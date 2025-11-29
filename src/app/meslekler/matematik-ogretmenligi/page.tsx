@@ -120,7 +120,7 @@ export default function MathTeacherPage() {
       {/* Main Content */}
       <div id="roadmap-section" className="container mx-auto px-4 py-8 max-w-5xl">
         <Tabs defaultValue="roadmap" className="space-y-8">
-          <TabsList className="grid w-full grid-cols-5 lg:w-[600px]">
+          <TabsList className="grid w-full grid-cols-2 md:grid-cols-5 lg:w-[750px] h-auto">
             <TabsTrigger value="roadmap">Yol Haritası</TabsTrigger>
             <TabsTrigger value="pedagogy">Pedagoji</TabsTrigger>
             <TabsTrigger value="faq">SSS</TabsTrigger>

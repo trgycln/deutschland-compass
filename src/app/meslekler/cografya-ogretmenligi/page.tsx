@@ -111,7 +111,7 @@ export default function GeographyTeacherPage() {
       {/* Main Content Tabs */}
       <div className="container mx-auto px-4 py-12 max-w-5xl">
         <Tabs defaultValue="guide" className="space-y-8">
-          <TabsList className="grid w-full grid-cols-4 lg:w-[600px]">
+          <TabsList className="grid w-full grid-cols-2 md:grid-cols-4 lg:w-[600px] h-auto">
             <TabsTrigger value="guide">Rehber</TabsTrigger>
             <TabsTrigger value="experiences">Deneyimler</TabsTrigger>
             <TabsTrigger value="faq">SSS</TabsTrigger>

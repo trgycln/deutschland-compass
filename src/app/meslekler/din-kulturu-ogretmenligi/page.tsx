@@ -92,7 +92,7 @@ export default function ReligiousCultureTeacherPage() {
       <div className="container mx-auto px-4 py-12">
         <div className="max-w-4xl mx-auto">
           <Tabs defaultValue="roadmap" className="space-y-8">
-            <TabsList className="grid w-full grid-cols-4 lg:w-[600px]">
+            <TabsList className="grid w-full grid-cols-2 md:grid-cols-4 lg:w-[600px] h-auto">
               <TabsTrigger value="roadmap">Yol Haritası</TabsTrigger>
               <TabsTrigger value="experiences">Deneyimler</TabsTrigger>
               <TabsTrigger value="documents">Belgeler</TabsTrigger>
