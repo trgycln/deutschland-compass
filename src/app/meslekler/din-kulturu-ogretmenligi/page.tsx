@@ -51,8 +51,8 @@ export default function ReligiousCultureTeacherPage() {
       {/* Hero Section */}
       <div className="bg-white dark:bg-slate-900 border-b border-slate-200 dark:border-slate-800">
         <div className="container mx-auto px-4 py-12">
-          <div className="max-w-4xl mx-auto">
-            <div className="flex items-center gap-3 mb-6">
+          <div className="max-w-4xl mx-auto flex flex-col items-center md:items-start text-center md:text-left">
+            <div className="flex items-center justify-center md:justify-start gap-3 mb-6">
               <Badge variant="secondary" className="bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400">
                 Eğitim
               </Badge>
@@ -69,7 +69,7 @@ export default function ReligiousCultureTeacherPage() {
               {pageDescription}
             </p>
 
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8 w-full">
               {religiousCultureTeacherData.stats.map((stat, index) => (
                 <div key={index} className="bg-slate-50 dark:bg-slate-800/50 p-4 rounded-lg border border-slate-200 dark:border-slate-700">
                   <div className="text-sm text-slate-500 dark:text-slate-400 mb-1">{stat.label}</div>

@@ -19,8 +19,7 @@ export function Navbar() {
               className="object-cover scale-110"
             />
           </div>
-          <span className="hidden sm:inline-block">Deutschland Compass</span>
-          <span className="sm:hidden">DC</span>
+          <span className="font-bold text-xl text-slate-900 dark:text-white">Deutschland Compass</span>
         </Link>
         
         {/* Desktop Navigation */}
@@ -47,30 +46,46 @@ export function Navbar() {
                 <span className="sr-only">Menüyü aç</span>
               </Button>
             </SheetTrigger>
-            <SheetContent side="right">
-              <SheetHeader>
-                <SheetTitle>Menü</SheetTitle>
+            <SheetContent side="right" className="w-full sm:w-[400px] flex flex-col">
+              <SheetHeader className="flex flex-col items-center gap-4 mt-8">
+                <div className="relative w-16 h-16 rounded-full overflow-hidden border-2 border-slate-100 dark:border-slate-800 bg-white flex items-center justify-center shadow-md">
+                  <Image 
+                    src="/dc_logo.png" 
+                    alt="Deutschland Compass Logo" 
+                    width={64} 
+                    height={64} 
+                    className="object-cover scale-110"
+                  />
+                </div>
+                <SheetTitle className="text-2xl font-bold text-center">Deutschland Compass</SheetTitle>
               </SheetHeader>
-              <div className="flex flex-col gap-4 mt-6">
-                <Link href="/meslekler" className="text-lg font-medium hover:text-blue-600 transition-colors">
+              
+              <div className="flex flex-col gap-6 mt-8 items-center flex-1">
+                <Link href="/meslekler" className="text-xl font-medium text-slate-600 hover:text-blue-600 dark:text-slate-300 transition-colors">
                   Meslekler
                 </Link>
-                <Link href="/rehber/anerkennung" className="text-lg font-medium hover:text-blue-600 transition-colors">
+                <Link href="/rehber/anerkennung" className="text-xl font-medium text-slate-600 hover:text-blue-600 dark:text-slate-300 transition-colors">
                   Denklik Rehberi
                 </Link>
-                <Link href="/blog" className="text-lg font-medium hover:text-blue-600 transition-colors">
+                <Link href="/blog" className="text-xl font-medium text-slate-600 hover:text-blue-600 dark:text-slate-300 transition-colors">
                   Blog
                 </Link>
-                <Link href="/hakkimizda" className="text-lg font-medium hover:text-blue-600 transition-colors">
+                <Link href="/hakkimizda" className="text-xl font-medium text-slate-600 hover:text-blue-600 dark:text-slate-300 transition-colors">
                   Hakkımızda
                 </Link>
-                <div className="h-px bg-slate-200 dark:bg-slate-800 my-2" />
-                <Link href="/giris" className="text-lg font-medium hover:text-blue-600 transition-colors">
+                
+                <div className="w-16 h-px bg-slate-200 dark:bg-slate-800 my-2" />
+                
+                <Link href="/giris" className="text-lg font-medium text-slate-600 hover:text-slate-900 dark:text-slate-300 dark:hover:text-white">
                   Giriş Yap
                 </Link>
-                <Button asChild className="w-full">
+                <Button asChild className="w-full max-w-[200px] rounded-full">
                   <Link href="/katki">Katkıda Bulun</Link>
                 </Button>
+              </div>
+              
+              <div className="py-8 text-center text-sm text-slate-400">
+                &copy; 2025 Deutschland Compass
               </div>
             </SheetContent>
           </Sheet>

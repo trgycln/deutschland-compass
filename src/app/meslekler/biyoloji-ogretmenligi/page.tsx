@@ -51,9 +51,9 @@ export default function BiologyTeacherPage() {
       {/* Hero Section */}
       <div className="bg-white dark:bg-slate-900 border-b">
         <div className="container mx-auto px-4 py-12 max-w-5xl">
-          <div className="flex flex-col md:flex-row gap-8 items-start">
-            <div className="flex-1 space-y-4">
-              <div className="flex items-center gap-2">
+          <div className="flex flex-col md:flex-row gap-8 items-center md:items-start text-center md:text-left">
+            <div className="flex-1 space-y-4 w-full">
+              <div className="flex items-center justify-center md:justify-start gap-2">
                 <Badge variant="outline" className="text-green-600 border-green-200 bg-green-50">Fen Bilimleri</Badge>
                 <Badge variant="outline" className="text-slate-600">Meslek Rehberi</Badge>
               </div>
@@ -64,7 +64,7 @@ export default function BiologyTeacherPage() {
                 {pageDescription}
               </p>
               
-              <div className="flex flex-wrap gap-4 pt-4">
+              <div className="flex flex-wrap justify-center md:justify-start gap-4 pt-4">
                 {biologyTeacherData.stats.map((stat, index) => (
                   <div key={index} className="flex items-center gap-2 bg-slate-100 dark:bg-slate-800 px-3 py-1.5 rounded-full">
                     <span className={`w-2 h-2 rounded-full ${stat.color}`} />
@@ -75,7 +75,7 @@ export default function BiologyTeacherPage() {
                 ))}
               </div>
 
-              <div className="flex gap-3 pt-4">
+              <div className="flex justify-center md:justify-start gap-3 pt-4">
                 <Button 
                   className="gap-2"
                   onClick={() => document.getElementById('roadmap-section')?.scrollIntoView({ behavior: 'smooth' })}
