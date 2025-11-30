@@ -27,7 +27,9 @@ export function Footer() {
           <div>
             <h3 className="font-semibold text-slate-900 dark:text-white mb-4">Platform</h3>
             <ul className="space-y-2 text-sm text-slate-600 dark:text-slate-400">
+              <li><Link href="/hakkimizda" className="hover:text-blue-600">Hakkımızda</Link></li>
               <li><Link href="/meslekler" className="hover:text-blue-600">Meslek Rehberleri</Link></li>
+              <li><Link href="/rehber/sirket-kurma" className="hover:text-blue-600">Şirket Kurma Rehberi</Link></li>
               <li><Link href="/tecrubeler" className="hover:text-blue-600">Tecrübe Paylaşımları</Link></li>
               <li><Link href="/sss" className="hover:text-blue-600">Sıkça Sorulan Sorular</Link></li>
             </ul>

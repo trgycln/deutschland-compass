@@ -112,7 +112,32 @@ export default function AdminPage() {
       .order('title');
     
     if (data && data.length > 0) {
-      setProfessions(data);
+      // Add "Eğitim Rehberi" as a virtual profession for filtering
+      const virtualProfessions = [
+        { 
+          id: 9999, 
+          title: 'Eğitim Rehberi', 
+          slug: 'egitim-rehberi',
+          description: 'Eğitim ve Kariyer Rehberi Sayfası',
+          video_url: ''
+        },
+        { 
+          id: 9998, 
+          title: 'Şirket Kurma Rehberi', 
+          slug: 'sirket-kurma-rehberi',
+          description: 'Almanya\'da Şirket Kurma ve Girişimcilik Rehberi',
+          video_url: ''
+        }
+      ];
+
+      // Filter out virtual professions that might already exist in data (to avoid duplicates)
+      const uniqueVirtualProfessions = virtualProfessions.filter(vp => 
+        !data.some(p => p.slug === vp.slug)
+      );
+
+      const allProfessions = [...data, ...uniqueVirtualProfessions];
+      setProfessions(allProfessions);
+      
       // Set default if not set
       if (!selectedProfessionSlug) {
         setSelectedProfessionSlug(data[0].slug);

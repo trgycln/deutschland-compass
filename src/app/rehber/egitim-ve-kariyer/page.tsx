@@ -8,6 +8,7 @@ import { Badge } from '@/components/ui/badge';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
 import { BookOpen, PlayCircle, GraduationCap, School, Briefcase, Users, HeartHandshake, Lightbulb } from 'lucide-react';
 import { ShareExperienceDialog } from '@/components/share-experience-dialog';
+import { UploadDocumentDialog } from '@/components/upload-document-dialog';
 
 export default function EducationCareerGuidePage() {
   const { title, description, videoUrl, sections, summary, faq } = educationCareerGuideData;
@@ -55,7 +56,15 @@ export default function EducationCareerGuidePage() {
                 <BookOpen className="w-4 h-4" />
                 Rehberi Oku
               </Button>
-              {/* Share dialog can be generic or specific if adapted */}
+              
+              <ShareExperienceDialog 
+                professionSlug="egitim-rehberi" 
+                defaultProfessionName="Eğitim Rehberi" 
+              />
+              
+              <UploadDocumentDialog 
+                professionSlug="egitim-rehberi" 
+              />
             </div>
           </div>
         </div>

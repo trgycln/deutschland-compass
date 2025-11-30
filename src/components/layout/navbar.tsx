@@ -26,6 +26,7 @@ export function Navbar() {
         <nav className="hidden md:flex items-center gap-6 text-sm font-medium text-slate-600 dark:text-slate-300">
           <Link href="/meslekler" className="hover:text-blue-600 transition-colors">Meslekler</Link>
           <Link href="/rehber/egitim-ve-kariyer" className="hover:text-blue-600 transition-colors">Eğitim Rehberi</Link>
+          <Link href="/rehber/sirket-kurma" className="hover:text-blue-600 transition-colors">Şirket Kurma</Link>
           <Link href="/rehber/anerkennung" className="hover:text-blue-600 transition-colors">Denklik Rehberi</Link>
           <Link href="/blog" className="hover:text-blue-600 transition-colors">Blog</Link>
           <Link href="/hakkimizda" className="hover:text-blue-600 transition-colors">Hakkımızda</Link>
