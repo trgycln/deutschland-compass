@@ -43,20 +43,17 @@ export function Footer() {
           </div>
 
           <div>
-            <h3 className="font-semibold text-slate-900 dark:text-white mb-4">Bizi Takip Edin</h3>
-            <div className="flex gap-4">
-              <Link href="#" className="text-slate-400 hover:text-blue-600">
-                <Twitter className="h-5 w-5" />
-              </Link>
-              <Link href="#" className="text-slate-400 hover:text-slate-900 dark:hover:text-white">
-                <Github className="h-5 w-5" />
-              </Link>
+            <h3 className="font-semibold text-slate-900 dark:text-white mb-4">Yasal</h3>
+            <div className="text-sm text-slate-600 dark:text-slate-400 space-y-2">
+              <p>Bu site kâr amacı gütmeyen bir topluluk projesidir.</p>
+              <p>Kişisel verileriniz toplanmaz ve saklanmaz.</p>
+              <p>Tüm içerikler anonim olarak paylaşılır.</p>
             </div>
           </div>
         </div>
         
         <div className="mt-12 pt-8 border-t border-slate-200 dark:border-slate-800 text-center text-sm text-slate-500">
-          © {new Date().getFullYear()} Deutschland Compass. Kâr amacı gütmeyen bir topluluk projesidir.
+          © {new Date().getFullYear()} Deutschland Compass. Topluluk yararına, gönüllüler tarafından geliştirilmiştir.
         </div>
       </div>
     </footer>

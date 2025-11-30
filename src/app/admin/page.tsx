@@ -448,6 +448,26 @@ export default function AdminPage() {
     }
   }
 
+  async function toggleBlogStatus(blog: BlogPost) {
+    try {
+      const { error } = await supabase
+        .from('blogs')
+        .update({ is_published: !blog.is_published })
+        .eq('id', blog.id);
+
+      if (error) throw error;
+
+      setBlogs(blogs.map(b => 
+        b.id === blog.id ? { ...b, is_published: !b.is_published } : b
+      ));
+      
+      alert(blog.is_published ? 'Blog yayından kaldırıldı.' : 'Blog yayınlandı.');
+    } catch (error) {
+      console.error('Error updating blog status:', error);
+      alert('Durum güncellenirken bir hata oluştu.');
+    }
+  }
+
   return (
     <div className="container mx-auto py-10 px-4">
       <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-8 gap-4">
@@ -598,9 +618,18 @@ export default function AdminPage() {
               ) : (
                 <div className="space-y-4">
                   {blogs.map((blog) => (
-                    <div key={blog.id} className="p-4 border rounded-lg bg-slate-50 dark:bg-slate-900">
+                    <div key={blog.id} className={`p-4 border rounded-lg ${blog.is_published ? 'bg-white dark:bg-slate-950' : 'bg-yellow-50 dark:bg-yellow-900/10 border-yellow-200 dark:border-yellow-800'}`}>
                       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
                         <div className="flex-1 min-w-0">
+                          <div className="flex items-center gap-2 mb-1">
+                            {blog.is_published ? (
+                              <Badge variant="default" className="bg-green-600 hover:bg-green-700">Yayında</Badge>
+                            ) : (
+                              <Badge variant="secondary" className="bg-yellow-100 text-yellow-800 hover:bg-yellow-200">Onay Bekliyor</Badge>
+                            )}
+                            <span className="text-xs text-slate-500">{new Date(blog.created_at).toLocaleDateString('tr-TR')}</span>
+                            <span className="text-xs text-slate-500">• {blog.author}</span>
+                          </div>
                           <h3 className="text-lg font-semibold truncate">{blog.title}</h3>
                           <p className="text-sm text-slate-600 dark:text-slate-400 truncate">{blog.excerpt}</p>
                           <div className="flex flex-wrap gap-2 mt-2">
@@ -609,7 +638,17 @@ export default function AdminPage() {
                             ))}
                           </div>
                         </div>
-                        <div className="flex gap-2 shrink-0">
+                        <div className="flex gap-2 shrink-0 items-center">
+                          {!blog.is_published && (
+                            <Button size="sm" className="bg-green-600 hover:bg-green-700 text-white" onClick={() => toggleBlogStatus(blog)}>
+                              <CheckCircle className="w-4 h-4 mr-2" /> Onayla
+                            </Button>
+                          )}
+                          {blog.is_published && (
+                            <Button size="sm" variant="outline" onClick={() => toggleBlogStatus(blog)}>
+                              Yayından Kaldır
+                            </Button>
+                          )}
                           <Button size="icon" variant="ghost" onClick={() => openBlogDialog(blog)}>
                             <Pencil className="w-4 h-4 text-blue-500" />
                           </Button>

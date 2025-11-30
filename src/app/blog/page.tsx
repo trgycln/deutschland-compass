@@ -37,11 +37,16 @@ export default async function BlogPage() {
 
   return (
     <div className="container mx-auto px-4 py-12">
-      <div className="text-center mb-16">
-        <h1 className="text-4xl font-bold text-slate-900 dark:text-white mb-4">Blog ve Makaleler</h1>
-        <p className="text-xl text-slate-600 dark:text-slate-400 max-w-2xl mx-auto">
-          Almanya'da yaşam, kariyer ve eğitim üzerine güncel rehberler, başarı hikayeleri ve ipuçları.
-        </p>
+      <div className="flex flex-col md:flex-row justify-between items-center mb-12 gap-6">
+        <div className="text-center md:text-left">
+          <h1 className="text-4xl font-bold text-slate-900 dark:text-white mb-4">Blog ve Makaleler</h1>
+          <p className="text-xl text-slate-600 dark:text-slate-400 max-w-2xl">
+            Almanya'da yaşam, kariyer ve eğitim üzerine güncel rehberler, başarı hikayeleri ve ipuçları.
+          </p>
+        </div>
+        <Button asChild size="lg" className="shrink-0">
+          <Link href="/blog/katki">Yazı Gönder</Link>
+        </Button>
       </div>
 
       {posts.length === 0 ? (

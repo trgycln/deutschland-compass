@@ -68,7 +68,7 @@ export default function EducationCareerGuidePage() {
           <div className="aspect-video bg-slate-200 rounded-xl overflow-hidden shadow-lg border border-slate-200 dark:border-slate-800 relative">
             {videoUrl ? (
               <iframe 
-                src={videoUrl} 
+                src={videoUrl.replace("watch?v=", "embed/")} 
                 title="Video İçerik"
                 className="w-full h-full"
                 allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 

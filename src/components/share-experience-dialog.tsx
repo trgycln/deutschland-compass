@@ -36,7 +36,7 @@ export function ShareExperienceDialog({ professionSlug, defaultProfessionName = 
         .from('experiences')
         .insert([
           { 
-            name: formData.name || 'Anonim',
+            name: 'Anonim', // Her zaman anonim
             profession: formData.profession,
             content: formData.content,
             status: 'pending' // Onay bekleyen durumunda
@@ -77,23 +77,17 @@ export function ShareExperienceDialog({ professionSlug, defaultProfessionName = 
         {success ? (
           <div className="flex flex-col items-center justify-center py-8 text-green-600">
             <CheckCircle2 className="w-12 h-12 mb-2" />
-            <p className="font-medium">Teşekkürler! Tecrübeniz onaya gönderildi.</p>
+            <p className="font-medium text-center">Teşekkürler! Tecrübeniz moderasyon onayına gönderildi.</p>
+            <p className="text-sm text-slate-500 mt-2 text-center">İçeriğiniz incelendikten sonra anonim olarak yayınlanacaktır.</p>
           </div>
         ) : (
           <>
+            <div className="bg-blue-50 dark:bg-blue-900/20 p-4 rounded-lg mb-4 text-sm text-blue-800 dark:text-blue-200">
+              <p className="font-semibold mb-1">Gizlilik ve Güvenlik Notu:</p>
+              <p>Paylaşımlarınız tamamen <strong>anonim</strong> olarak yayınlanır. Lütfen metin içerisinde kendinizin veya başkalarının ad-soyad, telefon, e-posta gibi kişisel bilgilerini paylaşmayınız.</p>
+            </div>
             <div className="grid gap-4 py-4">
-              <div className="grid grid-cols-4 items-center gap-4">
-                <Label htmlFor="name" className="text-right">
-                  Ad Soyad
-                </Label>
-                <Input 
-                  id="name" 
-                  placeholder="İsimsiz de olabilir" 
-                  className="col-span-3"
-                  value={formData.name}
-                  onChange={(e) => setFormData({...formData, name: e.target.value})}
-                />
-              </div>
+              {/* İsim alanı kaldırıldı - Tamamen anonim */}
               <div className="grid grid-cols-4 items-center gap-4">
                 <Label htmlFor="profession" className="text-right">
                   Meslek

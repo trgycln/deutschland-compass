@@ -1,7 +1,7 @@
 export const educationCareerGuideData = {
   title: "Türkiye'den Almanya'ya Göç Eden Aileler İçin Eğitim ve Kariyer Rehberi",
   description: "İlkokuldan üniversiteye kadar uzanan eğitim ve meslek edinme süreçleri, karşılaşılan zorluklar, çözüm yolları ve destek mekanizmaları hakkında kapsamlı bir rehber.",
-  videoUrl: "", // Video URL eklenecek
+  videoUrl: "https://www.youtube.com/embed/B3v48EqWwY4",
   sections: [
     {
       id: "bolum-1",

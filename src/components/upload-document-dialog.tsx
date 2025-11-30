@@ -15,7 +15,8 @@ import {
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Textarea } from "@/components/ui/textarea"
-import { Loader2, UploadCloud, FileText, X } from "lucide-react"
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
+import { Loader2, UploadCloud, FileText, X, Shield } from "lucide-react"
 
 export function UploadDocumentDialog({ professionSlug }: { professionSlug: string }) {
   const [open, setOpen] = useState(false)
@@ -23,8 +24,7 @@ export function UploadDocumentDialog({ professionSlug }: { professionSlug: strin
   const [file, setFile] = useState<File | null>(null)
   const [formData, setFormData] = useState({
     title: "",
-    description: "",
-    uploader_name: ""
+    description: ""
   })
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -70,7 +70,7 @@ export function UploadDocumentDialog({ professionSlug }: { professionSlug: strin
             file_url: publicUrl,
             file_type: fileExt,
             file_size: (file.size / 1024 / 1024).toFixed(2) + ' MB',
-            uploader_name: formData.uploader_name || 'Anonim',
+            uploader_name: 'Anonim',
             profession_slug: professionSlug,
             status: 'pending'
           }
@@ -80,7 +80,7 @@ export function UploadDocumentDialog({ professionSlug }: { professionSlug: strin
 
       setOpen(false)
       setFile(null)
-      setFormData({ title: "", description: "", uploader_name: "" })
+      setFormData({ title: "", description: "" })
       alert("Doküman başarıyla yüklendi ve onay için gönderildi.")
 
     } catch (error: any) {
@@ -108,6 +108,15 @@ export function UploadDocumentDialog({ professionSlug }: { professionSlug: strin
         </DialogHeader>
         
         <div className="grid gap-4 py-4">
+          <Alert className="bg-blue-50 border-blue-200">
+            <Shield className="h-4 w-4 text-blue-600" />
+            <AlertTitle className="text-blue-800">Gizlilik ve Güvenlik</AlertTitle>
+            <AlertDescription className="text-blue-700 text-xs">
+              Paylaşımlarınız tamamen <strong>anonim</strong> olarak yayınlanır. İsim veya kişisel bilgi talep edilmez. 
+              Tüm içerikler editör onayından sonra yayınlanır.
+            </AlertDescription>
+          </Alert>
+
           <div className="grid gap-2">
             <Label htmlFor="title">Doküman Başlığı *</Label>
             <Input 
@@ -125,16 +134,6 @@ export function UploadDocumentDialog({ professionSlug }: { professionSlug: strin
               value={formData.description}
               onChange={(e) => setFormData({...formData, description: e.target.value})}
               placeholder="Doküman içeriği hakkında kısa bilgi..."
-            />
-          </div>
-
-          <div className="grid gap-2">
-            <Label htmlFor="uploader">Adınız (İsteğe bağlı)</Label>
-            <Input 
-              id="uploader" 
-              value={formData.uploader_name}
-              onChange={(e) => setFormData({...formData, uploader_name: e.target.value})}
-              placeholder="İsminiz"
             />
           </div>
 
