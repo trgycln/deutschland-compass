@@ -45,6 +45,33 @@ export default function GuidesPage() {
             </Card>
           </Link>
 
+          {/* Eğitim ve Kariyer Rehberi (Aileler İçin) */}
+          <Link href="/rehber/egitim-ve-kariyer" className="group">
+            <Card className="h-full hover:shadow-xl transition-all duration-300 border-slate-200 dark:border-slate-800 group-hover:border-green-500/50">
+              <CardHeader>
+                <div className="flex justify-between items-start mb-4">
+                  <div className="p-3 bg-green-100 dark:bg-green-900/30 rounded-lg text-green-600 dark:text-green-400">
+                    <GraduationCap className="w-8 h-8" />
+                  </div>
+                  <ArrowRight className="h-6 w-6 text-slate-400 group-hover:text-green-500 transition-colors" />
+                </div>
+                <CardTitle className="text-2xl group-hover:text-green-600 transition-colors">
+                  Aileler İçin Eğitim ve Kariyer Rehberi
+                </CardTitle>
+                <CardDescription className="text-base mt-2">
+                  İlkokuldan üniversiteye kadar çocuklarınızın eğitim süreci, okul türleri, meslek seçimi ve ailelere düşen görevler hakkında detaylı rehber.
+                </CardDescription>
+              </CardHeader>
+              <CardContent>
+                <div className="flex flex-wrap gap-2">
+                  <Badge variant="secondary">Okul Sistemi</Badge>
+                  <Badge variant="secondary">Aile Rehberi</Badge>
+                  <Badge variant="secondary">Gençlik</Badge>
+                </div>
+              </CardContent>
+            </Card>
+          </Link>
+
           {/* Anerkennung Rehberi */}
           <Link href="/rehber/anerkennung" className="group">
             <Card className="h-full hover:shadow-xl transition-all duration-300 border-slate-200 dark:border-slate-800 group-hover:border-purple-500/50">

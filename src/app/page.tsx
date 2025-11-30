@@ -61,15 +61,17 @@ export default function Home() {
                 </CardDescription>
               </CardHeader>
             </Card>
-            <Card className="border-none shadow-lg bg-slate-50 dark:bg-slate-800/50">
-              <CardHeader>
-                <MessageSquare className="h-10 w-10 text-green-600 mb-4" />
-                <CardTitle>Yaşayan Sistem</CardTitle>
-                <CardDescription className="text-base">
-                  Sürekli güncellenen, soru-cevaplarla zenginleşen dinamik bir yapı.
-                </CardDescription>
-              </CardHeader>
-            </Card>
+            <Link href="/rehber/egitim-ve-kariyer" className="block h-full">
+              <Card className="h-full border-none shadow-lg bg-slate-50 dark:bg-slate-800/50 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors cursor-pointer">
+                <CardHeader>
+                  <MessageSquare className="h-10 w-10 text-green-600 mb-4" />
+                  <CardTitle>Aileler İçin Eğitim</CardTitle>
+                  <CardDescription className="text-base">
+                    İlkokuldan üniversiteye, çocuklarınızın geleceği için kapsamlı eğitim ve kariyer rehberi.
+                  </CardDescription>
+                </CardHeader>
+              </Card>
+            </Link>
           </div>
         </div>
       </section>
