@@ -1,4 +1,6 @@
+"use client";
 
+import { useState } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { Button } from '@/components/ui/button';
@@ -6,6 +8,8 @@ import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from '@/co
 import { Menu } from 'lucide-react';
 
 export function Navbar() {
+  const [isOpen, setIsOpen] = useState(false);
+
   return (
     <header className="sticky top-0 z-50 w-full border-b bg-white/95 backdrop-blur supports-[backdrop-filter]:bg-white/60 dark:bg-slate-950/95 dark:supports-[backdrop-filter]:bg-slate-950/60">
       <div className="container mx-auto flex h-16 items-center justify-between px-4">
@@ -41,7 +45,7 @@ export function Navbar() {
           </Button>
 
           {/* Mobile Menu */}
-          <Sheet>
+          <Sheet open={isOpen} onOpenChange={setIsOpen}>
             <SheetTrigger asChild>
               <Button variant="ghost" size="icon" className="md:hidden">
                 <Menu className="h-6 w-6" />
@@ -63,29 +67,60 @@ export function Navbar() {
               </SheetHeader>
               
               <div className="flex flex-col gap-6 mt-8 items-center flex-1">
-                <Link href="/meslekler" className="text-xl font-medium text-slate-600 hover:text-blue-600 dark:text-slate-300 transition-colors">
+                <Link 
+                  href="/meslekler" 
+                  className="text-xl font-medium text-slate-600 hover:text-blue-600 dark:text-slate-300 transition-colors"
+                  onClick={() => setIsOpen(false)}
+                >
                   Meslekler
                 </Link>
-                <Link href="/rehber/egitim-ve-kariyer" className="text-xl font-medium text-slate-600 hover:text-blue-600 dark:text-slate-300 transition-colors">
+                <Link 
+                  href="/rehber/egitim-ve-kariyer" 
+                  className="text-xl font-medium text-slate-600 hover:text-blue-600 dark:text-slate-300 transition-colors"
+                  onClick={() => setIsOpen(false)}
+                >
                   Eğitim Rehberi
                 </Link>
-                <Link href="/rehber/anerkennung" className="text-xl font-medium text-slate-600 hover:text-blue-600 dark:text-slate-300 transition-colors">
+                <Link 
+                  href="/rehber/sirket-kurma" 
+                  className="text-xl font-medium text-slate-600 hover:text-blue-600 dark:text-slate-300 transition-colors"
+                  onClick={() => setIsOpen(false)}
+                >
+                  Şirket Kurma
+                </Link>
+                <Link 
+                  href="/rehber/anerkennung" 
+                  className="text-xl font-medium text-slate-600 hover:text-blue-600 dark:text-slate-300 transition-colors"
+                  onClick={() => setIsOpen(false)}
+                >
                   Denklik Rehberi
                 </Link>
-                <Link href="/blog" className="text-xl font-medium text-slate-600 hover:text-blue-600 dark:text-slate-300 transition-colors">
+                <Link 
+                  href="/blog" 
+                  className="text-xl font-medium text-slate-600 hover:text-blue-600 dark:text-slate-300 transition-colors"
+                  onClick={() => setIsOpen(false)}
+                >
                   Blog
                 </Link>
-                <Link href="/hakkimizda" className="text-xl font-medium text-slate-600 hover:text-blue-600 dark:text-slate-300 transition-colors">
+                <Link 
+                  href="/hakkimizda" 
+                  className="text-xl font-medium text-slate-600 hover:text-blue-600 dark:text-slate-300 transition-colors"
+                  onClick={() => setIsOpen(false)}
+                >
                   Hakkımızda
                 </Link>
                 
                 <div className="w-16 h-px bg-slate-200 dark:bg-slate-800 my-2" />
                 
-                <Link href="/giris" className="text-lg font-medium text-slate-600 hover:text-slate-900 dark:text-slate-300 dark:hover:text-white">
+                <Link 
+                  href="/giris" 
+                  className="text-lg font-medium text-slate-600 hover:text-slate-900 dark:text-slate-300 dark:hover:text-white"
+                  onClick={() => setIsOpen(false)}
+                >
                   Giriş Yap
                 </Link>
                 <Button asChild className="w-full max-w-[200px] rounded-full">
-                  <Link href="/katki">Katkıda Bulun</Link>
+                  <Link href="/katki" onClick={() => setIsOpen(false)}>Katkıda Bulun</Link>
                 </Button>
               </div>
               
