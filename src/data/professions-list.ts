@@ -11,10 +11,11 @@ export interface ProfessionCardData {
   status: ProfessionStatus;
   pathType: ProfessionPathType;
   customLink?: string;
-  icon: 'Briefcase' | 'BookOpen' | 'Stethoscope' | 'Code2' | 'Map' | 'Train' | 'Bus' | 'Rocket' | 'Truck';
+  icon: 'Briefcase' | 'BookOpen' | 'Stethoscope' | 'Code2' | 'Map' | 'Train' | 'Bus' | 'Rocket' | 'Truck' | 'Zap';
   demand: 'Yüksek Talep' | 'Çok Yüksek Talep' | 'Orta-Yüksek Talep' | 'Normal';
   readingTime: string;
   badgeColor: 'blue' | 'red' | 'green' | 'slate' | 'orange' | 'purple';
+  keywords?: string[];
 }
 
 export const professionsList: ProfessionCardData[] = [
@@ -147,7 +148,8 @@ export const professionsList: ProfessionCardData[] = [
     icon: 'Briefcase',
     demand: 'Yüksek Talep',
     readingTime: '14dk Okuma',
-    badgeColor: 'green'
+    badgeColor: 'green',
+    keywords: ['umweltingenieur', 'cevre', 'muhendis', 'aritma', 'su', 'atik', 'environment']
   },
   // Yeni Kariyer Yolları
   {
@@ -176,7 +178,8 @@ export const professionsList: ProfessionCardData[] = [
     icon: 'Truck',
     demand: 'Çok Yüksek Talep',
     readingTime: '15dk Okuma',
-    badgeColor: 'orange'
+    badgeColor: 'orange',
+    keywords: ['kurier', 'postbote', 'paket', 'zusteller', 'lojistik', 'kurye', 'dagitim', 'dhl', 'amazon', 'hermes']
   },
   {
     id: 'tren-makinistligi',
@@ -216,7 +219,38 @@ export const professionsList: ProfessionCardData[] = [
     icon: 'Bus',
     demand: 'Yüksek Talep',
     readingTime: '15dk Okuma',
-    badgeColor: 'orange'
+    badgeColor: 'orange',
+    keywords: ['busfahrer', 'otobüs', 'sofor', 'şoför', 'ulaşım', 'ehliyet', 'yolcu', 'tasima', 'seyahat']
+  },
+  {
+    id: 'elektrikci',
+    title: 'Elektrikçi / Elektronikçi',
+    slug: 'elektrikci',
+    description: 'Endüstriyel Elektrikçi ve Elektronikçi (Enerji/Bina Tekniği) meslekleri için denklik ve eğitim rehberi.',
+    category: 'Sanayi & İnşaat',
+    status: 'active',
+    pathType: 'new-path',
+    customLink: '/rehber/elektrikci',
+    icon: 'Zap',
+    demand: 'Çok Yüksek Talep',
+    readingTime: '16dk Okuma',
+    badgeColor: 'blue',
+    keywords: ['elektrik', 'elektronik', 'elektriker', 'elektroniker', 'ausbildung', 'sanayi', 'insaat', 'teknisyen', 'usta']
+  },
+  {
+    id: 'erzieherin',
+    title: 'Çocuk Eğitmeni (Erzieherin)',
+    slug: 'erzieherin',
+    description: 'Almanya\'da Erzieherin olmak, denklik süreçleri, Ausbildung ve kariyer fırsatları.',
+    category: 'Eğitim & Sosyal',
+    status: 'active',
+    pathType: 'new-path',
+    customLink: '/rehber/erzieherin',
+    icon: 'BookOpen',
+    demand: 'Çok Yüksek Talep',
+    readingTime: '18dk Okuma',
+    badgeColor: 'purple',
+    keywords: ['erzieher', 'kindergarten', 'kita', 'pedagog', 'ogretmen', 'okul oncesi', 'cocuk gelisimi', 'egitmen', 'bakici']
   },
   {
     id: 'yazilim-bootcamp',

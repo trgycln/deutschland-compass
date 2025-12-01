@@ -8,20 +8,40 @@ import { careerGuideData } from '@/data/career-guide-data';
 import { HomeSearch } from '@/components/home-search';
 import { ProfessionsTabs } from '@/components/professions-tabs';
 
+const normalizeText = (text: string) => {
+  return text
+    .toLowerCase()
+    .replace(/ğ/g, 'g')
+    .replace(/ü/g, 'u')
+    .replace(/ş/g, 's')
+    .replace(/ı/g, 'i')
+    .replace(/i̇/g, 'i')
+    .replace(/ö/g, 'o')
+    .replace(/ç/g, 'c');
+};
+
 export default async function ProfessionsPage({
   searchParams,
 }: {
   searchParams: Promise<{ [key: string]: string | string[] | undefined }>;
 }) {
   const resolvedSearchParams = await searchParams;
-  const search = typeof resolvedSearchParams.search === 'string' ? resolvedSearchParams.search.toLowerCase() : '';
+  const search = typeof resolvedSearchParams.search === 'string' ? resolvedSearchParams.search : '';
+  const normalizedSearch = normalizeText(search);
 
   const filteredProfessions = professionsList.filter((profession) => {
     if (!search) return true;
+    
+    const normalizedTitle = normalizeText(profession.title);
+    const normalizedDescription = normalizeText(profession.description);
+    const normalizedCategory = normalizeText(profession.category);
+    const normalizedKeywords = profession.keywords ? profession.keywords.map(k => normalizeText(k)) : [];
+
     return (
-      profession.title.toLowerCase().includes(search) ||
-      profession.description.toLowerCase().includes(search) ||
-      profession.category.toLowerCase().includes(search)
+      normalizedTitle.includes(normalizedSearch) ||
+      normalizedDescription.includes(normalizedSearch) ||
+      normalizedCategory.includes(normalizedSearch) ||
+      normalizedKeywords.some(k => k.includes(normalizedSearch))
     );
   });
 
@@ -50,10 +70,15 @@ export default async function ProfessionsPage({
 
   const filteredGuides = guides.filter(guide => {
     if (!search) return false;
+    
+    const normalizedTitle = normalizeText(guide.title);
+    const normalizedDescription = normalizeText(guide.description);
+    const normalizedKeywords = guide.keywords.map(k => normalizeText(k));
+
     return (
-      guide.title.toLowerCase().includes(search) ||
-      guide.description.toLowerCase().includes(search) ||
-      guide.keywords.some(k => search.includes(k) || k.includes(search))
+      normalizedTitle.includes(normalizedSearch) ||
+      normalizedDescription.includes(normalizedSearch) ||
+      normalizedKeywords.some(k => k.includes(normalizedSearch) || normalizedSearch.includes(k))
     );
   });
 

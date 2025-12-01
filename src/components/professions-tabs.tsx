@@ -4,7 +4,7 @@ import Link from 'next/link';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { ArrowRight, Users, BookOpen, Briefcase, Stethoscope, Code2, Map, Train, Bus, Rocket, Truck } from 'lucide-react';
+import { ArrowRight, Users, BookOpen, Briefcase, Stethoscope, Code2, Map, Train, Bus, Rocket, Truck, Zap } from 'lucide-react';
 import { ProfessionCardData } from '@/data/professions-list';
 
 const iconMap = {
@@ -16,7 +16,8 @@ const iconMap = {
   Train,
   Bus,
   Rocket,
-  Truck
+  Truck,
+  Zap
 };
 
 const badgeColorMap: Record<string, string> = {
@@ -58,6 +59,10 @@ const hoverIconColorMap: Record<string, string> = {
 export function ProfessionsTabs({ professions }: { professions: ProfessionCardData[] }) {
   const continuationProfessions = professions.filter(p => p.pathType === 'continuation');
   const newPathProfessions = professions.filter(p => p.pathType === 'new-path');
+
+  // Eğer "Kendi Mesleğim" sekmesinde sonuç yoksa ama "Yeni Bir Kariyer" sekmesinde varsa,
+  // varsayılan olarak "Yeni Bir Kariyer" sekmesini aç.
+  const defaultTab = (continuationProfessions.length === 0 && newPathProfessions.length > 0) ? "new-path" : "continuation";
 
   const renderProfessionCard = (profession: ProfessionCardData) => {
     const Icon = iconMap[profession.icon];
@@ -112,20 +117,20 @@ export function ProfessionsTabs({ professions }: { professions: ProfessionCardDa
   };
 
   return (
-    <Tabs defaultValue="continuation" className="w-full">
+    <Tabs defaultValue={defaultTab} key={defaultTab} className="w-full">
       <div className="flex justify-center mb-12">
         <TabsList className="grid w-full max-w-lg grid-cols-2 h-auto p-1 bg-slate-100 dark:bg-slate-800 rounded-xl">
           <TabsTrigger 
             value="continuation" 
             className="py-3 text-sm md:text-base rounded-lg data-[state=active]:bg-white data-[state=active]:text-blue-700 data-[state=active]:shadow-sm dark:data-[state=active]:bg-slate-950 dark:data-[state=active]:text-blue-400"
           >
-            Kendi Mesleğim
+            Kendi Mesleğim <span className="ml-2 text-xs bg-slate-200 dark:bg-slate-800 px-2 py-0.5 rounded-full text-slate-600 dark:text-slate-400">{continuationProfessions.length}</span>
           </TabsTrigger>
           <TabsTrigger 
             value="new-path" 
             className="py-3 text-sm md:text-base rounded-lg data-[state=active]:bg-white data-[state=active]:text-purple-700 data-[state=active]:shadow-sm dark:data-[state=active]:bg-slate-950 dark:data-[state=active]:text-purple-400"
           >
-            Yeni Bir Kariyer
+            Yeni Bir Kariyer <span className="ml-2 text-xs bg-slate-200 dark:bg-slate-800 px-2 py-0.5 rounded-full text-slate-600 dark:text-slate-400">{newPathProfessions.length}</span>
           </TabsTrigger>
         </TabsList>
       </div>
