@@ -2,46 +2,11 @@
 import Link from 'next/link';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { ArrowRight, Users, BookOpen, Briefcase, Stethoscope, Code2, Map, GraduationCap } from 'lucide-react';
+import { ArrowRight, BookOpen, GraduationCap, Map } from 'lucide-react';
 import { professionsList } from '@/data/professions-list';
 import { careerGuideData } from '@/data/career-guide-data';
 import { HomeSearch } from '@/components/home-search';
-
-const iconMap = {
-  Briefcase,
-  BookOpen,
-  Stethoscope,
-  Code2,
-  Map
-};
-
-const badgeColorMap: Record<string, string> = {
-  blue: "bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-300",
-  red: "bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-300",
-  green: "bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-300",
-  slate: "bg-slate-100 text-slate-600 hover:bg-slate-200"
-};
-
-const hoverBorderColorMap: Record<string, string> = {
-  blue: "group-hover:border-blue-500/50",
-  red: "group-hover:border-red-500/50",
-  green: "group-hover:border-green-500/50",
-  slate: ""
-};
-
-const hoverTextColorMap: Record<string, string> = {
-  blue: "group-hover:text-blue-600",
-  red: "group-hover:text-red-600",
-  green: "group-hover:text-green-600",
-  slate: ""
-};
-
-const hoverIconColorMap: Record<string, string> = {
-  blue: "group-hover:text-blue-500",
-  red: "group-hover:text-red-500",
-  green: "group-hover:text-green-500",
-  slate: ""
-};
+import { ProfessionsTabs } from '@/components/professions-tabs';
 
 export default async function ProfessionsPage({
   searchParams,
@@ -156,66 +121,7 @@ export default async function ProfessionsPage({
           </div>
         )}
 
-        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {filteredProfessions.length > 0 ? (
-            filteredProfessions.map((profession) => {
-              const Icon = iconMap[profession.icon];
-              const isComingSoon = profession.status === 'coming-soon';
-
-              if (isComingSoon) {
-                return (
-                  <Card key={profession.id} className="h-full opacity-75 hover:opacity-100 transition-opacity border-dashed">
-                    <CardHeader>
-                      <div className="flex justify-between items-start mb-2">
-                        <Badge variant="outline">{profession.category}</Badge>
-                        <Badge className="bg-slate-100 text-slate-600 hover:bg-slate-200">Yakında</Badge>
-                      </div>
-                      <CardTitle className="text-xl flex items-center gap-2 text-slate-700 dark:text-slate-300">
-                        <Icon className="w-5 h-5" />
-                        {profession.title}
-                      </CardTitle>
-                      <CardDescription>
-                        {profession.description}
-                      </CardDescription>
-                    </CardHeader>
-                  </Card>
-                );
-              }
-
-              return (
-                <Link key={profession.id} href={`/meslekler/${profession.slug}`} className="group">
-                  <Card className={`h-full hover:shadow-xl transition-all duration-300 border-slate-200 dark:border-slate-800 ${hoverBorderColorMap[profession.badgeColor]}`}>
-                    <CardHeader>
-                      <div className="flex justify-between items-start mb-2">
-                        <Badge variant="secondary" className={badgeColorMap[profession.badgeColor]}>
-                          {profession.category}
-                        </Badge>
-                        <ArrowRight className={`h-5 w-5 text-slate-400 transition-colors ${hoverIconColorMap[profession.badgeColor]}`} />
-                      </div>
-                      <CardTitle className={`text-xl transition-colors flex items-center gap-2 ${hoverTextColorMap[profession.badgeColor]}`}>
-                        <Icon className="w-5 h-5" />
-                        {profession.title}
-                      </CardTitle>
-                      <CardDescription>
-                        {profession.description}
-                      </CardDescription>
-                    </CardHeader>
-                    <CardContent>
-                      <div className="flex gap-4 text-sm text-slate-500">
-                        <span className="flex items-center"><Users className="w-4 h-4 mr-1" /> {profession.demand}</span>
-                        <span className="flex items-center"><BookOpen className="w-4 h-4 mr-1" /> {profession.readingTime}</span>
-                      </div>
-                    </CardContent>
-                  </Card>
-                </Link>
-              );
-            })
-          ) : (
-            <div className="col-span-full text-center py-12 text-slate-500">
-              Aradığınız kriterlere uygun meslek bulunamadı.
-            </div>
-          )}
-        </div>
+        <ProfessionsTabs professions={filteredProfessions} />
       </div>
     </div>
   );

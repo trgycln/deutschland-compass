@@ -111,37 +111,77 @@ export default function AdminPage() {
       .select('*')
       .order('title');
     
-    if (data && data.length > 0) {
-      // Add "Eğitim Rehberi" as a virtual profession for filtering
-      const virtualProfessions = [
-        { 
-          id: 9999, 
-          title: 'Eğitim Rehberi', 
-          slug: 'egitim-rehberi',
-          description: 'Eğitim ve Kariyer Rehberi Sayfası',
-          video_url: ''
-        },
-        { 
-          id: 9998, 
-          title: 'Şirket Kurma Rehberi', 
-          slug: 'sirket-kurma-rehberi',
-          description: 'Almanya\'da Şirket Kurma ve Girişimcilik Rehberi',
-          video_url: ''
-        }
-      ];
+    const dbProfessions = data || [];
 
-      // Filter out virtual professions that might already exist in data (to avoid duplicates)
-      const uniqueVirtualProfessions = virtualProfessions.filter(vp => 
-        !data.some(p => p.slug === vp.slug)
-      );
-
-      const allProfessions = [...data, ...uniqueVirtualProfessions];
-      setProfessions(allProfessions);
-      
-      // Set default if not set
-      if (!selectedProfessionSlug) {
-        setSelectedProfessionSlug(data[0].slug);
+    // Add "Eğitim Rehberi" as a virtual profession for filtering
+    const virtualProfessions = [
+      { 
+        id: 9999, 
+        title: 'Eğitim Rehberi', 
+        slug: 'egitim-rehberi',
+        description: 'Eğitim ve Kariyer Rehberi Sayfası',
+        video_url: ''
+      },
+      { 
+        id: 9998, 
+        title: 'Şirket Kurma Rehberi', 
+        slug: 'sirket-kurma-rehberi',
+        description: 'Almanya\'da Şirket Kurma ve Girişimcilik Rehberi',
+        video_url: ''
+      },
+      { 
+        id: 9997, 
+        title: 'Kargo ve Posta Dağıtım', 
+        slug: 'kargo-posta-dagitim',
+        description: 'Kargo ve Posta Dağıtım Sektörü Rehberi',
+        video_url: ''
+      },
+      { 
+        id: 9996, 
+        title: 'Otobüs Şoförlüğü', 
+        slug: 'otobus-soforlugu',
+        description: 'Otobüs Şoförlüğü (Busfahrer) Rehberi',
+        video_url: ''
+      },
+      { 
+        id: 9995, 
+        title: 'Coğrafi Bilgi Sistemleri (GIS)', 
+        slug: 'cografi-bilgi-sistemleri',
+        description: 'Coğrafi Bilgi Sistemleri (GIS/CBS) Uzmanlığı Rehberi',
+        video_url: ''
+      },
+      { 
+        id: 9994, 
+        title: 'Çevre Mühendisliği', 
+        slug: 'cevre-muhendisligi',
+        description: 'Çevre Mühendisliği Meslek Rehberi',
+        video_url: ''
       }
+    ];
+
+    // Filter out virtual professions that might already exist in data (to avoid duplicates)
+    // Also merge titles if DB has empty title but we know the virtual title
+    const mergedProfessions = dbProfessions.map(p => {
+      const virtualMatch = virtualProfessions.find(vp => vp.slug === p.slug);
+      if (virtualMatch && (!p.title || p.title.trim() === '')) {
+        return { ...p, title: virtualMatch.title };
+      }
+      return p;
+    });
+
+    // Filter out any remaining professions without titles (garbage data)
+    const validProfessions = mergedProfessions.filter(p => p.title && p.title.trim() !== '');
+
+    const missingVirtuals = virtualProfessions.filter(vp => 
+      !validProfessions.some(p => p.slug === vp.slug)
+    );
+
+    const allProfessions = [...validProfessions, ...missingVirtuals].sort((a, b) => a.title.localeCompare(b.title));
+    setProfessions(allProfessions);
+    
+    // Set default if not set
+    if (!selectedProfessionSlug && allProfessions.length > 0) {
+      setSelectedProfessionSlug(allProfessions[0].slug);
     }
   }
 
@@ -200,7 +240,29 @@ export default function AdminPage() {
           .single();
         
         if (error && error.code !== 'PGRST116') throw error;
-        setProfession(data || { slug: selectedProfessionSlug, title: '', description: '', video_url: '' });
+        
+        if (data) {
+          // If data exists but title is empty, try to find virtual title to populate form
+          if (!data.title || data.title.trim() === '') {
+            const virtualProf = professions.find(p => p.slug === selectedProfessionSlug);
+            setProfession({ 
+              ...data, 
+              title: virtualProf?.title || '',
+              description: data.description || virtualProf?.description || ''
+            });
+          } else {
+            setProfession(data);
+          }
+        } else {
+          // If not found in DB, try to find in virtual professions to populate defaults
+          const virtualProf = professions.find(p => p.slug === selectedProfessionSlug);
+          setProfession({ 
+            slug: selectedProfessionSlug, 
+            title: virtualProf?.title || '', 
+            description: virtualProf?.description || '', 
+            video_url: '' 
+          });
+        }
       }
     } catch (error) {
       console.error('Veri çekme hatası:', error);
@@ -406,12 +468,21 @@ export default function AdminPage() {
 
   async function updateProfession() {
     try {
+      // Remove ID if it's a virtual ID (>= 9000) to let DB generate a real ID
+      const professionToSave = { ...profession };
+      if (professionToSave.id && professionToSave.id >= 9000) {
+        delete professionToSave.id;
+      }
+
       const { error } = await supabase
         .from('professions')
-        .upsert(profession);
+        .upsert(professionToSave, { onConflict: 'slug' });
       
       if (error) throw error;
       alert('Ayarlar kaydedildi!');
+      
+      // Refresh data to get the real ID if it was a new insertion
+      fetchData();
     } catch (error) {
       console.error('Güncelleme hatası:', error);
       alert('Kaydetme başarısız.');
