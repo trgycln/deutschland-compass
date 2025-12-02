@@ -65,7 +65,7 @@ export default function EnglishTeacherPage() {
               </p>
               
               <div className="flex flex-wrap justify-center md:justify-start gap-4 pt-4">
-                {englishTeacherData.stats.map((stat, index) => (
+                {englishTeacherData.stats.map((stat: { label: string; value: string; color: string }, index: number) => (
                   <div key={index} className="flex items-center gap-2 bg-slate-100 dark:bg-slate-800 px-3 py-1.5 rounded-full">
                     <span className={`w-2 h-2 rounded-full ${stat.color}`} />
                     <span className="text-sm font-medium text-slate-600 dark:text-slate-300">
