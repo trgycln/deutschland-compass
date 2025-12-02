@@ -3,24 +3,38 @@
 import React from 'react';
 import { cloudDevopsData } from '@/data/cloud-devops-data';
 import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
-import { BookOpen, PlayCircle, GraduationCap, School, Briefcase, Users, HeartHandshake, Lightbulb, ArrowLeft, CheckCircle2, AlertCircle, ExternalLink, Database, Server, Layers, Cloud, Terminal, Code2, Network } from 'lucide-react';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { BookOpen, PlayCircle, GraduationCap, Users, HeartHandshake, ArrowLeft, CheckCircle2, Cloud, FileText } from 'lucide-react';
 import Link from 'next/link';
 import { ShareExperienceDialog } from '@/components/share-experience-dialog';
+import { FaqSection } from '@/components/faq-section';
+import { ExperienceSection } from '@/components/experience-section';
+import { DocumentSection } from '@/components/document-section';
+import { UploadDocumentDialog } from '@/components/upload-document-dialog';
+
+function getEmbedUrl(url: string) {
+  if (!url) return '';
+  if (url.includes('youtube.com/embed/')) return url;
+  const match = url.match(/(?:youtu\.be\/|youtube\.com\/(?:embed\/|v\/|watch\?v=|watch\?.+&v=))([^&?]+)/);
+  if (match && match[1]) {
+    return `https://www.youtube.com/embed/${match[1]}`;
+  }
+  return url;
+}
 
 export default function CloudDevopsPage() {
   const { title, description, videoUrl, stats, roadmap, pedagogy, faq } = cloudDevopsData;
 
   return (
-    <div className="min-h-screen bg-slate-50 dark:bg-slate-950 pb-20">
+    <div className="min-h-screen bg-slate-50 dark:bg-slate-950">
       {/* Hero Section */}
       <div className="bg-slate-900 text-white border-b border-slate-800 relative overflow-hidden">
         <div className="absolute inset-0 bg-grid-white/[0.05] bg-[size:20px_20px]" />
         <div className="absolute inset-0 bg-gradient-to-t from-slate-900 to-transparent" />
         
-        <div className="container mx-auto px-4 py-16 relative z-10">
+        <div className="container mx-auto px-4 py-12 max-w-5xl relative z-10">
           <Link 
             href="/meslekler/bilisim-it" 
             className="inline-flex items-center text-slate-400 hover:text-white mb-8 transition-colors"
@@ -29,108 +43,140 @@ export default function CloudDevopsPage() {
             Bilişim (IT) Sayfasına Dön
           </Link>
 
-          <div className="max-w-4xl">
-            <div className="flex items-center gap-3 mb-6">
-              <Badge variant="secondary" className="bg-blue-600/20 text-blue-300 hover:bg-blue-600/30 border-blue-500/50">
-                Cloud & DevOps
-              </Badge>
-              <Badge variant="outline" className="text-slate-400 border-slate-700">
-                Kariyer Rehberi
-              </Badge>
-            </div>
-            
-            <h1 className="text-4xl md:text-5xl font-bold mb-6 leading-tight">
-              {title}
-            </h1>
-            
-            <p className="text-xl text-slate-300 mb-8 leading-relaxed max-w-2xl">
-              {description}
-            </p>
+          <div className="flex flex-col md:flex-row gap-8 items-center md:items-start text-center md:text-left">
+            <div className="flex-1 space-y-4 w-full">
+              <div className="flex items-center justify-center md:justify-start gap-2">
+                <Badge variant="secondary" className="bg-blue-600/20 text-blue-300 hover:bg-blue-600/30 border-blue-500/50">
+                  Cloud & DevOps
+                </Badge>
+                <Badge variant="outline" className="text-slate-400 border-slate-700">
+                  Kariyer Rehberi
+                </Badge>
+              </div>
+              
+              <h1 className="text-4xl md:text-5xl font-bold mb-6 leading-tight">
+                {title}
+              </h1>
+              
+              <p className="text-xl text-slate-300 mb-8 leading-relaxed">
+                {description}
+              </p>
 
-            {/* Stats Grid */}
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-              {stats.map((stat, index) => (
-                <div key={index} className="bg-slate-800/50 backdrop-blur border border-slate-700 rounded-xl p-4">
-                  <div className="text-sm text-slate-400 mb-1">{stat.label}</div>
-                  <div className="font-semibold text-lg flex items-center gap-2">
-                    <span className={`w-2 h-2 rounded-full ${stat.color}`} />
-                    {stat.value}
+              <div className="flex flex-wrap justify-center md:justify-start gap-4 pt-4">
+                {stats.map((stat, index) => (
+                  <div key={index} className="bg-slate-800/50 backdrop-blur border border-slate-700 rounded-xl px-4 py-2">
+                    <div className="text-sm text-slate-400 mb-1">{stat.label}</div>
+                    <div className="font-semibold text-lg flex items-center gap-2">
+                      <span className={`w-2 h-2 rounded-full ${stat.color}`} />
+                      {stat.value}
+                    </div>
                   </div>
+                ))}
+              </div>
+
+              <div className="flex justify-center md:justify-start gap-3 pt-4">
+                <Button 
+                  className="gap-2"
+                  onClick={() => document.getElementById('roadmap-section')?.scrollIntoView({ behavior: 'smooth' })}
+                >
+                  <BookOpen className="w-4 h-4" />
+                  Rehbere Başla
+                </Button>
+                <ShareExperienceDialog professionSlug="cloud-devops" defaultProfessionName="Cloud & DevOps" />
+              </div>
+            </div>
+
+            {/* Video Section */}
+            <div className="w-full md:w-1/3 aspect-video bg-slate-800 rounded-xl overflow-hidden shadow-lg border border-slate-700">
+              {videoUrl && (videoUrl.includes('youtube') || videoUrl.includes('youtu.be')) ? (
+                <iframe 
+                  src={getEmbedUrl(videoUrl)} 
+                  title="Meslek Tanıtımı"
+                  className="w-full h-full"
+                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
+                  allowFullScreen
+                />
+              ) : (
+                <div className="w-full h-full flex flex-col items-center justify-center text-slate-500 gap-2">
+                  <PlayCircle className="w-12 h-12 opacity-50" />
+                  <span className="text-sm font-medium">Tanıtım videosu yakında eklenecek</span>
                 </div>
-              ))}
+              )}
             </div>
           </div>
         </div>
       </div>
 
-      <div className="container mx-auto px-4 py-12">
-        <div className="grid lg:grid-cols-3 gap-8">
-          {/* Main Content */}
-          <div className="lg:col-span-2 space-y-12">
-            
-            {/* Roadmap Section */}
-            <section>
-              <div className="flex items-center gap-3 mb-8">
-                <div className="p-3 bg-blue-100 dark:bg-blue-900/30 rounded-xl text-blue-600 dark:text-blue-400">
-                  <Cloud className="w-6 h-6" />
-                </div>
-                <h2 className="text-2xl font-bold text-slate-900 dark:text-white">
-                  Kariyer Yol Haritası
-                </h2>
-              </div>
+      {/* Main Content */}
+      <div id="roadmap-section" className="container mx-auto px-4 py-8 max-w-5xl">
+        <Tabs defaultValue="roadmap" className="space-y-8">
+          <TabsList className="grid w-full grid-cols-2 md:grid-cols-5 lg:w-[750px] h-auto">
+            <TabsTrigger value="roadmap">Yol Haritası</TabsTrigger>
+            <TabsTrigger value="pedagogy">Uygulama</TabsTrigger>
+            <TabsTrigger value="faq">SSS</TabsTrigger>
+            <TabsTrigger value="experiences">Tecrübeler</TabsTrigger>
+            <TabsTrigger value="documents">Dokümanlar</TabsTrigger>
+          </TabsList>
 
-              <div className="space-y-8">
-                {roadmap.map((step, index) => (
-                  <div key={index} className="relative pl-8 md:pl-0">
-                    {/* Timeline Line */}
-                    <div className="absolute left-0 top-0 bottom-0 w-px bg-slate-200 dark:bg-slate-800 md:hidden" />
-                    
-                    <Card className="relative border-slate-200 dark:border-slate-800 overflow-hidden">
-                      <div className="absolute top-0 left-0 w-1 h-full bg-blue-500" />
+          {/* Roadmap Tab */}
+          <TabsContent value="roadmap" className="space-y-8">
+            <div className="grid gap-8">
+              {roadmap.map((step, index) => (
+                <div key={index} className="relative pl-8 md:pl-0">
+                  {/* Timeline Line (Desktop) */}
+                  <div className="hidden md:block absolute left-[27px] top-14 bottom-0 w-0.5 bg-slate-200 dark:bg-slate-800 last:hidden" />
+                  
+                  <div className="flex gap-6">
+                    {/* Step Number */}
+                    <div className="hidden md:flex flex-col items-center">
+                      <div className="w-14 h-14 rounded-full bg-white border-2 border-blue-600 text-blue-600 flex items-center justify-center font-bold text-xl shadow-sm z-10">
+                        {step.step}
+                      </div>
+                    </div>
+
+                    {/* Content Card */}
+                    <Card className="flex-1 border-slate-200 dark:border-slate-800">
                       <CardHeader>
-                        <div className="flex items-center gap-4 mb-2">
-                          <div className="flex items-center justify-center w-8 h-8 rounded-full bg-blue-100 dark:bg-blue-900/50 text-blue-600 dark:text-blue-400 font-bold text-sm border-4 border-white dark:border-slate-950 shadow-sm z-10">
-                            {step.step}
-                          </div>
-                          <CardTitle className="text-xl">{step.title}</CardTitle>
+                        <div className="flex items-center gap-3 mb-2 md:hidden">
+                           <span className="w-8 h-8 rounded-full bg-blue-100 text-blue-600 flex items-center justify-center font-bold text-sm">
+                             {step.step}
+                           </span>
+                           <CardTitle>{step.title}</CardTitle>
                         </div>
-                        <p className="text-slate-600 dark:text-slate-400 pl-12">
+                        <CardTitle className="hidden md:block">{step.title}</CardTitle>
+                        <CardDescription className="text-base">
                           {step.description}
-                        </p>
+                        </CardDescription>
                       </CardHeader>
-                      <CardContent className="pl-12">
-                        <div className="grid gap-4">
-                          {step.details.map((detail, idx) => (
-                            <div key={idx} className="bg-slate-50 dark:bg-slate-900/50 rounded-lg p-4 border border-slate-100 dark:border-slate-800">
-                              <h4 className="font-semibold text-slate-900 dark:text-white mb-2 flex items-center gap-2">
-                                <CheckCircle2 className="w-4 h-4 text-green-500" />
-                                {detail.title}
-                              </h4>
-                              <p className="text-slate-600 dark:text-slate-400 text-sm leading-relaxed">
-                                {detail.content}
-                              </p>
-                            </div>
-                          ))}
-                        </div>
+                      <CardContent className="grid gap-4 md:grid-cols-1">
+                        {step.details.map((detail, idx) => (
+                          <div key={idx} className="bg-slate-50 dark:bg-slate-900 p-4 rounded-lg border border-slate-100 dark:border-slate-800">
+                            <h4 className="font-semibold text-slate-900 dark:text-slate-100 mb-2 flex items-center gap-2">
+                              <CheckCircle2 className="w-5 h-5 text-blue-500 shrink-0 mt-0.5" />
+                              {detail.title}
+                            </h4>
+                            <p className="text-sm text-slate-600 dark:text-slate-400 leading-relaxed whitespace-pre-line">
+                              {detail.content}
+                            </p>
+                          </div>
+                        ))}
                       </CardContent>
                     </Card>
                   </div>
-                ))}
-              </div>
-            </section>
+                </div>
+              ))}
+            </div>
+          </TabsContent>
 
-            {/* Pedagogy/Analogy Section */}
-            <section>
-              <Card className="bg-gradient-to-br from-blue-50 to-indigo-50 dark:from-blue-950/30 dark:to-indigo-950/30 border-blue-100 dark:border-blue-900">
+          {/* Pedagogy/Analogy Tab */}
+          <TabsContent value="pedagogy">
+            <div className="grid gap-6 md:grid-cols-2">
+              <Card className="md:col-span-2 bg-gradient-to-br from-blue-50 to-indigo-50 dark:from-blue-950/30 dark:to-indigo-950/30 border-blue-100 dark:border-blue-900">
                 <CardHeader>
-                  <div className="flex items-center gap-3 mb-2">
-                    <div className="p-2 bg-blue-100 dark:bg-blue-900/50 rounded-lg text-blue-600 dark:text-blue-400">
-                      <Terminal className="w-6 h-6" />
-                    </div>
-                    <CardTitle className="text-xl text-blue-900 dark:text-blue-100">
-                      {pedagogy.title}
-                    </CardTitle>
-                  </div>
+                  <CardTitle className="flex items-center gap-2 text-blue-900 dark:text-blue-100">
+                    <Cloud className="w-5 h-5 text-blue-500" />
+                    {pedagogy.title}
+                  </CardTitle>
                 </CardHeader>
                 <CardContent className="space-y-6">
                   <div className="prose prose-blue dark:prose-invert max-w-none">
@@ -161,54 +207,35 @@ export default function CloudDevopsPage() {
                   </div>
                 </CardContent>
               </Card>
-            </section>
+            </div>
+          </TabsContent>
 
-            {/* FAQ Section */}
-            <section>
-              <div className="flex items-center gap-3 mb-6">
-                <div className="p-3 bg-indigo-100 dark:bg-indigo-900/30 rounded-xl text-indigo-600 dark:text-indigo-400">
-                  <Lightbulb className="w-6 h-6" />
+          {/* FAQ Tab */}
+          <TabsContent value="faq">
+            <FaqSection professionSlug="cloud-devops" initialFaqs={faq} />
+          </TabsContent>
+
+          {/* Experiences Tab */}
+          <TabsContent value="experiences">
+            <div className="space-y-8">
+              <ExperienceSection professionSlug="cloud-devops" />
+            </div>
+          </TabsContent>
+
+          {/* Documents Tab */}
+          <TabsContent value="documents">
+            <div className="space-y-6">
+              <div className="flex justify-between items-center">
+                <div>
+                  <h3 className="text-lg font-semibold">Dokümanlar</h3>
+                  <p className="text-sm text-slate-500">Bu meslek için paylaşılan örnek belgeler ve formlar.</p>
                 </div>
-                <h2 className="text-2xl font-bold text-slate-900 dark:text-white">
-                  Sıkça Sorulan Sorular
-                </h2>
+                <UploadDocumentDialog professionSlug="cloud-devops" />
               </div>
-              
-              <Accordion type="single" collapsible className="w-full space-y-4">
-                {faq.map((item, index) => (
-                  <AccordionItem key={index} value={`item-${index}`} className="border border-slate-200 dark:border-slate-800 rounded-lg bg-white dark:bg-slate-900 px-4">
-                    <AccordionTrigger className="text-left hover:no-underline py-4 font-medium text-slate-900 dark:text-slate-100">
-                      {item.question}
-                    </AccordionTrigger>
-                    <AccordionContent className="text-slate-600 dark:text-slate-400 pb-4 leading-relaxed whitespace-pre-line">
-                      {item.answer}
-                    </AccordionContent>
-                  </AccordionItem>
-                ))}
-              </Accordion>
-            </section>
-
-          </div>
-
-          {/* Sidebar */}
-          <div className="space-y-6">
-            {/* Share Experience Card */}
-            <Card className="bg-gradient-to-br from-blue-600 to-indigo-700 text-white border-none shadow-lg sticky top-24">
-              <CardHeader>
-                <CardTitle className="flex items-center gap-2 text-xl">
-                  <HeartHandshake className="w-6 h-6 text-blue-200" />
-                  Tecrübeni Paylaş
-                </CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-4">
-                <p className="text-blue-100">
-                  Cloud ve DevOps alanındaki tecrübeleriniz, yeni başlayanlar için çok değerli. Hikayenizi paylaşarak topluluğa katkıda bulunun.
-                </p>
-                <ShareExperienceDialog professionId="cloud-devops" professionTitle="Cloud & DevOps Uzmanlığı" />
-              </CardContent>
-            </Card>
-          </div>
-        </div>
+              <DocumentSection professionSlug="cloud-devops" />
+            </div>
+          </TabsContent>
+        </Tabs>
       </div>
     </div>
   );

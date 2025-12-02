@@ -1,12 +1,12 @@
 'use client';
 
 import React from 'react';
-import { hardwareData } from '@/data/hardware-data';
+import { lokfuhrerData } from '@/data/lokfuhrer-data';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { BookOpen, PlayCircle, GraduationCap, Users, HeartHandshake, ArrowLeft, CheckCircle2, Cpu, FileText } from 'lucide-react';
+import { BookOpen, PlayCircle, GraduationCap, Users, HeartHandshake, ArrowLeft, CheckCircle2, TrainFront, Anchor, FileText } from 'lucide-react';
 import Link from 'next/link';
 import { ShareExperienceDialog } from '@/components/share-experience-dialog';
 import { FaqSection } from '@/components/faq-section';
@@ -24,8 +24,8 @@ function getEmbedUrl(url: string) {
   return url;
 }
 
-export default function HardwarePage() {
-  const { title, description, videoUrl, stats, roadmap, pedagogy, faq } = hardwareData;
+export default function LokfuhrerPage() {
+  const { title, description, videoUrl, stats, roadmap, pedagogy, faq } = lokfuhrerData;
 
   return (
     <div className="min-h-screen bg-slate-50 dark:bg-slate-950">
@@ -36,21 +36,21 @@ export default function HardwarePage() {
         
         <div className="container mx-auto px-4 py-12 max-w-5xl relative z-10">
           <Link 
-            href="/meslekler/bilisim-it" 
+            href="/meslekler" 
             className="inline-flex items-center text-slate-400 hover:text-white mb-8 transition-colors"
           >
             <ArrowLeft className="w-4 h-4 mr-2" />
-            Bilişim (IT) Sayfasına Dön
+            Meslekler Sayfasına Dön
           </Link>
 
           <div className="flex flex-col md:flex-row gap-8 items-center md:items-start text-center md:text-left">
             <div className="flex-1 space-y-4 w-full">
               <div className="flex items-center justify-center md:justify-start gap-2">
                 <Badge variant="secondary" className="bg-emerald-600/20 text-emerald-300 hover:bg-emerald-600/30 border-emerald-500/50">
-                  Hardware & Support
+                  Ulaşım & Lojistik
                 </Badge>
                 <Badge variant="outline" className="text-slate-400 border-slate-700">
-                  Donanım Rehberi
+                  Kariyer Rehberi
                 </Badge>
               </div>
               
@@ -82,7 +82,7 @@ export default function HardwarePage() {
                   <BookOpen className="w-4 h-4" />
                   Rehbere Başla
                 </Button>
-                <ShareExperienceDialog professionSlug="it-donanim" defaultProfessionName="IT Donanım ve Sistem" />
+                <ShareExperienceDialog professionSlug="lokfuhrer" defaultProfessionName="Lokführer (Makinistlik)" />
               </div>
             </div>
 
@@ -151,7 +151,7 @@ export default function HardwarePage() {
                       <CardContent className="grid gap-4 md:grid-cols-1">
                         {step.details.map((detail, idx) => (
                           <div key={idx} className="bg-slate-50 dark:bg-slate-900 p-4 rounded-lg border border-slate-100 dark:border-slate-800">
-                            <h4 className="font-semibold text-slate-900 dark:text-slate-100 mb-2 flex items-center gap-2">
+                            <h4 className="font-semibold text-slate-900 dark:text-slate-100 mb-2 flex items-start gap-2">
                               <CheckCircle2 className="w-5 h-5 text-emerald-500 shrink-0 mt-0.5" />
                               {detail.title}
                             </h4>
@@ -174,7 +174,7 @@ export default function HardwarePage() {
               <Card className="md:col-span-2 bg-gradient-to-br from-emerald-50 to-teal-50 dark:from-emerald-950/30 dark:to-teal-950/30 border-emerald-100 dark:border-emerald-900">
                 <CardHeader>
                   <CardTitle className="flex items-center gap-2 text-emerald-900 dark:text-emerald-100">
-                    <Cpu className="w-5 h-5 text-emerald-500" />
+                    <Anchor className="w-5 h-5 text-emerald-500" />
                     {pedagogy.title}
                   </CardTitle>
                 </CardHeader>
@@ -212,13 +212,13 @@ export default function HardwarePage() {
 
           {/* FAQ Tab */}
           <TabsContent value="faq">
-            <FaqSection professionSlug="it-donanim" initialFaqs={faq} />
+            <FaqSection professionSlug="lokfuhrer" initialFaqs={faq} />
           </TabsContent>
 
           {/* Experiences Tab */}
           <TabsContent value="experiences">
             <div className="space-y-8">
-              <ExperienceSection professionSlug="it-donanim" />
+              <ExperienceSection professionSlug="lokfuhrer" />
             </div>
           </TabsContent>
 
@@ -230,9 +230,9 @@ export default function HardwarePage() {
                   <h3 className="text-lg font-semibold">Dokümanlar</h3>
                   <p className="text-sm text-slate-500">Bu meslek için paylaşılan örnek belgeler ve formlar.</p>
                 </div>
-                <UploadDocumentDialog professionSlug="it-donanim" />
+                <UploadDocumentDialog professionSlug="lokfuhrer" />
               </div>
-              <DocumentSection professionSlug="it-donanim" />
+              <DocumentSection professionSlug="lokfuhrer" />
             </div>
           </TabsContent>
         </Tabs>

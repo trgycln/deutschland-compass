@@ -204,7 +204,7 @@ export default function TesterPage() {
                 <p className="text-orange-100">
                   Yazılım Test Uzmanlığı alanındaki tecrübeleriniz, yeni başlayanlar için çok değerli. Hikayenizi paylaşarak topluluğa katkıda bulunun.
                 </p>
-                <ShareExperienceDialog professionId="yazilim-test-uzmanligi" professionTitle="Yazılım Test Uzmanlığı (Tester)" />
+                <ShareExperienceDialog professionSlug="yazilim-test-uzmanligi" defaultProfessionName="Yazılım Test Uzmanlığı (Tester)" />
               </CardContent>
             </Card>
           </div>

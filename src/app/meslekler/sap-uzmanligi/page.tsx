@@ -204,7 +204,7 @@ export default function SapPage() {
                 <p className="text-blue-100">
                   SAP alanındaki tecrübeleriniz, yeni başlayanlar için çok değerli. Hikayenizi paylaşarak topluluğa katkıda bulunun.
                 </p>
-                <ShareExperienceDialog professionId="sap-uzmanligi" professionTitle="SAP Uzmanlığı" />
+                <ShareExperienceDialog professionSlug="sap-uzmanligi" defaultProfessionName="SAP Uzmanlığı" />
               </CardContent>
             </Card>
           </div>

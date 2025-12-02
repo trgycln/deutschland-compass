@@ -1,12 +1,12 @@
 'use client';
 
 import React from 'react';
-import { hardwareData } from '@/data/hardware-data';
+import { kurdishTeacherData } from '@/data/kurdish-teacher-data';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { BookOpen, PlayCircle, GraduationCap, Users, HeartHandshake, ArrowLeft, CheckCircle2, Cpu, FileText } from 'lucide-react';
+import { BookOpen, PlayCircle, GraduationCap, Users, HeartHandshake, ArrowLeft, CheckCircle2, Languages, Globe, FileText } from 'lucide-react';
 import Link from 'next/link';
 import { ShareExperienceDialog } from '@/components/share-experience-dialog';
 import { FaqSection } from '@/components/faq-section';
@@ -24,8 +24,8 @@ function getEmbedUrl(url: string) {
   return url;
 }
 
-export default function HardwarePage() {
-  const { title, description, videoUrl, stats, roadmap, pedagogy, faq } = hardwareData;
+export default function KurdishTeacherPage() {
+  const { title, description, videoUrl, stats, roadmap, pedagogy, faq } = kurdishTeacherData;
 
   return (
     <div className="min-h-screen bg-slate-50 dark:bg-slate-950">
@@ -36,21 +36,21 @@ export default function HardwarePage() {
         
         <div className="container mx-auto px-4 py-12 max-w-5xl relative z-10">
           <Link 
-            href="/meslekler/bilisim-it" 
+            href="/meslekler" 
             className="inline-flex items-center text-slate-400 hover:text-white mb-8 transition-colors"
           >
             <ArrowLeft className="w-4 h-4 mr-2" />
-            Bilişim (IT) Sayfasına Dön
+            Meslekler Sayfasına Dön
           </Link>
 
           <div className="flex flex-col md:flex-row gap-8 items-center md:items-start text-center md:text-left">
             <div className="flex-1 space-y-4 w-full">
               <div className="flex items-center justify-center md:justify-start gap-2">
-                <Badge variant="secondary" className="bg-emerald-600/20 text-emerald-300 hover:bg-emerald-600/30 border-emerald-500/50">
-                  Hardware & Support
+                <Badge variant="secondary" className="bg-red-600/20 text-red-300 hover:bg-red-600/30 border-red-500/50">
+                  Eğitim & Dil
                 </Badge>
                 <Badge variant="outline" className="text-slate-400 border-slate-700">
-                  Donanım Rehberi
+                  Kariyer Rehberi
                 </Badge>
               </div>
               
@@ -82,7 +82,7 @@ export default function HardwarePage() {
                   <BookOpen className="w-4 h-4" />
                   Rehbere Başla
                 </Button>
-                <ShareExperienceDialog professionSlug="it-donanim" defaultProfessionName="IT Donanım ve Sistem" />
+                <ShareExperienceDialog professionSlug="kurtce-ogretmenligi" defaultProfessionName="Kürtçe Öğretmenliği" />
               </div>
             </div>
 
@@ -129,7 +129,7 @@ export default function HardwarePage() {
                   <div className="flex gap-6">
                     {/* Step Number */}
                     <div className="hidden md:flex flex-col items-center">
-                      <div className="w-14 h-14 rounded-full bg-white border-2 border-emerald-600 text-emerald-600 flex items-center justify-center font-bold text-xl shadow-sm z-10">
+                      <div className="w-14 h-14 rounded-full bg-white border-2 border-red-600 text-red-600 flex items-center justify-center font-bold text-xl shadow-sm z-10">
                         {step.step}
                       </div>
                     </div>
@@ -138,7 +138,7 @@ export default function HardwarePage() {
                     <Card className="flex-1 border-slate-200 dark:border-slate-800">
                       <CardHeader>
                         <div className="flex items-center gap-3 mb-2 md:hidden">
-                           <span className="w-8 h-8 rounded-full bg-emerald-100 text-emerald-600 flex items-center justify-center font-bold text-sm">
+                           <span className="w-8 h-8 rounded-full bg-red-100 text-red-600 flex items-center justify-center font-bold text-sm">
                              {step.step}
                            </span>
                            <CardTitle>{step.title}</CardTitle>
@@ -151,8 +151,8 @@ export default function HardwarePage() {
                       <CardContent className="grid gap-4 md:grid-cols-1">
                         {step.details.map((detail, idx) => (
                           <div key={idx} className="bg-slate-50 dark:bg-slate-900 p-4 rounded-lg border border-slate-100 dark:border-slate-800">
-                            <h4 className="font-semibold text-slate-900 dark:text-slate-100 mb-2 flex items-center gap-2">
-                              <CheckCircle2 className="w-5 h-5 text-emerald-500 shrink-0 mt-0.5" />
+                            <h4 className="font-semibold text-slate-900 dark:text-white mb-2 flex items-center gap-2">
+                              <CheckCircle2 className="w-5 h-5 text-green-500 shrink-0 mt-0.5" />
                               {detail.title}
                             </h4>
                             <p className="text-sm text-slate-600 dark:text-slate-400 leading-relaxed whitespace-pre-line">
@@ -171,36 +171,36 @@ export default function HardwarePage() {
           {/* Pedagogy/Analogy Tab */}
           <TabsContent value="pedagogy">
             <div className="grid gap-6 md:grid-cols-2">
-              <Card className="md:col-span-2 bg-gradient-to-br from-emerald-50 to-teal-50 dark:from-emerald-950/30 dark:to-teal-950/30 border-emerald-100 dark:border-emerald-900">
+              <Card className="md:col-span-2 bg-gradient-to-br from-red-50 to-orange-50 dark:from-red-950/30 dark:to-orange-950/30 border-red-100 dark:border-red-900">
                 <CardHeader>
-                  <CardTitle className="flex items-center gap-2 text-emerald-900 dark:text-emerald-100">
-                    <Cpu className="w-5 h-5 text-emerald-500" />
+                  <CardTitle className="flex items-center gap-2 text-red-900 dark:text-red-100">
+                    <Globe className="w-5 h-5 text-red-500" />
                     {pedagogy.title}
                   </CardTitle>
                 </CardHeader>
                 <CardContent className="space-y-6">
-                  <div className="prose prose-emerald dark:prose-invert max-w-none">
-                    <p className="text-emerald-800 dark:text-emerald-200 leading-relaxed whitespace-pre-line">
+                  <div className="prose prose-red dark:prose-invert max-w-none">
+                    <p className="text-red-800 dark:text-red-200 leading-relaxed whitespace-pre-line">
                       {pedagogy.content}
                     </p>
                   </div>
                   
                   <div className="grid md:grid-cols-2 gap-4 pt-4">
-                    <div className="bg-white/60 dark:bg-slate-900/60 rounded-lg p-4 border border-emerald-100 dark:border-emerald-900/50">
-                      <h4 className="font-semibold text-emerald-900 dark:text-emerald-100 mb-2 flex items-center gap-2">
+                    <div className="bg-white/60 dark:bg-slate-900/60 rounded-lg p-4 border border-red-100 dark:border-red-900/50">
+                      <h4 className="font-semibold text-red-900 dark:text-red-100 mb-2 flex items-center gap-2">
                         <Users className="w-4 h-4" />
                         Özel Gereksinimler
                       </h4>
-                      <p className="text-sm text-emerald-700 dark:text-emerald-300">
+                      <p className="text-sm text-red-700 dark:text-red-300">
                         {pedagogy.specialNeeds}
                       </p>
                     </div>
-                    <div className="bg-white/60 dark:bg-slate-900/60 rounded-lg p-4 border border-emerald-100 dark:border-emerald-900/50">
-                      <h4 className="font-semibold text-emerald-900 dark:text-emerald-100 mb-2 flex items-center gap-2">
+                    <div className="bg-white/60 dark:bg-slate-900/60 rounded-lg p-4 border border-red-100 dark:border-red-900/50">
+                      <h4 className="font-semibold text-red-900 dark:text-red-100 mb-2 flex items-center gap-2">
                         <BookOpen className="w-4 h-4" />
                         Kaynaklar
                       </h4>
-                      <p className="text-sm text-emerald-700 dark:text-emerald-300">
+                      <p className="text-sm text-red-700 dark:text-red-300">
                         {pedagogy.resources}
                       </p>
                     </div>
@@ -212,13 +212,13 @@ export default function HardwarePage() {
 
           {/* FAQ Tab */}
           <TabsContent value="faq">
-            <FaqSection professionSlug="it-donanim" initialFaqs={faq} />
+            <FaqSection professionSlug="kurtce-ogretmenligi" initialFaqs={faq} />
           </TabsContent>
 
           {/* Experiences Tab */}
           <TabsContent value="experiences">
             <div className="space-y-8">
-              <ExperienceSection professionSlug="it-donanim" />
+              <ExperienceSection professionSlug="kurtce-ogretmenligi" />
             </div>
           </TabsContent>
 
@@ -230,9 +230,9 @@ export default function HardwarePage() {
                   <h3 className="text-lg font-semibold">Dokümanlar</h3>
                   <p className="text-sm text-slate-500">Bu meslek için paylaşılan örnek belgeler ve formlar.</p>
                 </div>
-                <UploadDocumentDialog professionSlug="it-donanim" />
+                <UploadDocumentDialog professionSlug="kurtce-ogretmenligi" />
               </div>
-              <DocumentSection professionSlug="it-donanim" />
+              <DocumentSection professionSlug="kurtce-ogretmenligi" />
             </div>
           </TabsContent>
         </Tabs>

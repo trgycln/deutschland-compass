@@ -204,7 +204,7 @@ export default function DataSciencePage() {
                 <p className="text-purple-100">
                   Veri Bilimi alanındaki tecrübeleriniz, yeni başlayanlar için çok değerli. Hikayenizi paylaşarak topluluğa katkıda bulunun.
                 </p>
-                <ShareExperienceDialog professionId="veri-bilimi" professionTitle="Veri Bilimi (Data Science)" />
+                <ShareExperienceDialog professionSlug="veri-bilimi" defaultProfessionName="Veri Bilimi (Data Science)" />
               </CardContent>
             </Card>
           </div>

@@ -207,6 +207,27 @@ export default function AdminPage() {
         video_url: ''
       },
       { 
+        id: 9982, 
+        title: 'İşletme ve İktisat', 
+        slug: 'isletme-iktisat',
+        description: 'İşletme, İktisat ve Maliye Rehberi',
+        video_url: ''
+      },
+      { 
+        id: 9981, 
+        title: 'Kimya Öğretmenliği', 
+        slug: 'kimya-ogretmenligi',
+        description: 'Kimya Öğretmenliği ve Kimyagerlik Rehberi',
+        video_url: ''
+      },
+      { 
+        id: 9980, 
+        title: 'Kürtçe Öğretmenliği', 
+        slug: 'kurtce-ogretmenligi',
+        description: 'Kürtçe Öğretmenliği ve Pedagojik Uzmanlık Rehberi',
+        video_url: ''
+      },
+      { 
         id: 9993, 
         title: 'Hemşirelik', 
         slug: 'hemsire',

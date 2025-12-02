@@ -204,7 +204,7 @@ export default function CyberSecurityPage() {
                 <p className="text-blue-100">
                   Siber güvenlik alanındaki tecrübeleriniz, yeni başlayanlar için çok değerli. Hikayenizi paylaşarak topluluğa katkıda bulunun.
                 </p>
-                <ShareExperienceDialog professionId="siber-guvenlik" professionTitle="Siber Güvenlik" />
+                <ShareExperienceDialog professionSlug="siber-guvenlik" defaultProfessionName="Siber Güvenlik" />
               </CardContent>
             </Card>
           </div>

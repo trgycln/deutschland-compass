@@ -204,7 +204,7 @@ export default function SoftwareDeveloperPage() {
                 <p className="text-blue-100">
                   Yazılım geliştirme alanındaki tecrübeleriniz, yeni başlayanlar için çok değerli. Hikayenizi paylaşarak topluluğa katkıda bulunun.
                 </p>
-                <ShareExperienceDialog professionId="yazilim-gelistirici" professionTitle="Yazılım Geliştirici" />
+                <ShareExperienceDialog professionSlug="yazilim-gelistirici" defaultProfessionName="Yazılım Geliştirici" />
               </CardContent>
             </Card>
           </div>

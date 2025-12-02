@@ -4,20 +4,56 @@ import Link from 'next/link';
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { ArrowRight, Users, BookOpen, Briefcase, Stethoscope, Code2, Map, Train, Bus, Rocket, Truck, Zap, GraduationCap, HardHat, HeartPulse, Laptop } from 'lucide-react';
+import { ArrowRight, Users, GraduationCap, HardHat, HeartPulse, Laptop, Briefcase as LucideBriefcase, Bus } from 'lucide-react';
 import { ProfessionCardData } from '@/data/professions-list';
 
-const iconMap = {
-  Briefcase,
-  BookOpen,
-  Stethoscope,
-  Code2,
-  Map,
-  Train,
-  Bus,
-  Rocket,
-  Truck,
-  Zap
+// React Icons Imports
+import { 
+  FcBriefcase, FcReading, FcCommandLine, FcAutomotive, 
+  FcShipped, FcElectronics, FcGraduationCap, FcEngineering, FcBiotech, 
+  FcDataSheet, FcMultipleDevices, FcGlobe, FcRules, FcManager, FcBusiness,
+  FcDepartment, FcProcess, FcShop, FcSupport, FcSurvey
+} from 'react-icons/fc';
+import { 
+  GiTeacher, GiChemicalTank, GiElectric, GiHealthNormal, GiNurseFemale, 
+  GiDoctorFace, GiTestTubes, GiDna2, GiComputing, GiNetworkBars, GiCargoShip
+} from 'react-icons/gi';
+import { FaUserNurse, FaUserMd, FaBus, FaTruck, FaCode, FaLaptopCode, FaChalkboardTeacher, FaMap, FaTrain } from 'react-icons/fa';
+import { MdOutlineScience, MdOutlinePsychology, MdOutlineSecurity } from 'react-icons/md';
+
+const iconMap: Record<string, any> = {
+  // Mevcut mapping'leri daha renkli ikonlarla güncelliyoruz
+  'Briefcase': FcBriefcase,
+  'BookOpen': FcReading,
+  'Stethoscope': GiDoctorFace,
+  'Code2': FcCommandLine,
+  'Map': FaMap,
+  'Train': FaTrain,
+  'Bus': FaBus,
+  'Rocket': FcElectronics,
+  'Truck': FcShipped,
+  'Zap': GiElectric,
+  
+  // Yeni semantik mappingler
+  'Teacher': FaChalkboardTeacher,
+  'Chemistry': GiChemicalTank,
+  'Biology': GiDna2,
+  'Physics': MdOutlineScience,
+  'Math': FcSurvey,
+  'Nurse': FaUserNurse,
+  'Doctor': FaUserMd,
+  'Engineer': FcEngineering,
+  'Data': FcDataSheet,
+  'IT': FcMultipleDevices,
+  'Security': MdOutlineSecurity,
+  'Law': FcRules,
+  'Business': FcBusiness,
+  'Manager': FcManager,
+  'Global': FcGlobe,
+  'Psychology': MdOutlinePsychology,
+  'Support': FcSupport,
+  'Shop': FcShop,
+  'Process': FcProcess
 };
 
 // Kategori ikonları
@@ -28,7 +64,7 @@ const categoryIconMap: Record<string, any> = {
   'Bilişim': Laptop,
   'Sanayi & İnşaat': HardHat,
   'Ulaşım': Bus,
-  'Diğer': Briefcase
+  'Diğer': LucideBriefcase
 };
 
 const badgeColorMap: Record<string, string> = {
@@ -156,7 +192,7 @@ export function ProfessionsTabs({ professions }: { professions: ProfessionCardDa
     return (
       <div className="space-y-10">
         {sortedCategories.map(category => {
-          const CategoryIcon = categoryIconMap[category] || Briefcase;
+          const CategoryIcon = categoryIconMap[category] || LucideBriefcase;
           return (
             <div key={category} className="animate-in fade-in-50 duration-500">
               <h3 className="flex items-center gap-2 text-lg font-semibold text-slate-900 dark:text-white mb-4 pl-1">
