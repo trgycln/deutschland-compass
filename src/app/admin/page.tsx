@@ -158,6 +158,55 @@ export default function AdminPage() {
         video_url: ''
       },
       { 
+        id: 9989, 
+        title: 'Siber Güvenlik', 
+        slug: 'siber-guvenlik',
+        description: 'Siber Güvenlik Uzmanlığı Rehberi',
+        video_url: ''
+      },
+      { 
+        id: 9988, 
+        title: 'Yazılım Geliştirici', 
+        slug: 'yazilim-gelistirici',
+        description: 'Yazılım Geliştirici (Software Developer) Rehberi',
+        video_url: ''
+      },
+      { 
+        id: 9987, 
+        title: 'SAP Uzmanlığı', 
+        slug: 'sap-uzmanligi',
+        description: 'SAP Danışmanlığı ve Geliştirme Rehberi',
+        video_url: ''
+      },
+      { 
+        id: 9986, 
+        title: 'Veri Bilimi (Data Science)', 
+        slug: 'veri-bilimi',
+        description: 'Veri Bilimi ve Analitiği Rehberi',
+        video_url: ''
+      },
+      { 
+        id: 9985, 
+        title: 'Yazılım Test Uzmanlığı', 
+        slug: 'yazilim-test-uzmanligi',
+        description: 'Yazılım Test Uzmanlığı (Tester/QA) Rehberi',
+        video_url: ''
+      },
+      { 
+        id: 9984, 
+        title: 'IT Donanım ve Sistem', 
+        slug: 'it-donanim',
+        description: 'IT Donanım ve Sistem Yönetimi Rehberi',
+        video_url: ''
+      },
+      { 
+        id: 9983, 
+        title: 'Cloud & DevOps', 
+        slug: 'cloud-devops',
+        description: 'Cloud ve DevOps Uzmanlığı Rehberi',
+        video_url: ''
+      },
+      { 
         id: 9993, 
         title: 'Hemşirelik', 
         slug: 'hemsire',
@@ -190,6 +239,34 @@ export default function AdminPage() {
         title: 'İngilizce Öğretmenliği', 
         slug: 'ingilizce-ogretmenligi',
         description: 'İngilizce Öğretmenliği Rehberi',
+        video_url: ''
+      },
+      { 
+        id: 9988, 
+        title: 'İnşaat Mühendisliği', 
+        slug: 'insaat-muhendisligi',
+        description: 'İnşaat Mühendisliği Rehberi',
+        video_url: ''
+      },
+      { 
+        id: 9987, 
+        title: 'Bilişim (IT) Sektörü', 
+        slug: 'bilisim-it',
+        description: 'Bilişim (IT) Sektörü Rehberi',
+        video_url: ''
+      },
+      { 
+        id: 9986, 
+        title: 'Siber Güvenlik', 
+        slug: 'siber-guvenlik',
+        description: 'Siber Güvenlik Kariyer Rehberi',
+        video_url: ''
+      },
+      { 
+        id: 9985, 
+        title: 'Yazılım Geliştirici', 
+        slug: 'yazilim-gelistirici',
+        description: 'Yazılım Geliştirici Kariyer Rehberi',
         video_url: ''
       }
     ];

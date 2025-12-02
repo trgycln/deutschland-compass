@@ -27,4 +27,12 @@ export interface ProfessionData {
     question: string;
     answer: string;
   }[];
+  specializations?: {
+    title: string;
+    description: string;
+    skills: string[];
+    salary: string;
+    demand: string;
+    link?: string;
+  }[];
 }
