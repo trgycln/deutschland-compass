@@ -72,7 +72,7 @@ export function UploadDocumentDialog({ professionSlug }: { professionSlug: strin
             file_size: (file.size / 1024 / 1024).toFixed(2) + ' MB',
             uploader_name: 'Anonim',
             profession_slug: professionSlug,
-            status: 'pending'
+            status: 'approved'
           }
         ])
 
@@ -81,7 +81,8 @@ export function UploadDocumentDialog({ professionSlug }: { professionSlug: strin
       setOpen(false)
       setFile(null)
       setFormData({ title: "", description: "" })
-      alert("Doküman başarıyla yüklendi ve onay için gönderildi.")
+      alert("Doküman başarıyla yüklendi.")
+      window.location.reload() // Sayfayı yenile ki liste güncellensin
 
     } catch (error: any) {
       console.error('Upload error:', error)

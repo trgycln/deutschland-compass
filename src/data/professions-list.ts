@@ -46,6 +46,19 @@ export const professionsList: ProfessionCardData[] = [
     badgeColor: 'red'
   },
   {
+    id: 'ingilizce-ogretmenligi',
+    title: 'İngilizce Öğretmenliği',
+    slug: 'ingilizce-ogretmenligi',
+    description: 'Denklik, vize, dil şartları ve kariyer rehberi.',
+    category: 'Eğitim',
+    status: 'active',
+    pathType: 'continuation',
+    icon: 'BookOpen',
+    demand: 'Çok Yüksek Talep',
+    readingTime: '15dk Okuma',
+    badgeColor: 'blue'
+  },
+  {
     id: 'bilgisayar-ogretmenligi',
     title: 'Bilgisayar Öğretmenliği',
     slug: 'bilgisayar-ogretmenligi',
@@ -83,6 +96,34 @@ export const professionsList: ProfessionCardData[] = [
     demand: 'Orta-Yüksek Talep',
     readingTime: '10dk Okuma',
     badgeColor: 'green'
+  },
+  {
+    id: 'fen-bilgisi-ogretmenligi',
+    title: 'Fen Bilgisi Öğretmenliği',
+    slug: 'fen-bilgisi-ogretmenligi',
+    description: 'Fizik, Kimya, Biyoloji denklik süreçleri ve Lehrkräfte programları.',
+    category: 'Eğitim & Fen',
+    status: 'active',
+    pathType: 'continuation',
+    icon: 'BookOpen',
+    demand: 'Yüksek Talep',
+    readingTime: '16dk Okuma',
+    badgeColor: 'green',
+    keywords: ['fizik', 'kimya', 'biyoloji', 'science', 'naturwissenschaften', 'lehrer']
+  },
+  {
+    id: 'fizik-ogretmenligi',
+    title: 'Fizik Öğretmenliği',
+    slug: 'fizik-ogretmenligi',
+    description: 'Fizik öğretmenleri için denklik, Lehrkräfte programları ve kariyer rehberi.',
+    category: 'Eğitim & Fen',
+    status: 'active',
+    pathType: 'continuation',
+    icon: 'BookOpen',
+    demand: 'Çok Yüksek Talep',
+    readingTime: '15dk Okuma',
+    badgeColor: 'red',
+    keywords: ['fizik', 'physics', 'physik', 'lehrer', 'öğretmen', 'denklik']
   },
   {
     id: 'cografya-ogretmenligi',
@@ -278,5 +319,61 @@ export const professionsList: ProfessionCardData[] = [
     demand: 'Yüksek Talep',
     readingTime: '12dk Okuma',
     badgeColor: 'blue'
+  },
+  {
+    id: 'fizyoterapist',
+    title: 'Fizyoterapist',
+    slug: 'fizyoterapist',
+    description: 'Denklik süreci, Ausbildung fırsatları ve kariyer rehberi.',
+    category: 'Sağlık',
+    status: 'active',
+    pathType: 'continuation',
+    icon: 'Stethoscope',
+    demand: 'Çok Yüksek Talep',
+    readingTime: '14dk Okuma',
+    badgeColor: 'green',
+    keywords: ['fizyoterapist', 'physiotherapeut', 'fizik tedavi', 'rehabilitasyon', 'saglik', 'hastane', 'klinik', 'masaj', 'terapi']
+  },
+  {
+    id: 'gida-muhendisligi',
+    title: 'Gıda Mühendisliği',
+    slug: 'gida-muhendisligi',
+    description: 'Denklik, vize süreçleri, kalite yönetimi ve kariyer fırsatları.',
+    category: 'Mühendislik',
+    status: 'active',
+    pathType: 'continuation',
+    icon: 'Briefcase',
+    demand: 'Yüksek Talep',
+    readingTime: '15dk Okuma',
+    badgeColor: 'blue',
+    keywords: ['gida', 'muhendis', 'lebensmittel', 'ingenieur', 'kalite', 'uretim', 'haccp', 'iso', 'denklik', 'zab']
+  },
+  {
+    id: 'guzel-sanatlar-ogretmenligi',
+    title: 'Güzel Sanatlar Öğretmenliği',
+    slug: 'guzel-sanatlar-ogretmenligi',
+    description: 'Sanat öğretmenleri için denklik, dil şartları ve kariyer rehberi.',
+    category: 'Eğitim',
+    status: 'active',
+    pathType: 'continuation',
+    icon: 'BookOpen',
+    demand: 'Yüksek Talep',
+    readingTime: '16dk Okuma',
+    badgeColor: 'red',
+    keywords: ['sanat', 'resim', 'ogretmen', 'kunst', 'lehrer', 'egitim', 'okul', 'denklik', 'anerkennung', 'pedagoji']
+  },
+  {
+    id: 'hemsire',
+    title: 'Hemşirelik',
+    slug: 'hemsire',
+    description: 'Denklik, vize, dil şartları ve Almanya\'da hemşirelik kariyeri rehberi.',
+    category: 'Sağlık',
+    status: 'active',
+    pathType: 'continuation',
+    icon: 'Stethoscope',
+    demand: 'Çok Yüksek Talep',
+    readingTime: '18dk Okuma',
+    badgeColor: 'red',
+    keywords: ['hemsire', 'krankenschwester', 'pflege', 'saglik', 'hastane', 'denklik', 'anerkennung', 'almanya']
   },
 ];

@@ -156,6 +156,41 @@ export default function AdminPage() {
         slug: 'cevre-muhendisligi',
         description: 'Çevre Mühendisliği Meslek Rehberi',
         video_url: ''
+      },
+      { 
+        id: 9993, 
+        title: 'Hemşirelik', 
+        slug: 'hemsire',
+        description: 'Almanya\'da Hemşirelik Mesleği Rehberi',
+        video_url: ''
+      },
+      { 
+        id: 9992, 
+        title: 'Güzel Sanatlar Öğretmenliği', 
+        slug: 'guzel-sanatlar-ogretmenligi',
+        description: 'Güzel Sanatlar Öğretmenliği Rehberi',
+        video_url: ''
+      },
+      { 
+        id: 9991, 
+        title: 'Fizyoterapist', 
+        slug: 'fizyoterapist',
+        description: 'Fizyoterapistlik Mesleği Rehberi',
+        video_url: ''
+      },
+      { 
+        id: 9990, 
+        title: 'Gıda Mühendisliği', 
+        slug: 'gida-muhendisligi',
+        description: 'Gıda Mühendisliği Rehberi',
+        video_url: ''
+      },
+      { 
+        id: 9989, 
+        title: 'İngilizce Öğretmenliği', 
+        slug: 'ingilizce-ogretmenligi',
+        description: 'İngilizce Öğretmenliği Rehberi',
+        video_url: ''
       }
     ];
 

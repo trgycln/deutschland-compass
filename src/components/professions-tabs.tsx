@@ -1,10 +1,10 @@
 "use client";
 
 import Link from 'next/link';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { ArrowRight, Users, BookOpen, Briefcase, Stethoscope, Code2, Map, Train, Bus, Rocket, Truck, Zap } from 'lucide-react';
+import { ArrowRight, Users, BookOpen, Briefcase, Stethoscope, Code2, Map, Train, Bus, Rocket, Truck, Zap, GraduationCap, HardHat, HeartPulse, Laptop } from 'lucide-react';
 import { ProfessionCardData } from '@/data/professions-list';
 
 const iconMap = {
@@ -20,13 +20,24 @@ const iconMap = {
   Zap
 };
 
+// Kategori ikonları
+const categoryIconMap: Record<string, any> = {
+  'Eğitim': GraduationCap,
+  'Sağlık': HeartPulse,
+  'Mühendislik': HardHat,
+  'Bilişim': Laptop,
+  'Sanayi & İnşaat': HardHat,
+  'Ulaşım': Bus,
+  'Diğer': Briefcase
+};
+
 const badgeColorMap: Record<string, string> = {
-  blue: "bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-300",
-  red: "bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-300",
-  green: "bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-300",
-  slate: "bg-slate-100 text-slate-600 hover:bg-slate-200",
-  orange: "bg-orange-100 text-orange-700 dark:bg-orange-900/30 dark:text-orange-300",
-  purple: "bg-purple-100 text-purple-700 dark:bg-purple-900/30 dark:text-purple-300"
+  blue: "bg-blue-50 text-blue-700 border-blue-200 dark:bg-blue-900/20 dark:text-blue-300 dark:border-blue-800",
+  red: "bg-red-50 text-red-700 border-red-200 dark:bg-red-900/20 dark:text-red-300 dark:border-red-800",
+  green: "bg-green-50 text-green-700 border-green-200 dark:bg-green-900/20 dark:text-green-300 dark:border-green-800",
+  slate: "bg-slate-50 text-slate-600 border-slate-200 dark:bg-slate-900/20 dark:text-slate-300 dark:border-slate-800",
+  orange: "bg-orange-50 text-orange-700 border-orange-200 dark:bg-orange-900/20 dark:text-orange-300 dark:border-orange-800",
+  purple: "bg-purple-50 text-purple-700 border-purple-200 dark:bg-purple-900/20 dark:text-purple-300 dark:border-purple-800"
 };
 
 const hoverBorderColorMap: Record<string, string> = {
@@ -60,11 +71,21 @@ export function ProfessionsTabs({ professions }: { professions: ProfessionCardDa
   const continuationProfessions = professions.filter(p => p.pathType === 'continuation');
   const newPathProfessions = professions.filter(p => p.pathType === 'new-path');
 
-  // Eğer "Kendi Mesleğim" sekmesinde sonuç yoksa ama "Yeni Bir Kariyer" sekmesinde varsa,
-  // varsayılan olarak "Yeni Bir Kariyer" sekmesini aç.
   const defaultTab = (continuationProfessions.length === 0 && newPathProfessions.length > 0) ? "new-path" : "continuation";
 
-  const renderProfessionCard = (profession: ProfessionCardData) => {
+  // Meslekleri kategorilerine göre gruplayan fonksiyon
+  const groupByCategory = (items: ProfessionCardData[]) => {
+    return items.reduce((acc, item) => {
+      const category = item.category || 'Diğer';
+      if (!acc[category]) {
+        acc[category] = [];
+      }
+      acc[category].push(item);
+      return acc;
+    }, {} as Record<string, ProfessionCardData[]>);
+  };
+
+  const renderCompactCard = (profession: ProfessionCardData) => {
     const Icon = iconMap[profession.icon];
     const isComingSoon = profession.status === 'coming-soon';
     
@@ -81,38 +102,76 @@ export function ProfessionsTabs({ professions }: { professions: ProfessionCardDa
 
     return (
       <CardWrapper key={profession.id}>
-        <Card className={`h-full transition-all duration-300 hover:shadow-lg border-slate-200 dark:border-slate-800 ${!isComingSoon ? hoverBorderColorMap[profession.badgeColor] : ''} ${isComingSoon ? 'opacity-75' : ''}`}>
-          <CardHeader>
-            <div className="flex justify-between items-start mb-2">
-              <div className={`p-2 rounded-lg bg-slate-100 dark:bg-slate-800 transition-colors ${!isComingSoon ? hoverIconColorMap[profession.badgeColor] : ''}`}>
-                <Icon className="w-6 h-6" />
-              </div>
-              <Badge variant="secondary" className={badgeColorMap[profession.badgeColor]}>
-                {profession.demand}
-              </Badge>
+        <Card className={`h-full transition-all duration-200 hover:shadow-md border-slate-200 dark:border-slate-800 ${!isComingSoon ? hoverBorderColorMap[profession.badgeColor] : ''} ${isComingSoon ? 'opacity-75' : ''}`}>
+          <CardContent className="p-4 flex items-center gap-4">
+            {/* Icon Box */}
+            <div className={`p-2.5 rounded-lg bg-slate-50 dark:bg-slate-900 border border-slate-100 dark:border-slate-800 shrink-0 transition-colors ${!isComingSoon ? hoverIconColorMap[profession.badgeColor] : ''}`}>
+              <Icon className="w-5 h-5 text-slate-600 dark:text-slate-400" />
             </div>
-            <CardTitle className={`text-xl mb-2 transition-colors ${!isComingSoon ? hoverTextColorMap[profession.badgeColor] : ''}`}>
-              {profession.title}
-            </CardTitle>
-            <CardDescription className="line-clamp-2">
-              {profession.description}
-            </CardDescription>
-          </CardHeader>
-          <CardContent>
-            <div className="flex items-center justify-between text-sm text-slate-500 dark:text-slate-400 mt-auto">
-              <div className="flex items-center gap-2">
-                <Users className="w-4 h-4" />
-                <span>{profession.readingTime}</span>
+
+            {/* Content */}
+            <div className="flex-1 min-w-0">
+              <div className="flex items-center gap-2 mb-1">
+                <h4 className={`font-semibold text-slate-900 dark:text-slate-100 truncate transition-colors ${!isComingSoon ? hoverTextColorMap[profession.badgeColor] : ''}`}>
+                  {profession.title}
+                </h4>
+                {isComingSoon && (
+                  <span className="text-[10px] font-medium px-1.5 py-0.5 bg-slate-100 dark:bg-slate-800 rounded-full text-slate-500">
+                    Yakında
+                  </span>
+                )}
               </div>
-              {!isComingSoon ? (
-                <ArrowRight className={`w-5 h-5 transition-transform group-hover:translate-x-1 ${hoverTextColorMap[profession.badgeColor]}`} />
-              ) : (
-                <span className="text-xs font-medium px-2 py-1 bg-slate-100 dark:bg-slate-800 rounded-full">Yakında</span>
-              )}
+              <div className="flex items-center gap-2 text-xs text-slate-500 dark:text-slate-400">
+                <Badge variant="outline" className={`px-1.5 py-0 h-5 font-normal border ${badgeColorMap[profession.badgeColor]}`}>
+                  {profession.demand}
+                </Badge>
+                <span className="hidden sm:inline-block">•</span>
+                <span className="hidden sm:inline-block truncate">{profession.readingTime}</span>
+              </div>
             </div>
+
+            {/* Arrow */}
+            {!isComingSoon && (
+              <ArrowRight className={`w-4 h-4 text-slate-300 dark:text-slate-600 shrink-0 transition-transform group-hover:translate-x-1 ${hoverTextColorMap[profession.badgeColor]}`} />
+            )}
           </CardContent>
         </Card>
       </CardWrapper>
+    );
+  };
+
+  const renderGroupedProfessions = (items: ProfessionCardData[]) => {
+    if (items.length === 0) {
+      return (
+        <div className="text-center py-12 text-slate-500">
+          Aradığınız kriterlere uygun meslek bulunamadı.
+        </div>
+      );
+    }
+
+    const grouped = groupByCategory(items);
+    // Kategorileri alfabetik sırala veya özel bir sıra belirle
+    const sortedCategories = Object.keys(grouped).sort();
+
+    return (
+      <div className="space-y-10">
+        {sortedCategories.map(category => {
+          const CategoryIcon = categoryIconMap[category] || Briefcase;
+          return (
+            <div key={category} className="animate-in fade-in-50 duration-500">
+              <h3 className="flex items-center gap-2 text-lg font-semibold text-slate-900 dark:text-white mb-4 pl-1">
+                <div className="p-1.5 rounded-md bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400">
+                  <CategoryIcon className="w-4 h-4" />
+                </div>
+                {category}
+              </h3>
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                {grouped[category].map(renderCompactCard)}
+              </div>
+            </div>
+          );
+        })}
+      </div>
     );
   };
 
@@ -135,8 +194,8 @@ export function ProfessionsTabs({ professions }: { professions: ProfessionCardDa
         </TabsList>
       </div>
 
-      <TabsContent value="continuation" className="space-y-8 animate-in fade-in-50 duration-500 slide-in-from-bottom-2">
-        <div className="text-center max-w-2xl mx-auto mb-8">
+      <TabsContent value="continuation" className="space-y-8">
+        <div className="text-center max-w-2xl mx-auto mb-12">
           <h2 className="text-2xl font-bold text-slate-900 dark:text-white mb-3">
             Mesleğinize Almanya'da Devam Edin
           </h2>
@@ -145,19 +204,11 @@ export function ProfessionsTabs({ professions }: { professions: ProfessionCardDa
           </p>
         </div>
         
-        {continuationProfessions.length > 0 ? (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {continuationProfessions.map(renderProfessionCard)}
-          </div>
-        ) : (
-          <div className="text-center py-12 text-slate-500">
-            Aradığınız kriterlere uygun meslek bulunamadı.
-          </div>
-        )}
+        {renderGroupedProfessions(continuationProfessions)}
       </TabsContent>
 
-      <TabsContent value="new-path" className="space-y-8 animate-in fade-in-50 duration-500 slide-in-from-bottom-2">
-        <div className="text-center max-w-2xl mx-auto mb-8">
+      <TabsContent value="new-path" className="space-y-8">
+        <div className="text-center max-w-2xl mx-auto mb-12">
           <h2 className="text-2xl font-bold text-slate-900 dark:text-white mb-3">
             Yeni Bir Başlangıç Yapın
           </h2>
@@ -166,15 +217,7 @@ export function ProfessionsTabs({ professions }: { professions: ProfessionCardDa
           </p>
         </div>
 
-        {newPathProfessions.length > 0 ? (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {newPathProfessions.map(renderProfessionCard)}
-          </div>
-        ) : (
-          <div className="text-center py-12 text-slate-500">
-            Aradığınız kriterlere uygun meslek bulunamadı.
-          </div>
-        )}
+        {renderGroupedProfessions(newPathProfessions)}
       </TabsContent>
     </Tabs>
   );
