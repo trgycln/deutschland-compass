@@ -47,9 +47,8 @@ export function Footer() {
           <div>
             <h3 className="font-semibold text-slate-900 dark:text-white mb-4">Yasal</h3>
             <div className="text-sm text-slate-600 dark:text-slate-400 space-y-2">
-              <p>Bu site kâr amacı gütmeyen bir topluluk projesidir.</p>
-              <p>Kişisel verileriniz toplanmaz ve saklanmaz.</p>
-              <p>Tüm içerikler anonim olarak paylaşılır.</p>
+              <p>Bu site kapalı bir kullanıcı grubuna (Closed User Group) aittir.</p>
+              <p>Sadece yetkili erişime açıktır.</p>
             </div>
           </div>
         </div>
