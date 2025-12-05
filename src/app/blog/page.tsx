@@ -51,8 +51,7 @@ export default async function BlogPage() {
 
       {posts.length === 0 ? (
         <div className="text-center py-20 bg-slate-50 dark:bg-slate-900 rounded-lg border border-dashed">
-          <h3 className="text-xl font-medium text-slate-900 dark:text-white">Henüz yazı bulunmuyor</h3>
-          <p className="text-slate-500 mt-2">Çok yakında yeni içeriklerle buradayız.</p>
+          <h3 className="text-xl font-medium text-slate-900 dark:text-white">Blog yazıları yakında gelecek</h3>
         </div>
       ) : (
         <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-3">
