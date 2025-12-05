@@ -380,19 +380,7 @@ export const professionsList: ProfessionCardData[] = [
     readingTime: '12dk Okuma',
     badgeColor: 'green'
   },
-  {
-    id: 'doktorluk',
-    title: 'Doktorluk',
-    slug: 'doktorluk',
-    description: 'Approbation süreci, FSP sınavı ve uzmanlık eğitimi rehberi.',
-    category: 'Sağlık',
-    status: 'coming-soon',
-    pathType: 'continuation',
-    icon: 'Doctor',
-    demand: 'Çok Yüksek Talep',
-    readingTime: '-',
-    badgeColor: 'slate'
-  },
+
   {
     id: 'din-kulturu-ogretmenligi',
     title: 'Din Kültürü Öğretmenliği',
@@ -406,19 +394,7 @@ export const professionsList: ProfessionCardData[] = [
     readingTime: '10dk Okuma',
     badgeColor: 'green'
   },
-  {
-    id: 'yazilim-muhendisligi',
-    title: 'Yazılım Mühendisliği',
-    slug: 'yazilim-muhendisligi',
-    description: 'Mavi Kart, iş arama süreci ve Almanya IT sektörü analizi.',
-    category: 'Bilişim & Teknoloji',
-    status: 'coming-soon',
-    pathType: 'continuation',
-    icon: 'Engineer',
-    demand: 'Yüksek Talep',
-    readingTime: '-',
-    badgeColor: 'slate'
-  },
+
   {
     id: 'cevre-muhendisligi',
     title: 'Çevre Mühendisliği',
