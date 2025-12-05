@@ -28,21 +28,4 @@ create policy "Admins can manage blogs"
   using (true)
   with check (true);
 
--- Örnek Veri
-insert into public.blogs (title, slug, content, excerpt, is_published, tags) values
-(
-  'Almanya''da Öğretmenlik İçin İlk Adımlar',
-  'almanya-ogretmenlik-ilk-adimlar',
-  'Almanya''da öğretmenlik yapmak isteyenler için süreç bazen karmaşık görünebilir. Ancak doğru adımlarla bu süreci yönetmek mümkündür. İlk olarak dil seviyenizi B2-C1 seviyesine getirmeniz gerekmektedir...',
-  'Almanya''ya yeni gelen öğretmenler için yol haritası ve ilk yapılması gerekenler.',
-  true,
-  ARRAY['Eğitim', 'Kariyer', 'Almanya']
-),
-(
-  'Mavi Kart Nedir ve Nasıl Alınır?',
-  'mavi-kart-rehberi',
-  'AB Mavi Kart, Avrupa Birliği üyesi olmayan ülkelerin vatandaşlarına verilen bir çalışma ve oturum iznidir. Yüksek nitelikli çalışanları çekmeyi hedefler...',
-  'Yüksek nitelikli çalışanlar için AB Mavi Kart başvuru süreci ve şartları.',
-  true,
-  ARRAY['Vize', 'Oturum', 'Mavi Kart']
-);
+-- Örnek Veri (Boş - örnek makaleler Supabase'den silinmiştir)
