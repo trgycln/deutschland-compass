@@ -375,6 +375,10 @@ export default function AdminPage() {
       setDocuments(documents.map(doc => 
         doc.id === id ? { ...doc, status } : doc
       ));
+
+      if (status !== 'pending') {
+        setPendingDocuments(pendingDocuments.filter(d => d.id !== id));
+      }
     } catch (error) {
       console.error('Güncelleme hatası:', error);
       alert('İşlem başarısız.');
@@ -393,6 +397,7 @@ export default function AdminPage() {
       if (error) throw error;
       
       setDocuments(documents.filter(d => d.id !== id));
+      setPendingDocuments(pendingDocuments.filter(d => d.id !== id));
     } catch (error) {
       console.error('Silme hatası:', error);
       alert('Silme başarısız.');
@@ -560,6 +565,25 @@ export default function AdminPage() {
     } catch (error) {
       console.error('Güncelleme hatası:', error);
       alert('İşlem başarısız.');
+    }
+  }
+
+  async function deleteExperience(id: number) {
+    if (!confirm('Bu mesajı/tecrübeyi tamamen silmek istediğinize emin misiniz?')) return;
+
+    try {
+      const { error } = await supabase
+        .from('experiences')
+        .delete()
+        .eq('id', id);
+      
+      if (error) throw error;
+      
+      setExperiences(experiences.filter(e => e.id !== id));
+      setPendingExperiences(pendingExperiences.filter(e => e.id !== id));
+    } catch (error) {
+      console.error('Silme hatası:', error);
+      alert('Silme başarısız.');
     }
   }
 
@@ -799,8 +823,11 @@ export default function AdminPage() {
                             <Button size="sm" className="h-8 bg-green-600 hover:bg-green-700" onClick={() => updateExperienceStatus(exp.id, 'approved')}>
                               <CheckCircle className="w-4 h-4" />
                             </Button>
-                            <Button size="sm" variant="destructive" className="h-8" onClick={() => updateExperienceStatus(exp.id, 'rejected')}>
+                            <Button size="sm" variant="destructive" className="h-8" onClick={() => updateExperienceStatus(exp.id, 'rejected')} title="Reddet">
                               <XCircle className="w-4 h-4" />
+                            </Button>
+                            <Button size="sm" variant="ghost" className="h-8 text-red-500 hover:text-red-700 hover:bg-red-50" onClick={() => deleteExperience(exp.id)} title="Sil">
+                              <Trash2 className="w-4 h-4" />
                             </Button>
                           </div>
                         </div>
@@ -859,16 +886,23 @@ export default function AdminPage() {
                           </div>
                         </div>
                         <div className="flex gap-2 justify-end">
-                          <Button size="sm" variant="outline" className="h-8" onClick={() => openDocEditDialog(doc)}>
-                            <Pencil className="w-4 h-4 mr-1" /> Düzenle
+                          <Button size="sm" variant="outline" className="h-8" onClick={() => openDocEditDialog(doc)} title="Düzenle">
+                            <Pencil className="w-4 h-4" />
                           </Button>
-                          <Button size="sm" variant="outline" className="h-8" asChild>
+                          <Button size="sm" variant="outline" className="h-8" asChild title="İncele">
                             <a href={doc.file_url} target="_blank" rel="noopener noreferrer">
-                              <Download className="w-4 h-4 mr-1" /> İncele
+                              <Download className="w-4 h-4" />
                             </a>
                           </Button>
-                          {/* Document approval logic needs to be implemented or reused if exists */}
-                          {/* For now, we can't easily approve docs without a function, let's add a placeholder or implement it */}
+                          <Button size="sm" className="h-8 bg-green-600 hover:bg-green-700" onClick={() => updateDocumentStatus(doc.id, 'approved')} title="Onayla">
+                            <CheckCircle className="w-4 h-4" />
+                          </Button>
+                          <Button size="sm" variant="destructive" className="h-8" onClick={() => updateDocumentStatus(doc.id, 'rejected')} title="Reddet">
+                            <XCircle className="w-4 h-4" />
+                          </Button>
+                          <Button size="sm" variant="ghost" className="h-8 text-red-500 hover:text-red-700 hover:bg-red-50" onClick={() => deleteDocument(doc.id)} title="Sil">
+                            <Trash2 className="w-4 h-4" />
+                          </Button>
                         </div>
                       </div>
                     ))}

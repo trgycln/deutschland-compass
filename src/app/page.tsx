@@ -3,7 +3,7 @@ import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { ArrowRight, Users, BookOpen, MessageSquare } from 'lucide-react';
+import { ArrowRight, Users, BookOpen, MessageSquare, Info } from 'lucide-react';
 import { HomeSearch } from '@/components/home-search';
 import { HomeProfessions } from '@/components/home-professions';
 import { professionsList } from '@/data/professions-list';
@@ -14,6 +14,19 @@ export default function Home() {
   return (
     <div className="flex flex-col min-h-screen">
       <WhatsNewPopup />
+      
+      {/* Disclaimer Banner */}
+      <div className="bg-amber-50 dark:bg-amber-900/20 border-b border-amber-100 dark:border-amber-800/50 relative z-20">
+        <div className="container mx-auto px-4 py-3">
+          <div className="flex items-start md:items-center gap-3 justify-center text-sm text-amber-900 dark:text-amber-100">
+            <Info className="w-5 h-5 shrink-0 text-amber-600 dark:text-amber-400 mt-0.5 md:mt-0" />
+            <p className="max-w-5xl leading-relaxed">
+              <span className="font-semibold">Bilgilendirme:</span> Sitemizdeki dökümanlar, Telegram gruplarında paylaşılan ve topluluk yararına hazırlanmış açık kaynak içeriklerdir. Bilgilerin kaybolmaması adına derlenmiştir ve mümkün olduğunca hazırlayanların isimlerine yer verilmiştir. İçerik sahiplerinin talebi durumunda ilgili dökümanlar derhal kaldırılacaktır. Emek veren herkese teşekkür ederiz.
+            </p>
+          </div>
+        </div>
+      </div>
+
       {/* Hero Section */}
       <section className="relative py-20 md:py-32 bg-secondary dark:bg-slate-950 overflow-hidden">
         <div className="container mx-auto px-4 relative z-10">
