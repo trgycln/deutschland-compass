@@ -1,2 +1,5 @@
 User-agent: *
-Disallow: /
+Allow: /
+
+# Search engines will still respect the 'noindex' tag in the HTML head
+# but this allows social media bots (WhatsApp, etc.) to crawl and generate previews.

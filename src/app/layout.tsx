@@ -16,6 +16,7 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
+  metadataBase: new URL("https://deutschland-compass-self.vercel.app"),
   title: "Deutschland Compass | Dayanışma Ağı",
   description: "Almanya'daki profesyoneller için karşılıklı fayda esaslı, kapalı devre rehberlik ve tecrübe paylaşım platformu.",
   openGraph: {
