@@ -37,6 +37,7 @@ export function Navbar() {
           <Link href="/rehber/egitim-ve-kariyer" className="hover:text-primary transition-colors">Eğitim Rehberi</Link>
           <Link href="/rehber/sirket-kurma" className="hover:text-primary transition-colors">Şirket Kurma</Link>
           <Link href="/rehber/anerkennung" className="hover:text-primary transition-colors">Denklik Rehberi</Link>
+          <Link href="/telegram-gruplari" className="hover:text-primary transition-colors">Telegram Grupları</Link>
           <Link href="/blog" className="hover:text-primary transition-colors">Blog</Link>
           <Link href="/hakkimizda" className="hover:text-primary transition-colors">Hakkımızda</Link>
         </nav>
@@ -102,6 +103,13 @@ export function Navbar() {
                   onClick={() => setIsOpen(false)}
                 >
                   Denklik Rehberi
+                </Link>
+                <Link 
+                  href="/telegram-gruplari" 
+                  className="text-xl font-medium text-slate-600 hover:text-primary dark:text-slate-300 transition-colors"
+                  onClick={() => setIsOpen(false)}
+                >
+                  Telegram Grupları
                 </Link>
                 <Link 
                   href="/blog" 
