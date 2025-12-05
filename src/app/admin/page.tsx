@@ -7,8 +7,6 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Badge } from '@/components/ui/badge';
 import { Loader2, CheckCircle, XCircle, Trash2, Mail, ExternalLink } from 'lucide-react';
-import { useToast } from '@/hooks/use-toast'; // Assuming you have a toast hook, if not I'll use alert
-
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
@@ -66,6 +64,7 @@ export default function AdminPage() {
   const [faqs, setFaqs] = useState<Faq[]>([]);
   const [documents, setDocuments] = useState<Document[]>([]);
   const [blogs, setBlogs] = useState<BlogPost[]>([]);
+  const [operationInProgress, setOperationInProgress] = useState(false);
   
   // Dashboard Data
   const [pendingExperiences, setPendingExperiences] = useState<Experience[]>([]);
@@ -378,6 +377,7 @@ export default function AdminPage() {
 
   async function updateDocumentStatus(id: number, status: 'approved' | 'rejected' | 'pending') {
     try {
+      setOperationInProgress(true);
       const { error } = await supabase
         .from('documents')
         .update({ status })
@@ -392,9 +392,14 @@ export default function AdminPage() {
       if (status !== 'pending') {
         setPendingDocuments(pendingDocuments.filter(d => d.id !== id));
       }
+
+      const statusText = status === 'approved' ? 'Onaylandı' : status === 'rejected' ? 'Reddedildi' : 'Beklemeye Alındı';
+      alert(`Döküman başarıyla ${statusText.toLowerCase()} oldu.`);
     } catch (error) {
       console.error('Güncelleme hatası:', error);
-      alert('İşlem başarısız.');
+      alert('İşlem başarısız. Lütfen tekrar deneyin.');
+    } finally {
+      setOperationInProgress(false);
     }
   }
 
@@ -402,18 +407,25 @@ export default function AdminPage() {
     if (!confirm('Bu dokümanı silmek istediğinize emin misiniz?')) return;
 
     try {
+      setOperationInProgress(true);
       const { error } = await supabase
         .from('documents')
         .delete()
         .eq('id', id);
       
-      if (error) throw error;
+      if (error) {
+        console.error('Silme hatası:', error);
+        throw error;
+      }
       
-      setDocuments(documents.filter(d => d.id !== id));
-      setPendingDocuments(pendingDocuments.filter(d => d.id !== id));
+      // Veritabanından yeniden yükle
+      await fetchData();
+      alert('Döküman başarıyla silindi.');
     } catch (error) {
       console.error('Silme hatası:', error);
-      alert('Silme başarısız.');
+      alert('Silme başarısız. Lütfen tekrar deneyin.');
+    } finally {
+      setOperationInProgress(false);
     }
   }
 
@@ -557,6 +569,7 @@ export default function AdminPage() {
 
   async function updateExperienceStatus(id: number, status: 'approved' | 'rejected' | 'pending') {
     try {
+      setOperationInProgress(true);
       const { error } = await supabase
         .from('experiences')
         .update({ status })
@@ -573,11 +586,14 @@ export default function AdminPage() {
       if (status !== 'pending') {
         setPendingExperiences(pendingExperiences.filter(exp => exp.id !== id));
       }
-      
-      // Eğer onaylandıysa ve Genel Katkı değilse kullanıcıya bilgi verilebilir (opsiyonel)
+
+      const statusText = status === 'approved' ? 'Onaylandı' : status === 'rejected' ? 'Reddedildi' : 'Beklemeye Alındı';
+      alert(`Tecrübe başarıyla ${statusText.toLowerCase()} oldu.`);
     } catch (error) {
       console.error('Güncelleme hatası:', error);
-      alert('İşlem başarısız.');
+      alert('İşlem başarısız. Lütfen tekrar deneyin.');
+    } finally {
+      setOperationInProgress(false);
     }
   }
 
@@ -585,18 +601,25 @@ export default function AdminPage() {
     if (!confirm('Bu mesajı/tecrübeyi tamamen silmek istediğinize emin misiniz?')) return;
 
     try {
+      setOperationInProgress(true);
       const { error } = await supabase
         .from('experiences')
         .delete()
         .eq('id', id);
       
-      if (error) throw error;
+      if (error) {
+        console.error('Silme hatası:', error);
+        throw error;
+      }
       
-      setExperiences(experiences.filter(e => e.id !== id));
-      setPendingExperiences(pendingExperiences.filter(e => e.id !== id));
+      // Veritabanından yeniden yükle
+      await fetchData();
+      alert('Tecrübe başarıyla silindi.');
     } catch (error) {
       console.error('Silme hatası:', error);
-      alert('Silme başarısız.');
+      alert('Silme başarısız. Lütfen tekrar deneyin.');
+    } finally {
+      setOperationInProgress(false);
     }
   }
 
@@ -614,6 +637,7 @@ export default function AdminPage() {
     if (!editingExp) return;
 
     try {
+      setOperationInProgress(true);
       const { error } = await supabase
         .from('experiences')
         .update({ 
@@ -632,9 +656,13 @@ export default function AdminPage() {
       
       setIsExpEditDialogOpen(false);
       setEditingExp(null);
+      
+      alert('Tecrübe başarıyla kaydedildi.');
     } catch (error) {
       console.error('Güncelleme hatası:', error);
-      alert('Kaydetme başarısız.');
+      alert('Kaydetme başarısız. Lütfen tekrar deneyin.');
+    } finally {
+      setOperationInProgress(false);
     }
   }
 
@@ -651,6 +679,7 @@ export default function AdminPage() {
     if (!editingDoc) return;
 
     try {
+      setOperationInProgress(true);
       const { error } = await supabase
         .from('documents')
         .update({ 
@@ -669,9 +698,13 @@ export default function AdminPage() {
       
       setIsDocEditDialogOpen(false);
       setEditingDoc(null);
+      
+      alert('Döküman başarıyla kaydedildi.');
     } catch (error) {
       console.error('Güncelleme hatası:', error);
-      alert('Kaydetme başarısız.');
+      alert('Kaydetme başarısız. Lütfen tekrar deneyin.');
+    } finally {
+      setOperationInProgress(false);
     }
   }
 
@@ -830,16 +863,16 @@ export default function AdminPage() {
                             </span>
                           </div>
                           <div className="flex gap-1">
-                            <Button size="sm" variant="outline" className="h-8" onClick={() => openExpEditDialog(exp)}>
+                            <Button size="sm" variant="outline" className="h-8" onClick={() => openExpEditDialog(exp)} disabled={operationInProgress} title="Düzenle">
                               <Pencil className="w-4 h-4" />
                             </Button>
-                            <Button size="sm" className="h-8 bg-green-600 hover:bg-green-700" onClick={() => updateExperienceStatus(exp.id, 'approved')}>
+                            <Button size="sm" className="h-8 bg-green-600 hover:bg-green-700" onClick={() => updateExperienceStatus(exp.id, 'approved')} disabled={operationInProgress} title="Onayla">
                               <CheckCircle className="w-4 h-4" />
                             </Button>
-                            <Button size="sm" variant="destructive" className="h-8" onClick={() => updateExperienceStatus(exp.id, 'rejected')} title="Reddet">
+                            <Button size="sm" variant="destructive" className="h-8" onClick={() => updateExperienceStatus(exp.id, 'rejected')} disabled={operationInProgress} title="Reddet">
                               <XCircle className="w-4 h-4" />
                             </Button>
-                            <Button size="sm" variant="ghost" className="h-8 text-red-500 hover:text-red-700 hover:bg-red-50" onClick={() => deleteExperience(exp.id)} title="Sil">
+                            <Button size="sm" variant="ghost" className="h-8 text-red-500 hover:text-red-700 hover:bg-red-50" onClick={() => deleteExperience(exp.id)} disabled={operationInProgress} title="Sil">
                               <Trash2 className="w-4 h-4" />
                             </Button>
                           </div>
@@ -899,7 +932,7 @@ export default function AdminPage() {
                           </div>
                         </div>
                         <div className="flex gap-2 justify-end">
-                          <Button size="sm" variant="outline" className="h-8" onClick={() => openDocEditDialog(doc)} title="Düzenle">
+                          <Button size="sm" variant="outline" className="h-8" onClick={() => openDocEditDialog(doc)} disabled={operationInProgress} title="Düzenle">
                             <Pencil className="w-4 h-4" />
                           </Button>
                           <Button size="sm" variant="outline" className="h-8" asChild title="İncele">
@@ -907,13 +940,13 @@ export default function AdminPage() {
                               <Download className="w-4 h-4" />
                             </a>
                           </Button>
-                          <Button size="sm" className="h-8 bg-green-600 hover:bg-green-700" onClick={() => updateDocumentStatus(doc.id, 'approved')} title="Onayla">
+                          <Button size="sm" className="h-8 bg-green-600 hover:bg-green-700" onClick={() => updateDocumentStatus(doc.id, 'approved')} disabled={operationInProgress} title="Onayla">
                             <CheckCircle className="w-4 h-4" />
                           </Button>
-                          <Button size="sm" variant="destructive" className="h-8" onClick={() => updateDocumentStatus(doc.id, 'rejected')} title="Reddet">
+                          <Button size="sm" variant="destructive" className="h-8" onClick={() => updateDocumentStatus(doc.id, 'rejected')} disabled={operationInProgress} title="Reddet">
                             <XCircle className="w-4 h-4" />
                           </Button>
-                          <Button size="sm" variant="ghost" className="h-8 text-red-500 hover:text-red-700 hover:bg-red-50" onClick={() => deleteDocument(doc.id)} title="Sil">
+                          <Button size="sm" variant="ghost" className="h-8 text-red-500 hover:text-red-700 hover:bg-red-50" onClick={() => deleteDocument(doc.id)} disabled={operationInProgress} title="Sil">
                             <Trash2 className="w-4 h-4" />
                           </Button>
                         </div>
@@ -1463,6 +1496,74 @@ export default function AdminPage() {
           </DialogContent>
         </Dialog>
       </div>
+
+      {/* Experience Edit Dialog */}
+      <Dialog open={isExpEditDialogOpen} onOpenChange={setIsExpEditDialogOpen}>
+        <DialogContent className="max-w-2xl">
+          <DialogHeader>
+            <DialogTitle>Tecrübe/Mesajı Düzenle</DialogTitle>
+          </DialogHeader>
+          <div className="space-y-4 py-4">
+            <div className="space-y-2">
+              <Label>Ad/Soyadı</Label>
+              <Input 
+                value={expForm.name} 
+                onChange={(e) => setExpForm({...expForm, name: e.target.value})} 
+                placeholder="Örn: Ahmet Yılmaz"
+              />
+            </div>
+            <div className="space-y-2">
+              <Label>İçerik</Label>
+              <Textarea 
+                value={expForm.content} 
+                onChange={(e) => setExpForm({...expForm, content: e.target.value})} 
+                placeholder="Tecrübe veya mesaj..."
+                className="h-40"
+              />
+            </div>
+            <div className="flex gap-2 justify-end">
+              <Button variant="outline" onClick={() => setIsExpEditDialogOpen(false)}>İptal</Button>
+              <Button onClick={handleSaveExperience} disabled={operationInProgress}>
+                {operationInProgress ? 'Kaydediliyor...' : 'Kaydet'}
+              </Button>
+            </div>
+          </div>
+        </DialogContent>
+      </Dialog>
+
+      {/* Document Edit Dialog */}
+      <Dialog open={isDocEditDialogOpen} onOpenChange={setIsDocEditDialogOpen}>
+        <DialogContent className="max-w-2xl">
+          <DialogHeader>
+            <DialogTitle>Dökümanı Düzenle</DialogTitle>
+          </DialogHeader>
+          <div className="space-y-4 py-4">
+            <div className="space-y-2">
+              <Label>Başlık</Label>
+              <Input 
+                value={docEditForm.title} 
+                onChange={(e) => setDocEditForm({...docEditForm, title: e.target.value})} 
+                placeholder="Döküman başlığı"
+              />
+            </div>
+            <div className="space-y-2">
+              <Label>Açıklama</Label>
+              <Textarea 
+                value={docEditForm.description} 
+                onChange={(e) => setDocEditForm({...docEditForm, description: e.target.value})} 
+                placeholder="Döküman açıklaması"
+                className="h-32"
+              />
+            </div>
+            <div className="flex gap-2 justify-end">
+              <Button variant="outline" onClick={() => setIsDocEditDialogOpen(false)}>İptal</Button>
+              <Button onClick={handleSaveDocument} disabled={operationInProgress}>
+                {operationInProgress ? 'Kaydediliyor...' : 'Kaydet'}
+              </Button>
+            </div>
+          </div>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }
