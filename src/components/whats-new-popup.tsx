@@ -7,6 +7,7 @@ import { ScrollArea } from '@/components/ui/scroll-area';
 import { FileText, MessageSquare, PenTool, ExternalLink, Calendar, Sparkles } from 'lucide-react';
 import Link from 'next/link';
 import { supabase } from '@/lib/supabase';
+import { professionsList } from '@/data/professions-list';
 import { formatDistanceToNow } from 'date-fns';
 import { tr } from 'date-fns/locale';
 
@@ -63,12 +64,19 @@ export function WhatsNewPopup() {
         const newItems: UpdateItem[] = [];
 
         docs?.forEach(doc => {
+          const profession = professionsList.find(p => p.slug === doc.profession_slug);
+          let link = `/meslekler/${doc.profession_slug}`;
+          
+          if (profession?.customLink) {
+            link = profession.customLink;
+          }
+          
           newItems.push({
             id: `doc-${doc.id}`,
             type: 'document',
             title: doc.title,
             subtitle: `${doc.file_type?.toUpperCase() || 'DOC'} • ${doc.profession_slug}`,
-            link: `/rehber/${doc.profession_slug}?tab=documents`,
+            link: `${link}?tab=documents`,
             date: doc.created_at,
             isNew: true
           });
@@ -84,20 +92,29 @@ export function WhatsNewPopup() {
             .replace(/ü/g, 'u')
             .replace(/ş/g, 's')
             .replace(/ı/g, 'i')
+            .replace(/i̇/g, 'i')
             .replace(/ö/g, 'o')
             .replace(/ç/g, 'c')
             .replace(/[^a-z0-9-]/g, '-')
             .replace(/-+/g, '-')
             .replace(/^-|-$/g, '');
             
+          const profession = professionsList.find(p => p.slug === slug);
+          let link = `/meslekler/${slug}`;
+          
+          if (profession?.customLink) {
+            link = profession.customLink;
+          }
+
           newItems.push({
             id: `exp-${exp.id}`,
             type: 'experience',
             title: exp.profession,
             subtitle: `Paylaşan: ${exp.name}`,
-            link: `/rehber/${slug}?tab=experiences`,
+            link: `${link}?tab=experiences`,
             date: exp.created_at,
             isNew: true
+
           });
         });
 

@@ -878,21 +878,6 @@ export const professionsList: ProfessionCardData[] = [
     readingTime: '12dk Okuma',
     badgeColor: 'blue',
     keywords: ['kürtçe', 'öğretmen', 'hsu', 'anadil', 'eğitim', 'kurdisch', 'lehrer']
-  },
-  {
-    id: 'genel-katki',
-    title: 'Genel Katkı / Öneri',
-    slug: 'genel-katki',
-    description: 'Kullanıcılardan gelen genel öneriler, yeni meslek talepleri ve katkılar.',
-    category: 'Yönetim',
-    status: 'active',
-    pathType: 'new-path',
-    customLink: '#',
-    icon: 'MessageSquare',
-    demand: 'Normal',
-    readingTime: '-',
-    badgeColor: 'slate',
-    keywords: ['katkı', 'öneri', 'iletişim', 'destek']
   }
 ];
 
