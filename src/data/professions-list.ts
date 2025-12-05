@@ -167,19 +167,7 @@ export const professionsList: ProfessionCardData[] = [
     readingTime: '14dk Okuma',
     badgeColor: 'purple'
   },
-  {
-    id: 'kurtce-ogretmenligi',
-    title: 'Kürtçe Öğretmenliği',
-    slug: 'kurtce-ogretmenligi',
-    description: 'HSU Kurdisch, dil sertifikası, denklik ve pedagojik uzmanlık rehberi.',
-    category: 'Eğitim',
-    status: 'active',
-    pathType: 'continuation',
-    icon: 'BookOpen',
-    demand: 'Orta-Yüksek Talep',
-    readingTime: '12dk Okuma',
-    badgeColor: 'red'
-  },
+
   {
     id: 'matematik-ogretmenligi',
     title: 'Matematik Öğretmenliği',
@@ -875,6 +863,21 @@ export const professionsList: ProfessionCardData[] = [
     readingTime: '25dk Okuma',
     badgeColor: 'purple',
     keywords: ['anerkennung', 'denklik', 'zab', 'diploma', 'tanınma', 'berufserlaubnis', 'approbation']
+  },
+  {
+    id: 'kurtce-ogretmenligi',
+    title: 'Kürtçe Öğretmenliği',
+    slug: 'kurtce-ogretmenligi',
+    description: 'Almanya\'da Kürtçe öğretmeni olmak, HSU (Herkunftssprachlicher Unterricht) programları ve başvuru süreçleri.',
+    category: 'Eğitim',
+    status: 'active',
+    pathType: 'continuation',
+    customLink: '/rehber/kurtce-ogretmenligi',
+    icon: 'Teacher',
+    demand: 'Orta-Yüksek Talep',
+    readingTime: '12dk Okuma',
+    badgeColor: 'blue',
+    keywords: ['kürtçe', 'öğretmen', 'hsu', 'anadil', 'eğitim', 'kurdisch', 'lehrer']
   },
   {
     id: 'genel-katki',
