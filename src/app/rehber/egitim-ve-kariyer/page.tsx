@@ -1,17 +1,33 @@
 'use client';
 
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { educationCareerGuideData } from '@/data/education-career-guide-data';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
-import { BookOpen, PlayCircle, GraduationCap, School, Briefcase, Users, HeartHandshake, Lightbulb } from 'lucide-react';
+import { BookOpen, PlayCircle, GraduationCap, School, Briefcase, Users, HeartHandshake, Lightbulb, FileText, Download, Eye, Building2 } from 'lucide-react';
 import { ShareExperienceDialog } from '@/components/share-experience-dialog';
 import { UploadDocumentDialog } from '@/components/upload-document-dialog';
+import { supabase } from '@/lib/supabase';
 
 export default function EducationCareerGuidePage() {
   const { title, description, videoUrl, sections, summary, faq } = educationCareerGuideData;
+  const [documents, setDocuments] = useState<any[]>([]);
+
+  useEffect(() => {
+    async function fetchDocuments() {
+      const { data } = await supabase
+        .from('documents')
+        .select('*')
+        .eq('profession_slug', 'egitim-rehberi')
+        .eq('status', 'approved')
+        .order('created_at', { ascending: true });
+      
+      if (data) setDocuments(data);
+    }
+    fetchDocuments();
+  }, []);
 
   const getIconForSection = (id: string) => {
     switch (id) {
@@ -142,6 +158,69 @@ export default function EducationCareerGuidePage() {
               </div>
             </div>
           </div>
+        </div>
+
+        {/* Documents Section */}
+        <div className="mb-16">
+          <div className="flex items-center justify-between mb-8">
+            <h2 className="text-2xl font-bold text-slate-900 dark:text-white">
+              Kaynaklar ve Dokümanlar
+            </h2>
+            <UploadDocumentDialog professionSlug="egitim-rehberi" />
+          </div>
+          
+          {documents.length > 0 ? (
+            <div className="grid gap-4 md:grid-cols-2">
+              {documents.map((doc) => (
+                <Card key={doc.id} className="hover:shadow-md transition-shadow">
+                  <CardContent className="p-4 flex items-center justify-between">
+                    <div className="flex items-center gap-4">
+                      <div className="h-12 w-12 rounded-lg bg-indigo-100 dark:bg-indigo-900/30 flex items-center justify-center flex-shrink-0">
+                        <FileText className="h-6 w-6 text-indigo-600 dark:text-indigo-400" />
+                      </div>
+                      <div className="min-w-0">
+                        <h4 className="font-semibold text-slate-900 dark:text-white truncate">{doc.title}</h4>
+                        <p className="text-sm text-slate-500 dark:text-slate-400 line-clamp-1">{doc.description}</p>
+                        <div className="flex items-center gap-2 mt-1 text-xs text-slate-400">
+                          <span>{doc.file_type?.toUpperCase()}</span>
+                          <span>•</span>
+                          <span>{doc.file_size}</span>
+                          <span>•</span>
+                          <span>{new Date(doc.created_at).toLocaleDateString('tr-TR')}</span>
+                        </div>
+                      </div>
+                    </div>
+                    <div className="flex items-center gap-2 flex-shrink-0">
+                      <Button variant="ghost" size="icon" asChild>
+                        <a href={doc.file_url} target="_blank" rel="noopener noreferrer">
+                          <Eye className="h-4 w-4" />
+                        </a>
+                      </Button>
+                      <Button variant="ghost" size="icon" asChild>
+                        <a href={doc.file_url} download>
+                          <Download className="h-4 w-4" />
+                        </a>
+                      </Button>
+                    </div>
+                  </CardContent>
+                </Card>
+              ))}
+            </div>
+          ) : (
+            <Card className="bg-slate-50 dark:bg-slate-900 border-dashed border-2 border-slate-200 dark:border-slate-800">
+              <CardContent className="flex flex-col items-center justify-center py-12 text-center">
+                <div className="h-16 w-16 rounded-full bg-indigo-100 dark:bg-indigo-900/30 flex items-center justify-center mb-4">
+                  <Building2 className="h-8 w-8 text-indigo-600 dark:text-indigo-400 opacity-50" />
+                </div>
+                <h3 className="text-lg font-semibold text-slate-900 dark:text-white mb-2">
+                  Henüz belge paylaşılmamış
+                </h3>
+                <p className="text-slate-600 dark:text-slate-400 max-w-md">
+                  Bu alan için henüz bir belge yüklenmedi. Elinizdeki kaynakları paylaşarak topluluğa katkıda bulunabilirsiniz.
+                </p>
+              </CardContent>
+            </Card>
+          )}
         </div>
 
         {/* FAQ Section */}

@@ -3,6 +3,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Mail, MessageSquare, FileText, Share2 } from 'lucide-react';
 import Link from 'next/link';
+import { ContributionDialog } from '@/components/contribution-dialog';
 
 export default function ContributePage() {
   return (
@@ -60,9 +61,11 @@ export default function ContributePage() {
             <p className="text-slate-600 dark:text-slate-300 mb-6">
               Sitede gördüğünüz eksiklikleri, hataları veya geliştirme önerilerinizi bizimle paylaşın.
             </p>
-            <Button asChild variant="secondary" className="w-full">
-              <Link href="mailto:info@deutschlandcompass.com">Bize Yazın</Link>
-            </Button>
+            <ContributionDialog>
+              <Button variant="secondary" className="w-full">
+                Bize Yazın
+              </Button>
+            </ContributionDialog>
           </CardContent>
         </Card>
 
@@ -77,9 +80,11 @@ export default function ContributePage() {
             <p className="text-slate-600 dark:text-slate-300 mb-6">
               Projede aktif rol almak, moderatör olmak veya içerik üreticisi olarak katılmak isterseniz kapımız açık.
             </p>
-            <Button asChild variant="ghost" className="w-full border">
-              <Link href="mailto:contact@deutschlandcompass.com">İletişim</Link>
-            </Button>
+            <ContributionDialog>
+              <Button variant="ghost" className="w-full border">
+                İletişim Formu
+              </Button>
+            </ContributionDialog>
           </CardContent>
         </Card>
       </div>

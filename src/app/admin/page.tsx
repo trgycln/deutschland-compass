@@ -6,7 +6,7 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Badge } from '@/components/ui/badge';
-import { Loader2, CheckCircle, XCircle, Trash2 } from 'lucide-react';
+import { Loader2, CheckCircle, XCircle, Trash2, Mail, ExternalLink } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast'; // Assuming you have a toast hook, if not I'll use alert
 
 import { Input } from '@/components/ui/input';
@@ -14,6 +14,7 @@ import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { PlusCircle, Pencil, UploadCloud, Download, FileText } from 'lucide-react';
+import { professionsList } from '@/data/professions-list';
 
 // Types
 type Experience = {
@@ -60,15 +61,20 @@ type BlogPost = {
 };
 
 export default function AdminPage() {
-  const [activeTab, setActiveTab] = useState('experiences');
+  const [activeTab, setActiveTab] = useState('dashboard');
   const [experiences, setExperiences] = useState<Experience[]>([]);
   const [faqs, setFaqs] = useState<Faq[]>([]);
   const [documents, setDocuments] = useState<Document[]>([]);
   const [blogs, setBlogs] = useState<BlogPost[]>([]);
   
+  // Dashboard Data
+  const [pendingExperiences, setPendingExperiences] = useState<Experience[]>([]);
+  const [pendingDocuments, setPendingDocuments] = useState<Document[]>([]);
+
   // Profession Selection
   const [professions, setProfessions] = useState<any[]>([]);
   const [selectedProfessionSlug, setSelectedProfessionSlug] = useState<string>('');
+  const [professionSearch, setProfessionSearch] = useState('');
   const [profession, setProfession] = useState<any>(null);
   
   const [loading, setLoading] = useState(true);
@@ -95,15 +101,83 @@ export default function AdminPage() {
   const [docFile, setDocFile] = useState<File | null>(null);
   const [docForm, setDocForm] = useState({ title: '', description: '', profession_slug: '' });
 
+  // Experience Edit State
+  const [isExpEditDialogOpen, setIsExpEditDialogOpen] = useState(false);
+  const [editingExp, setEditingExp] = useState<Experience | null>(null);
+  const [expForm, setExpForm] = useState({ name: '', content: '', admin_note: '' });
+
+  // Document Edit State
+  const [isDocEditDialogOpen, setIsDocEditDialogOpen] = useState(false);
+  const [editingDoc, setEditingDoc] = useState<Document | null>(null);
+  const [docEditForm, setDocEditForm] = useState({ title: '', description: '' });
+
+  // Helper to render content with links
+  const renderContent = (content: string) => {
+    if (!content) return null;
+    
+    // Split by markdown links: [text](url)
+    const parts = content.split(/(\[[^\]]+\]\([^)]+\))/g);
+    
+    return parts.map((part, i) => {
+      const match = part.match(/^\[([^\]]+)\]\(([^)]+)\)$/);
+      if (match) {
+        return (
+          <a 
+            key={i} 
+            href={match[2]} 
+            target="_blank" 
+            rel="noopener noreferrer" 
+            className="text-blue-600 hover:underline font-medium inline-flex items-center gap-1 mx-1"
+          >
+            <ExternalLink className="w-3 h-3" />
+            {match[1]}
+          </a>
+        );
+      }
+      return part;
+    });
+  };
+
   useEffect(() => {
     fetchProfessions();
+    fetchDashboardData();
   }, []);
 
   useEffect(() => {
-    if (selectedProfessionSlug) {
+    if (selectedProfessionSlug && activeTab !== 'dashboard') {
       fetchData();
     }
   }, [activeTab, selectedProfessionSlug]);
+
+  async function fetchDashboardData() {
+    setLoading(true);
+    try {
+      // Fetch all pending experiences
+      const { data: expData, error: expError } = await supabase
+        .from('experiences')
+        .select('*')
+        .eq('status', 'pending')
+        .order('created_at', { ascending: false });
+      
+      if (expError) throw expError;
+      setPendingExperiences(expData || []);
+
+      // Fetch all pending documents
+      const { data: docData, error: docError } = await supabase
+        .from('documents')
+        .select('*')
+        .eq('status', 'pending')
+        .order('created_at', { ascending: false });
+      
+      if (docError) throw docError;
+      setPendingDocuments(docData || []);
+
+    } catch (error) {
+      console.error('Dashboard veri çekme hatası:', error);
+    } finally {
+      setLoading(false);
+    }
+  }
 
   async function fetchProfessions() {
     const { data, error } = await supabase
@@ -114,183 +188,13 @@ export default function AdminPage() {
     const dbProfessions = data || [];
 
     // Add "Eğitim Rehberi" as a virtual profession for filtering
-    const virtualProfessions = [
-      { 
-        id: 9999, 
-        title: 'Eğitim Rehberi', 
-        slug: 'egitim-rehberi',
-        description: 'Eğitim ve Kariyer Rehberi Sayfası',
-        video_url: ''
-      },
-      { 
-        id: 9998, 
-        title: 'Şirket Kurma Rehberi', 
-        slug: 'sirket-kurma-rehberi',
-        description: 'Almanya\'da Şirket Kurma ve Girişimcilik Rehberi',
-        video_url: ''
-      },
-      { 
-        id: 9997, 
-        title: 'Kargo ve Posta Dağıtım', 
-        slug: 'kargo-posta-dagitim',
-        description: 'Kargo ve Posta Dağıtım Sektörü Rehberi',
-        video_url: ''
-      },
-      { 
-        id: 9996, 
-        title: 'Otobüs Şoförlüğü', 
-        slug: 'otobus-soforlugu',
-        description: 'Otobüs Şoförlüğü (Busfahrer) Rehberi',
-        video_url: ''
-      },
-      { 
-        id: 9995, 
-        title: 'Coğrafi Bilgi Sistemleri (GIS)', 
-        slug: 'cografi-bilgi-sistemleri',
-        description: 'Coğrafi Bilgi Sistemleri (GIS/CBS) Uzmanlığı Rehberi',
-        video_url: ''
-      },
-      { 
-        id: 9994, 
-        title: 'Çevre Mühendisliği', 
-        slug: 'cevre-muhendisligi',
-        description: 'Çevre Mühendisliği Meslek Rehberi',
-        video_url: ''
-      },
-      { 
-        id: 9989, 
-        title: 'Siber Güvenlik', 
-        slug: 'siber-guvenlik',
-        description: 'Siber Güvenlik Uzmanlığı Rehberi',
-        video_url: ''
-      },
-      { 
-        id: 9988, 
-        title: 'Yazılım Geliştirici', 
-        slug: 'yazilim-gelistirici',
-        description: 'Yazılım Geliştirici (Software Developer) Rehberi',
-        video_url: ''
-      },
-      { 
-        id: 9987, 
-        title: 'SAP Uzmanlığı', 
-        slug: 'sap-uzmanligi',
-        description: 'SAP Danışmanlığı ve Geliştirme Rehberi',
-        video_url: ''
-      },
-      { 
-        id: 9986, 
-        title: 'Veri Bilimi (Data Science)', 
-        slug: 'veri-bilimi',
-        description: 'Veri Bilimi ve Analitiği Rehberi',
-        video_url: ''
-      },
-      { 
-        id: 9985, 
-        title: 'Yazılım Test Uzmanlığı', 
-        slug: 'yazilim-test-uzmanligi',
-        description: 'Yazılım Test Uzmanlığı (Tester/QA) Rehberi',
-        video_url: ''
-      },
-      { 
-        id: 9984, 
-        title: 'IT Donanım ve Sistem', 
-        slug: 'it-donanim',
-        description: 'IT Donanım ve Sistem Yönetimi Rehberi',
-        video_url: ''
-      },
-      { 
-        id: 9983, 
-        title: 'Cloud & DevOps', 
-        slug: 'cloud-devops',
-        description: 'Cloud ve DevOps Uzmanlığı Rehberi',
-        video_url: ''
-      },
-      { 
-        id: 9982, 
-        title: 'İşletme ve İktisat', 
-        slug: 'isletme-iktisat',
-        description: 'İşletme, İktisat ve Maliye Rehberi',
-        video_url: ''
-      },
-      { 
-        id: 9981, 
-        title: 'Kimya Öğretmenliği', 
-        slug: 'kimya-ogretmenligi',
-        description: 'Kimya Öğretmenliği ve Kimyagerlik Rehberi',
-        video_url: ''
-      },
-      { 
-        id: 9980, 
-        title: 'Kürtçe Öğretmenliği', 
-        slug: 'kurtce-ogretmenligi',
-        description: 'Kürtçe Öğretmenliği ve Pedagojik Uzmanlık Rehberi',
-        video_url: ''
-      },
-      { 
-        id: 9993, 
-        title: 'Hemşirelik', 
-        slug: 'hemsire',
-        description: 'Almanya\'da Hemşirelik Mesleği Rehberi',
-        video_url: ''
-      },
-      { 
-        id: 9992, 
-        title: 'Güzel Sanatlar Öğretmenliği', 
-        slug: 'guzel-sanatlar-ogretmenligi',
-        description: 'Güzel Sanatlar Öğretmenliği Rehberi',
-        video_url: ''
-      },
-      { 
-        id: 9991, 
-        title: 'Fizyoterapist', 
-        slug: 'fizyoterapist',
-        description: 'Fizyoterapistlik Mesleği Rehberi',
-        video_url: ''
-      },
-      { 
-        id: 9990, 
-        title: 'Gıda Mühendisliği', 
-        slug: 'gida-muhendisligi',
-        description: 'Gıda Mühendisliği Rehberi',
-        video_url: ''
-      },
-      { 
-        id: 9989, 
-        title: 'İngilizce Öğretmenliği', 
-        slug: 'ingilizce-ogretmenligi',
-        description: 'İngilizce Öğretmenliği Rehberi',
-        video_url: ''
-      },
-      { 
-        id: 9988, 
-        title: 'İnşaat Mühendisliği', 
-        slug: 'insaat-muhendisligi',
-        description: 'İnşaat Mühendisliği Rehberi',
-        video_url: ''
-      },
-      { 
-        id: 9987, 
-        title: 'Bilişim (IT) Sektörü', 
-        slug: 'bilisim-it',
-        description: 'Bilişim (IT) Sektörü Rehberi',
-        video_url: ''
-      },
-      { 
-        id: 9986, 
-        title: 'Siber Güvenlik', 
-        slug: 'siber-guvenlik',
-        description: 'Siber Güvenlik Kariyer Rehberi',
-        video_url: ''
-      },
-      { 
-        id: 9985, 
-        title: 'Yazılım Geliştirici', 
-        slug: 'yazilim-gelistirici',
-        description: 'Yazılım Geliştirici Kariyer Rehberi',
-        video_url: ''
-      }
-    ];
+    const virtualProfessions = professionsList.map((p, index) => ({
+      id: 9000 + index,
+      title: p.title,
+      slug: p.slug,
+      description: p.description,
+      video_url: ''
+    }));
 
     // Filter out virtual professions that might already exist in data (to avoid duplicates)
     // Also merge titles if DB has empty title but we know the virtual title
@@ -309,7 +213,11 @@ export default function AdminPage() {
       !validProfessions.some(p => p.slug === vp.slug)
     );
 
-    const allProfessions = [...validProfessions, ...missingVirtuals].sort((a, b) => a.title.localeCompare(b.title));
+    const combined = [...validProfessions, ...missingVirtuals];
+    // Deduplicate by slug to prevent "duplicate key" errors
+    const uniqueProfessions = Array.from(new Map(combined.map(item => [item.slug, item])).values());
+
+    const allProfessions = uniqueProfessions.sort((a, b) => a.title.localeCompare(b.title));
     setProfessions(allProfessions);
     
     // Set default if not set
@@ -319,7 +227,7 @@ export default function AdminPage() {
   }
 
   async function fetchData() {
-    if (!selectedProfessionSlug) return;
+    if (!selectedProfessionSlug || activeTab === 'dashboard') return;
 
     setLoading(true);
     try {
@@ -397,8 +305,15 @@ export default function AdminPage() {
           });
         }
       }
-    } catch (error) {
+    } catch (error: any) {
       console.error('Veri çekme hatası:', error);
+      if (error?.message) {
+        console.error('Hata mesajı:', error.message);
+      }
+      // Supabase bazen HTML hata sayfası döndürebilir (500 vs), bu durumda JSON parse hatası olur
+      if (typeof error === 'object' && error !== null && Object.keys(error).length === 0) {
+        console.error('Bilinmeyen hata (Muhtemelen sunucu/bağlantı hatası)');
+      }
     } finally {
       setLoading(false);
     }
@@ -635,9 +550,91 @@ export default function AdminPage() {
       setExperiences(experiences.map(exp => 
         exp.id === id ? { ...exp, status } : exp
       ));
+
+      // Dashboard listesini de güncelle
+      if (status !== 'pending') {
+        setPendingExperiences(pendingExperiences.filter(exp => exp.id !== id));
+      }
+      
+      // Eğer onaylandıysa ve Genel Katkı değilse kullanıcıya bilgi verilebilir (opsiyonel)
     } catch (error) {
       console.error('Güncelleme hatası:', error);
       alert('İşlem başarısız.');
+    }
+  }
+
+  function openExpEditDialog(exp: Experience) {
+    setEditingExp(exp);
+    setExpForm({ 
+      name: exp.name, 
+      content: exp.content,
+      admin_note: '' // Admin notu şimdilik içeriğe eklenecek
+    });
+    setIsExpEditDialogOpen(true);
+  }
+
+  async function handleSaveExperience() {
+    if (!editingExp) return;
+
+    try {
+      const { error } = await supabase
+        .from('experiences')
+        .update({ 
+          name: expForm.name,
+          content: expForm.content
+        })
+        .eq('id', editingExp.id);
+
+      if (error) throw error;
+
+      // Update local state
+      const updatedExp = { ...editingExp, name: expForm.name, content: expForm.content };
+      
+      setExperiences(experiences.map(e => e.id === editingExp.id ? updatedExp : e));
+      setPendingExperiences(pendingExperiences.map(e => e.id === editingExp.id ? updatedExp : e));
+      
+      setIsExpEditDialogOpen(false);
+      setEditingExp(null);
+    } catch (error) {
+      console.error('Güncelleme hatası:', error);
+      alert('Kaydetme başarısız.');
+    }
+  }
+
+  function openDocEditDialog(doc: Document) {
+    setEditingDoc(doc);
+    setDocEditForm({ 
+      title: doc.title, 
+      description: doc.description
+    });
+    setIsDocEditDialogOpen(true);
+  }
+
+  async function handleSaveDocument() {
+    if (!editingDoc) return;
+
+    try {
+      const { error } = await supabase
+        .from('documents')
+        .update({ 
+          title: docEditForm.title,
+          description: docEditForm.description
+        })
+        .eq('id', editingDoc.id);
+
+      if (error) throw error;
+
+      // Update local state
+      const updatedDoc = { ...editingDoc, title: docEditForm.title, description: docEditForm.description };
+      
+      setDocuments(documents.map(d => d.id === editingDoc.id ? updatedDoc : d));
+      setPendingDocuments(pendingDocuments.map(d => d.id === editingDoc.id ? updatedDoc : d));
+      
+      setIsDocEditDialogOpen(false);
+      setEditingDoc(null);
+    } catch (error) {
+      console.error('Güncelleme hatası:', error);
+      alert('Kaydetme başarısız.');
     }
   }
 
@@ -700,31 +697,187 @@ export default function AdminPage() {
   return (
     <div className="container mx-auto py-10 px-4">
       <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-8 gap-4">
-        <h1 className="text-3xl font-bold">Yönetim Paneli</h1>
-        
-        <div className="flex items-center gap-2">
-          <Label htmlFor="profession-select" className="whitespace-nowrap">Aktif Meslek:</Label>
-          <select 
-            id="profession-select"
-            className="flex h-10 w-full items-center justify-between rounded-md border border-slate-200 bg-white px-3 py-2 text-sm ring-offset-white placeholder:text-slate-500 focus:outline-none focus:ring-2 focus:ring-slate-950 focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 dark:border-slate-800 dark:bg-slate-950 dark:ring-offset-slate-950 dark:placeholder:text-slate-400 dark:focus:ring-slate-300 min-w-[200px]"
-            value={selectedProfessionSlug}
-            onChange={(e) => setSelectedProfessionSlug(e.target.value)}
+        <div className="flex items-center gap-4">
+          <h1 className="text-3xl font-bold">Yönetim Paneli</h1>
+          <Button 
+            variant={selectedProfessionSlug === 'genel-katki' ? "default" : "outline"}
+            onClick={() => {
+              setSelectedProfessionSlug('genel-katki');
+              setActiveTab('experiences');
+            }}
+            className="gap-2 ml-4"
           >
-            {professions.map((p) => (
-              <option key={p.slug} value={p.slug}>{p.title}</option>
-            ))}
-          </select>
+            <Mail className="w-4 h-4" />
+            Gelen Kutusu
+            {experiences.filter(e => e.status === 'pending' && e.profession === 'Genel Katkı / Öneri').length > 0 && (
+              <Badge variant="destructive" className="ml-1 h-5 w-5 p-0 flex items-center justify-center rounded-full">
+                {experiences.filter(e => e.status === 'pending' && e.profession === 'Genel Katkı / Öneri').length}
+              </Badge>
+            )}
+          </Button>
+        </div>
+        
+        <div className="flex flex-col gap-2 items-end">
+          <Input 
+            placeholder="Listede ara..." 
+            value={professionSearch}
+            onChange={(e) => setProfessionSearch(e.target.value)}
+            className="w-[200px] h-8 text-xs"
+          />
+          <div className="flex items-center gap-2">
+            <Label htmlFor="profession-select" className="whitespace-nowrap">Aktif Meslek:</Label>
+            <select 
+              id="profession-select"
+              className="flex h-10 w-full items-center justify-between rounded-md border border-slate-200 bg-white px-3 py-2 text-sm ring-offset-white placeholder:text-slate-500 focus:outline-none focus:ring-2 focus:ring-slate-950 focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 dark:border-slate-800 dark:bg-slate-950 dark:ring-offset-slate-950 dark:placeholder:text-slate-400 dark:focus:ring-slate-300 min-w-[200px]"
+              value={selectedProfessionSlug}
+              onChange={(e) => setSelectedProfessionSlug(e.target.value)}
+            >
+              {professions
+                .filter(p => p.slug === selectedProfessionSlug || p.title.toLowerCase().includes(professionSearch.toLowerCase()))
+                .map((p) => (
+                <option key={p.slug} value={p.slug}>{p.title}</option>
+              ))}
+            </select>
+          </div>
         </div>
       </div>
       
-      <Tabs defaultValue="experiences" onValueChange={setActiveTab} className="space-y-6">
+      <Tabs defaultValue="dashboard" value={activeTab} onValueChange={setActiveTab} className="space-y-6">
         <TabsList>
+          <TabsTrigger value="dashboard">Genel Bakış</TabsTrigger>
           <TabsTrigger value="experiences">Tecrübe Paylaşımları</TabsTrigger>
           <TabsTrigger value="faqs">Sıkça Sorulan Sorular</TabsTrigger>
           <TabsTrigger value="documents">Dokümanlar</TabsTrigger>
           <TabsTrigger value="blogs">Blog Yönetimi</TabsTrigger>
           <TabsTrigger value="settings">Meslek Ayarları</TabsTrigger>
         </TabsList>
+
+        <TabsContent value="dashboard">
+          <div className="grid gap-6 md:grid-cols-2">
+            {/* Pending Experiences & Contributions */}
+            <Card className="md:col-span-2 lg:col-span-1">
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2">
+                  <Mail className="w-5 h-5 text-blue-600" />
+                  Bekleyen Mesajlar ve Katkılar
+                  {pendingExperiences.length > 0 && (
+                    <Badge variant="destructive" className="ml-auto">
+                      {pendingExperiences.length} Yeni
+                    </Badge>
+                  )}
+                </CardTitle>
+                <CardDescription>
+                  Onay bekleyen kullanıcı yorumları, tecrübe paylaşımları ve iletişim mesajları.
+                </CardDescription>
+              </CardHeader>
+              <CardContent>
+                {loading ? (
+                  <div className="flex justify-center p-8"><Loader2 className="animate-spin" /></div>
+                ) : pendingExperiences.length === 0 ? (
+                  <div className="text-center py-8 text-slate-500">
+                    <CheckCircle className="w-12 h-12 mx-auto mb-2 text-green-500 opacity-50" />
+                    <p>Bekleyen mesaj yok. Her şey güncel!</p>
+                  </div>
+                ) : (
+                  <div className="space-y-4">
+                    {pendingExperiences.map((exp) => (
+                      <div key={exp.id} className="p-4 border rounded-lg bg-white dark:bg-slate-900 shadow-sm">
+                        <div className="flex justify-between items-start mb-2">
+                          <div>
+                            <div className="flex items-center gap-2 mb-1">
+                              <span className="font-semibold text-sm">{exp.name || 'Anonim'}</span>
+                              <Badge variant="outline" className="text-xs">{exp.profession}</Badge>
+                            </div>
+                            <span className="text-xs text-slate-500">
+                              {new Date(exp.created_at).toLocaleDateString('tr-TR')}
+                            </span>
+                          </div>
+                          <div className="flex gap-1">
+                            <Button size="sm" variant="outline" className="h-8" onClick={() => openExpEditDialog(exp)}>
+                              <Pencil className="w-4 h-4" />
+                            </Button>
+                            <Button size="sm" className="h-8 bg-green-600 hover:bg-green-700" onClick={() => updateExperienceStatus(exp.id, 'approved')}>
+                              <CheckCircle className="w-4 h-4" />
+                            </Button>
+                            <Button size="sm" variant="destructive" className="h-8" onClick={() => updateExperienceStatus(exp.id, 'rejected')}>
+                              <XCircle className="w-4 h-4" />
+                            </Button>
+                          </div>
+                        </div>
+                        <p className="text-sm text-slate-700 dark:text-slate-300 whitespace-pre-wrap bg-slate-50 dark:bg-slate-800 p-3 rounded-md">
+                          {renderContent(exp.content)}
+                        </p>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </CardContent>
+            </Card>
+
+            {/* Pending Documents */}
+            <Card className="md:col-span-2 lg:col-span-1">
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2">
+                  <FileText className="w-5 h-5 text-orange-600" />
+                  Bekleyen Dökümanlar
+                  {pendingDocuments.length > 0 && (
+                    <Badge variant="destructive" className="ml-auto">
+                      {pendingDocuments.length} Yeni
+                    </Badge>
+                  )}
+                </CardTitle>
+                <CardDescription>
+                  Kullanıcılar tarafından yüklenen ve onay bekleyen dosyalar.
+                </CardDescription>
+              </CardHeader>
+              <CardContent>
+                {loading ? (
+                  <div className="flex justify-center p-8"><Loader2 className="animate-spin" /></div>
+                ) : pendingDocuments.length === 0 ? (
+                  <div className="text-center py-8 text-slate-500">
+                    <CheckCircle className="w-12 h-12 mx-auto mb-2 text-green-500 opacity-50" />
+                    <p>Bekleyen döküman yok.</p>
+                  </div>
+                ) : (
+                  <div className="space-y-4">
+                    {pendingDocuments.map((doc) => (
+                      <div key={doc.id} className="p-4 border rounded-lg bg-white dark:bg-slate-900 shadow-sm">
+                        <div className="flex justify-between items-start mb-2">
+                          <div className="flex-1 min-w-0 mr-2">
+                            <div className="flex items-center gap-2 mb-1">
+                              <FileText className="w-4 h-4 text-blue-500 shrink-0" />
+                              <span className="font-semibold text-sm truncate" title={doc.title}>{doc.title}</span>
+                            </div>
+                            <div className="flex flex-wrap gap-2 text-xs text-slate-500 mb-2">
+                              <Badge variant="secondary" className="text-xs">{doc.profession_slug}</Badge>
+                              <span>{(parseInt(doc.file_size) / 1024 / 1024).toFixed(2)} MB</span>
+                              <span>{doc.uploader_name}</span>
+                            </div>
+                            <p className="text-xs text-slate-600 dark:text-slate-400 line-clamp-2 mb-2">
+                              {doc.description}
+                            </p>
+                          </div>
+                        </div>
+                        <div className="flex gap-2 justify-end">
+                          <Button size="sm" variant="outline" className="h-8" onClick={() => openDocEditDialog(doc)}>
+                            <Pencil className="w-4 h-4 mr-1" /> Düzenle
+                          </Button>
+                          <Button size="sm" variant="outline" className="h-8" asChild>
+                            <a href={doc.file_url} target="_blank" rel="noopener noreferrer">
+                              <Download className="w-4 h-4 mr-1" /> İncele
+                            </a>
+                          </Button>
+                          {/* Document approval logic needs to be implemented or reused if exists */}
+                          {/* For now, we can't easily approve docs without a function, let's add a placeholder or implement it */}
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </CardContent>
+            </Card>
+          </div>
+        </TabsContent>
 
         <TabsContent value="documents">
           <Card>
@@ -768,6 +921,9 @@ export default function AdminPage() {
                       </div>
                       
                       <div className="flex gap-2 shrink-0">
+                        <Button size="sm" variant="outline" onClick={() => openDocEditDialog(doc)}>
+                          <Pencil className="w-4 h-4 mr-1" /> Düzenle
+                        </Button>
                         {doc.status === 'pending' && (
                           <>
                             <Button size="sm" className="bg-green-600 hover:bg-green-700" onClick={() => updateDocumentStatus(doc.id, 'approved')}>
@@ -985,14 +1141,14 @@ export default function AdminPage() {
                     />
                   </div>
                   <div className="space-y-2">
-                    <Label>Video URL (YouTube Embed Link)</Label>
+                    <Label>NotebookLM Video URL (YouTube Embed Link)</Label>
                     <Input 
                       value={profession?.video_url || ''} 
                       onChange={(e) => setProfession({...profession, video_url: e.target.value})} 
                       placeholder="https://www.youtube.com/embed/..."
                     />
                     <p className="text-xs text-slate-500">
-                      Örnek: https://www.youtube.com/embed/dQw4w9WgXcQ
+                      NotebookLM tarafından oluşturulan videonun YouTube embed linkini buraya yapıştırın.
                     </p>
                   </div>
                   <Button onClick={updateProfession}>Kaydet</Button>
@@ -1031,7 +1187,7 @@ export default function AdminPage() {
                           </span>
                         </div>
                         <p className="text-sm text-slate-700 dark:text-slate-300 whitespace-pre-wrap">
-                          {exp.content}
+                          {renderContent(exp.content)}
                         </p>
                       </div>
                       

@@ -33,18 +33,15 @@ export function Navbar() {
         
         {/* Desktop Navigation */}
         <nav className="hidden md:flex items-center gap-6 text-sm font-medium text-slate-600 dark:text-slate-300">
-          <Link href="/meslekler" className="hover:text-blue-600 transition-colors">Meslekler</Link>
-          <Link href="/rehber/egitim-ve-kariyer" className="hover:text-blue-600 transition-colors">Eğitim Rehberi</Link>
-          <Link href="/rehber/sirket-kurma" className="hover:text-blue-600 transition-colors">Şirket Kurma</Link>
-          <Link href="/rehber/anerkennung" className="hover:text-blue-600 transition-colors">Denklik Rehberi</Link>
-          <Link href="/blog" className="hover:text-blue-600 transition-colors">Blog</Link>
-          <Link href="/hakkimizda" className="hover:text-blue-600 transition-colors">Hakkımızda</Link>
+          <Link href="/meslekler" className="hover:text-primary transition-colors">Meslekler</Link>
+          <Link href="/rehber/egitim-ve-kariyer" className="hover:text-primary transition-colors">Eğitim Rehberi</Link>
+          <Link href="/rehber/sirket-kurma" className="hover:text-primary transition-colors">Şirket Kurma</Link>
+          <Link href="/rehber/anerkennung" className="hover:text-primary transition-colors">Denklik Rehberi</Link>
+          <Link href="/blog" className="hover:text-primary transition-colors">Blog</Link>
+          <Link href="/hakkimizda" className="hover:text-primary transition-colors">Hakkımızda</Link>
         </nav>
 
         <div className="flex items-center gap-4">
-          <Link href="/giris" className="text-sm font-medium text-slate-600 hover:text-slate-900 dark:text-slate-300 dark:hover:text-white hidden sm:block">
-            Giriş Yap
-          </Link>
           <Button asChild className="hidden sm:flex">
             <Link href="/katki">Katkıda Bulun</Link>
           </Button>
@@ -80,42 +77,42 @@ export function Navbar() {
               <div className="flex flex-col gap-6 mt-8 items-center flex-1">
                 <Link 
                   href="/meslekler" 
-                  className="text-xl font-medium text-slate-600 hover:text-blue-600 dark:text-slate-300 transition-colors"
+                  className="text-xl font-medium text-slate-600 hover:text-primary dark:text-slate-300 transition-colors"
                   onClick={() => setIsOpen(false)}
                 >
                   Meslekler
                 </Link>
                 <Link 
                   href="/rehber/egitim-ve-kariyer" 
-                  className="text-xl font-medium text-slate-600 hover:text-blue-600 dark:text-slate-300 transition-colors"
+                  className="text-xl font-medium text-slate-600 hover:text-primary dark:text-slate-300 transition-colors"
                   onClick={() => setIsOpen(false)}
                 >
                   Eğitim Rehberi
                 </Link>
                 <Link 
                   href="/rehber/sirket-kurma" 
-                  className="text-xl font-medium text-slate-600 hover:text-blue-600 dark:text-slate-300 transition-colors"
+                  className="text-xl font-medium text-slate-600 hover:text-primary dark:text-slate-300 transition-colors"
                   onClick={() => setIsOpen(false)}
                 >
                   Şirket Kurma
                 </Link>
                 <Link 
                   href="/rehber/anerkennung" 
-                  className="text-xl font-medium text-slate-600 hover:text-blue-600 dark:text-slate-300 transition-colors"
+                  className="text-xl font-medium text-slate-600 hover:text-primary dark:text-slate-300 transition-colors"
                   onClick={() => setIsOpen(false)}
                 >
                   Denklik Rehberi
                 </Link>
                 <Link 
                   href="/blog" 
-                  className="text-xl font-medium text-slate-600 hover:text-blue-600 dark:text-slate-300 transition-colors"
+                  className="text-xl font-medium text-slate-600 hover:text-primary dark:text-slate-300 transition-colors"
                   onClick={() => setIsOpen(false)}
                 >
                   Blog
                 </Link>
                 <Link 
                   href="/hakkimizda" 
-                  className="text-xl font-medium text-slate-600 hover:text-blue-600 dark:text-slate-300 transition-colors"
+                  className="text-xl font-medium text-slate-600 hover:text-primary dark:text-slate-300 transition-colors"
                   onClick={() => setIsOpen(false)}
                 >
                   Hakkımızda
@@ -123,13 +120,6 @@ export function Navbar() {
                 
                 <div className="w-16 h-px bg-slate-200 dark:bg-slate-800 my-2" />
                 
-                <Link 
-                  href="/giris" 
-                  className="text-lg font-medium text-slate-600 hover:text-slate-900 dark:text-slate-300 dark:hover:text-white"
-                  onClick={() => setIsOpen(false)}
-                >
-                  Giriş Yap
-                </Link>
                 <Button asChild className="w-full max-w-[200px] rounded-full">
                   <Link href="/katki" onClick={() => setIsOpen(false)}>Katkıda Bulun</Link>
                 </Button>

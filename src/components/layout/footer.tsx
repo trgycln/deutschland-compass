@@ -40,7 +40,6 @@ export function Footer() {
             <ul className="space-y-2 text-sm text-slate-600 dark:text-slate-400">
               <li><Link href="/katki" className="hover:text-blue-600">Nasıl Katkı Sağlarım?</Link></li>
               <li><Link href="/kurallar" className="hover:text-blue-600">Topluluk Kuralları</Link></li>
-              <li><Link href="/iletisim" className="hover:text-blue-600">İletişim</Link></li>
             </ul>
           </div>
 

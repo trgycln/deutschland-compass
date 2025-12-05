@@ -12,13 +12,13 @@ import {
   FcBriefcase, FcReading, FcCommandLine, FcAutomotive, 
   FcShipped, FcElectronics, FcGraduationCap, FcEngineering, FcBiotech, 
   FcDataSheet, FcMultipleDevices, FcGlobe, FcRules, FcManager, FcBusiness,
-  FcDepartment, FcProcess, FcShop, FcSupport, FcSurvey
+  FcDepartment, FcProcess, FcShop, FcSupport, FcSurvey, FcConferenceCall
 } from 'react-icons/fc';
 import { 
   GiTeacher, GiChemicalTank, GiElectric, GiHealthNormal, GiNurseFemale, 
   GiDoctorFace, GiTestTubes, GiDna2, GiComputing, GiNetworkBars, GiCargoShip
 } from 'react-icons/gi';
-import { FaUserNurse, FaUserMd, FaBus, FaTruck, FaCode, FaLaptopCode, FaChalkboardTeacher, FaMap, FaTrain } from 'react-icons/fa';
+import { FaUserNurse, FaUserMd, FaBus, FaTruck, FaCode, FaLaptopCode, FaChalkboardTeacher, FaMap, FaTrain, FaBaby, FaSchool, FaTools, FaHistory, FaTaxi, FaLeaf } from 'react-icons/fa';
 import { MdOutlineScience, MdOutlinePsychology, MdOutlineSecurity } from 'react-icons/md';
 
 const iconMap: Record<string, any> = {
@@ -33,9 +33,15 @@ const iconMap: Record<string, any> = {
   'Rocket': FcElectronics,
   'Truck': FcShipped,
   'Zap': GiElectric,
+  'Wrench': FaTools,
+  'History': FaHistory,
+  'Taxi': FaTaxi,
+  'Sprout': FaLeaf,
+  'GraduationCap': FcGraduationCap,
   
   // Yeni semantik mappingler
   'Teacher': FaChalkboardTeacher,
+  'Baby': FaBaby,
   'Chemistry': GiChemicalTank,
   'Biology': GiDna2,
   'Physics': MdOutlineScience,
@@ -53,7 +59,9 @@ const iconMap: Record<string, any> = {
   'Psychology': MdOutlinePsychology,
   'Support': FcSupport,
   'Shop': FcShop,
-  'Process': FcProcess
+  'Process': FcProcess,
+  'School': FaSchool,
+  'Users': FcConferenceCall
 };
 
 // Kategori ikonları
@@ -122,7 +130,7 @@ export function ProfessionsTabs({ professions }: { professions: ProfessionCardDa
   };
 
   const renderCompactCard = (profession: ProfessionCardData) => {
-    const Icon = iconMap[profession.icon];
+    const Icon = iconMap[profession.icon] || LucideBriefcase;
     const isComingSoon = profession.status === 'coming-soon';
     
     const CardWrapper = ({ children }: { children: React.ReactNode }) => {

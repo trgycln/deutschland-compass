@@ -43,7 +43,7 @@ export function DocumentSection({ professionSlug }: { professionSlug: string }) 
           .select('*')
           .eq('profession_slug', professionSlug)
           .eq('status', 'approved')
-          .order('created_at', { ascending: false });
+          .order('created_at', { ascending: true });
 
         if (error) throw error;
         setDocuments(data || []);
