@@ -10,6 +10,7 @@ import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/
 import { BookOpen, PlayCircle, Building2, Scale, TrendingUp, Wallet, Users, Briefcase, Lightbulb, Quote, Calendar, User } from 'lucide-react';
 import { ShareExperienceDialog } from '@/components/share-experience-dialog';
 import { UploadDocumentDialog } from '@/components/upload-document-dialog';
+import { DocumentSection } from '@/components/document-section';
 
 export default function BusinessGuidePage() {
   const { title, description, videoUrl, sections, faq } = businessGuideData;
@@ -237,6 +238,9 @@ export default function BusinessGuidePage() {
             </Card>
           )}
         </div>
+
+        {/* Documents Section */}
+        <DocumentSection professionSlug="sirket-kurma" />
       </div>
     </div>
   );

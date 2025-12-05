@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useEffect, useState } from 'react';
+import React from 'react';
 import { supabase } from '@/lib/supabase';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
@@ -8,23 +8,9 @@ import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/
 import { Badge } from '@/components/ui/badge';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { CheckCircle2, AlertTriangle, FileText, Building2, GraduationCap, Briefcase, Info, HelpCircle, Lightbulb, PlayCircle, Download, Eye } from 'lucide-react';
+import { DocumentSection } from '@/components/document-section';
 
 export default function AnerkennungPage() {
-  const [documents, setDocuments] = useState<any[]>([]);
-
-  useEffect(() => {
-    async function fetchDocuments() {
-      const { data } = await supabase
-        .from('documents')
-        .select('*')
-        .eq('profession_slug', 'anerkennung')
-        .eq('status', 'approved')
-        .order('created_at', { ascending: true });
-      
-      if (data) setDocuments(data);
-    }
-    fetchDocuments();
-  }, []);
 
   return (
     <div className="min-h-screen bg-slate-50 dark:bg-slate-950 py-12">
@@ -80,57 +66,7 @@ export default function AnerkennungPage() {
         </Card>
 
         {/* Documents Section */}
-        {documents.length > 0 && (
-          <Card className="mb-8 border-blue-200 dark:border-blue-800">
-            <CardHeader className="bg-blue-50/50 dark:bg-blue-900/10 border-b border-blue-100 dark:border-blue-800/50">
-              <CardTitle className="flex items-center gap-2 text-xl text-blue-900 dark:text-blue-100">
-                <FileText className="w-6 h-6 text-blue-600 dark:text-blue-400" />
-                Faydalı Dökümanlar ve Örnekler
-              </CardTitle>
-              <CardDescription className="text-blue-700 dark:text-blue-300">
-                Denklik süreciyle ilgili resmi formlar, dilekçe örnekleri ve rehber dökümanlar.
-              </CardDescription>
-            </CardHeader>
-            <CardContent className="p-6">
-              <div className="grid gap-4 md:grid-cols-2">
-                {documents.map((doc) => (
-                  <div key={doc.id} className="flex items-start justify-between p-4 rounded-lg border bg-white dark:bg-slate-900 border-slate-200 dark:border-slate-800 hover:border-blue-300 dark:hover:border-blue-700 transition-colors">
-                    <div className="flex items-start gap-3">
-                      <div className="p-2 rounded-md bg-blue-50 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400">
-                        <FileText className="w-5 h-5" />
-                      </div>
-                      <div>
-                        <h4 className="font-medium text-slate-900 dark:text-slate-100 line-clamp-1" title={doc.title}>
-                          {doc.title}
-                        </h4>
-                        <p className="text-sm text-slate-500 dark:text-slate-400 line-clamp-2 mt-1">
-                          {doc.description}
-                        </p>
-                        <div className="flex items-center gap-2 mt-2 text-xs text-slate-400">
-                          <span>{new Date(doc.created_at).toLocaleDateString('tr-TR')}</span>
-                          <span>•</span>
-                          <span>{(doc.size / 1024 / 1024).toFixed(2)} MB</span>
-                        </div>
-                      </div>
-                    </div>
-                    <div className="flex flex-col gap-2">
-                      <Button variant="ghost" size="icon" asChild className="h-8 w-8 text-slate-500 hover:text-blue-600">
-                        <a href={doc.url} target="_blank" rel="noopener noreferrer" title="Görüntüle">
-                          <Eye className="w-4 h-4" />
-                        </a>
-                      </Button>
-                      <Button variant="ghost" size="icon" asChild className="h-8 w-8 text-slate-500 hover:text-blue-600">
-                        <a href={doc.url} download title="İndir">
-                          <Download className="w-4 h-4" />
-                        </a>
-                      </Button>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </CardContent>
-          </Card>
-        )}
+        <DocumentSection professionSlug="anerkennung" />
 
         <div className="grid gap-8">
           

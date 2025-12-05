@@ -11,6 +11,7 @@ import { BookOpen, Leaf, GraduationCap, FileText, Briefcase, Factory, Globe, Bui
 import { ShareExperienceDialog } from '@/components/share-experience-dialog';
 import { UploadDocumentDialog } from '@/components/upload-document-dialog';
 import { FaqSection } from '@/components/faq-section';
+import { DocumentSection } from '@/components/document-section';
 
 function getEmbedUrl(url: string) {
   if (!url) return '';
@@ -340,72 +341,7 @@ export default function EnvironmentalEngineerGuidePage() {
 
           {/* Documents Tab */}
           <TabsContent value="documents">
-            <div className="space-y-6">
-              <div className="flex flex-col md:flex-row justify-between items-center gap-4 bg-indigo-50 dark:bg-indigo-900/20 p-6 rounded-xl border border-indigo-100 dark:border-indigo-800">
-                <div>
-                  <h3 className="text-lg font-semibold text-indigo-900 dark:text-indigo-100">Kaynak Paylaşımı</h3>
-                  <p className="text-indigo-700 dark:text-indigo-300 text-sm mt-1">
-                    Elinizdeki ders notlarını, sunumları veya faydalı belgeleri paylaşarak meslektaşlarınıza destek olun.
-                  </p>
-                </div>
-                <UploadDocumentDialog 
-                  professionSlug="cevre-muhendisligi" 
-                />
-              </div>
-              
-              {documents.length > 0 ? (
-                <div className="grid gap-4">
-                  {documents.map((doc) => (
-                    <Card key={doc.id} className="hover:shadow-md transition-shadow">
-                      <CardContent className="p-4 flex items-center justify-between">
-                        <div className="flex items-center gap-4">
-                          <div className="h-12 w-12 rounded-lg bg-indigo-100 dark:bg-indigo-900/30 flex items-center justify-center">
-                            <FileText className="h-6 w-6 text-indigo-600 dark:text-indigo-400" />
-                          </div>
-                          <div>
-                            <h4 className="font-semibold text-slate-900 dark:text-white">{doc.title}</h4>
-                            <p className="text-sm text-slate-500 dark:text-slate-400 line-clamp-1">{doc.description}</p>
-                            <div className="flex items-center gap-2 mt-1 text-xs text-slate-400">
-                              <span>{doc.file_type?.toUpperCase()}</span>
-                              <span>•</span>
-                              <span>{doc.file_size}</span>
-                              <span>•</span>
-                              <span>{new Date(doc.created_at).toLocaleDateString('tr-TR')}</span>
-                            </div>
-                          </div>
-                        </div>
-                        <div className="flex items-center gap-2">
-                          <Button variant="ghost" size="icon" asChild>
-                            <a href={doc.file_url} target="_blank" rel="noopener noreferrer">
-                              <Eye className="h-4 w-4" />
-                            </a>
-                          </Button>
-                          <Button variant="ghost" size="icon" asChild>
-                            <a href={doc.file_url} download>
-                              <Download className="h-4 w-4" />
-                            </a>
-                          </Button>
-                        </div>
-                      </CardContent>
-                    </Card>
-                  ))}
-                </div>
-              ) : (
-                <Card className="bg-slate-50 dark:bg-slate-900 border-dashed border-2 border-slate-200 dark:border-slate-800">
-                  <CardContent className="flex flex-col items-center justify-center py-12 text-center">
-                    <div className="h-16 w-16 rounded-full bg-indigo-100 dark:bg-indigo-900/30 flex items-center justify-center mb-4">
-                      <Building2 className="h-8 w-8 text-indigo-600 dark:text-indigo-400 opacity-50" />
-                    </div>
-                    <h3 className="text-lg font-semibold text-slate-900 dark:text-white mb-2">
-                      Henüz belge paylaşılmamış
-                    </h3>
-                    <p className="text-slate-600 dark:text-slate-400 max-w-md">
-                      Bu alan için henüz bir belge yüklenmedi.
-                    </p>
-                  </CardContent>
-                </Card>
-              )}
-            </div>
+            <DocumentSection professionSlug="cevre-muhendisligi" />
           </TabsContent>
         </Tabs>
       </div>

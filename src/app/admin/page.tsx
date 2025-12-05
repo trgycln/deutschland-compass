@@ -320,16 +320,29 @@ export default function AdminPage() {
   }
 
   async function handleUploadDocument() {
-    if (!docFile || !docForm.title) return;
+    if (!docFile || !docForm.title) {
+      alert('Lütfen dosya seçin ve başlık girin.');
+      return;
+    }
+
+    if (!selectedProfessionSlug) {
+      alert('Lütfen önce bir meslek seçin.');
+      return;
+    }
 
     try {
       const fileExt = docFile.name.split('.').pop();
-      const fileName = `${Math.random().toString(36).substring(2)}_${Date.now()}.${fileExt}`;
+      // Sanitize file name
+      const sanitizedFileName = docFile.name.replace(/[^a-zA-Z0-9.]/g, '_');
+      const fileName = `${Math.random().toString(36).substring(2)}_${Date.now()}_${sanitizedFileName}`;
       const filePath = `${selectedProfessionSlug}/${fileName}`;
 
       const { error: uploadError } = await supabase.storage
         .from('documents')
-        .upload(filePath, docFile);
+        .upload(filePath, docFile, {
+          cacheControl: '3600',
+          upsert: false
+        });
 
       if (uploadError) throw uploadError;
 
@@ -356,10 +369,10 @@ export default function AdminPage() {
       setDocFile(null);
       setDocForm({ title: '', description: '', profession_slug: selectedProfessionSlug });
       fetchData();
-      alert('Doküman yüklendi!');
+      alert('Doküman başarıyla yüklendi!');
     } catch (error: any) {
-      console.error('Yükleme hatası:', error);
-      alert('Yükleme başarısız: ' + error.message);
+      console.error('Upload error:', error);
+      alert('Yükleme sırasında bir hata oluştu: ' + (error.message || error));
     }
   }
 

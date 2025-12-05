@@ -429,19 +429,6 @@ export const professionsList: ProfessionCardData[] = [
     keywords: ['kurier', 'postbote', 'paket', 'zusteller', 'lojistik', 'kurye', 'dagitim', 'dhl', 'amazon', 'hermes']
   },
   {
-    id: 'tren-gorevlisi',
-    title: 'Tren Görevlisi (Zugbegleiter)',
-    slug: 'tren-gorevlisi',
-    description: 'Demiryollarında müşteri hizmetleri ve seyahat güvenliği için kariyer fırsatları.',
-    category: 'Ulaşım & Lojistik',
-    status: 'coming-soon',
-    pathType: 'new-path',
-    icon: 'Train',
-    demand: 'Yüksek Talep',
-    readingTime: '-',
-    badgeColor: 'orange'
-  },
-  {
     id: 'otobus-soforlugu',
     title: 'Otobüs Şoförlüğü',
     slug: 'otobus-soforlugu',
@@ -485,19 +472,6 @@ export const professionsList: ProfessionCardData[] = [
     readingTime: '18dk Okuma',
     badgeColor: 'purple',
     keywords: ['erzieher', 'kindergarten', 'kita', 'pedagog', 'ogretmen', 'okul oncesi', 'cocuk gelisimi', 'egitmen', 'bakici']
-  },
-  {
-    id: 'yazilim-bootcamp',
-    title: 'Yazılım (Bootcamp / Alaylı)',
-    slug: 'yazilim-bootcamp',
-    description: 'IT sektörüne geçiş yapmak isteyenler için bootcamp ve sertifika programları.',
-    category: 'Bilişim & Teknoloji',
-    status: 'coming-soon',
-    pathType: 'new-path',
-    icon: 'IT',
-    demand: 'Yüksek Talep',
-    readingTime: '-',
-    badgeColor: 'blue'
   },
   {
     id: 'cografi-bilgi-sistemleri',

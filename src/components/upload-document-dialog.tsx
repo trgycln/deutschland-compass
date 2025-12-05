@@ -46,12 +46,17 @@ export function UploadDocumentDialog({ professionSlug }: { professionSlug: strin
     try {
       // 1. Upload file to Supabase Storage
       const fileExt = file.name.split('.').pop()
-      const fileName = `${Math.random().toString(36).substring(2)}_${Date.now()}.${fileExt}`
+      // Sanitize file name to avoid issues with special characters
+      const sanitizedFileName = file.name.replace(/[^a-zA-Z0-9.]/g, '_');
+      const fileName = `${Math.random().toString(36).substring(2)}_${Date.now()}_${sanitizedFileName}`
       const filePath = `${professionSlug}/${fileName}`
 
       const { error: uploadError } = await supabase.storage
         .from('documents')
-        .upload(filePath, file)
+        .upload(filePath, file, {
+          cacheControl: '3600',
+          upsert: false
+        })
 
       if (uploadError) throw uploadError
 

@@ -43,9 +43,10 @@ export function DocumentSection({ professionSlug }: { professionSlug: string }) 
           .select('*')
           .eq('profession_slug', professionSlug)
           .eq('status', 'approved')
-          .order('created_at', { ascending: true });
+          .order('created_at', { ascending: false });
 
         if (error) throw error;
+        console.log(`Fetched ${data?.length} documents for ${professionSlug}`);
         setDocuments(data || []);
       } catch (error: any) {
         console.error('Dokümanlar yüklenirken hata:', error.message || error);

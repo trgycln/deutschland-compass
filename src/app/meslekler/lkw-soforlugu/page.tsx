@@ -10,6 +10,7 @@ import { Badge } from '@/components/ui/badge';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { ShareExperienceDialog } from '@/components/share-experience-dialog';
 import { UploadDocumentDialog } from '@/components/upload-document-dialog';
+import { DocumentSection } from '@/components/document-section';
 
 export const metadata: Metadata = {
   title: 'LKW Fahrer (Tır Şoförlüğü) | Almanya Kariyer Rehberi',
@@ -253,25 +254,7 @@ export default function LkwDriverPage() {
 
           {/* Documents Tab */}
           <TabsContent value="documents">
-            <Card className="shadow-md">
-              <CardHeader>
-                <CardTitle className="flex items-center gap-2">
-                  <FileText className="w-6 h-6 text-orange-500" />
-                  Dokümanlar ve Kaynaklar
-                </CardTitle>
-                <CardDescription>
-                  Faydalı belgeler, formlar ve rehberler
-                </CardDescription>
-              </CardHeader>
-              <CardContent>
-                <div className="text-center py-12 bg-slate-50 rounded-xl border border-dashed border-slate-300">
-                  <div className="w-16 h-16 bg-slate-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                    <Upload className="w-8 h-8 text-slate-400" />
-                  </div>
-                  <h3 className="text-lg font-medium text-slate-900 mb-2">Henüz doküman eklenmemiş</h3>
-                  <p className="text-slate-500 max-w-md mx-auto mb-6">
-                    Elindeki faydalı dokümanları paylaşarak topluluğa katkıda bulunabilirsin.
-                  </p>
+            <DocumentSection profession_slug="lkw-soforlugu" />
                   <UploadDocumentDialog professionSlug="lkw-soforlugu" />
                 </div>
               </CardContent>

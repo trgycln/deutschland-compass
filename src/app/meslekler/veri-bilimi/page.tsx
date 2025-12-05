@@ -9,6 +9,8 @@ import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/
 import { BookOpen, PlayCircle, GraduationCap, School, Briefcase, Users, HeartHandshake, Lightbulb, ArrowLeft, CheckCircle2, AlertCircle, ExternalLink, Database, Server, Layers, BarChart3 } from 'lucide-react';
 import Link from 'next/link';
 import { ShareExperienceDialog } from '@/components/share-experience-dialog';
+import { DocumentSection } from '@/components/document-section';
+import { UploadDocumentDialog } from '@/components/upload-document-dialog';
 
 export default function DataSciencePage() {
   const { title, description, videoUrl, stats, roadmap, pedagogy, faq } = dataScienceData;
@@ -186,6 +188,15 @@ export default function DataSciencePage() {
                   </AccordionItem>
                 ))}
               </Accordion>
+            </section>
+
+            {/* Documents Section */}
+            <section className="mt-12">
+              <div className="flex items-center justify-between mb-6">
+                <h2 className="text-3xl font-bold text-slate-900 dark:text-white">Örnek Dokümanlar</h2>
+                <UploadDocumentDialog professionSlug="veri-bilimi" />
+              </div>
+              <DocumentSection professionSlug="veri-bilimi" />
             </section>
 
           </div>

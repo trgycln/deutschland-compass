@@ -9,6 +9,7 @@ import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/
 import { BookOpen, PlayCircle, GraduationCap, School, Briefcase, Users, HeartHandshake, Lightbulb, ArrowLeft, CheckCircle2, AlertCircle, ExternalLink, Database, Server, Layers, Bug, Code2 } from 'lucide-react';
 import Link from 'next/link';
 import { ShareExperienceDialog } from '@/components/share-experience-dialog';
+import { DocumentSection } from '@/components/document-section';
 
 export default function TesterPage() {
   const { title, description, videoUrl, stats, roadmap, pedagogy, faq } = testerData;
@@ -187,6 +188,9 @@ export default function TesterPage() {
                 ))}
               </Accordion>
             </section>
+
+            {/* Documents Section */}
+            <DocumentSection professionSlug="yazilim-test-uzmanligi" />
 
           </div>
 

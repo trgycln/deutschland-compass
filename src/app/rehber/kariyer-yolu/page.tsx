@@ -1,9 +1,12 @@
+'use client';
+
 import { careerGuideData } from '@/data/career-guide-data';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Separator } from '@/components/ui/separator';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
 import { CheckCircle2, Map, BookOpen, Briefcase, GraduationCap, AlertCircle } from 'lucide-react';
+import { DocumentSection } from '@/components/document-section';
 
 export default function CareerGuidePage() {
   return (
@@ -173,6 +176,9 @@ export default function CareerGuidePage() {
             </Accordion>
           </div>
         )}
+
+        {/* Documents Section */}
+        <DocumentSection professionSlug="kariyer-yolu" />
 
       </div>
     </div>

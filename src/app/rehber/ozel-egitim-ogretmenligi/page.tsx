@@ -30,6 +30,7 @@ import {
 import Link from "next/link";
 import { ShareExperienceDialog } from '@/components/share-experience-dialog';
 import { UploadDocumentDialog } from '@/components/upload-document-dialog';
+import { DocumentSection } from '@/components/document-section';
 import { supabase } from '@/lib/supabase';
 import {
   Accordion,
@@ -622,12 +623,7 @@ export default function OzelEgitimPage() {
                     professionSlug="ozel-egitim-ogretmenligi"
                   />
                 </div>
-                <Card>
-                  <CardContent className="py-12 text-center">
-                    <p className="text-slate-500 mb-4">Henüz belge yüklenmemiş.</p>
-                    <Button variant="outline">Belge Yükle</Button>
-                  </CardContent>
-                </Card>
+                <DocumentSection professionSlug="ozel-egitim-ogretmenligi" />
               </TabsContent>
             </Tabs>
           </div>
