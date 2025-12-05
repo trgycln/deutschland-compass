@@ -26,6 +26,7 @@ import {
 } from "lucide-react";
 import Link from "next/link";
 import { ShareExperienceDialog } from '@/components/share-experience-dialog';
+import { DocumentSection } from '@/components/document-section';
 import { supabase } from '@/lib/supabase';
 import {
   Accordion,
@@ -605,17 +606,7 @@ export default function TaxiFahrerPage() {
           </TabsContent>
 
           <TabsContent value="documents">
-            <Card>
-              <CardContent className="pt-6">
-                <div className="text-center py-12">
-                  <FileText className="w-12 h-12 text-slate-300 mx-auto mb-4" />
-                  <h3 className="text-lg font-medium text-slate-900 dark:text-slate-100">Henüz belge eklenmemiş</h3>
-                  <p className="text-slate-500 dark:text-slate-400">
-                    Bu meslekle ilgili resmi belgeler ve formlar yakında eklenecektir.
-                  </p>
-                </div>
-              </CardContent>
-            </Card>
+            <DocumentSection professionSlug="taxi-fahrer" />
           </TabsContent>
         </Tabs>
       </div>

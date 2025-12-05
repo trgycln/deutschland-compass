@@ -33,6 +33,7 @@ import {
 import Link from "next/link";
 import { ShareExperienceDialog } from '@/components/share-experience-dialog';
 import { ProfessionVideoPlayer } from '@/components/profession-video-player';
+import { DocumentSection } from '@/components/document-section';
 import { supabase } from '@/lib/supabase';
 import {
   Accordion,
@@ -330,6 +331,10 @@ export default function VeterinerHekimligiPage() {
               <Badge className="ml-2 bg-purple-100 text-purple-700 dark:bg-purple-900 dark:text-purple-300 hover:bg-purple-100 border-0">
                 {experiences.length}
               </Badge>
+            </TabsTrigger>
+            <TabsTrigger value="documents" className="px-6 py-3 rounded-lg data-[state=active]:bg-indigo-50 dark:data-[state=active]:bg-indigo-900/20 data-[state=active]:text-indigo-600 dark:data-[state=active]:text-indigo-400">
+              <FileText className="w-4 h-4 mr-2" />
+              Dokümanlar
             </TabsTrigger>
           </TabsList>
 
@@ -769,6 +774,10 @@ export default function VeterinerHekimligiPage() {
                 ))}
               </div>
             )}
+          </TabsContent>
+
+          <TabsContent value="documents" className="space-y-6">
+            <DocumentSection professionSlug="veteriner-hekimligi" />
           </TabsContent>
         </Tabs>
       </div>

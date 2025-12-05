@@ -254,11 +254,7 @@ export default function LkwDriverPage() {
 
           {/* Documents Tab */}
           <TabsContent value="documents">
-            <DocumentSection profession_slug="lkw-soforlugu" />
-                  <UploadDocumentDialog professionSlug="lkw-soforlugu" />
-                </div>
-              </CardContent>
-            </Card>
+            <DocumentSection professionSlug="lkw-soforlugu" />
           </TabsContent>
         </Tabs>
       </div>

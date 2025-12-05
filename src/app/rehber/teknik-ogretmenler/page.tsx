@@ -29,6 +29,7 @@ import {
 } from "lucide-react";
 import Link from "next/link";
 import { ShareExperienceDialog } from '@/components/share-experience-dialog';
+import { DocumentSection } from '@/components/document-section';
 import { supabase } from '@/lib/supabase';
 import {
   Accordion,
@@ -371,6 +372,10 @@ export default function TeknikOgretmenlerPage() {
                 {experiences.length}
               </Badge>
             </TabsTrigger>
+            <TabsTrigger value="documents" className="px-6 py-3 rounded-lg data-[state=active]:bg-indigo-50 dark:data-[state=active]:bg-indigo-900/20 data-[state=active]:text-indigo-600 dark:data-[state=active]:text-indigo-400">
+              <FileText className="w-4 h-4 mr-2" />
+              Dokümanlar
+            </TabsTrigger>
           </TabsList>
 
           <TabsContent value="guide" className="space-y-8">
@@ -565,6 +570,10 @@ export default function TeknikOgretmenlerPage() {
                 ))}
               </div>
             )}
+          </TabsContent>
+
+          <TabsContent value="documents" className="space-y-6">
+            <DocumentSection professionSlug="teknik-ogretmenler" />
           </TabsContent>
         </Tabs>
       </div>

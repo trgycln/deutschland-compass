@@ -26,6 +26,7 @@ import {
 } from "lucide-react";
 import Link from "next/link";
 import { ShareExperienceDialog } from '@/components/share-experience-dialog';
+import { DocumentSection } from '@/components/document-section';
 import { supabase } from '@/lib/supabase';
 import {
   Accordion,
@@ -989,17 +990,7 @@ export default function TarihOgretmenligiPage() {
           </TabsContent>
 
           <TabsContent value="documents">
-            <Card>
-              <CardContent className="py-12 text-center">
-                <FileText className="w-16 h-16 text-slate-200 mx-auto mb-4" />
-                <h3 className="text-xl font-semibold text-slate-900 dark:text-white mb-2">
-                  Dokümanlar Hazırlanıyor
-                </h3>
-                <p className="text-slate-500 max-w-md mx-auto">
-                  Tarih öğretmenliği denklik süreci ve başvuru formları ile ilgili dokümanlar yakında buraya eklenecektir.
-                </p>
-              </CardContent>
-            </Card>
+            <DocumentSection professionSlug="tarih-ogretmenligi" />
           </TabsContent>
         </Tabs>
       </div>

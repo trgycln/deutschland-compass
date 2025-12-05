@@ -31,6 +31,7 @@ import {
 import Link from "next/link";
 import { ShareExperienceDialog } from '@/components/share-experience-dialog';
 import { UploadDocumentDialog } from '@/components/upload-document-dialog';
+import { DocumentSection } from '@/components/document-section';
 import { supabase } from '@/lib/supabase';
 import {
   Accordion,
@@ -858,19 +859,7 @@ export default function OgsPage() {
               </TabsContent>
 
               <TabsContent value="documents" className="mt-6">
-                <Card>
-                  <CardHeader>
-                    <CardTitle>Dokümanlar</CardTitle>
-                    <CardDescription>
-                      İş başvurusu ve çalışma hayatı için gerekli belgeler ve şablonlar.
-                    </CardDescription>
-                  </CardHeader>
-                  <CardContent>
-                    <div className="text-center py-12 text-slate-500">
-                      <p>Henüz bu alanda yüklenmiş bir doküman bulunmuyor.</p>
-                    </div>
-                  </CardContent>
-                </Card>
+                <DocumentSection professionSlug="ogs-calisanlari" />
               </TabsContent>
             </Tabs>
           </div>

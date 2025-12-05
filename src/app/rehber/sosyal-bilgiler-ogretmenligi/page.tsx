@@ -25,6 +25,7 @@ import {
 } from "lucide-react";
 import Link from "next/link";
 import { ShareExperienceDialog } from '@/components/share-experience-dialog';
+import { DocumentSection } from '@/components/document-section';
 import { supabase } from '@/lib/supabase';
 import {
   Accordion,
@@ -484,23 +485,7 @@ export default function SosyalBilgilerPage() {
               </TabsContent>
 
               <TabsContent value="documents" className="mt-6">
-                <Card>
-                  <CardHeader>
-                    <CardTitle>Dokümanlar ve Kaynaklar</CardTitle>
-                    <CardDescription>
-                      Faydalı formlar, dilekçe örnekleri ve resmi belgeler.
-                    </CardDescription>
-                  </CardHeader>
-                  <CardContent>
-                    <div className="text-center py-12 text-slate-500">
-                      <FileText className="w-12 h-12 mx-auto mb-4 opacity-20" />
-                      <p>Henüz doküman yüklenmemiş.</p>
-                      <Button variant="link" className="mt-2 text-cyan-600">
-                        Doküman yükle
-                      </Button>
-                    </div>
-                  </CardContent>
-                </Card>
+                <DocumentSection professionSlug="sosyal-bilgiler-ogretmenligi" />
               </TabsContent>
             </Tabs>
           </div>

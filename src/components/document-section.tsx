@@ -72,33 +72,33 @@ export function DocumentSection({ professionSlug }: { professionSlug: string }) 
   }
 
   return (
-    <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-      {documents.map((doc) => (
-        <Card key={doc.id} className="flex flex-col hover:shadow-md transition-shadow">
-          <CardContent className="p-6 flex flex-col h-full">
-            <div className="flex items-start justify-between mb-4">
-              <div className="p-3 bg-slate-50 dark:bg-slate-800 rounded-lg">
-                {getFileIcon(doc.file_type)}
+    <div className="rounded-xl border border-slate-200/80 dark:border-slate-800 bg-white dark:bg-slate-900 shadow-sm overflow-hidden">
+      <div className="divide-y divide-slate-200 dark:divide-slate-800">
+        {documents.map((doc) => (
+          <div key={doc.id} className="flex flex-col gap-3 px-4 py-3 md:px-5 md:py-4 hover:bg-slate-50/70 dark:hover:bg-slate-800/50 transition-colors">
+            <div className="flex flex-wrap items-center gap-3 justify-between">
+              <div className="flex items-center gap-3 min-w-0">
+                <div className="p-2 rounded-lg bg-slate-100 dark:bg-slate-800">
+                  {getFileIcon(doc.file_type)}
+                </div>
+                <div className="min-w-0">
+                  <p className="font-semibold text-slate-900 dark:text-slate-100 truncate" title={doc.title}>{doc.title}</p>
+                  <p className="text-xs text-slate-500 dark:text-slate-400">{new Date(doc.created_at).toLocaleDateString('tr-TR')} • {doc.uploader_name || 'Anonim'}</p>
+                </div>
               </div>
-              <Badge variant="outline" className="text-xs uppercase">
-                {doc.file_type}
-              </Badge>
+              <Badge variant="outline" className="text-[11px] uppercase tracking-wide">{doc.file_type || 'dosya'}</Badge>
             </div>
-            
-            <h3 className="font-semibold text-lg mb-2 line-clamp-2" title={doc.title}>
-              {doc.title}
-            </h3>
-            
-            <p className="text-sm text-slate-500 dark:text-slate-400 mb-4 line-clamp-3 flex-1">
-              {doc.description || 'Açıklama yok.'}
-            </p>
-            
-            <div className="mt-auto pt-4 border-t flex items-center justify-between">
-              <div className="text-xs text-slate-400">
-                <span className="block font-medium text-slate-600 dark:text-slate-300">{doc.uploader_name}</span>
-                <span>{new Date(doc.created_at).toLocaleDateString('tr-TR')}</span>
+
+            {doc.description && (
+              <p className="text-sm text-slate-600 dark:text-slate-300 leading-relaxed line-clamp-2 md:line-clamp-3">
+                {doc.description}
+              </p>
+            )}
+
+            <div className="flex items-center justify-between gap-3">
+              <div className="text-xs text-slate-500 dark:text-slate-400">
+                Boyut: {doc.file_size || '—'}
               </div>
-              
               <Button size="sm" variant="outline" asChild>
                 <a href={doc.file_url} target="_blank" rel="noopener noreferrer" className="gap-2">
                   <Download className="w-4 h-4" />
@@ -106,9 +106,9 @@ export function DocumentSection({ professionSlug }: { professionSlug: string }) 
                 </a>
               </Button>
             </div>
-          </CardContent>
-        </Card>
-      ))}
+          </div>
+        ))}
+      </div>
     </div>
   );
 }

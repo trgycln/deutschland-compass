@@ -27,6 +27,7 @@ import {
 import Link from "next/link";
 import { ShareExperienceDialog } from '@/components/share-experience-dialog';
 import { UploadDocumentDialog } from '@/components/upload-document-dialog';
+import { DocumentSection } from '@/components/document-section';
 import { supabase } from '@/lib/supabase';
 import {
   Accordion,
@@ -658,33 +659,7 @@ export default function MuhasebePage() {
           </TabsContent>
 
           <TabsContent value="documents">
-            <div className="space-y-6">
-              <div className="flex flex-col md:flex-row justify-between items-center gap-4 bg-indigo-50 dark:bg-indigo-900/20 p-6 rounded-xl border border-indigo-100 dark:border-indigo-800">
-                <div>
-                  <h3 className="text-lg font-semibold text-indigo-900 dark:text-indigo-100">Kaynak Paylaşımı</h3>
-                  <p className="text-indigo-700 dark:text-indigo-300 text-sm mt-1">
-                    Elinizdeki ders notlarını, sunumları veya faydalı belgeleri paylaşarak meslektaşlarınıza destek olun.
-                  </p>
-                </div>
-                <UploadDocumentDialog 
-                  professionSlug="muhasebe" 
-                />
-              </div>
-              
-              <Card className="bg-slate-50 dark:bg-slate-900 border-dashed border-2 border-slate-200 dark:border-slate-800">
-                <CardContent className="flex flex-col items-center justify-center py-12 text-center">
-                  <div className="h-16 w-16 rounded-full bg-indigo-100 dark:bg-indigo-900/30 flex items-center justify-center mb-4">
-                    <Building2 className="h-8 w-8 text-indigo-600 dark:text-indigo-400 opacity-50" />
-                  </div>
-                  <h3 className="text-lg font-semibold text-slate-900 dark:text-white mb-2">
-                    Henüz belge paylaşılmamış
-                  </h3>
-                  <p className="text-slate-600 dark:text-slate-400 max-w-md">
-                    Bu alan için henüz bir belge yüklenmedi.
-                  </p>
-                </CardContent>
-              </Card>
-            </div>
+            <DocumentSection professionSlug="muhasebe" />
           </TabsContent>
         </Tabs>
       </div>
