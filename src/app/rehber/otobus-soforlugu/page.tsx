@@ -7,7 +7,7 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { BookOpen, Bus, ShieldCheck, Clock, Euro, Wrench, GraduationCap, Award, Quote, Calendar, User, AlertTriangle, HelpCircle, Building2, FileText, Download } from 'lucide-react';
+import { BookOpen, Bus, ShieldCheck, Clock, Euro, Wrench, GraduationCap, Award, Quote, Calendar, User, AlertTriangle, HelpCircle, Building2, FileText, Download, Loader2 } from 'lucide-react';
 import { ShareExperienceDialog } from '@/components/share-experience-dialog';
 import { UploadDocumentDialog } from '@/components/upload-document-dialog';
 import { FaqSection } from '@/components/faq-section';
@@ -26,6 +26,7 @@ export default function BusDriverGuidePage() {
   const { title, description, sections, faq, stats, videoUrl: defaultVideoUrl, analogy } = busDriverData;
   const [experiences, setExperiences] = useState<any[]>([]);
   const [documents, setDocuments] = useState<any[]>([]);
+  const [loadingDocuments, setLoadingDocuments] = useState(true);
   const [videoUrl, setVideoUrl] = useState(defaultVideoUrl);
   const [pageTitle, setPageTitle] = useState(title);
   const [pageDescription, setPageDescription] = useState(description);
@@ -47,10 +48,10 @@ export default function BusDriverGuidePage() {
         .from('documents')
         .select('*')
         .eq('profession_slug', 'otobus-soforlugu')
-        .eq('status', 'approved')
         .order('created_at', { ascending: false });
       
       if (docData) setDocuments(docData);
+      setLoadingDocuments(false);
 
       // Fetch profession details (video, title, description)
       const { data: profData } = await supabase
@@ -359,7 +360,11 @@ export default function BusDriverGuidePage() {
                 />
               </div>
               
-              {documents.length > 0 ? (
+              {loadingDocuments ? (
+                <div className="flex justify-center py-12">
+                  <Loader2 className="h-8 w-8 animate-spin text-indigo-500" />
+                </div>
+              ) : documents.length > 0 ? (
                 <div className="grid gap-4">
                   {documents.map((doc) => (
                     <Card key={doc.id} className="hover:shadow-md transition-shadow">
