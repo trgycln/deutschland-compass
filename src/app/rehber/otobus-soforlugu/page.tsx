@@ -59,11 +59,10 @@ export default function BusDriverGuidePage() {
 
   const getIconForSection = (id: string) => {
     switch (id) {
-      case 'baslama-sartlari': return <GraduationCap className="w-6 h-6 text-blue-600" />;
-      case 'ehliyet-ve-yeterlilik': return <Award className="w-6 h-6 text-purple-600" />;
-      case 'arac-kullanim-guvenlik': return <ShieldCheck className="w-6 h-6 text-red-600" />;
-      case 'calisma-kosullari': return <Clock className="w-6 h-6 text-orange-600" />;
-      case 'teknik-konular': return <Wrench className="w-6 h-6 text-slate-600" />;
+      case 'hazirlik-ve-kosullar': return <GraduationCap className="w-6 h-6 text-blue-600" />;
+      case 'mesleki-yeterlilik': return <Award className="w-6 h-6 text-purple-600" />;
+      case 'is-arama-maas': return <Euro className="w-6 h-6 text-green-600" />;
+      case 'is-hayati-guvenlik': return <ShieldCheck className="w-6 h-6 text-red-600" />;
       default: return <BookOpen className="w-6 h-6 text-slate-600" />;
     }
   };
@@ -76,8 +75,9 @@ export default function BusDriverGuidePage() {
     lines.forEach((line, index) => {
       const trimmedLine = line.trim();
       
-      if (trimmedLine.startsWith('•')) {
-        const lineContent = line.replace('•', '').trim();
+      if (trimmedLine.startsWith('•') || trimmedLine.startsWith('◦')) {
+        const isSubItem = trimmedLine.startsWith('◦');
+        const lineContent = line.replace(isSubItem ? '◦' : '•', '').trim();
         const parts = lineContent.split(/(\*\*.*?\*\*)/g).map((part, i) => {
           if (part.startsWith('**') && part.endsWith('**')) {
             return <strong key={i} className="font-semibold text-slate-900 dark:text-slate-100">{part.slice(2, -2)}</strong>;
@@ -86,8 +86,8 @@ export default function BusDriverGuidePage() {
         });
 
         currentList.push(
-          <li key={index} className="flex items-start gap-2 mb-2">
-            <span className="mt-2 w-1.5 h-1.5 rounded-full bg-blue-500 flex-shrink-0" />
+          <li key={index} className={`flex items-start gap-2 mb-2 ${isSubItem ? 'ml-6' : ''}`}>
+            <span className={`mt-2 w-1.5 h-1.5 rounded-full flex-shrink-0 ${isSubItem ? 'bg-slate-400' : 'bg-blue-500'}`} />
             <span className="text-slate-600 dark:text-slate-300">{parts}</span>
           </li>
         );
