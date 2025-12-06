@@ -4,7 +4,7 @@ import { useEffect, useState } from 'react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog';
 import { Badge } from '@/components/ui/badge';
 import { ScrollArea } from '@/components/ui/scroll-area';
-import { FileText, MessageSquare, PenTool, ExternalLink, Calendar, Sparkles } from 'lucide-react';
+import { FileText, MessageSquare, PenTool, ExternalLink, Calendar, Sparkles, PlayCircle } from 'lucide-react';
 import Link from 'next/link';
 import { supabase } from '@/lib/supabase';
 import { professionsList } from '@/data/professions-list';
@@ -13,7 +13,7 @@ import { tr } from 'date-fns/locale';
 
 type UpdateItem = {
   id: string | number;
-  type: 'document' | 'experience' | 'blog';
+  type: 'document' | 'experience' | 'blog' | 'video';
   title: string;
   subtitle?: string;
   link: string;
@@ -56,6 +56,15 @@ export function WhatsNewPopup() {
           .from('blogs')
           .select('id, title, slug, created_at')
           .eq('is_published', true)
+          .gt('created_at', dateStr)
+          .order('created_at', { ascending: false })
+          .limit(5);
+
+        // 4. Fetch recent profession videos
+        const { data: videos } = await supabase
+          .from('professions')
+          .select('slug, title, video_url, created_at')
+          .not('video_url', 'is', null)
           .gt('created_at', dateStr)
           .order('created_at', { ascending: false })
           .limit(5);
@@ -130,6 +139,25 @@ export function WhatsNewPopup() {
           });
         });
 
+        videos?.forEach(video => {
+          const profession = professionsList.find(p => p.slug === video.slug);
+          let link = `/meslekler/${video.slug}`;
+
+          if (profession?.customLink) {
+            link = profession.customLink;
+          }
+
+          newItems.push({
+            id: `video-${video.slug}`,
+            type: 'video',
+            title: profession?.title || video.title || video.slug,
+            subtitle: 'NotebookLM Videosu',
+            link,
+            date: video.created_at,
+            isNew: true
+          });
+        });
+
         // Sort combined list by date desc
         newItems.sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
 
@@ -187,12 +215,19 @@ export function WhatsNewPopup() {
                   {item.type === 'document' && <FileText className="w-5 h-5" />}
                   {item.type === 'experience' && <MessageSquare className="w-5 h-5" />}
                   {item.type === 'blog' && <PenTool className="w-5 h-5" />}
+                  {item.type === 'video' && <PlayCircle className="w-5 h-5" />}
                 </div>
                 
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center justify-between gap-2 mb-1">
                     <Badge variant="secondary" className="text-[10px] h-5 px-1.5 font-normal bg-secondary text-primary dark:bg-secondary/20 dark:text-primary-foreground">
-                      {item.type === 'document' ? 'Doküman' : item.type === 'experience' ? 'Tecrübe' : 'Blog'}
+                      {item.type === 'document'
+                        ? 'Doküman'
+                        : item.type === 'experience'
+                          ? 'Tecrübe'
+                          : item.type === 'blog'
+                            ? 'Blog'
+                            : 'Video'}
                     </Badge>
                     <span className="text-xs text-slate-400 flex items-center gap-1 whitespace-nowrap">
                       <Calendar className="w-3 h-3" />
