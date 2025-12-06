@@ -7,7 +7,23 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { BookOpen, Bus, ShieldCheck, Clock, Euro, Wrench, GraduationCap, Award, Quote, Calendar, User, AlertTriangle, HelpCircle, Building2, FileText, Download, Loader2 } from 'lucide-react';
+import { BookOpen, Bus, ShieldCheck, Euro, GraduationCap, Award, Quote, Calendar, User, AlertTriangle, Building2, FileText, Download, Loader2 } from 'lucide-react';
+
+interface Experience {
+  id: string;
+  user_name: string;
+  content: string;
+  rating: number;
+  created_at: string;
+}
+
+interface Document {
+  id: string;
+  title: string;
+  file_url: string;
+  file_type: string;
+  created_at: string;
+}
 import { ShareExperienceDialog } from '@/components/share-experience-dialog';
 import { UploadDocumentDialog } from '@/components/upload-document-dialog';
 import { FaqSection } from '@/components/faq-section';
@@ -24,8 +40,8 @@ function getEmbedUrl(url: string) {
 
 export default function BusDriverGuidePage() {
   const { title, description, sections, faq, stats, videoUrl: defaultVideoUrl, analogy } = busDriverData;
-  const [experiences, setExperiences] = useState<any[]>([]);
-  const [documents, setDocuments] = useState<any[]>([]);
+  const [experiences, setExperiences] = useState<Experience[]>([]);
+  const [documents, setDocuments] = useState<Document[]>([]);
   const [loadingDocuments, setLoadingDocuments] = useState(true);
   const [videoUrl, setVideoUrl] = useState(defaultVideoUrl);
   const [pageTitle, setPageTitle] = useState(title);
