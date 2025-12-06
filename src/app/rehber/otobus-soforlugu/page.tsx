@@ -49,9 +49,15 @@ export default function BusDriverGuidePage() {
   const [videoUrl, setVideoUrl] = useState(defaultVideoUrl);
   const [pageTitle, setPageTitle] = useState(title);
   const [pageDescription, setPageDescription] = useState(description);
+  const [hashProcessed, setHashProcessed] = useState(false);
 
   useEffect(() => {
     async function fetchPageData() {
+      // Check if URL has specific experience hash
+      const targetExperienceId = typeof window !== 'undefined' && window.location.hash.startsWith('#experience-')
+        ? parseInt(window.location.hash.replace('#experience-', ''))
+        : null;
+
       // Fetch experiences - simplified filtering
       const { data: expData, error: expError } = await supabase
         .from('experiences')
@@ -64,7 +70,7 @@ export default function BusDriverGuidePage() {
       }
       
       // Filter by profession keywords on client side for better matching
-      const filtered = expData?.filter(exp => {
+      let filtered = expData?.filter(exp => {
         const profession = (exp.profession || '').toLowerCase();
         return profession.includes('otobüs') || 
                profession.includes('bus') || 
@@ -73,35 +79,17 @@ export default function BusDriverGuidePage() {
                profession.includes('sürücü');
       }) || [];
       
-      setExperiences(filtered);
-      console.log('Filtered experiences:', filtered);
-
-      // Check if there's a hash in URL pointing to a specific experience
-      if (typeof window !== 'undefined' && window.location.hash) {
-        const hash = window.location.hash.substring(1);
-        if (hash.startsWith('experience-')) {
-          // Wait for DOM to render
-          setTimeout(() => {
-            // Switch to experiences tab
-            const experiencesTab = document.querySelector('[data-state="inactive"][role="tab"][aria-controls*="experiences"]') as HTMLElement;
-            if (experiencesTab) {
-              experiencesTab.click();
-            }
-            // Scroll to the specific experience
-            setTimeout(() => {
-              const element = document.getElementById(hash);
-              if (element) {
-                element.scrollIntoView({ behavior: 'smooth', block: 'center' });
-                // Add highlight effect
-                element.classList.add('ring-2', 'ring-amber-500', 'ring-offset-2');
-                setTimeout(() => {
-                  element.classList.remove('ring-2', 'ring-amber-500', 'ring-offset-2');
-                }, 3000);
-              }
-            }, 300);
-          }, 500);
+      // If we have a target experience ID and it's not in filtered list, add it
+      if (targetExperienceId && expData) {
+        const targetExp = expData.find(exp => exp.id === targetExperienceId);
+        if (targetExp && !filtered.find(exp => exp.id === targetExperienceId)) {
+          console.log('Adding target experience to list:', targetExp);
+          filtered = [targetExp, ...filtered];
         }
       }
+      
+      setExperiences(filtered);
+      console.log('Filtered experiences:', filtered);
 
       // Fetch documents
       const { data: docData } = await supabase
@@ -128,6 +116,78 @@ export default function BusDriverGuidePage() {
     }
     fetchPageData();
   }, []);
+
+  // Separate useEffect for hash navigation - runs when experiences change
+  useEffect(() => {
+    if (hashProcessed || experiences.length === 0) return;
+    
+    if (typeof window !== 'undefined' && window.location.hash) {
+      const hash = window.location.hash.substring(1);
+      if (hash.startsWith('experience-')) {
+        setHashProcessed(true);
+        console.log('Processing hash after experiences loaded:', hash);
+        
+        const experienceId = parseInt(hash.replace('experience-', ''));
+        
+        // Check if experience exists in current list
+        const expExists = experiences.some(exp => exp.id === experienceId);
+        if (!expExists) {
+          console.log('Experience not in this profession list, checking database...');
+          // Redirect to correct profession
+          supabase
+            .from('experiences')
+            .select('profession')
+            .eq('id', experienceId)
+            .single()
+            .then(({ data }) => {
+              if (data) {
+                const slug = data.profession
+                  .toLowerCase()
+                  .replace(/ğ/g, 'g')
+                  .replace(/ü/g, 'u')
+                  .replace(/ş/g, 's')
+                  .replace(/ı/g, 'i')
+                  .replace(/i̇/g, 'i')
+                  .replace(/ö/g, 'o')
+                  .replace(/ç/g, 'c')
+                  .replace(/[^a-z0-9-]/g, '-')
+                  .replace(/-+/g, '-')
+                  .replace(/^-|-$/g, '');
+                
+                window.location.href = `/rehber/${slug}#experience-${experienceId}`;
+              }
+            });
+          return;
+        }
+        
+        // Experience exists, proceed with tab switch
+        setTimeout(() => {
+          let experiencesTab = document.querySelector('button[value="experiences"]') as HTMLElement;
+          if (!experiencesTab) {
+            const allButtons = Array.from(document.querySelectorAll('button'));
+            experiencesTab = allButtons.find(btn => btn.textContent?.trim() === 'Tecrübeler') as HTMLElement;
+          }
+          
+          if (experiencesTab) {
+            console.log('Clicking experiences tab...');
+            experiencesTab.click();
+            
+            setTimeout(() => {
+              const element = document.getElementById(hash);
+              if (element) {
+                console.log('Scrolling to:', hash);
+                element.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                element.classList.add('ring-2', 'ring-amber-500', 'ring-offset-2', 'transition-all');
+                setTimeout(() => {
+                  element.classList.remove('ring-2', 'ring-amber-500', 'ring-offset-2');
+                }, 3000);
+              }
+            }, 800);
+          }
+        }, 500);
+      }
+    }
+  }, [experiences, hashProcessed]);
 
   const getIconForSection = (id: string) => {
     switch (id) {
