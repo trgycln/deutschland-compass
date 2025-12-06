@@ -1,7 +1,8 @@
 'use client';
 
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { chemistryTeacherData } from '@/data/chemistry-teacher-data';
+import { supabase } from '@/lib/supabase';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
@@ -25,7 +26,23 @@ function getEmbedUrl(url: string) {
 }
 
 export default function ChemistryTeacherPage() {
-  const { title, description, videoUrl, stats, roadmap, pedagogy, faq } = chemistryTeacherData;
+  const { title, description, videoUrl: defaultVideoUrl, stats, roadmap, pedagogy, faq } = chemistryTeacherData;
+  const [videoUrl, setVideoUrl] = useState(defaultVideoUrl);
+
+  useEffect(() => {
+    async function fetchProfessionData() {
+      const { data } = await supabase
+        .from('professions')
+        .select('video_url')
+        .eq('slug', 'kimya-ogretmenligi')
+        .single();
+      
+      if (data?.video_url) {
+        setVideoUrl(data.video_url);
+      }
+    }
+    fetchProfessionData();
+  }, []);
 
   return (
     <div className="min-h-screen bg-slate-50 dark:bg-slate-950">

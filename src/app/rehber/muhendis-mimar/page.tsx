@@ -798,7 +798,7 @@ export default function MuhendisMimarPage() {
                                 </div>
                                 <div>
                                   <h3 className="font-semibold text-slate-900 dark:text-white">
-                                    {exp.is_anonymous ? 'Anonim Çalışan' : exp.full_name}
+                                    {exp.name || 'Anonim Çalışan'}
                                   </h3>
                                   <div className="flex items-center gap-2 text-sm text-slate-500">
                                     <Calendar className="h-3 w-3" />
@@ -807,7 +807,7 @@ export default function MuhendisMimarPage() {
                                 </div>
                               </div>
                               <Badge variant="secondary" className="bg-orange-50 text-orange-700 dark:bg-orange-900/20 dark:text-orange-300">
-                                {exp.experience_years} Yıl Tecrübe
+                                {exp.profession}
                               </Badge>
                             </div>
                             
@@ -816,14 +816,6 @@ export default function MuhendisMimarPage() {
                                 {exp.content}
                               </p>
                             </div>
-
-                            {exp.company_name && !exp.is_anonymous && (
-                              <div className="mt-4 pt-4 border-t border-slate-100 dark:border-slate-800">
-                                <p className="text-sm text-slate-500">
-                                  <span className="font-medium">Şirket:</span> {exp.company_name}
-                                </p>
-                              </div>
-                            )}
                           </CardContent>
                         </Card>
                       ))}
