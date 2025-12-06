@@ -60,11 +60,10 @@ export default function GisGuidePage() {
 
   const getIconForSection = (id: string) => {
     switch (id) {
-      case 'tanim-kapsam': return <Map className="w-6 h-6 text-blue-600" />;
-      case 'ilgili-alanlar-yetkinlikler': return <Code2 className="w-6 h-6 text-purple-600" />;
-      case 'egitim-kariyer-yollari': return <Route className="w-6 h-6 text-green-600" />;
-      case 'is-imkanlari-ucret': return <Briefcase className="w-6 h-6 text-orange-600" />;
-      case 'sistem-gereksinimleri': return <Laptop className="w-6 h-6 text-slate-600" />;
+      case 'hazirlik-ve-basvuru': return <Map className="w-6 h-6 text-blue-600" />;
+      case 'ise-giris-ve-kariyer': return <Briefcase className="w-6 h-6 text-green-600" />;
+      case 'teknik-detaylar': return <Code2 className="w-6 h-6 text-purple-600" />;
+      case 'ek-bilgiler': return <HelpCircle className="w-6 h-6 text-orange-600" />;
       default: return <BookOpen className="w-6 h-6 text-slate-600" />;
     }
   };

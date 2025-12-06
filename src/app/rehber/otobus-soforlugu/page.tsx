@@ -10,18 +10,21 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { BookOpen, Bus, ShieldCheck, Euro, GraduationCap, Award, Quote, Calendar, User, AlertTriangle, Building2, FileText, Download, Loader2 } from 'lucide-react';
 
 interface Experience {
-  id: string;
-  user_name: string;
-  content: string;
-  rating: number;
+  id: number;
   created_at: string;
+  name: string;
+  profession: string;
+  content: string;
+  status: 'pending' | 'approved' | 'rejected';
 }
 
 interface Document {
   id: string;
   title: string;
+  description?: string;
   file_url: string;
   file_type: string;
+  file_size?: string;
   created_at: string;
 }
 import { ShareExperienceDialog } from '@/components/share-experience-dialog';
@@ -49,15 +52,56 @@ export default function BusDriverGuidePage() {
 
   useEffect(() => {
     async function fetchPageData() {
-      // Fetch experiences
-      const { data: expData } = await supabase
+      // Fetch experiences - simplified filtering
+      const { data: expData, error: expError } = await supabase
         .from('experiences')
         .select('*')
         .eq('status', 'approved')
-        .or('profession.ilike.%Otobüs%,profession.ilike.%Bus%,profession.ilike.%Şoför%,profession.ilike.%Sürücü%')
         .order('created_at', { ascending: false });
       
-      if (expData) setExperiences(expData);
+      if (expError) {
+        console.error('Error fetching experiences:', expError);
+      }
+      
+      // Filter by profession keywords on client side for better matching
+      const filtered = expData?.filter(exp => {
+        const profession = (exp.profession || '').toLowerCase();
+        return profession.includes('otobüs') || 
+               profession.includes('bus') || 
+               profession.includes('şoför') ||
+               profession.includes('soför') ||
+               profession.includes('sürücü');
+      }) || [];
+      
+      setExperiences(filtered);
+      console.log('Filtered experiences:', filtered);
+
+      // Check if there's a hash in URL pointing to a specific experience
+      if (typeof window !== 'undefined' && window.location.hash) {
+        const hash = window.location.hash.substring(1);
+        if (hash.startsWith('experience-')) {
+          // Wait for DOM to render
+          setTimeout(() => {
+            // Switch to experiences tab
+            const experiencesTab = document.querySelector('[data-state="inactive"][role="tab"][aria-controls*="experiences"]') as HTMLElement;
+            if (experiencesTab) {
+              experiencesTab.click();
+            }
+            // Scroll to the specific experience
+            setTimeout(() => {
+              const element = document.getElementById(hash);
+              if (element) {
+                element.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                // Add highlight effect
+                element.classList.add('ring-2', 'ring-amber-500', 'ring-offset-2');
+                setTimeout(() => {
+                  element.classList.remove('ring-2', 'ring-amber-500', 'ring-offset-2');
+                }, 3000);
+              }
+            }, 300);
+          }, 500);
+        }
+      }
 
       // Fetch documents
       const { data: docData } = await supabase
@@ -300,7 +344,11 @@ export default function BusDriverGuidePage() {
               {experiences.length > 0 ? (
                 <div className="grid gap-6">
                   {experiences.map((exp) => (
-                    <Card key={exp.id} className="overflow-hidden border-l-4 border-l-blue-500">
+                    <Card 
+                      key={exp.id} 
+                      id={`experience-${exp.id}`}
+                      className="overflow-hidden border-l-4 border-l-blue-500 transition-all duration-300"
+                    >
                       <CardContent className="p-6">
                         <div className="flex items-start justify-between mb-4">
                           <div className="flex items-center gap-3">
@@ -309,7 +357,7 @@ export default function BusDriverGuidePage() {
                             </div>
                             <div>
                               <h3 className="font-semibold text-slate-900 dark:text-white">
-                                {exp.is_anonymous ? 'Anonim Çalışan' : exp.full_name}
+                                {exp.name || 'Anonim'}
                               </h3>
                               <div className="flex items-center gap-2 text-sm text-slate-500">
                                 <Calendar className="h-3 w-3" />
@@ -317,9 +365,6 @@ export default function BusDriverGuidePage() {
                               </div>
                             </div>
                           </div>
-                          <Badge variant="secondary" className="bg-blue-50 text-blue-700 dark:bg-blue-900/20 dark:text-blue-300">
-                            {exp.experience_years} Yıl Tecrübe
-                          </Badge>
                         </div>
                         
                         <div className="prose dark:prose-invert max-w-none">
@@ -328,13 +373,6 @@ export default function BusDriverGuidePage() {
                           </p>
                         </div>
 
-                        {exp.company_name && !exp.is_anonymous && (
-                          <div className="mt-4 pt-4 border-t border-slate-100 dark:border-slate-800">
-                            <p className="text-sm text-slate-500">
-                              <span className="font-medium">Şirket:</span> {exp.company_name}
-                            </p>
-                          </div>
-                        )}
                       </CardContent>
                     </Card>
                   ))}

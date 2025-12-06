@@ -3,10 +3,10 @@
 import React, { useEffect, useState } from 'react';
 import { computerScienceTeacherData } from '@/data/computer-science-teacher-data';
 import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { CheckCircle2, BookOpen, Briefcase, GraduationCap, PlayCircle, Share2 } from 'lucide-react';
+import { BookOpen, Briefcase, FileText, Users, Monitor, CheckCircle2, PlayCircle } from 'lucide-react';
 import { ShareExperienceDialog } from '@/components/share-experience-dialog';
 import { FaqSection } from '@/components/faq-section';
 import { ExperienceSection } from '@/components/experience-section';
@@ -22,6 +22,23 @@ function getEmbedUrl(url: string) {
     return `https://www.youtube.com/embed/${match[1]}`;
   }
   return url;
+}
+
+function getIconForSection(id: string) {
+  switch (id) {
+    case 'hazirlik':
+      return <BookOpen className="w-6 h-6 text-blue-600" />;
+    case 'is-hayati':
+      return <Briefcase className="w-6 h-6 text-blue-600" />;
+    case 'basvuru':
+      return <FileText className="w-6 h-6 text-blue-600" />;
+    case 'kariyer-gelisimi':
+      return <Monitor className="w-6 h-6 text-blue-600" />;
+    case 'genel-degerlendirme':
+      return <Users className="w-6 h-6 text-blue-600" />;
+    default:
+      return <CheckCircle2 className="w-6 h-6 text-blue-600" />;
+  }
 }
 
 export default function ComputerScienceTeacherPage() {
@@ -78,7 +95,7 @@ export default function ComputerScienceTeacherPage() {
               <div className="flex justify-center md:justify-start gap-3 pt-4">
                 <Button 
                   className="gap-2"
-                  onClick={() => document.getElementById('roadmap-section')?.scrollIntoView({ behavior: 'smooth' })}
+                  onClick={() => document.getElementById('guide-section')?.scrollIntoView({ behavior: 'smooth' })}
                 >
                   <BookOpen className="w-4 h-4" />
                   Rehbere Başla
@@ -118,36 +135,23 @@ export default function ComputerScienceTeacherPage() {
             <TabsTrigger value="documents">Dokümanlar</TabsTrigger>
           </TabsList>
 
-          <TabsContent value="guide" className="space-y-8" id="roadmap-section">
+          <TabsContent value="guide" className="space-y-8" id="guide-section">
             <div className="grid gap-8">
-              {computerScienceTeacherData.roadmap.map((step, index) => (
-                <Card key={index} className="relative overflow-hidden border-l-4 border-l-blue-500">
-                  <div className="absolute top-0 right-0 p-4 opacity-10">
-                    <span className="text-6xl font-bold text-slate-900 dark:text-white">{step.step}</span>
-                  </div>
-                  <CardHeader>
-                    <CardTitle className="text-2xl flex items-center gap-3">
-                      <span className="flex items-center justify-center w-8 h-8 rounded-full bg-blue-100 text-blue-600 text-sm font-bold">
-                        {step.step}
-                      </span>
-                      {step.title}
-                    </CardTitle>
-                    <CardDescription className="text-base pt-2">
-                      {step.description}
-                    </CardDescription>
-                  </CardHeader>
-                  <CardContent className="grid gap-6">
-                    {step.details.map((detail, idx) => (
-                      <div key={idx} className="bg-slate-50 dark:bg-slate-900/50 p-4 rounded-lg">
-                        <h4 className="font-semibold text-slate-900 dark:text-slate-200 mb-2 flex items-center gap-2">
-                          <CheckCircle2 className="w-4 h-4 text-green-500" />
-                          {detail.title}
-                        </h4>
-                        <p className="text-slate-600 dark:text-slate-400 text-sm leading-relaxed">
-                          {detail.content}
-                        </p>
+              {computerScienceTeacherData.sections.map((section) => (
+                <Card key={section.id} className="overflow-hidden border-l-4 border-l-blue-500" id={section.id}>
+                  <CardHeader className="bg-slate-50/50 dark:bg-slate-900/50 border-b border-slate-100 dark:border-slate-800">
+                    <CardTitle className="text-2xl flex items-center gap-3 text-slate-900 dark:text-slate-100">
+                      <div className="p-2 bg-blue-100 dark:bg-blue-900/30 rounded-lg">
+                        {getIconForSection(section.id)}
                       </div>
-                    ))}
+                      {section.title}
+                    </CardTitle>
+                  </CardHeader>
+                  <CardContent className="pt-6">
+                    <div 
+                      className="prose prose-slate dark:prose-invert max-w-none"
+                      dangerouslySetInnerHTML={{ __html: section.content }}
+                    />
                   </CardContent>
                 </Card>
               ))}
@@ -159,7 +163,7 @@ export default function ComputerScienceTeacherPage() {
           </TabsContent>
 
           <TabsContent value="faq">
-            <FaqSection professionSlug="bilgisayar-ogretmenligi" initialFaqs={computerScienceTeacherData.faqs} />
+            <FaqSection professionSlug="bilgisayar-ogretmenligi" initialFaqs={computerScienceTeacherData.faq} />
           </TabsContent>
 
           <TabsContent value="documents">

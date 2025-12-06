@@ -3,10 +3,25 @@
 import React, { useEffect, useState } from 'react';
 import { religiousCultureTeacherData } from '@/data/religious-culture-teacher-data';
 import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { CheckCircle2, BookOpen, PlayCircle } from 'lucide-react';
+import { 
+  BookOpen, 
+  Map, 
+  School, 
+  Briefcase, 
+  Users, 
+  Info, 
+  CheckCircle2, 
+  Landmark, 
+  Award, 
+  Route, 
+  MessageCircle,
+  PlayCircle,
+  AlertTriangle,
+  Globe
+} from 'lucide-react';
 import { ShareExperienceDialog } from '@/components/share-experience-dialog';
 import { FaqSection } from '@/components/faq-section';
 import { ExperienceSection } from '@/components/experience-section';
@@ -25,9 +40,10 @@ function getEmbedUrl(url: string) {
 }
 
 export default function ReligiousCultureTeacherPage() {
-  const [videoUrl, setVideoUrl] = useState(religiousCultureTeacherData.videoUrl);
-  const [pageTitle, setPageTitle] = useState(religiousCultureTeacherData.title);
-  const [pageDescription, setPageDescription] = useState(religiousCultureTeacherData.description);
+  const { title, description, sections, faq, stats, videoUrl: defaultVideoUrl } = religiousCultureTeacherData;
+  const [videoUrl, setVideoUrl] = useState(defaultVideoUrl);
+  const [pageTitle, setPageTitle] = useState(title);
+  const [pageDescription, setPageDescription] = useState(description);
 
   useEffect(() => {
     async function fetchPageData() {
@@ -46,133 +62,197 @@ export default function ReligiousCultureTeacherPage() {
     fetchPageData();
   }, []);
 
+  const getIconForSection = (id: string) => {
+    switch (id) {
+      case 'hazirlik-donemi': return <CheckCircle2 className="w-6 h-6 text-blue-600" />;
+      case 'varis-ve-uyum': return <Landmark className="w-6 h-6 text-green-600" />;
+      case 'is-hayati-ve-kariyer': return <Briefcase className="w-6 h-6 text-purple-600" />;
+      case 'pedagojik-yetkinlik': return <Users className="w-6 h-6 text-orange-600" />;
+      default: return <BookOpen className="w-6 h-6 text-slate-600" />;
+    }
+  };
+
+  const formatText = (text: string) => {
+    const lines = text.split('\n');
+    const elements: React.ReactNode[] = [];
+    let currentList: React.ReactNode[] = [];
+
+    lines.forEach((line, index) => {
+      const trimmedLine = line.trim();
+      
+      if (trimmedLine.startsWith('•')) {
+        const lineContent = line.replace('•', '').trim();
+        const parts = lineContent.split(/(\*\*.*?\*\*)/g).map((part, i) => {
+          if (part.startsWith('**') && part.endsWith('**')) {
+            return <strong key={i} className="font-semibold text-slate-900 dark:text-slate-100">{part.slice(2, -2)}</strong>;
+          }
+          return part;
+        });
+
+        currentList.push(
+          <li key={index} className="flex items-start gap-2 mb-2">
+            <span className="mt-2 w-1.5 h-1.5 rounded-full bg-blue-500 flex-shrink-0" />
+            <span className="text-slate-600 dark:text-slate-300">{parts}</span>
+          </li>
+        );
+      } else {
+        if (currentList.length > 0) {
+          elements.push(<ul key={`list-${index}`} className="mb-4 pl-2">{currentList}</ul>);
+          currentList = [];
+        }
+
+        if (trimmedLine === '') {
+          // Skip empty lines
+        } else {
+          const parts = line.split(/(\*\*.*?\*\*)/g).map((part, i) => {
+            if (part.startsWith('**') && part.endsWith('**')) {
+              return <strong key={i} className="font-semibold text-slate-900 dark:text-slate-100">{part.slice(2, -2)}</strong>;
+            }
+            return part;
+          });
+
+          elements.push(
+            <p key={index} className="mb-3 text-slate-600 dark:text-slate-300 leading-relaxed">
+              {parts}
+            </p>
+          );
+        }
+      }
+    });
+
+    if (currentList.length > 0) {
+      elements.push(<ul key="list-end" className="mb-4 pl-2">{currentList}</ul>);
+    }
+
+    return elements;
+  };
+
   return (
     <div className="min-h-screen bg-slate-50 dark:bg-slate-950">
       {/* Hero Section */}
-      <div className="bg-white dark:bg-slate-900 border-b border-slate-200 dark:border-slate-800">
-        <div className="container mx-auto px-4 py-12">
-          <div className="max-w-4xl mx-auto flex flex-col items-center md:items-start text-center md:text-left">
-            <div className="flex items-center justify-center md:justify-start gap-3 mb-6">
-              <Badge variant="secondary" className="bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400">
-                Eğitim
-              </Badge>
-              <Badge variant="outline" className="text-slate-600 dark:text-slate-400">
-                Rehber
-              </Badge>
-            </div>
-            
-            <h1 className="text-4xl font-bold text-slate-900 dark:text-white mb-6">
-              {pageTitle}
-            </h1>
-            
-            <p className="text-xl text-slate-600 dark:text-slate-400 mb-8 leading-relaxed">
-              {pageDescription}
-            </p>
-
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8 w-full">
-              {religiousCultureTeacherData.stats.map((stat, index) => (
-                <div key={index} className="bg-slate-50 dark:bg-slate-800/50 p-4 rounded-lg border border-slate-200 dark:border-slate-700">
-                  <div className="text-sm text-slate-500 dark:text-slate-400 mb-1">{stat.label}</div>
-                  <div className="flex items-center gap-2">
-                    <div className={`w-2 h-2 rounded-full ${stat.color}`} />
-                    <span className="font-semibold text-slate-900 dark:text-white">{stat.value}</span>
+      <div className="bg-white dark:bg-slate-900 border-b">
+        <div className="container mx-auto px-4 py-12 max-w-5xl">
+          <div className="flex flex-col md:flex-row gap-8 items-center md:items-start text-center md:text-left">
+            <div className="flex-1 space-y-4 w-full">
+              <div className="flex items-center justify-center md:justify-start gap-2">
+                <Badge variant="outline" className="text-green-600 border-green-200 bg-green-50">Sosyal Bilimler</Badge>
+                <Badge variant="outline" className="text-slate-600">Meslek Rehberi</Badge>
+              </div>
+              <h1 className="text-4xl font-bold tracking-tight text-slate-900 dark:text-slate-50">
+                {pageTitle}
+              </h1>
+              <p className="text-xl text-slate-600 dark:text-slate-400 leading-relaxed">
+                {pageDescription}
+              </p>
+              
+              <div className="flex flex-wrap justify-center md:justify-start gap-4 pt-4">
+                {stats && stats.map((stat, index) => (
+                  <div key={index} className="flex items-center gap-2 bg-slate-100 dark:bg-slate-800 px-3 py-1.5 rounded-full">
+                    <span className={`w-2 h-2 rounded-full ${stat.color}`} />
+                    <span className="text-sm font-medium text-slate-600 dark:text-slate-300">
+                      {stat.label}: <span className="text-slate-900 dark:text-white">{stat.value}</span>
+                    </span>
                   </div>
-                </div>
-              ))}
+                ))}
+              </div>
+
+              <div className="flex justify-center md:justify-start gap-3 pt-4">
+                <Button 
+                  className="gap-2"
+                  onClick={() => document.getElementById('content-section')?.scrollIntoView({ behavior: 'smooth' })}
+                >
+                  <BookOpen className="w-4 h-4" />
+                  Rehbere Başla
+                </Button>
+                <ShareExperienceDialog professionSlug="din-kulturu-ogretmenligi" />
+              </div>
             </div>
 
-            <div className="flex flex-wrap gap-3">
-              <ShareExperienceDialog professionSlug="din-kulturu-ogretmenligi" defaultProfessionName={pageTitle} />
-              <UploadDocumentDialog professionSlug="din-kulturu-ogretmenligi" />
+            {/* Video Section */}
+            <div className="w-full md:w-1/3 aspect-video bg-slate-200 rounded-xl overflow-hidden shadow-lg border border-slate-200 dark:border-slate-800">
+              {videoUrl && (videoUrl.includes('youtube') || videoUrl.includes('youtu.be')) ? (
+                <iframe 
+                  src={getEmbedUrl(videoUrl)} 
+                  title="Meslek Tanıtımı"
+                  className="w-full h-full"
+                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
+                  allowFullScreen
+                />
+              ) : (
+                <div className="w-full h-full flex flex-col items-center justify-center text-slate-400 bg-slate-100 dark:bg-slate-800">
+                  <PlayCircle className="w-12 h-12 mb-2 opacity-50" />
+                  <span className="text-sm font-medium">Video Yakında</span>
+                </div>
+              )}
             </div>
           </div>
         </div>
       </div>
 
-      <div className="container mx-auto px-4 py-12">
-        <div className="max-w-4xl mx-auto">
-          <Tabs defaultValue="roadmap" className="space-y-8">
-            <TabsList className="grid w-full grid-cols-2 md:grid-cols-4 lg:w-[600px] h-auto">
-              <TabsTrigger value="roadmap">Yol Haritası</TabsTrigger>
-              <TabsTrigger value="experiences">Deneyimler</TabsTrigger>
-              <TabsTrigger value="documents">Belgeler</TabsTrigger>
-              <TabsTrigger value="faq">SSS</TabsTrigger>
-            </TabsList>
+      {/* Main Content Tabs */}
+      <div id="content-section" className="container mx-auto px-4 py-12 max-w-5xl">
+        
+        <Tabs defaultValue="guide" className="space-y-8">
+          <TabsList className="grid w-full grid-cols-2 md:grid-cols-4 lg:w-[600px] h-auto">
+            <TabsTrigger value="guide">Rehber</TabsTrigger>
+            <TabsTrigger value="experiences">Deneyimler</TabsTrigger>
+            <TabsTrigger value="faq">SSS</TabsTrigger>
+            <TabsTrigger value="documents">Dokümanlar</TabsTrigger>
+          </TabsList>
 
-            <TabsContent value="roadmap" className="space-y-8">
-              {/* Video Section */}
-              {videoUrl && (
-                <Card>
-                  <CardHeader>
-                    <CardTitle className="flex items-center gap-2">
-                      <PlayCircle className="w-5 h-5 text-red-500" />
-                      Tanıtım Videosu
-                    </CardTitle>
-                  </CardHeader>
-                  <CardContent>
-                    <div className="aspect-video rounded-lg overflow-hidden bg-slate-100 dark:bg-slate-800">
-                      <iframe
-                        width="100%"
-                        height="100%"
-                        src={getEmbedUrl(videoUrl)}
-                        title="YouTube video player"
-                        frameBorder="0"
-                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                        allowFullScreen
-                      />
-                    </div>
-                  </CardContent>
-                </Card>
-              )}
+          <TabsContent value="guide" className="space-y-8">
+            {sections && sections.map((section) => (
+              <section key={section.id} className="scroll-mt-20" id={section.id}>
+                <div className="flex items-center gap-3 mb-6">
+                  <div className="p-2 bg-white dark:bg-slate-800 rounded-lg shadow-sm border border-slate-200 dark:border-slate-700">
+                    {getIconForSection(section.id)}
+                  </div>
+                  <h2 className="text-2xl font-bold text-slate-900 dark:text-white">
+                    {section.title}
+                  </h2>
+                </div>
+                
+                <div className="grid gap-6">
+                  {section.content.map((item, index) => (
+                    <Card key={index} className="border-slate-200 dark:border-slate-800">
+                      <CardHeader>
+                        <CardTitle className="text-lg text-blue-700 dark:text-blue-400">
+                          {item.subtitle}
+                        </CardTitle>
+                      </CardHeader>
+                      <CardContent>
+                        <div className="prose dark:prose-invert max-w-none">
+                          {formatText(item.text)}
+                        </div>
+                      </CardContent>
+                    </Card>
+                  ))}
+                </div>
+              </section>
+            ))}
+          </TabsContent>
 
-              {/* Roadmap Steps */}
-              <div className="space-y-6">
-                {religiousCultureTeacherData.roadmap.map((step, index) => (
-                  <Card key={index} className="relative overflow-hidden border-l-4 border-l-blue-500">
-                    <CardHeader>
-                      <div className="flex items-center gap-4">
-                        <div className="flex items-center justify-center w-8 h-8 rounded-full bg-blue-100 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 font-bold text-sm">
-                          {step.step}
-                        </div>
-                        <div>
-                          <CardTitle className="text-xl">{step.title}</CardTitle>
-                          <CardDescription className="mt-1">{step.description}</CardDescription>
-                        </div>
-                      </div>
-                    </CardHeader>
-                    <CardContent>
-                      <div className="grid gap-4">
-                        {step.details.map((detail, idx) => (
-                          <div key={idx} className="bg-slate-50 dark:bg-slate-800/50 p-4 rounded-lg">
-                            <h4 className="font-semibold text-slate-900 dark:text-white mb-2 flex items-center gap-2">
-                              <CheckCircle2 className="w-4 h-4 text-green-500" />
-                              {detail.title}
-                            </h4>
-                            <p className="text-slate-600 dark:text-slate-300 text-sm leading-relaxed">
-                              {detail.content}
-                            </p>
-                          </div>
-                        ))}
-                      </div>
-                    </CardContent>
-                  </Card>
-                ))}
+          <TabsContent value="experiences">
+            <ExperienceSection professionSlug="din-kulturu-ogretmenligi" />
+          </TabsContent>
+
+          <TabsContent value="faq">
+            <FaqSection professionSlug="din-kulturu-ogretmenligi" initialFaqs={faq} />
+          </TabsContent>
+
+          <TabsContent value="documents">
+            <div className="space-y-6">
+              <div className="flex justify-between items-center">
+                <div>
+                  <h3 className="text-lg font-semibold text-slate-900 dark:text-white">Faydalı Dokümanlar</h3>
+                  <p className="text-sm text-slate-500">Bu meslek grubu için paylaşılmış resmi belgeler ve örnekler.</p>
+                </div>
+                <UploadDocumentDialog professionSlug="din-kulturu-ogretmenligi" />
               </div>
-            </TabsContent>
-
-            <TabsContent value="experiences">
-              <ExperienceSection professionSlug="din-kulturu-ogretmenligi" />
-            </TabsContent>
-
-            <TabsContent value="documents">
               <DocumentSection professionSlug="din-kulturu-ogretmenligi" />
-            </TabsContent>
-
-            <TabsContent value="faq">
-              <FaqSection professionSlug="din-kulturu-ogretmenligi" initialFaqs={religiousCultureTeacherData.faqs} />
-            </TabsContent>
-          </Tabs>
-        </div>
+            </div>
+          </TabsContent>
+        </Tabs>
       </div>
     </div>
   );

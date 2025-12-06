@@ -1,12 +1,28 @@
+
 'use client';
 
 import React, { useEffect, useState } from 'react';
 import { geographyTeacherData } from '@/data/geography-teacher-data';
 import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { CheckCircle2, BookOpen, PlayCircle } from 'lucide-react';
+import { 
+  BookOpen, 
+  Map, 
+  School, 
+  Briefcase, 
+  Users, 
+  Info, 
+  CheckCircle2, 
+  Landmark, 
+  Award, 
+  Route, 
+  MessageCircle,
+  PlayCircle,
+  AlertTriangle,
+  Globe
+} from 'lucide-react';
 import { ShareExperienceDialog } from '@/components/share-experience-dialog';
 import { FaqSection } from '@/components/faq-section';
 import { ExperienceSection } from '@/components/experience-section';
@@ -25,9 +41,10 @@ function getEmbedUrl(url: string) {
 }
 
 export default function GeographyTeacherPage() {
-  const [videoUrl, setVideoUrl] = useState(geographyTeacherData.videoUrl);
-  const [pageTitle, setPageTitle] = useState(geographyTeacherData.title);
-  const [pageDescription, setPageDescription] = useState(geographyTeacherData.description);
+  const { title, description, sections, faq, stats, videoUrl: defaultVideoUrl, analogy } = geographyTeacherData;
+  const [videoUrl, setVideoUrl] = useState(defaultVideoUrl);
+  const [pageTitle, setPageTitle] = useState(title);
+  const [pageDescription, setPageDescription] = useState(description);
 
   useEffect(() => {
     async function fetchPageData() {
@@ -45,6 +62,74 @@ export default function GeographyTeacherPage() {
     }
     fetchPageData();
   }, []);
+
+  const getIconForSection = (id: string) => {
+    switch (id) {
+      case 'hazirlik-ve-on-sartlar': return <CheckCircle2 className="w-6 h-6 text-blue-600" />;
+      case 'varis-ve-finansal-teminat': return <Landmark className="w-6 h-6 text-green-600" />;
+      case 'mesleki-yeterlilik-anerkennung': return <Award className="w-6 h-6 text-purple-600" />;
+      case 'kariyer-yollari': return <Route className="w-6 h-6 text-orange-600" />;
+      case 'is-hayati-ve-statuler': return <Briefcase className="w-6 h-6 text-indigo-600" />;
+      case 'is-gorusmesi-ve-pedagoji': return <Users className="w-6 h-6 text-pink-600" />;
+      case 'ek-bilgiler': return <Info className="w-6 h-6 text-slate-600" />;
+      default: return <BookOpen className="w-6 h-6 text-slate-600" />;
+    }
+  };
+
+  const formatText = (text: string) => {
+    const lines = text.split('\n');
+    const elements: React.ReactNode[] = [];
+    let currentList: React.ReactNode[] = [];
+
+    lines.forEach((line, index) => {
+      const trimmedLine = line.trim();
+      
+      if (trimmedLine.startsWith('•')) {
+        const lineContent = line.replace('•', '').trim();
+        const parts = lineContent.split(/(\*\*.*?\*\*)/g).map((part, i) => {
+          if (part.startsWith('**') && part.endsWith('**')) {
+            return <strong key={i} className="font-semibold text-slate-900 dark:text-slate-100">{part.slice(2, -2)}</strong>;
+          }
+          return part;
+        });
+
+        currentList.push(
+          <li key={index} className="flex items-start gap-2 mb-2">
+            <span className="mt-2 w-1.5 h-1.5 rounded-full bg-blue-500 flex-shrink-0" />
+            <span className="text-slate-600 dark:text-slate-300">{parts}</span>
+          </li>
+        );
+      } else {
+        if (currentList.length > 0) {
+          elements.push(<ul key={`list-${index}`} className="mb-4 pl-2">{currentList}</ul>);
+          currentList = [];
+        }
+
+        if (trimmedLine === '') {
+          // Skip empty lines
+        } else {
+          const parts = line.split(/(\*\*.*?\*\*)/g).map((part, i) => {
+            if (part.startsWith('**') && part.endsWith('**')) {
+              return <strong key={i} className="font-semibold text-slate-900 dark:text-slate-100">{part.slice(2, -2)}</strong>;
+            }
+            return part;
+          });
+
+          elements.push(
+            <p key={index} className="mb-3 text-slate-600 dark:text-slate-300 leading-relaxed">
+              {parts}
+            </p>
+          );
+        }
+      }
+    });
+
+    if (currentList.length > 0) {
+      elements.push(<ul key="list-end" className="mb-4 pl-2">{currentList}</ul>);
+    }
+
+    return elements;
+  };
 
   return (
     <div className="min-h-screen bg-slate-50 dark:bg-slate-950">
@@ -65,7 +150,7 @@ export default function GeographyTeacherPage() {
               </p>
               
               <div className="flex flex-wrap justify-center md:justify-start gap-4 pt-4">
-                {geographyTeacherData.stats.map((stat, index) => (
+                {stats && stats.map((stat, index) => (
                   <div key={index} className="flex items-center gap-2 bg-slate-100 dark:bg-slate-800 px-3 py-1.5 rounded-full">
                     <span className={`w-2 h-2 rounded-full ${stat.color}`} />
                     <span className="text-sm font-medium text-slate-600 dark:text-slate-300">
@@ -78,7 +163,7 @@ export default function GeographyTeacherPage() {
               <div className="flex justify-center md:justify-start gap-3 pt-4">
                 <Button 
                   className="gap-2"
-                  onClick={() => document.getElementById('roadmap-section')?.scrollIntoView({ behavior: 'smooth' })}
+                  onClick={() => document.getElementById('content-section')?.scrollIntoView({ behavior: 'smooth' })}
                 >
                   <BookOpen className="w-4 h-4" />
                   Rehbere Başla
@@ -109,7 +194,21 @@ export default function GeographyTeacherPage() {
       </div>
 
       {/* Main Content Tabs */}
-      <div className="container mx-auto px-4 py-12 max-w-5xl">
+      <div id="content-section" className="container mx-auto px-4 py-12 max-w-5xl">
+        
+        {/* Analogy Section */}
+        {analogy && (
+          <div className="mb-8 bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-xl p-6 flex gap-4">
+            <AlertTriangle className="w-6 h-6 text-blue-600 dark:text-blue-400 flex-shrink-0" />
+            <div>
+              <h3 className="font-semibold text-blue-900 dark:text-blue-100 mb-2">{analogy.title}</h3>
+              <p className="text-blue-800 dark:text-blue-200 text-sm leading-relaxed">
+                {analogy.description}
+              </p>
+            </div>
+          </div>
+        )}
+
         <Tabs defaultValue="guide" className="space-y-8">
           <TabsList className="grid w-full grid-cols-2 md:grid-cols-4 lg:w-[600px] h-auto">
             <TabsTrigger value="guide">Rehber</TabsTrigger>
@@ -118,40 +217,36 @@ export default function GeographyTeacherPage() {
             <TabsTrigger value="documents">Dokümanlar</TabsTrigger>
           </TabsList>
 
-          <TabsContent value="guide" className="space-y-8" id="roadmap-section">
-            <div className="grid gap-8">
-              {geographyTeacherData.roadmap.map((step, index) => (
-                <Card key={index} className="relative overflow-hidden border-l-4 border-l-green-500">
-                  <div className="absolute top-0 right-0 p-4 opacity-10">
-                    <span className="text-6xl font-bold text-slate-900 dark:text-white">{step.step}</span>
+          <TabsContent value="guide" className="space-y-8">
+            {sections && sections.map((section) => (
+              <section key={section.id} className="scroll-mt-20" id={section.id}>
+                <div className="flex items-center gap-3 mb-6">
+                  <div className="p-2 bg-white dark:bg-slate-800 rounded-lg shadow-sm border border-slate-200 dark:border-slate-700">
+                    {getIconForSection(section.id)}
                   </div>
-                  <CardHeader>
-                    <CardTitle className="text-2xl flex items-center gap-3">
-                      <span className="flex items-center justify-center w-8 h-8 rounded-full bg-green-100 text-green-600 text-sm font-bold">
-                        {step.step}
-                      </span>
-                      {step.title}
-                    </CardTitle>
-                    <CardDescription className="text-base pt-2">
-                      {step.description}
-                    </CardDescription>
-                  </CardHeader>
-                  <CardContent className="grid gap-6">
-                    {step.details.map((detail, idx) => (
-                      <div key={idx} className="bg-slate-50 dark:bg-slate-900/50 p-4 rounded-lg">
-                        <h4 className="font-semibold text-slate-900 dark:text-slate-200 mb-2 flex items-center gap-2">
-                          <CheckCircle2 className="w-4 h-4 text-green-500" />
-                          {detail.title}
-                        </h4>
-                        <p className="text-slate-600 dark:text-slate-400 text-sm leading-relaxed">
-                          {detail.content}
-                        </p>
-                      </div>
-                    ))}
-                  </CardContent>
-                </Card>
-              ))}
-            </div>
+                  <h2 className="text-2xl font-bold text-slate-900 dark:text-white">
+                    {section.title}
+                  </h2>
+                </div>
+                
+                <div className="grid gap-6">
+                  {section.content.map((item, index) => (
+                    <Card key={index} className="border-slate-200 dark:border-slate-800">
+                      <CardHeader>
+                        <CardTitle className="text-lg text-blue-700 dark:text-blue-400">
+                          {item.subtitle}
+                        </CardTitle>
+                      </CardHeader>
+                      <CardContent>
+                        <div className="prose dark:prose-invert max-w-none">
+                          {formatText(item.text)}
+                        </div>
+                      </CardContent>
+                    </Card>
+                  ))}
+                </div>
+              </section>
+            ))}
           </TabsContent>
 
           <TabsContent value="experiences">
@@ -159,7 +254,7 @@ export default function GeographyTeacherPage() {
           </TabsContent>
 
           <TabsContent value="faq">
-            <FaqSection professionSlug="cografya-ogretmenligi" initialFaqs={geographyTeacherData.faqs} />
+            <FaqSection professionSlug="cografya-ogretmenligi" initialFaqs={faq} />
           </TabsContent>
 
           <TabsContent value="documents">

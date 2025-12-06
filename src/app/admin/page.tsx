@@ -570,12 +570,17 @@ export default function AdminPage() {
   async function updateExperienceStatus(id: number, status: 'approved' | 'rejected' | 'pending') {
     try {
       setOperationInProgress(true);
-      const { error } = await supabase
-        .from('experiences')
-        .update({ status })
-        .eq('id', id);
       
-      if (error) throw error;
+      const response = await fetch('/api/admin/update-experience', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ id, status }),
+      });
+
+      if (!response.ok) {
+        const data = await response.json();
+        throw new Error(data.error || 'Update failed');
+      }
       
       // Listeyi güncelle
       setExperiences(experiences.map(exp => 

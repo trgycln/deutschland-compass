@@ -7,10 +7,18 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { BookOpen, Truck, Package, Clock, Euro, Languages, Building2, Quote, Calendar, User, AlertTriangle, HelpCircle } from 'lucide-react';
+import { BookOpen, Truck, Package, Languages, Building2, Quote, Calendar, User, AlertTriangle, HelpCircle } from 'lucide-react';
 import { ShareExperienceDialog } from '@/components/share-experience-dialog';
 import { UploadDocumentDialog } from '@/components/upload-document-dialog';
 import { FaqSection } from '@/components/faq-section';
+
+interface Experience {
+  id: string;
+  user_name: string;
+  content: string;
+  rating: number;
+  created_at: string;
+}
 
 function getEmbedUrl(url: string) {
   if (!url) return '';
@@ -23,8 +31,8 @@ function getEmbedUrl(url: string) {
 }
 
 export default function LogisticsGuidePage() {
-  const { title, description, sections, faq, stats, videoUrl: defaultVideoUrl } = logisticsGuideData;
-  const [experiences, setExperiences] = useState<any[]>([]);
+  const { title, description, sections, faq, stats, videoUrl: defaultVideoUrl, analogy } = logisticsGuideData;
+  const [experiences, setExperiences] = useState<Experience[]>([]);
   const [videoUrl, setVideoUrl] = useState(defaultVideoUrl);
   const [pageTitle, setPageTitle] = useState(title);
   const [pageDescription, setPageDescription] = useState(description);
@@ -59,11 +67,11 @@ export default function LogisticsGuidePage() {
 
   const getIconForSection = (id: string) => {
     switch (id) {
-      case 'genel-bakis': return <Truck className="w-6 h-6 text-blue-600" />;
-      case 'calisma-sartlari': return <Clock className="w-6 h-6 text-orange-600" />;
-      case 'maaslar': return <Euro className="w-6 h-6 text-green-600" />;
-      case 'basvuru': return <Languages className="w-6 h-6 text-purple-600" />;
-      case 'alternatifler': return <Building2 className="w-6 h-6 text-slate-600" />;
+      case 'hazirlik-ve-basvuru': return <Languages className="w-6 h-6 text-purple-600" />;
+      case 'vize-ve-ise-baslama': return <Building2 className="w-6 h-6 text-blue-600" />;
+      case 'is-hayati-ve-sartlar': return <Truck className="w-6 h-6 text-orange-600" />;
+      case 'alternatif-isler': return <Package className="w-6 h-6 text-green-600" />;
+      case 'ek-bilgiler': return <HelpCircle className="w-6 h-6 text-slate-600" />;
       default: return <Package className="w-6 h-6 text-slate-600" />;
     }
   };
@@ -191,15 +199,17 @@ export default function LogisticsGuidePage() {
       <div id="content-section" className="container mx-auto px-4 py-8 max-w-5xl">
         
         {/* Info Alert */}
-        <div className="mb-8 bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-xl p-6 flex gap-4">
-          <AlertTriangle className="w-6 h-6 text-blue-600 dark:text-blue-400 flex-shrink-0" />
-          <div>
-            <h3 className="font-semibold text-blue-900 dark:text-blue-100 mb-2">Sektör Analojisi</h3>
-            <p className="text-blue-800 dark:text-blue-200 text-sm leading-relaxed">
-              Bu meslek, bir "maraton koşusu gerektiren, aynı zamanda bir bulmacayı çözerken ağır yükler taşıdığınız" bir işe benzetilebilir. Hız ve pratiklik önemlidir, fiziksel dayanıklılık şarttır, ancak zihinsel olarak karmaşık bir uzmanlık gerektirmediği için dil engeli düşüktür ve düzenli bir gelir kaynağı sunar.
-            </p>
+        {analogy && (
+          <div className="mb-8 bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-xl p-6 flex gap-4">
+            <AlertTriangle className="w-6 h-6 text-blue-600 dark:text-blue-400 flex-shrink-0" />
+            <div>
+              <h3 className="font-semibold text-blue-900 dark:text-blue-100 mb-2">{analogy.title}</h3>
+              <p className="text-blue-800 dark:text-blue-200 text-sm leading-relaxed">
+                {analogy.description}
+              </p>
+            </div>
           </div>
-        </div>
+        )}
 
         <Tabs defaultValue="guide" className="space-y-8">
           <TabsList className="grid w-full grid-cols-2 md:grid-cols-4 lg:w-[600px] h-auto">

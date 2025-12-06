@@ -4,7 +4,7 @@ import { useEffect, useState } from 'react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog';
 import { Badge } from '@/components/ui/badge';
 import { ScrollArea } from '@/components/ui/scroll-area';
-import { FileText, MessageSquare, PenTool, ExternalLink, Calendar, Sparkles, PlayCircle } from 'lucide-react';
+import { FileText, MessageSquare, PenTool, ExternalLink, Calendar, Sparkles, PlayCircle, Star } from 'lucide-react';
 import Link from 'next/link';
 import { supabase } from '@/lib/supabase';
 import { professionsList } from '@/data/professions-list';
@@ -19,6 +19,7 @@ type UpdateItem = {
   link: string;
   date: string;
   isNew?: boolean;
+  isFeatured?: boolean; // User contribution flag
 };
 
 export function WhatsNewPopup() {
@@ -120,10 +121,10 @@ export function WhatsNewPopup() {
             type: 'experience',
             title: exp.profession,
             subtitle: `Paylaşan: ${exp.name}`,
-            link: `${link}?tab=experiences`,
+            link: `${link}#experience-${exp.id}`,
             date: exp.created_at,
-            isNew: true
-
+            isNew: true,
+            isFeatured: true // Mark all experiences as featured
           });
         });
 
@@ -158,8 +159,14 @@ export function WhatsNewPopup() {
           });
         });
 
-        // Sort combined list by date desc
-        newItems.sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
+        // Sort: Featured (experiences) first, then by date desc
+        newItems.sort((a, b) => {
+          // Featured items always come first
+          if (a.isFeatured && !b.isFeatured) return -1;
+          if (!a.isFeatured && b.isFeatured) return 1;
+          // Within same category, sort by date
+          return new Date(b.date).getTime() - new Date(a.date).getTime();
+        });
 
         setItems(newItems);
         
@@ -205,13 +212,22 @@ export function WhatsNewPopup() {
                 key={item.id} 
                 href={item.link}
                 onClick={() => setIsOpen(false)}
-                className="flex items-start gap-4 p-3 rounded-lg hover:bg-slate-50 dark:hover:bg-slate-900 transition-colors group border border-transparent hover:border-slate-100 dark:hover:border-slate-800"
+                className={`flex items-start gap-4 p-3 rounded-lg transition-colors group border ${
+                  item.isFeatured 
+                    ? 'bg-gradient-to-r from-amber-50 to-orange-50 dark:from-amber-950/30 dark:to-orange-950/30 border-amber-200 dark:border-amber-800 hover:border-amber-300 dark:hover:border-amber-700 shadow-sm'
+                    : 'border-transparent hover:bg-slate-50 dark:hover:bg-slate-900 hover:border-slate-100 dark:hover:border-slate-800'
+                }`}
               >
-                <div className={`p-2 rounded-full shrink-0 ${
-                  item.type === 'document' ? 'bg-secondary text-primary dark:bg-secondary/20 dark:text-accent' :
-                  item.type === 'experience' ? 'bg-secondary text-primary dark:bg-secondary/20 dark:text-accent' :
-                  'bg-secondary text-primary dark:bg-secondary/20 dark:text-accent'
+                <div className={`p-2 rounded-full shrink-0 relative ${
+                  item.isFeatured 
+                    ? 'bg-amber-100 text-amber-600 dark:bg-amber-900/40 dark:text-amber-400'
+                    : item.type === 'document' ? 'bg-secondary text-primary dark:bg-secondary/20 dark:text-accent' :
+                      item.type === 'experience' ? 'bg-secondary text-primary dark:bg-secondary/20 dark:text-accent' :
+                      'bg-secondary text-primary dark:bg-secondary/20 dark:text-accent'
                 }`}>
+                  {item.isFeatured && (
+                    <Star className="w-3 h-3 absolute -top-1 -right-1 fill-amber-400 text-amber-500 animate-pulse" />
+                  )}
                   {item.type === 'document' && <FileText className="w-5 h-5" />}
                   {item.type === 'experience' && <MessageSquare className="w-5 h-5" />}
                   {item.type === 'blog' && <PenTool className="w-5 h-5" />}
@@ -220,15 +236,27 @@ export function WhatsNewPopup() {
                 
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center justify-between gap-2 mb-1">
-                    <Badge variant="secondary" className="text-[10px] h-5 px-1.5 font-normal bg-secondary text-primary dark:bg-secondary/20 dark:text-primary-foreground">
-                      {item.type === 'document'
-                        ? 'Doküman'
-                        : item.type === 'experience'
-                          ? 'Tecrübe'
-                          : item.type === 'blog'
-                            ? 'Blog'
-                            : 'Video'}
-                    </Badge>
+                    <div className="flex items-center gap-1.5">
+                      <Badge variant="secondary" className={`text-[10px] h-5 px-1.5 font-normal ${
+                        item.isFeatured 
+                          ? 'bg-amber-200 text-amber-800 dark:bg-amber-900/60 dark:text-amber-200'
+                          : 'bg-secondary text-primary dark:bg-secondary/20 dark:text-primary-foreground'
+                      }`}>
+                        {item.type === 'document'
+                          ? 'Doküman'
+                          : item.type === 'experience'
+                            ? 'Tecrübe'
+                            : item.type === 'blog'
+                              ? 'Blog'
+                              : 'Video'}
+                      </Badge>
+                      {item.isFeatured && (
+                        <Badge className="text-[10px] h-5 px-1.5 font-medium bg-amber-500 text-white dark:bg-amber-600 border-0">
+                          <Star className="w-2.5 h-2.5 mr-0.5 fill-white" />
+                          Topluluktan
+                        </Badge>
+                      )}
+                    </div>
                     <span className="text-xs text-slate-400 flex items-center gap-1 whitespace-nowrap">
                       <Calendar className="w-3 h-3" />
                       {formatDistanceToNow(new Date(item.date), { addSuffix: true, locale: tr })}
