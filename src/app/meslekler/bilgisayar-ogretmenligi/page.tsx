@@ -100,7 +100,10 @@ export default function ComputerScienceTeacherPage() {
                   <BookOpen className="w-4 h-4" />
                   Rehbere Başla
                 </Button>
-                <ShareExperienceDialog professionSlug="bilgisayar-ogretmenligi" />
+                <ShareExperienceDialog 
+                  professionSlug="bilgisayar-ogretmenligi" 
+                  defaultProfessionName="Bilgisayar Öğretmenliği"
+                />
               </div>
             </div>
 

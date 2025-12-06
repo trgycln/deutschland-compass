@@ -5,6 +5,7 @@ import { supabase } from '@/lib/supabase';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Loader2, User, Calendar } from 'lucide-react';
+import { professionsList } from '@/data/professions-list';
 
 type Experience = {
   id: number;
@@ -22,11 +23,6 @@ export function ExperienceSection({ professionSlug }: { professionSlug: string }
   useEffect(() => {
     async function fetchExperiences() {
       try {
-        // Şu anlık professionSlug filtresi yapmıyoruz çünkü veritabanında slug sütunu yok, 
-        // sadece profession (string) var. İleride profession tablosu ile ilişkilendirilirse slug ile filtreleme yapılabilir.
-        // Şimdilik "Matematik Öğretmenliği" stringine göre filtreleyelim veya hepsini getirelim.
-        // Ancak kullanıcı deneyimi için sadece onaylanmışları getiriyoruz.
-        
         const { data, error } = await supabase
           .from('experiences')
           .select('*')
@@ -34,7 +30,26 @@ export function ExperienceSection({ professionSlug }: { professionSlug: string }
           .order('created_at', { ascending: false });
 
         if (error) throw error;
-        setExperiences(data || []);
+
+        // Filter experiences based on profession slug
+        const currentProfession = professionsList.find(p => p.slug === professionSlug);
+        
+        let filteredData = data || [];
+        
+        if (currentProfession) {
+          const keywords = [
+            currentProfession.title.toLowerCase(),
+            ...(currentProfession.keywords || []).map(k => k.toLowerCase())
+          ];
+
+          filteredData = filteredData.filter(exp => {
+            const expProfession = (exp.profession || '').toLowerCase();
+            // Check if experience profession matches title or any keyword
+            return keywords.some(keyword => expProfession.includes(keyword));
+          });
+        }
+
+        setExperiences(filteredData);
       } catch (error) {
         console.error('Tecrübeler yüklenirken hata:', error);
       } finally {
