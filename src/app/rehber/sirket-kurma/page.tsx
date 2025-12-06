@@ -18,6 +18,11 @@ export default function BusinessGuidePage() {
   const { title, description, videoUrl, sections, faq, detailedReport, jobcenterReport } = businessGuideData;
   const [experiences, setExperiences] = useState<any[]>([]);
   const [activeTab, setActiveTab] = useState('detailed');
+  const [hydrated, setHydrated] = useState(false);
+
+  useEffect(() => {
+    setHydrated(true);
+  }, []);
 
   useEffect(() => {
     async function fetchExperiences() {
@@ -98,6 +103,7 @@ export default function BusinessGuidePage() {
 
       <div className="container mx-auto px-4 py-12 max-w-4xl" id="content-start">
         {/* Tab Navigation */}
+        {hydrated ? (
         <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
           <TabsList className="grid w-full grid-cols-6 mb-8 sticky top-0 z-10 bg-gradient-to-b from-white to-slate-50 dark:from-slate-900 dark:to-slate-800 p-3 shadow-md rounded-xl border border-blue-100 dark:border-slate-700 gap-2">
             <TabsTrigger value="main" className="gap-2 rounded-lg h-12 md:h-12 px-3 transition-all duration-200 data-[state=active]:bg-gradient-to-r data-[state=active]:from-blue-500 data-[state=active]:to-blue-600 data-[state=active]:text-white data-[state=active]:shadow-lg hover:bg-blue-50 dark:hover:bg-blue-900/20 text-sm md:text-[15px] font-semibold">
@@ -792,6 +798,7 @@ export default function BusinessGuidePage() {
             )}
           </TabsContent>
         </Tabs>
+        ) : null}
       </div>
     </div>
   );
