@@ -99,30 +99,30 @@ export default function BusinessGuidePage() {
       <div className="container mx-auto px-4 py-12 max-w-4xl" id="content-start">
         {/* Tab Navigation */}
         <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-          <TabsList className="grid w-full grid-cols-5 mb-8 sticky top-0 z-10 bg-gradient-to-b from-white to-slate-50 dark:from-slate-900 dark:to-slate-800 p-3 shadow-md rounded-xl border border-blue-100 dark:border-slate-700 gap-2">
-            <TabsTrigger value="main" className="gap-2 rounded-lg transition-all duration-200 data-[state=active]:bg-gradient-to-r data-[state=active]:from-blue-500 data-[state=active]:to-blue-600 data-[state=active]:text-white data-[state=active]:shadow-lg hover:bg-blue-50 dark:hover:bg-blue-900/20 text-sm md:text-base font-semibold">
+          <TabsList className="grid w-full grid-cols-6 mb-8 sticky top-0 z-10 bg-gradient-to-b from-white to-slate-50 dark:from-slate-900 dark:to-slate-800 p-3 shadow-md rounded-xl border border-blue-100 dark:border-slate-700 gap-2">
+            <TabsTrigger value="main" className="gap-2 rounded-lg h-12 md:h-12 px-3 transition-all duration-200 data-[state=active]:bg-gradient-to-r data-[state=active]:from-blue-500 data-[state=active]:to-blue-600 data-[state=active]:text-white data-[state=active]:shadow-lg hover:bg-blue-50 dark:hover:bg-blue-900/20 text-sm md:text-[15px] font-semibold">
               <BookOpen className="w-5 h-5" />
-              <span className="hidden sm:inline">Pratik Rehber</span>
-              <span className="sm:hidden">Rehber</span>
+              <span>Rehber</span>
             </TabsTrigger>
-            <TabsTrigger value="detailed" className="gap-2 rounded-lg transition-all duration-200 data-[state=active]:bg-gradient-to-r data-[state=active]:from-purple-500 data-[state=active]:to-purple-600 data-[state=active]:text-white data-[state=active]:shadow-lg hover:bg-purple-50 dark:hover:bg-purple-900/20 text-sm md:text-base font-semibold">
+            <TabsTrigger value="detailed" className="gap-2 rounded-lg h-12 md:h-12 px-3 transition-all duration-200 data-[state=active]:bg-gradient-to-r data-[state=active]:from-purple-500 data-[state=active]:to-purple-600 data-[state=active]:text-white data-[state=active]:shadow-lg hover:bg-purple-50 dark:hover:bg-purple-900/20 text-sm md:text-[15px] font-semibold">
               <Scale className="w-5 h-5" />
-              <span className="hidden sm:inline">Alman Mevzuatı</span>
-              <span className="sm:hidden">Mevzuat</span>
+              <span>Mevzuat</span>
             </TabsTrigger>
-            <TabsTrigger value="jobcenter" className="gap-2 rounded-lg transition-all duration-200 data-[state=active]:bg-gradient-to-r data-[state=active]:from-teal-500 data-[state=active]:to-teal-600 data-[state=active]:text-white data-[state=active]:shadow-lg hover:bg-teal-50 dark:hover:bg-teal-900/20 text-sm md:text-base font-semibold">
+            <TabsTrigger value="jobcenter" className="gap-2 rounded-lg h-12 md:h-12 px-3 transition-all duration-200 data-[state=active]:bg-gradient-to-r data-[state=active]:from-teal-500 data-[state=active]:to-teal-600 data-[state=active]:text-white data-[state=active]:shadow-lg hover:bg-teal-50 dark:hover:bg-teal-900/20 text-sm md:text-[15px] font-semibold">
               <ClipboardCheck className="w-5 h-5" />
-              <span className="hidden sm:inline">Jobcenter & Girişim</span>
-              <span className="sm:hidden">Jobcenter</span>
+              <span>Jobcenter</span>
             </TabsTrigger>
-            <TabsTrigger value="faq" className="gap-2 rounded-lg transition-all duration-200 data-[state=active]:bg-gradient-to-r data-[state=active]:from-amber-500 data-[state=active]:to-amber-600 data-[state=active]:text-white data-[state=active]:shadow-lg hover:bg-amber-50 dark:hover:bg-amber-900/20 text-sm md:text-base font-semibold">
+            <TabsTrigger value="faq" className="gap-2 rounded-lg h-12 md:h-12 px-3 transition-all duration-200 data-[state=active]:bg-gradient-to-r data-[state=active]:from-amber-500 data-[state=active]:to-amber-600 data-[state=active]:text-white data-[state=active]:shadow-lg hover:bg-amber-50 dark:hover:bg-amber-900/20 text-sm md:text-[15px] font-semibold">
               <span className="text-lg">❓</span>
-              <span className="hidden sm:inline">SSS</span>
+              <span>SSS</span>
             </TabsTrigger>
-            <TabsTrigger value="experiences" className="gap-2 rounded-lg transition-all duration-200 data-[state=active]:bg-gradient-to-r data-[state=active]:from-green-500 data-[state=active]:to-green-600 data-[state=active]:text-white data-[state=active]:shadow-lg hover:bg-green-50 dark:hover:bg-green-900/20 text-sm md:text-base font-semibold">
+            <TabsTrigger value="sharing" className="gap-2 rounded-lg h-12 md:h-12 px-3 transition-all duration-200 data-[state=active]:bg-gradient-to-r data-[state=active]:from-cyan-500 data-[state=active]:to-cyan-600 data-[state=active]:text-white data-[state=active]:shadow-lg hover:bg-cyan-50 dark:hover:bg-cyan-900/20 text-sm md:text-[15px] font-semibold">
+              <FileText className="w-5 h-5" />
+              <span>Dökümanlar</span>
+            </TabsTrigger>
+            <TabsTrigger value="experiences" className="gap-2 rounded-lg h-12 md:h-12 px-3 transition-all duration-200 data-[state=active]:bg-gradient-to-r data-[state=active]:from-green-500 data-[state=active]:to-green-600 data-[state=active]:text-white data-[state=active]:shadow-lg hover:bg-green-50 dark:hover:bg-green-900/20 text-sm md:text-[15px] font-semibold">
               <Quote className="w-5 h-5" />
-              <span className="hidden sm:inline">Tecrübeler</span>
-              <span className="sm:hidden">Deneyim</span>
+              <span>Tecrübeler</span>
             </TabsTrigger>
           </TabsList>
 
@@ -646,6 +646,77 @@ export default function BusinessGuidePage() {
                 </AccordionItem>
               ))}
             </Accordion>
+          </TabsContent>
+
+          {/* Sharing Tab */}
+          <TabsContent value="sharing" className="space-y-8">
+            <div className="text-center mb-4">
+              <h2 className="text-4xl font-bold text-slate-900 dark:text-white mb-3">
+                📂 Dokümanlar
+              </h2>
+              <p className="text-lg text-slate-600 dark:text-slate-400">Yüklenen belgeleri toplu halde inceleyin</p>
+            </div>
+
+            <div className="space-y-6">
+              <DocumentSection professionSlug="sirket-kurma" />
+
+              <Card className="border-2 border-cyan-200 dark:border-cyan-700">
+                <CardHeader className="bg-gradient-to-r from-cyan-100 to-cyan-50 dark:from-cyan-900/40 dark:to-cyan-900/20 border-b-2 border-cyan-200 dark:border-cyan-700">
+                  <div className="flex items-center justify-between gap-3 flex-wrap">
+                    <div className="flex items-center gap-2">
+                      <Quote className="h-5 w-5 text-cyan-700 dark:text-cyan-300" />
+                      <CardTitle className="text-xl text-cyan-900 dark:text-cyan-200">Son Paylaşılan Tecrübeler</CardTitle>
+                    </div>
+                    <ShareExperienceDialog 
+                      professionSlug="sirket-kurma-rehberi" 
+                      defaultProfessionName="Şirket Kurma / Girişimcilik" 
+                    />
+                  </div>
+                </CardHeader>
+                <CardContent className="space-y-4 pt-6">
+                  {experiences.length > 0 ? (
+                    <div className="grid gap-4">
+                      {experiences.slice(0, 3).map((exp, expIdx) => (
+                        <Card key={exp.id} className="border-l-4 border-l-cyan-500">
+                          <CardContent className="p-4 space-y-2">
+                            <div className="flex items-center justify-between gap-3">
+                              <div className="flex items-center gap-3">
+                                <div className="h-10 w-10 rounded-full bg-gradient-to-br from-cyan-400 to-cyan-600 flex items-center justify-center text-white font-bold text-base">
+                                  {String.fromCharCode(65 + (expIdx % 26))}
+                                </div>
+                                <div>
+                                  <h3 className="font-semibold text-slate-900 dark:text-white text-base">
+                                    {exp.name || 'Anonim Girişimci'}
+                                  </h3>
+                                  <div className="flex items-center gap-2 text-xs text-slate-500 dark:text-slate-400">
+                                    <Calendar className="h-3.5 w-3.5" />
+                                    <span>{new Date(exp.created_at).toLocaleDateString('tr-TR')}</span>
+                                  </div>
+                                </div>
+                              </div>
+                              <Badge variant="secondary" className="bg-cyan-100 text-cyan-900 dark:bg-cyan-900/50 dark:text-cyan-200 font-semibold px-2 py-1 text-xs">
+                                {exp.profession}
+                              </Badge>
+                            </div>
+                            <p className="text-slate-700 dark:text-slate-300 whitespace-pre-wrap leading-relaxed text-sm">
+                              {exp.content}
+                            </p>
+                          </CardContent>
+                        </Card>
+                      ))}
+                    </div>
+                  ) : (
+                    <div className="text-center py-8">
+                      <p className="text-slate-600 dark:text-slate-400 mb-3">Henüz paylaşılmış bir tecrübe yok.</p>
+                      <ShareExperienceDialog 
+                        professionSlug="sirket-kurma-rehberi" 
+                        defaultProfessionName="Şirket Kurma / Girişimcilik" 
+                      />
+                    </div>
+                  )}
+                </CardContent>
+              </Card>
+            </div>
           </TabsContent>
 
           {/* Experiences Tab */}
