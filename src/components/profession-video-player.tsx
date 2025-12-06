@@ -5,33 +5,87 @@ import { supabase } from '@/lib/supabase';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { PlayCircle } from 'lucide-react';
 
-export function ProfessionVideoPlayer({ professionSlug }: { professionSlug: string }) {
+// Normalizes YouTube links into an embeddable URL; falls back to the original URL otherwise.
+function getEmbedUrl(url: string) {
+  if (!url) return '';
+  if (url.includes('youtube.com/embed/')) return url;
+  const match = url.match(/(?:youtu\.be\/|youtube\.com\/(?:embed\/|v\/|watch\?v=|watch\?.+&v=))([^&?]+)/);
+  if (match && match[1]) {
+    return `https://www.youtube.com/embed/${match[1]}`;
+  }
+  return url;
+}
+
+interface ProfessionVideoPlayerProps {
+  professionSlug: string;
+  variant?: 'default' | 'hero';
+  fallbackUrl?: string;
+}
+
+export function ProfessionVideoPlayer({ professionSlug, variant = 'default', fallbackUrl }: ProfessionVideoPlayerProps) {
   const [videoUrl, setVideoUrl] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
+    let isCancelled = false;
+
     async function fetchVideo() {
       try {
-        const { data, error } = await supabase
+        const { data } = await supabase
           .from('professions')
           .select('video_url')
           .eq('slug', professionSlug)
           .single();
 
-        if (data && data.video_url) {
-          setVideoUrl(data.video_url);
+        if (!isCancelled) {
+          if (data?.video_url) {
+            setVideoUrl(data.video_url);
+          } else if (fallbackUrl) {
+            setVideoUrl(fallbackUrl);
+          }
         }
       } catch (error) {
         console.error('Error fetching video:', error);
+        if (!isCancelled && fallbackUrl) {
+          setVideoUrl(fallbackUrl);
+        }
       } finally {
-        setLoading(false);
+        if (!isCancelled) {
+          setLoading(false);
+        }
       }
     }
 
     fetchVideo();
-  }, [professionSlug]);
 
-  if (loading || !videoUrl) return null;
+    return () => {
+      isCancelled = true;
+    };
+  }, [professionSlug, fallbackUrl]);
+
+  if (loading) return null; // Avoid layout shift during load
+
+  if (variant === 'hero') {
+    return (
+      <div className="w-full aspect-video bg-slate-800 rounded-xl overflow-hidden shadow-lg border border-slate-700">
+        {videoUrl ? (
+          <iframe
+            src={getEmbedUrl(videoUrl)}
+            className="w-full h-full"
+            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+            allowFullScreen
+          />
+        ) : (
+          <div className="w-full h-full flex flex-col items-center justify-center text-slate-500 gap-2">
+            <PlayCircle className="w-12 h-12 opacity-50" />
+            <span className="text-sm font-medium">Tanıtım videosu yakında eklenecek</span>
+          </div>
+        )}
+      </div>
+    );
+  }
+
+  if (!videoUrl) return null;
 
   return (
     <Card className="mb-8 border-blue-100 dark:border-blue-900 bg-blue-50/50 dark:bg-blue-900/10">
@@ -44,7 +98,7 @@ export function ProfessionVideoPlayer({ professionSlug }: { professionSlug: stri
       <CardContent>
         <div className="relative w-full pt-[56.25%] rounded-lg overflow-hidden bg-black/5 border border-slate-200 dark:border-slate-800 shadow-sm">
           <iframe
-            src={videoUrl}
+            src={getEmbedUrl(videoUrl)}
             className="absolute top-0 left-0 w-full h-full"
             allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
             allowFullScreen

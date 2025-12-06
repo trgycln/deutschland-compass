@@ -59,6 +59,7 @@ type BlogPost = {
 };
 
 export default function AdminPage() {
+  const [mounted, setMounted] = useState(false);
   const [activeTab, setActiveTab] = useState('dashboard');
   const [experiences, setExperiences] = useState<Experience[]>([]);
   const [faqs, setFaqs] = useState<Faq[]>([]);
@@ -138,6 +139,7 @@ export default function AdminPage() {
   };
 
   useEffect(() => {
+    setMounted(true);
     fetchProfessions();
     fetchDashboardData();
   }, []);
@@ -408,18 +410,22 @@ export default function AdminPage() {
 
     try {
       setOperationInProgress(true);
-      const { error } = await supabase
-        .from('documents')
-        .delete()
-        .eq('id', id);
       
-      if (error) {
-        console.error('Silme hatası:', error);
-        throw error;
+      const response = await fetch('/api/admin/delete-item', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ id, table: 'documents' }),
+      });
+
+      if (!response.ok) {
+        const data = await response.json();
+        throw new Error(data.error || 'Delete failed');
       }
       
-      // Veritabanından yeniden yükle
-      await fetchData();
+      // Update local state immediately
+      setDocuments(prev => prev.filter(d => d.id !== id));
+      setPendingDocuments(prev => prev.filter(d => d.id !== id));
+      
       alert('Döküman başarıyla silindi.');
     } catch (error) {
       console.error('Silme hatası:', error);
@@ -607,18 +613,22 @@ export default function AdminPage() {
 
     try {
       setOperationInProgress(true);
-      const { error } = await supabase
-        .from('experiences')
-        .delete()
-        .eq('id', id);
       
-      if (error) {
-        console.error('Silme hatası:', error);
-        throw error;
+      const response = await fetch('/api/admin/delete-item', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ id, table: 'experiences' }),
+      });
+
+      if (!response.ok) {
+        const data = await response.json();
+        throw new Error(data.error || 'Delete failed');
       }
       
-      // Veritabanından yeniden yükle
-      await fetchData();
+      // Update local state immediately
+      setExperiences(prev => prev.filter(e => e.id !== id));
+      setPendingExperiences(prev => prev.filter(e => e.id !== id));
+      
       alert('Tecrübe başarıyla silindi.');
     } catch (error) {
       console.error('Silme hatası:', error);
@@ -717,12 +727,16 @@ export default function AdminPage() {
     if (!confirm('Bu soruyu silmek istediğinize emin misiniz?')) return;
 
     try {
-      const { error } = await supabase
-        .from('faqs')
-        .delete()
-        .eq('id', id);
-      
-      if (error) throw error;
+      const response = await fetch('/api/admin/delete-item', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ id, table: 'faqs' }),
+      });
+
+      if (!response.ok) {
+        const data = await response.json();
+        throw new Error(data.error || 'Delete failed');
+      }
       
       setFaqs(faqs.filter(f => f.id !== id));
     } catch (error) {
@@ -735,12 +749,16 @@ export default function AdminPage() {
     if (!confirm('Bu yazıyı silmek istediğinize emin misiniz?')) return;
 
     try {
-      const { error } = await supabase
-        .from('blogs')
-        .delete()
-        .eq('id', id);
-      
-      if (error) throw error;
+      const response = await fetch('/api/admin/delete-item', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ id, table: 'blogs' }),
+      });
+
+      if (!response.ok) {
+        const data = await response.json();
+        throw new Error(data.error || 'Delete failed');
+      }
       
       setBlogs(blogs.filter(b => b.id !== id));
     } catch (error) {
@@ -767,6 +785,10 @@ export default function AdminPage() {
       console.error('Error updating blog status:', error);
       alert('Durum güncellenirken bir hata oluştu.');
     }
+  }
+
+  if (!mounted) {
+    return <div className="flex justify-center items-center min-h-screen"><Loader2 className="animate-spin w-8 h-8" /></div>;
   }
 
   return (

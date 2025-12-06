@@ -36,6 +36,7 @@ import {
 } from "@/components/ui/accordion";
 import { ExperienceSection } from '@/components/experience-section';
 import { DocumentSection } from '@/components/document-section';
+import { ProfessionVideoPlayer } from '@/components/profession-video-player';
 
 export default function KurtceOgretmenligiPage() {
   const [experiences, setExperiences] = useState<any[]>([]);
@@ -99,24 +100,31 @@ export default function KurtceOgretmenligiPage() {
         <div className="absolute inset-0 bg-[url('https://images.unsplash.com/photo-1503676260728-1c00da094a0b?auto=format&fit=crop&q=80')] bg-cover bg-center opacity-10" />
         
         <div className="container mx-auto px-4 relative z-20">
-          <div className="max-w-4xl">
-            <Badge className="mb-4 bg-red-600 hover:bg-red-700 text-white border-none text-lg py-1.5 px-4">
-              Eğitim & Dil
-            </Badge>
-            <h1 className="text-4xl md:text-6xl font-bold text-white mb-6 leading-tight">
-              Kürtçe Öğretmenliği <br/>
-              <span className="text-red-400">Kariyer Rehberi</span>
-            </h1>
-            <p className="text-xl text-slate-300 mb-8 max-w-2xl leading-relaxed">
-              Almanya'da Kürtçe (Kurmancî/Zazakî) öğretmeni olmak, HSU (Anadil Dersleri) sistemi, denklik süreçleri ve iş fırsatları hakkında kapsamlı rehber.
-            </p>
-            
-            <div className="flex flex-wrap gap-4">
-              <Button size="lg" className="bg-red-600 hover:bg-red-700 text-white gap-2">
-                <BookOpen className="w-5 h-5" />
-                Rehberi Okumaya Başla
-              </Button>
-              <ShareExperienceDialog professionSlug="kurtce-ogretmenligi" />
+          <div className="flex flex-col md:flex-row gap-8 items-center md:items-start">
+            <div className="flex-1 space-y-6">
+              <Badge className="bg-red-600 hover:bg-red-700 text-white border-none text-lg py-1.5 px-4">
+                Eğitim & Dil
+              </Badge>
+              <h1 className="text-4xl md:text-6xl font-bold text-white leading-tight">
+                Kürtçe Öğretmenliği <br/>
+                <span className="text-red-400">Kariyer Rehberi</span>
+              </h1>
+              <p className="text-xl text-slate-300 max-w-2xl leading-relaxed">
+                Almanya'da Kürtçe (Kurmancî/Zazakî) öğretmeni olmak, HSU (Anadil Dersleri) sistemi, denklik süreçleri ve iş fırsatları hakkında kapsamlı rehber.
+              </p>
+              
+              <div className="flex flex-wrap gap-4">
+                <Button size="lg" className="bg-red-600 hover:bg-red-700 text-white gap-2">
+                  <BookOpen className="w-5 h-5" />
+                  Rehberi Okumaya Başla
+                </Button>
+                <ShareExperienceDialog professionSlug="kurtce-ogretmenligi" />
+              </div>
+            </div>
+
+            {/* Video Section */}
+            <div className="w-full md:w-1/3">
+              <ProfessionVideoPlayer professionSlug="kurtce-ogretmenligi" variant="hero" />
             </div>
           </div>
         </div>
