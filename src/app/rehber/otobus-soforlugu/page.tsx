@@ -7,7 +7,7 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { BookOpen, Bus, ShieldCheck, Clock, Euro, Wrench, GraduationCap, Award, Quote, Calendar, User, AlertTriangle, HelpCircle, Building2 } from 'lucide-react';
+import { BookOpen, Bus, ShieldCheck, Clock, Euro, Wrench, GraduationCap, Award, Quote, Calendar, User, AlertTriangle, HelpCircle, Building2, FileText, Download } from 'lucide-react';
 import { ShareExperienceDialog } from '@/components/share-experience-dialog';
 import { UploadDocumentDialog } from '@/components/upload-document-dialog';
 import { FaqSection } from '@/components/faq-section';
@@ -25,6 +25,7 @@ function getEmbedUrl(url: string) {
 export default function BusDriverGuidePage() {
   const { title, description, sections, faq, stats, videoUrl: defaultVideoUrl, analogy } = busDriverData;
   const [experiences, setExperiences] = useState<any[]>([]);
+  const [documents, setDocuments] = useState<any[]>([]);
   const [videoUrl, setVideoUrl] = useState(defaultVideoUrl);
   const [pageTitle, setPageTitle] = useState(title);
   const [pageDescription, setPageDescription] = useState(description);
@@ -40,6 +41,16 @@ export default function BusDriverGuidePage() {
         .order('created_at', { ascending: false });
       
       if (expData) setExperiences(expData);
+
+      // Fetch documents
+      const { data: docData } = await supabase
+        .from('documents')
+        .select('*')
+        .eq('profession_slug', 'otobus-soforlugu')
+        .eq('status', 'approved')
+        .order('created_at', { ascending: false });
+      
+      if (docData) setDocuments(docData);
 
       // Fetch profession details (video, title, description)
       const { data: profData } = await supabase
@@ -348,19 +359,54 @@ export default function BusDriverGuidePage() {
                 />
               </div>
               
-              <Card className="bg-slate-50 dark:bg-slate-900 border-dashed border-2 border-slate-200 dark:border-slate-800">
-                <CardContent className="flex flex-col items-center justify-center py-12 text-center">
-                  <div className="h-16 w-16 rounded-full bg-indigo-100 dark:bg-indigo-900/30 flex items-center justify-center mb-4">
-                    <Building2 className="h-8 w-8 text-indigo-600 dark:text-indigo-400 opacity-50" />
-                  </div>
-                  <h3 className="text-lg font-semibold text-slate-900 dark:text-white mb-2">
-                    Henüz belge paylaşılmamış
-                  </h3>
-                  <p className="text-slate-600 dark:text-slate-400 max-w-md">
-                    Bu alan için henüz bir belge yüklenmedi.
-                  </p>
-                </CardContent>
-              </Card>
+              {documents.length > 0 ? (
+                <div className="grid gap-4">
+                  {documents.map((doc) => (
+                    <Card key={doc.id} className="hover:shadow-md transition-shadow">
+                      <CardContent className="p-4 flex items-center justify-between">
+                        <div className="flex items-center gap-4">
+                          <div className="h-12 w-12 rounded-lg bg-indigo-100 dark:bg-indigo-900/30 flex items-center justify-center">
+                            <FileText className="h-6 w-6 text-indigo-600 dark:text-indigo-400" />
+                          </div>
+                          <div>
+                            <h4 className="font-semibold text-slate-900 dark:text-white">{doc.title}</h4>
+                            <p className="text-sm text-slate-500 dark:text-slate-400 line-clamp-1">
+                              {doc.description || 'Açıklama yok'}
+                            </p>
+                            <div className="flex items-center gap-3 mt-1 text-xs text-slate-400">
+                              <span>{doc.file_type?.toUpperCase()}</span>
+                              <span>•</span>
+                              <span>{doc.file_size}</span>
+                              <span>•</span>
+                              <span>{new Date(doc.created_at).toLocaleDateString('tr-TR')}</span>
+                            </div>
+                          </div>
+                        </div>
+                        <Button variant="outline" size="sm" asChild>
+                          <a href={doc.file_url} target="_blank" rel="noopener noreferrer" className="flex items-center gap-2">
+                            <Download className="h-4 w-4" />
+                            <span className="hidden sm:inline">İndir</span>
+                          </a>
+                        </Button>
+                      </CardContent>
+                    </Card>
+                  ))}
+                </div>
+              ) : (
+                <Card className="bg-slate-50 dark:bg-slate-900 border-dashed border-2 border-slate-200 dark:border-slate-800">
+                  <CardContent className="flex flex-col items-center justify-center py-12 text-center">
+                    <div className="h-16 w-16 rounded-full bg-indigo-100 dark:bg-indigo-900/30 flex items-center justify-center mb-4">
+                      <Building2 className="h-8 w-8 text-indigo-600 dark:text-indigo-400 opacity-50" />
+                    </div>
+                    <h3 className="text-lg font-semibold text-slate-900 dark:text-white mb-2">
+                      Henüz belge paylaşılmamış
+                    </h3>
+                    <p className="text-slate-600 dark:text-slate-400 max-w-md">
+                      Bu alan için henüz bir belge yüklenmedi.
+                    </p>
+                  </CardContent>
+                </Card>
+              )}
             </div>
           </TabsContent>
         </Tabs>
