@@ -1,13 +1,11 @@
 'use client';
 
 import React from 'react';
-import { supabase } from '@/lib/supabase';
-import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
 import { Badge } from '@/components/ui/badge';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
-import { CheckCircle2, AlertTriangle, FileText, Building2, GraduationCap, Briefcase, Info, HelpCircle, Lightbulb, PlayCircle, Download, Eye } from 'lucide-react';
+import { CheckCircle2, AlertTriangle, FileText, Building2, GraduationCap, Briefcase, Info, HelpCircle, Lightbulb, PlayCircle, Euro, Languages, Scale } from 'lucide-react';
 import { DocumentSection } from '@/components/document-section';
 
 export default function AnerkennungPage() {
@@ -23,23 +21,12 @@ export default function AnerkennungPage() {
             <Badge variant="outline" className="text-slate-600">Resmi İşlemler</Badge>
           </div>
           <h1 className="text-4xl font-bold tracking-tight text-slate-900 dark:text-slate-50">
-            Almanya'da Mesleki Denklik (Anerkennung) Süreci
+            Almanya Kariyer ve Yaşam Rehberi: Kapsamlı Mesleki Tanınma (Anerkennung) Yol Haritası
           </h1>
           <p className="text-xl text-slate-600 dark:text-slate-400 leading-relaxed">
-            Türkiye'deki mesleki yeterliliklerinizi Almanya'da tanıtmak için izlemeniz gereken detaylı yol haritası.
-            Öğretmenlik, mühendislik, sağlık ve diğer meslekler için adım adım rehber.
+            Bu rehber, Türkiye'deki mesleki yeterliliklerini Almanya'da tanıtmak isteyen kişilere yönelik olup, kaynaklardaki yasal düzenlemelerden, prosedür adımlarından ve detaylı pratik tecrübe paylaşımlarından sentezlenmiştir.
           </p>
         </div>
-
-        {/* Introduction Alert */}
-        <Alert className="mb-8 bg-blue-50 border-blue-200 dark:bg-blue-900/20 dark:border-blue-800">
-          <Info className="h-5 w-5 text-blue-600 dark:text-blue-400" />
-          <AlertTitle className="text-blue-800 dark:text-blue-300 font-semibold">Önemli Bilgilendirme</AlertTitle>
-          <AlertDescription className="text-blue-700 dark:text-blue-400 mt-2">
-            Bu rehber, Almanya'ya yeni gelen ve mesleki yeterliliklerini tanıtmak isteyen kişiler için hazırlanmıştır. 
-            Süreç iki ana başlıkta ilerler: <strong>Diploma Değerlendirmesi (Zeugnisbewertung)</strong> ve <strong>Mesleki Tanınma (Berufliche Anerkennung)</strong>.
-          </AlertDescription>
-        </Alert>
 
         {/* NotebookLM Video Section */}
         <Card className="mb-8 border-indigo-200 dark:border-indigo-800 overflow-hidden">
@@ -70,428 +57,352 @@ export default function AnerkennungPage() {
 
         <div className="grid gap-8">
           
-          {/* Section 1: Temel Kavramlar */}
+          {/* I. Almanya'ya Göç ve Adaptasyon Sürecine Giriş */}
           <Card>
             <CardHeader>
-              <CardTitle className="flex items-center gap-2 text-2xl">
-                <FileText className="w-6 h-6 text-indigo-500" />
-                1. Temel Kavramlar ve Farklar
+              <CardTitle className="flex items-center gap-2 text-2xl text-indigo-700 dark:text-indigo-400">
+                <Info className="w-6 h-6" />
+                I. Almanya'ya Göç ve Adaptasyon Sürecine Giriş (Hazırlık ve Temel Kavramlar)
               </CardTitle>
-              <CardDescription>
-                ZAB ve Mesleki Tanınma arasındaki farkları anlamak sürecin en önemli adımıdır.
-              </CardDescription>
             </CardHeader>
             <CardContent className="space-y-6">
-              <div className="grid md:grid-cols-2 gap-4">
-                <div className="p-4 rounded-lg border bg-slate-50 dark:bg-slate-900 border-slate-200 dark:border-slate-800">
-                  <h3 className="font-bold text-lg mb-2 text-indigo-700 dark:text-indigo-400">Zeugnisbewertung (Diploma Değerlendirmesi)</h3>
-                  <ul className="space-y-2 text-sm text-slate-600 dark:text-slate-300">
-                    <li className="flex gap-2"><Building2 className="w-4 h-4 shrink-0" /> <strong>Kurum:</strong> ZAB (Bonn)</li>
-                    <li className="flex gap-2"><Info className="w-4 h-4 shrink-0" /> <strong>Amaç:</strong> Yükseköğretim yeterliliğinin resmi tanımı.</li>
-                    <li className="flex gap-2"><CheckCircle2 className="w-4 h-4 shrink-0" /> <strong>Önemi:</strong> İşgücü piyasasına erişimi kolaylaştırır.</li>
-                  </ul>
-                </div>
-                <div className="p-4 rounded-lg border bg-slate-50 dark:bg-slate-900 border-slate-200 dark:border-slate-800">
-                  <h3 className="font-bold text-lg mb-2 text-indigo-700 dark:text-indigo-400">Berufliche Anerkennung (Mesleki Tanınma)</h3>
-                  <ul className="space-y-2 text-sm text-slate-600 dark:text-slate-300">
-                    <li className="flex gap-2"><Building2 className="w-4 h-4 shrink-0" /> <strong>Kurum:</strong> Eyalet Meslek Odaları</li>
-                    <li className="flex gap-2"><Info className="w-4 h-4 shrink-0" /> <strong>Amaç:</strong> Mesleğin icra edilebilirliği onayı.</li>
-                    <li className="flex gap-2"><CheckCircle2 className="w-4 h-4 shrink-0" /> <strong>Önemi:</strong> Düzenlenmiş meslekler için zorunludur.</li>
-                  </ul>
-                </div>
-              </div>
-
-              <div className="bg-yellow-50 dark:bg-yellow-900/20 p-4 rounded-md border border-yellow-100 dark:border-yellow-900/50">
-                <h4 className="font-semibold text-yellow-800 dark:text-yellow-200 mb-2 flex items-center gap-2">
-                  <AlertTriangle className="w-4 h-4" /> Düzenlenmiş vs Düzenlenmemiş Meslekler
-                </h4>
-                <div className="grid md:grid-cols-2 gap-4 text-sm">
-                  <div>
-                    <strong className="block text-slate-900 dark:text-slate-200">Düzenlenmiş (Reglementiert):</strong>
-                    <p className="text-slate-700 dark:text-slate-400">Tanınma olmadan çalışılamaz. (Örn: Doktor, Öğretmen, Mühendis, Mimar)</p>
-                  </div>
-                  <div>
-                    <strong className="block text-slate-900 dark:text-slate-200">Düzenlenmemiş (Nicht Reglementiert):</strong>
-                    <p className="text-slate-700 dark:text-slate-400">Tanınma şart değildir ama ZAB belgesi avantaj sağlar. (Örn: Bilgisayar Müh., Ekonomist)</p>
-                  </div>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-
-          {/* Section 2: İşlemlere Başlama */}
-          <Card>
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2 text-2xl">
-                <Briefcase className="w-6 h-6 text-blue-500" />
-                2. İşlemlere Başlama (Jobcenter/Agentur)
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <Accordion type="single" collapsible className="w-full">
-                <AccordionItem value="item-1">
-                  <AccordionTrigger>Agentur für Arbeit Görüşmesi ve Rapor</AccordionTrigger>
-                  <AccordionContent className="text-slate-600 dark:text-slate-300 space-y-3">
-                    <p>Sürecin ilk adımı Job Center kariyer danışmanınızdan randevu almaktır. Sizi <strong>Anerkennungsberater</strong>'a (Tanınma Danışmanı) yönlendirecektir.</p>
-                    <ul className="list-disc pl-5 space-y-2">
-                      <li><strong>Hazırlık:</strong> Orijinal diploma ve transkriptlerinizi yanınızda bulundurun.</li>
-                      <li><strong>Rapor:</strong> Danışman size bir rapor verecektir. Bu raporu Job Center danışmanınıza teslim etmelisiniz.</li>
-                      <li><strong>Dil Seviyesi:</strong> Rapora C1-C2 seviyesinde dile ihtiyacınız olduğunu yazdırın. Bu, dil kursu desteği almanızı kolaylaştırır.</li>
-                      <li><strong>ZAB Onayı:</strong> Raporun hem ZAB (Bonn) hem de meslek odası başvurusunu kapsadığından emin olun.</li>
-                    </ul>
-                  </AccordionContent>
-                </AccordionItem>
-                <AccordionItem value="item-2">
-                  <AccordionTrigger>Ücret ve Masraflar</AccordionTrigger>
-                  <AccordionContent className="text-slate-600 dark:text-slate-300">
-                    <p>ZAB başvuru ücreti <strong>200 Euro</strong>'dur. Agentur für Arbeit veya Job Center, onay alındıktan sonra bu ücreti ve tercüme masraflarını karşılayabilir.</p>
-                  </AccordionContent>
-                </AccordionItem>
-              </Accordion>
-            </CardContent>
-          </Card>
-
-          {/* Section 3: ZAB Başvurusu */}
-          <Card>
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2 text-2xl">
-                <GraduationCap className="w-6 h-6 text-green-600" />
-                3. ZAB (Bonn) Başvurusu
-              </CardTitle>
-              <CardDescription>
-                Lisans, Yüksek Lisans ve Doktora diplomalarının değerlendirilmesi süreci.
-              </CardDescription>
-            </CardHeader>
-            <CardContent className="space-y-6">
+              
               <div className="space-y-4">
-                <h3 className="font-semibold text-lg">Başvuru Adımları</h3>
-                <ol className="list-decimal pl-5 space-y-3 text-slate-700 dark:text-slate-300">
-                  <li><strong>Online Form:</strong> "Kultusminister Konferenz" sitesinden form doldurulur, çıktısı alınıp imzalanır.</li>
-                  <li>
-                    <strong>Evrak Hazırlığı (Beglaubigung):</strong>
-                    <ul className="list-disc pl-5 mt-2 space-y-1 text-sm">
-                      <li>Diploma ve Transkriptlerin tercümelerinin onaylı nüshaları.</li>
-                      <li>Türkçe/İngilizce belgeler için Almanca tercüme şart olmayabilir (ZAB kabul eder) ancak yerel makamlar isteyebilir.</li>
-                      <li>Lise diploması fotokopisi.</li>
-                      <li>Pasaport, Kimlik ve Yeşil Belge fotokopileri.</li>
+                <h3 className="text-xl font-semibold flex items-center gap-2">
+                  <span className="bg-indigo-100 text-indigo-800 w-8 h-8 rounded-full flex items-center justify-center text-sm">1</span>
+                  Temel Denklik Kavramları
+                </h3>
+                <p className="text-slate-600 dark:text-slate-300">
+                  Almanya'da mesleki denklik süreci iki ana başlık altında ilerler:
+                </p>
+
+                <div className="grid md:grid-cols-2 gap-6 mt-4">
+                  <div className="bg-slate-50 dark:bg-slate-900 p-5 rounded-lg border border-slate-200 dark:border-slate-800">
+                    <h4 className="font-bold text-lg mb-3 text-blue-700 dark:text-blue-400">A. Diploma Değerlendirmesi (Zeugnisbewertung)</h4>
+                    <p className="text-sm mb-3">Bonn'da bulunan Yabancı Eğitim Merkezi Ofisi (ZAB) tarafından yürütülür.</p>
+                    <ul className="space-y-2 text-sm text-slate-700 dark:text-slate-300 list-disc list-inside">
+                      <li><strong>Tanımı:</strong> Yabancı bir üniversite yeterliliğini tanımlayan resmi belgedir.</li>
+                      <li><strong>Amacı:</strong> Alman işgücü piyasasına erişimi kolaylaştırır. Lisans, Master, Doktora mezuniyetini kanıtlar.</li>
+                      <li><strong>Niteliği:</strong> Karşılaştırmalı bir sınıflandırmadır, mesleki tanıma (Anerkennung) değildir.</li>
+                      <li><strong>Doktora:</strong> Tüm eğitim kariyerini (Lisans, Master, Doktora) kapsayan belgeler Bonn'a gönderilmelidir.</li>
                     </ul>
-                  </li>
-                  <li><strong>Gönderim:</strong> Belgeler posta yoluyla Bonn'a gönderilir. Asla orijinal belge göndermeyin!</li>
-                </ol>
+                  </div>
+
+                  <div className="bg-slate-50 dark:bg-slate-900 p-5 rounded-lg border border-slate-200 dark:border-slate-800">
+                    <h4 className="font-bold text-lg mb-3 text-green-700 dark:text-green-400">B. Mesleki Tanınma (Berufliche Anerkennung)</h4>
+                    <p className="text-sm mb-3">Bireyin kendi mesleğini Almanya'da yapıp yapamayacağını belirleyen süreçtir.</p>
+                    <ul className="space-y-2 text-sm text-slate-700 dark:text-slate-300 list-disc list-inside">
+                      <li><strong>Tanımı:</strong> Mesleği hangi şartlar dahilinde yapabileceğinizin 3-4 sayfalık değerlendirmesidir.</li>
+                      <li><strong>Yetkili Kurumlar:</strong> Eyaletlerdeki Meslek Odaları veya ilgili kurumlar (örn. Lehrkräfteakademie).</li>
+                    </ul>
+                  </div>
+                </div>
               </div>
 
-              <div className="bg-slate-100 dark:bg-slate-800 p-4 rounded-lg">
-                <h4 className="font-semibold mb-2">İpuçları</h4>
-                <ul className="space-y-2 text-sm">
-                  <li className="flex gap-2 items-start">
-                    <CheckCircle2 className="w-4 h-4 text-green-500 mt-0.5 shrink-0" />
-                    <span><strong>Beglaubigung:</strong> Belediyeler (Rathaus) genellikle noterden daha ekonomiktir.</span>
-                  </li>
-                  <li className="flex gap-2 items-start">
-                    <CheckCircle2 className="w-4 h-4 text-green-500 mt-0.5 shrink-0" />
-                    <span><strong>Lise Diploması:</strong> Aslı yoksa E-Devlet barkodlu belge veya okuldan "Kayıt Örneği" alınabilir.</span>
-                  </li>
-                  <li className="flex gap-2 items-start">
-                    <CheckCircle2 className="w-4 h-4 text-green-500 mt-0.5 shrink-0" />
-                    <span><strong>Süre:</strong> Sonuçlar genellikle 4-6 ay içinde gelir.</span>
-                  </li>
-                </ul>
+              <div className="space-y-4 pt-4 border-t">
+                <h3 className="text-xl font-semibold flex items-center gap-2">
+                  <span className="bg-indigo-100 text-indigo-800 w-8 h-8 rounded-full flex items-center justify-center text-sm">2</span>
+                  Düzenlenmiş ve Düzenlenmemiş Meslekler
+                </h3>
+                
+                <div className="space-y-4">
+                  <div className="flex gap-3 items-start">
+                    <AlertTriangle className="w-5 h-5 text-amber-600 mt-1 shrink-0" />
+                    <div>
+                      <h4 className="font-semibold text-amber-700 dark:text-amber-400">Düzenlenmiş Meslekler (Reglementiert)</h4>
+                      <p className="text-sm text-slate-600 dark:text-slate-300">
+                        Tanınma (Anerkennung) olmadan çalışmak mümkün değildir.
+                        <br/><strong>Örnekler:</strong> Sağlıkçılar (Hekim, Dişçi, Hemşire), Öğretmenlik, Mimarlık, Mühendislik.
+                      </p>
+                    </div>
+                  </div>
+                  
+                  <div className="flex gap-3 items-start">
+                    <CheckCircle2 className="w-5 h-5 text-green-600 mt-1 shrink-0" />
+                    <div>
+                      <h4 className="font-semibold text-green-700 dark:text-green-400">Düzenlenmemiş Meslekler (Nicht Reglementierter Beruf)</h4>
+                      <p className="text-sm text-slate-600 dark:text-slate-300">
+                        Tanınmaya gerek yoktur; doğrudan iş aranabilir. Ancak ZAB değerlendirmesi iş başvurularında önemlidir.
+                        <br/><strong>Örnekler:</strong> Bilgisayar Bilimci, Ekonomist, Siyaset Bilimci, Kimyager.
+                      </p>
+                    </div>
+                  </div>
+                </div>
               </div>
+
             </CardContent>
           </Card>
 
-          {/* Section 4: Mesleki Tanınma */}
+          {/* II. Gerekli Evrakların Temini ve Hazırlanması */}
           <Card>
             <CardHeader>
-              <CardTitle className="flex items-center gap-2 text-2xl">
-                <Building2 className="w-6 h-6 text-purple-600" />
-                4. Mesleki Tanınma (Berufliche Anerkennung)
+              <CardTitle className="flex items-center gap-2 text-2xl text-indigo-700 dark:text-indigo-400">
+                <FileText className="w-6 h-6" />
+                II. Gerekli Evrakların Temini ve Hazırlanması (Hazırlık Aşaması)
               </CardTitle>
-              <CardDescription>
-                Eyalet bazlı meslek odaları tarafından yapılan inceleme.
-              </CardDescription>
             </CardHeader>
-            <CardContent>
+            <CardContent className="space-y-6">
+              
               <Accordion type="single" collapsible className="w-full">
-                <AccordionItem value="teaching">
-                  <AccordionTrigger className="text-lg font-semibold">Öğretmenlik (Lehrkraft)</AccordionTrigger>
-                  <AccordionContent className="space-y-4">
-                    <p className="text-slate-600 dark:text-slate-300">
-                      Öğretmenler, bulundukları eyaletteki <strong>Lehrkräfteakademie</strong>'ye başvurmalıdır (Örn: Hessen'de Giessen, NRW'de Detmold).
-                    </p>
-                    <div className="space-y-2">
-                      <strong className="block">Sık Karşılaşılan Eksiklikler ve Şartlar:</strong>
-                      <ul className="list-disc pl-5 text-sm text-slate-600 dark:text-slate-300 space-y-1">
-                        <li><strong>Hausarbeit:</strong> Bitirme tezi. Master/Doktora tezi sayılabilir.</li>
-                        <li><strong>İkinci Branş:</strong> Genellikle eksik çıkar. Transkriptteki yan derslerle tamamlanabilir.</li>
-                        <li><strong>Referendariyet (Staj):</strong> Türkiye'deki hizmet dökümü ile muafiyet talep edilebilir.</li>
-                        <li><strong>Dil Şartı:</strong> Genellikle C2 istenir (NRW başvuruda C2 şart koşar).</li>
+                <AccordionItem value="uni-docs">
+                  <AccordionTrigger className="text-lg font-semibold">1. Üniversite ve Yükseköğretim Belgeleri</AccordionTrigger>
+                  <AccordionContent className="space-y-3 text-slate-600 dark:text-slate-300">
+                    <p>Lisans, Master, Doktora diplomaları ve transkriptlerinin tamamı ZAB'a gönderilmelidir.</p>
+                    <div className="bg-yellow-50 dark:bg-yellow-900/20 p-4 rounded-md border border-yellow-100 dark:border-yellow-800">
+                      <h5 className="font-semibold text-yellow-800 dark:text-yellow-400 mb-2 flex items-center gap-2">
+                        <Lightbulb className="w-4 h-4" /> Pratik İpuçları: Eksik Transkript
+                      </h5>
+                      <ul className="list-disc list-inside space-y-1 text-sm">
+                        <li><strong>E-Devlet:</strong> Barkodlu belge bazen kabul edilse de, resmi onay (Beglaubigung) için sorun olabilir.</li>
+                        <li><strong>Mail Yoluyla:</strong> Üniversiteden mail ile istenip, gelen maili doğrudan ZAB'a iletmek (önceden görüşerek) kabul edilebilir.</li>
+                        <li><strong>Geçici Mezuniyet:</strong> Geçici belge ile işlem yaptıranlar olmuştur.</li>
+                        <li><strong>Not:</strong> ZAB'a sadece akademik diplomalar gönderilir, sertifikalar değil.</li>
                       </ul>
                     </div>
                   </AccordionContent>
                 </AccordionItem>
 
+                <AccordionItem value="high-school">
+                  <AccordionTrigger className="text-lg font-semibold">2. Lise Diploması ve Transkripti</AccordionTrigger>
+                  <AccordionContent className="space-y-3 text-slate-600 dark:text-slate-300">
+                    <p>Lise diploması veya kayıt örneğinin Türkçesinin fotokopisi ZAB başvurusu için gereklidir.</p>
+                    <ul className="list-disc list-inside space-y-1">
+                      <li><strong>Temin:</strong> Mezun olunan liseden "DIPLOMA KAYIT ÖRNEĞİ" alınabilir. Yakınlarınız dilekçe ile alabilir.</li>
+                      <li><strong>E-Devlet:</strong> İmzasız olduğu için sorun çıkabilir, okuldan almak daha garantidir.</li>
+                      <li><strong>Transkript:</strong> 2007 sonrası e-okuldan, öncesi okul arşivinden (kütük defteri) alınabilir.</li>
+                      <li><strong>Ausbildung İçin:</strong> Üniversite diplomanız olsa bile, Ausbildung için lise denkliği (Schulamt) gerekebilir.</li>
+                    </ul>
+                  </AccordionContent>
+                </AccordionItem>
+
+                <AccordionItem value="experience">
+                  <AccordionTrigger className="text-lg font-semibold">3. Hizmet ve İş Deneyimi Belgeleri</AccordionTrigger>
+                  <AccordionContent className="space-y-3 text-slate-600 dark:text-slate-300">
+                    <ul className="list-disc list-inside space-y-1">
+                      <li><strong>Öğretmenlik:</strong> Hizmet cetvelinin (Hitap) tercümesi gerekir. "Asalet tasdiki" adaylığın kalkması olarak kabul edilir.</li>
+                      <li><strong>Özel Okul:</strong> Hizmet cetvelindeki "adaylık kaldırıldı" notu kabul edilebilir.</li>
+                      <li><strong>TC Kimlik Hatası:</strong> Belgelerde TC no hatası varsa, resmi kuruma açıklama yapılması gerekebilir.</li>
+                    </ul>
+                  </AccordionContent>
+                </AccordionItem>
+              </Accordion>
+
+            </CardContent>
+          </Card>
+
+          {/* III. Almanya'ya Varış ve Resmi Sürecin Başlatılması */}
+          <Card>
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2 text-2xl text-indigo-700 dark:text-indigo-400">
+                <Building2 className="w-6 h-6" />
+                III. Almanya'ya Varış ve Resmi Sürecin Başlatılması
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-6">
+              
+              <div className="grid md:grid-cols-3 gap-4">
+                <Card className="bg-slate-50 dark:bg-slate-900 border-none shadow-sm">
+                  <CardHeader>
+                    <CardTitle className="text-lg flex items-center gap-2">
+                      <Briefcase className="w-5 h-5 text-blue-600" />
+                      Jobcenter & Agentur
+                    </CardTitle>
+                  </CardHeader>
+                  <CardContent className="text-sm space-y-2">
+                    <p>İlk adım Job Center kariyer danışmanından randevu almaktır. Sizi Agentur für Arbeit'taki Anerkennungsberater'a yönlendirir.</p>
+                    <div className="bg-blue-100 dark:bg-blue-900/30 p-2 rounded text-xs text-blue-800 dark:text-blue-300">
+                      <strong>İpucu:</strong> Görüşmeye orijinal evraklarla gidin. Rapora "C1-C2 dil seviyesi gereklidir" ve "Hem ZAB hem Meslek Kurumuna gönderilmeli" ibarelerini yazdırın.
+                    </div>
+                  </CardContent>
+                </Card>
+
+                <Card className="bg-slate-50 dark:bg-slate-900 border-none shadow-sm">
+                  <CardHeader>
+                    <CardTitle className="text-lg flex items-center gap-2">
+                      <Euro className="w-5 h-5 text-green-600" />
+                      Maliyetler
+                    </CardTitle>
+                  </CardHeader>
+                  <CardContent className="text-sm space-y-2">
+                    <p>ZAB ücreti (200€) ve tercüme masraflarını Job Center karşılar. Ancak işlemden <strong>önce</strong> onay almalısınız.</p>
+                    <p>ZAB'dan gelen ödeme mailini (Gebührenbescheid) Job Center'a ileterek ödemeyi onların yapmasını sağlayın.</p>
+                  </CardContent>
+                </Card>
+
+                <Card className="bg-slate-50 dark:bg-slate-900 border-none shadow-sm">
+                  <CardHeader>
+                    <CardTitle className="text-lg flex items-center gap-2">
+                      <GraduationCap className="w-5 h-5 text-purple-600" />
+                      Dr. Unvanı
+                    </CardTitle>
+                  </CardHeader>
+                  <CardContent className="text-sm space-y-2">
+                    <p>Doktora (Dr. Titel) unvanınızı kimlik ve ehliyete yazdırabilirsiniz. Bunun yasal zemini mevcuttur.</p>
+                  </CardContent>
+                </Card>
+              </div>
+
+            </CardContent>
+          </Card>
+
+          {/* IV. Diploma Değerlendirme Süreci: ZAB */}
+          <Card>
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2 text-2xl text-indigo-700 dark:text-indigo-400">
+                <Scale className="w-6 h-6" />
+                IV. Diploma Değerlendirme Süreci: ZAB Başvurusu
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-6">
+              
+              <div className="space-y-4">
+                <h3 className="font-semibold text-lg">Başvuru Adımları</h3>
+                <ol className="list-decimal list-inside space-y-2 text-slate-700 dark:text-slate-300 ml-2">
+                  <li>Bonn'daki Kultusminister Konferenz sitesinden elektronik form doldurulur, çıktısı alınıp imzalanır.</li>
+                  <li>BUND ID web sitesinde hesap açılır (Online işlemler için gereklidir).</li>
+                  <li>Ödeme belgesi (Gebührenbescheid) sistemden takip edilir.</li>
+                </ol>
+
+                <div className="mt-6">
+                  <h3 className="font-semibold text-lg mb-3">Gönderilecek Evraklar (Amtliche Beglaubigung - Resmi Onaylı)</h3>
+                  <ul className="grid md:grid-cols-2 gap-2 text-sm">
+                    <li className="flex items-center gap-2"><CheckCircle2 className="w-4 h-4 text-green-500" /> İmzalı Başvuru Formu</li>
+                    <li className="flex items-center gap-2"><CheckCircle2 className="w-4 h-4 text-green-500" /> Lise Diploması (Türkçe fotokopi)</li>
+                    <li className="flex items-center gap-2"><CheckCircle2 className="w-4 h-4 text-green-500" /> Üniversite Diplomaları ve Transkriptler (Tercüme + Onaylı)</li>
+                    <li className="flex items-center gap-2"><CheckCircle2 className="w-4 h-4 text-green-500" /> Kimlik/Pasaport Fotokopisi</li>
+                  </ul>
+                </div>
+
+                <Alert className="mt-4">
+                  <Info className="h-4 w-4" />
+                  <AlertTitle>Tercüme ve Onay (Beglaubigung) Hakkında</AlertTitle>
+                  <AlertDescription className="text-sm mt-1">
+                    <p className="mb-2"><strong>Tercüme:</strong> ZAB normalde Türkçe/İngilizce belgeler için Almanca tercüme istemez. Ancak Job Center isteyebilir veya ileride lazım olabilir diye yaptırmak avantajlıdır.</p>
+                    <p><strong>Beglaubigung:</strong> Belediyeler, noterler veya kiliseler yapar. Tercüme + Türkçe fotokopi birlikte zımbalanıp onaylanmalıdır. Sadece tercümeyi onaylatmak yanlıştır.</p>
+                  </AlertDescription>
+                </Alert>
+              </div>
+
+            </CardContent>
+          </Card>
+
+          {/* V. Mesleki Tanınma (Berufliche Anerkennung) Süreci */}
+          <Card>
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2 text-2xl text-indigo-700 dark:text-indigo-400">
+                <Briefcase className="w-6 h-6" />
+                V. Mesleki Tanınma (Berufliche Anerkennung) Süreci
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-6">
+              
+              <Accordion type="single" collapsible className="w-full">
+                <AccordionItem value="teachers">
+                  <AccordionTrigger className="text-lg font-semibold text-blue-700 dark:text-blue-400">1. Öğretmenlik (Lehrkraft)</AccordionTrigger>
+                  <AccordionContent className="space-y-4 text-slate-600 dark:text-slate-300">
+                    <p>Öğretmenlik düzenlenmiş bir meslektir. Eyaletinizdeki <strong>Lehrkräfteakademie</strong>'ye başvurmalısınız.</p>
+                    <div className="grid md:grid-cols-2 gap-4">
+                      <div className="bg-slate-50 dark:bg-slate-900 p-4 rounded border">
+                        <h5 className="font-semibold mb-2">Tipik Şartlar ve Eksiklikler</h5>
+                        <ul className="list-disc list-inside text-sm space-y-1">
+                          <li><strong>Hausarbeit:</strong> Master/Doktora tezi sayılabilir.</li>
+                          <li><strong>İkinci Branş:</strong> Transkriptteki yan derslerle (sosyoloji, psikoloji vb.) tamamlanabilir.</li>
+                          <li><strong>Stajyerlik (Referendariat):</strong> Türkiye'deki hizmet cetveli (adaylığın kalkması) ile muafiyet istenebilir.</li>
+                        </ul>
+                      </div>
+                      <div className="bg-slate-50 dark:bg-slate-900 p-4 rounded border">
+                        <h5 className="font-semibold mb-2">Dil Şartı ve Tavsiye</h5>
+                        <p className="text-sm mb-2">Genellikle C2 istenir (NRW'de başvuru için şarttır). Ancak bazı programlar B1/B2 ile kabul edebilir.</p>
+                        <p className="text-sm font-medium text-indigo-600 dark:text-indigo-400">Tavsiye: Diliniz yetersiz olsa bile resmi işlemleri başlatıp hakkınızı "cebe koyun".</p>
+                      </div>
+                    </div>
+                  </AccordionContent>
+                </AccordionItem>
+
                 <AccordionItem value="erzieher">
-                  <AccordionTrigger className="text-lg font-semibold">Erzieher/in (Okul Öncesi)</AccordionTrigger>
-                  <AccordionContent className="space-y-4">
-                    <p className="text-slate-600 dark:text-slate-300">
-                      Öğretmenlik diplomasına alternatif popüler bir yoldur.
-                    </p>
-                    <ul className="list-disc pl-5 text-sm text-slate-600 dark:text-slate-300 space-y-1">
-                      <li>3 yıllık Ausbildung denkliği aranır.</li>
-                      <li>Genellikle B2 veya C1 dil seviyesi istenir.</li>
-                      <li>En az 3 ay tam zamanlı (Vollzeit) staj/deneyim şartı vardır.</li>
-                      <li>Lise diploması denkliği için Staatliche Schulamt'a başvurulmalıdır.</li>
+                  <AccordionTrigger className="text-lg font-semibold text-green-700 dark:text-green-400">2. Çocuk Bakımcısı (Erzieher/in) ve Sosyal Meslekler</AccordionTrigger>
+                  <AccordionContent className="space-y-3 text-slate-600 dark:text-slate-300">
+                    <p>Erzieher olmak için 3 yıl Ausbildung gerekir (Teilzeit veya Vollzeit).</p>
+                    <ul className="list-disc list-inside space-y-1">
+                      <li><strong>Dil:</strong> Genellikle B2 istenir, son zamanlarda C1 talep edilebilmektedir.</li>
+                      <li><strong>Staj:</strong> En az 3 ay tam zamanlı staj (Praktikum) şartı vardır. Gönüllü staj ile başlanabilir.</li>
+                      <li><strong>İpucu:</strong> Okul öncesi öğretmenliği diploması çevirilerinde "Vorschullehramt" veya "Vorschulpädagogik" kullanılabilir.</li>
                     </ul>
                   </AccordionContent>
                 </AccordionItem>
 
                 <AccordionItem value="others">
-                  <AccordionTrigger className="text-lg font-semibold">Diğer Meslekler (Sağlık, Mühendislik)</AccordionTrigger>
-                  <AccordionContent className="space-y-4">
-                    <ul className="space-y-3 text-sm text-slate-600 dark:text-slate-300">
-                      <li>
-                        <strong>Sağlıkçılar:</strong> Doktorlar <em>Landesärztekammer</em>, Hemşireler <em>Regierungspräsidium</em> gibi kurumlara başvurmalıdır.
-                      </li>
-                      <li>
-                        <strong>Mühendisler:</strong> İlgili eyaletteki <em>Ingenieurkammer</em> yetkilidir.
-                      </li>
-                      <li>
-                        <strong>Muhasebe:</strong> IHK FOSA (Nürnberg) üzerinden denklik işlemleri yürütülür.
-                      </li>
+                  <AccordionTrigger className="text-lg font-semibold text-purple-700 dark:text-purple-400">3. Sağlıkçılar, Mühendisler ve Diğerleri</AccordionTrigger>
+                  <AccordionContent className="space-y-3 text-slate-600 dark:text-slate-300">
+                    <ul className="list-disc list-inside space-y-2">
+                      <li><strong>Sağlıkçılar:</strong> Eyalet Tabipler Odası (Landesärztekammer) veya ilgili kuruma başvurmalıdır.</li>
+                      <li><strong>Mühendisler:</strong> Mühendisler Odası (Ingenieurkammer) yetkilidir.</li>
+                      <li><strong>Muhasebe:</strong> IHK FOSA (Nürnberg) kurumuna başvurulur.</li>
                     </ul>
                   </AccordionContent>
                 </AccordionItem>
               </Accordion>
+
             </CardContent>
           </Card>
 
-          {/* Section 5: Önemli İpuçları */}
-          <Card className="border-blue-200 dark:border-blue-800 bg-blue-50/50 dark:bg-blue-900/10">
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2 text-xl text-blue-900 dark:text-blue-100">
-                <Info className="w-5 h-5" />
-                5. Kritik İpuçları
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <ul className="grid gap-3 md:grid-cols-2">
-                <li className="bg-white dark:bg-slate-900 p-3 rounded border border-blue-100 dark:border-blue-800 text-sm">
-                  <strong>Dr. Unvanı:</strong> Kimlik ve ehliyetinize işletebilirsiniz.
-                </li>
-                <li className="bg-white dark:bg-slate-900 p-3 rounded border border-blue-100 dark:border-blue-800 text-sm">
-                  <strong>Transkript Temini:</strong> Orijinaline ulaşamıyorsanız, üniversitenizden ZAB'a doğrudan mail atılmasını sağlayabilirsiniz.
-                </li>
-                <li className="bg-white dark:bg-slate-900 p-3 rounded border border-blue-100 dark:border-blue-800 text-sm">
-                  <strong>Önlisans:</strong> Alman Berufsfachschule ile kıyaslanabilir, ZAB değerlendirmesi yapılabilir.
-                </li>
-                <li className="bg-white dark:bg-slate-900 p-3 rounded border border-blue-100 dark:border-blue-800 text-sm">
-                  <strong>Uzun Vadeli Düşünün:</strong> Diliniz yetersiz olsa bile denklik işlemlerini tamamlayıp kenara koymak, gelecekte mesleğe dönüşü kolaylaştırır.
-                </li>
-              </ul>
-            </CardContent>
-          </Card>
-
-          {/* Section 6: Sıkça Sorulan Sorular */}
+          {/* VI. Kariyer ve Yaşamda İleri Adımlar */}
           <Card>
             <CardHeader>
-              <CardTitle className="flex items-center gap-2 text-2xl">
-                <HelpCircle className="w-6 h-6 text-orange-500" />
-                Sıkça Sorulan Sorular
+              <CardTitle className="flex items-center gap-2 text-2xl text-indigo-700 dark:text-indigo-400">
+                <Lightbulb className="w-6 h-6" />
+                VI. Kariyer ve Yaşamda İleri Adımlar (Ek Bilgiler)
               </CardTitle>
             </CardHeader>
-            <CardContent className="space-y-8">
+            <CardContent className="space-y-6">
               
-              {/* Bölüm 1 */}
-              <div>
-                <h3 className="font-semibold text-lg mb-3 text-slate-800 dark:text-slate-200 border-b pb-2">Bölüm 1: Temel Kavramlar ve Sürecin Yapısı</h3>
-                <Accordion type="single" collapsible className="w-full">
-                  <AccordionItem value="faq-1">
-                    <AccordionTrigger>Almanya'da mesleki denklik süreci hangi aşamalardan oluşur?</AccordionTrigger>
-                    <AccordionContent>
-                      Almanya'da mesleki denklik süreci, iki ana başlık altında ilerlemektedir: <strong>Diploma Değerlendirmesi (Zeugnisbewertung)</strong> ve <strong>Mesleki Tanınma (Berufliche Anerkennung)</strong>.
-                    </AccordionContent>
-                  </AccordionItem>
-                  <AccordionItem value="faq-2">
-                    <AccordionTrigger>Zeugnisbewertung (Diploma Değerlendirmesi) nedir ve kim yapar?</AccordionTrigger>
-                    <AccordionContent>
-                      Zeugnisbewertung, yabancı bir yükseköğretim yeterliliğini tanımlayan resmi bir belgedir. Lisans, Yüksek Lisans ve Doktora düzeyindeki eğitimin Almanya'da kanıtlanmasını sağlar. Bu işlem, Bonn'da bulunan <strong>ZAB (Zentralstelle für ausländisches Bildungswesen)</strong> tarafından gerçekleştirilir.
-                    </AccordionContent>
-                  </AccordionItem>
-                  <AccordionItem value="faq-3">
-                    <AccordionTrigger>Zeugnisbewertung ile Berufliche Anerkennung arasındaki fark nedir?</AccordionTrigger>
-                    <AccordionContent>
-                      ZAB'ın yaptığı Zeugnisbewertung, yalnızca karşılaştırmalı bir sınıflandırmadır ve bir tanıma (Anerkennung) değildir. Berufliche Anerkennung ise, kişinin kendi ülkesindeki mesleği Almanya'da hangi şartlar altında yapabileceğini belirler.
-                    </AccordionContent>
-                  </AccordionItem>
-                  <AccordionItem value="faq-4">
-                    <AccordionTrigger>Düzenlenmiş (Reglementiert) meslekler hangileridir?</AccordionTrigger>
-                    <AccordionContent>
-                      Düzenlenmiş meslekler, kanun ve yönetmeliklerle belirlenmiştir ve Tanınma (Anerkennung) olmadan bu mesleklerde çalışmak mümkün değildir. Örnekler arasında sağlıkçılar (Hekim, Dişçi, Hemşire, Psikolog vb.), öğretmenlik, mimarlık ve mühendislik yer alır.
-                    </AccordionContent>
-                  </AccordionItem>
-                  <AccordionItem value="faq-5">
-                    <AccordionTrigger>Düzenlenmemiş meslekler için denklik alınmalı mıdır?</AccordionTrigger>
-                    <AccordionContent>
-                      Bu mesleklerde çalışmak için tanınmaya gerek yoktur; doğrudan iş aranabilir. Ancak iş başvurularında Bonn (ZAB) değerlendirmesini evraklara eklemek önemlidir. Örnekler: Bilgisayar Bilimci, ekonomist, siyaset bilimci, kimyager.
-                    </AccordionContent>
-                  </AccordionItem>
-                </Accordion>
-              </div>
-
-              {/* Bölüm 2 */}
-              <div>
-                <h3 className="font-semibold text-lg mb-3 text-slate-800 dark:text-slate-200 border-b pb-2">Bölüm 2: Sürece Başlama ve Maliyet</h3>
-                <Accordion type="single" collapsible className="w-full">
-                  <AccordionItem value="faq-6">
-                    <AccordionTrigger>Denklik sürecine başlamanın ilk adımı nedir?</AccordionTrigger>
-                    <AccordionContent>
-                      Sürece başlamanın ilk adımı, Job Center'daki kariyer danışmanından randevu almaktır.
-                    </AccordionContent>
-                  </AccordionItem>
-                  <AccordionItem value="faq-7">
-                    <AccordionTrigger>Agentur für Arbeit/Job Center görüşmesinde nasıl bir yol izlenmelidir?</AccordionTrigger>
-                    <AccordionContent>
-                      Kariyer danışmanı sizi Agentur für Arbeit'taki Anerkennungsberater'a (tanınma danışmanı) yönlendirecektir. Görüşmeye giderken orijinal diploma ve transkriptlerinizi içeren bir dosya hazırlayın. Görüşme sonucunda Anerkennungsberater tarafından doldurulup imzalanan rapor, Job Center'daki kariyer danışmanına teslim edilmeli ve Anerkennung işlemleri bu rapora göre başlayacaktır.
-                    </AccordionContent>
-                  </AccordionItem>
-                  <AccordionItem value="faq-8">
-                    <AccordionTrigger>Dil seviyesi onayı neden önemlidir?</AccordionTrigger>
-                    <AccordionContent>
-                      Görüşme sırasında mesleği yapmak için C1-C2 düzeyinde dile ihtiyacınız olduğunu belirtin ve danışmandan bu seviyeyi rapora yazdırmasını rica edin. Bu, Job Center'ın dil kursunuzun masraflarını sorun çıkarmadan karşılamasını sağlar.
-                    </AccordionContent>
-                  </AccordionItem>
-                  <AccordionItem value="faq-9">
-                    <AccordionTrigger>ZAB (Bonn) başvuru ücretini kim karşılar?</AccordionTrigger>
-                    <AccordionContent>
-                      Bonn'un (ZAB) ücreti 200 Euro'dur. Agentur für Arbeit/Job Center, onay alındıktan sonra bu ücreti ve tercüme masraflarını karşılayabilir.
-                    </AccordionContent>
-                  </AccordionItem>
-                </Accordion>
-              </div>
-
-              {/* Bölüm 3 */}
-              <div>
-                <h3 className="font-semibold text-lg mb-3 text-slate-800 dark:text-slate-200 border-b pb-2">Bölüm 3: ZAB Başvurusu ve Belge İşlemleri</h3>
-                <Accordion type="single" collapsible className="w-full">
-                  <AccordionItem value="faq-10">
-                    <AccordionTrigger>ZAB başvurusu için hangi evraklar gereklidir?</AccordionTrigger>
-                    <AccordionContent>
-                      <ul className="list-disc pl-5 space-y-2">
-                        <li>Lisans, Master, Doktora diplomalarının ve transkriptlerinin tercümelerinin Beglaubigung yapılmış nüshaları.</li>
-                        <li>Lise diploması veya kayıt örneğinin Türkçesinin fotokopisi.</li>
-                        <li>Kimlik (Aufenthaltstitel), Pasaport ve Yeşil Belgenin fotokopisi.</li>
-                        <li>Doktora diplomaları dahil tüm eğitim kariyerini kapsayan belgelerin gönderilmesi tavsiye edilir.</li>
-                      </ul>
-                    </AccordionContent>
-                  </AccordionItem>
-                  <AccordionItem value="faq-11">
-                    <AccordionTrigger>Türkçe veya İngilizce belgelerin Almanca tercümesi zorunlu mudur?</AccordionTrigger>
-                    <AccordionContent>
-                      Türkçe veya İngilizce dildeki diploma ve transkriptler için Almanca tercümesi istenmemektedir; İngilizce/Türkçe versiyonlar kabul edilmektedir. Ancak yerel yetkililer (Job Center veya Belediye) bazen ısrarla Almanca çeviri isteyebilir.
-                    </AccordionContent>
-                  </AccordionItem>
-                  <AccordionItem value="faq-12">
-                    <AccordionTrigger>Beglaubigung (Aslı Gibidir Onayı) nasıl yapılır?</AccordionTrigger>
-                    <AccordionContent>
-                      Beglaubigung, orijinal belge Zab'a gönderilemeyeceği için belgenin orijinalini belediye görevlisinin görmesi ve kopyasına "aslı gibidir" mührünü vurması işlemidir. Belediyeler (Rathaus/Bürgerbüro), yerel mahkeme (Ortsgericht) veya noterler tarafından yapılır. Belediyeler genellikle daha ekonomiktir.
-                    </AccordionContent>
-                  </AccordionItem>
-                  <AccordionItem value="faq-13">
-                    <AccordionTrigger>ZAB başvurusu sonuçlanma süresi ne kadardır?</AccordionTrigger>
-                    <AccordionContent>
-                      ZAB, evrakları alınca 200 Euro'luk fatura gönderir. Ödeme yapıldıktan sonra işlemler başlar ve sonuç yaklaşık 4-6 ay arasında adresinize ulaşır.
-                    </AccordionContent>
-                  </AccordionItem>
-                  <AccordionItem value="faq-14">
-                    <AccordionTrigger>Orijinal transkripti temin etmekte zorlananlar ne yapabilir?</AccordionTrigger>
-                    <AccordionContent>
-                      Islak imzalı orijinal transkripti temin etmekte zorlananlar, üniversite öğrenci işlerine mail atarak durumu açıklayıp transkriptin mail yoluyla gönderilmesini talep edebilirler. Bazı durumlarda üniversiteden gelen bu maili doğrudan ZAB'a forward etmek, orijinal belge yerine kabul edilebilmektedir.
-                    </AccordionContent>
-                  </AccordionItem>
-                  <AccordionItem value="faq-15">
-                    <AccordionTrigger>Önlisans diplomaları için ZAB değerlendirmesi yapılabilir mi?</AccordionTrigger>
-                    <AccordionContent>
-                      Önlisans diplomaları (Türk yükseköğretim alanı içinde yer alsa da), Alman Berufsfachschule eğitimleriyle karşılaştırılabilir nitelikte olabilir ve ZAB değerlendirmesi yapılabilmektedir.
-                    </AccordionContent>
-                  </AccordionItem>
-                </Accordion>
-              </div>
-
-              {/* Bölüm 4 */}
-              <div>
-                <h3 className="font-semibold text-lg mb-3 text-slate-800 dark:text-slate-200 border-b pb-2">Bölüm 4: Mesleki Tanınma Detayları</h3>
-                <Accordion type="single" collapsible className="w-full">
-                  <AccordionItem value="faq-16">
-                    <AccordionTrigger>Öğretmenlik denklik başvurusu nereye yapılır?</AccordionTrigger>
-                    <AccordionContent>
-                      Öğretmen kökenli herkesin, kendi eyaletlerinde bulunan Lehrkräfteakademie'ye başvurması gerekmektedir (Örn: Hessen'de Gissen, NRW'de Detmold, BW'de Tübingen).
-                    </AccordionContent>
-                  </AccordionItem>
-                  <AccordionItem value="faq-17">
-                    <AccordionTrigger>Öğretmenlik denklik sürecinde hangi eksiklikler ortaya çıkar?</AccordionTrigger>
-                    <AccordionContent>
-                      <ul className="list-disc pl-5 space-y-2">
-                        <li><strong>Hausarbeit (Bitirme Çalışması):</strong> Doktora veya Master tezi bunun yerine sayılabilir.</li>
-                        <li><strong>İkinci Branş:</strong> Lisans, Master veya Doktora transkriptlerindeki farklı dersler ile tamamlanabilir.</li>
-                        <li><strong>Referendariyet (Stajyerlik):</strong> Türkiye'deki hizmet dökümünüzün tercümesi sunularak muafiyet talep edilebilir.</li>
-                        <li><strong>Dil Şartı:</strong> Genellikle C2 Sertifikası veya kurumun yapacağı sınavda başarılı olunması istenir.</li>
-                      </ul>
-                    </AccordionContent>
-                  </AccordionItem>
-                  <AccordionItem value="faq-18">
-                    <AccordionTrigger>Diğer düzenlenmiş meslekler hangi kurumlara başvurmalıdır?</AccordionTrigger>
-                    <AccordionContent>
-                      <ul className="list-disc pl-5 space-y-2">
-                        <li><strong>Sağlıkçılar:</strong> Kendi eyaletlerindeki mesleki tanıma yapan kurumlara başvurmalıdırlar (Örn: Landesärztekammer).</li>
-                        <li><strong>Mühendisler:</strong> Çalışmak istenilen eyaletteki Ingenieurkammer'a başvurulmalıdır.</li>
-                        <li><strong>Muhasebecilik:</strong> IHK FOSA kurumuna başvurulur.</li>
-                      </ul>
-                    </AccordionContent>
-                  </AccordionItem>
-                </Accordion>
-              </div>
-
-              {/* Bölüm 5 */}
-              <div>
-                <h3 className="font-semibold text-lg mb-3 text-slate-800 dark:text-slate-200 border-b pb-2">Bölüm 5: Genel İpuçları</h3>
-                <Accordion type="single" collapsible className="w-full">
-                  <AccordionItem value="faq-19">
-                    <AccordionTrigger>Başvuruyu eksiksiz yapmanın önemi nedir?</AccordionTrigger>
-                    <AccordionContent>
-                      Sürece başlamadan önce resmi işlemleri düzgün yapmak ve eksiksiz bir dosya sunmak önemlidir. Üstünkörü başvurular, sonucu düzeltmek için daha fazla çaba gerektirir.
-                    </AccordionContent>
-                  </AccordionItem>
-                  <AccordionItem value="faq-20">
-                    <AccordionTrigger>Dil seviyesinin şu an yetersiz olması denklik sürecine engel midir?</AccordionTrigger>
-                    <AccordionContent>
-                      Hayır. Almanca seviyesinin şu an yetersiz olması, mesleği 3-4 yıl sonra da yapamayacağınız anlamına gelmez. Bu nedenle, resmi işlemleri düzgünce tamamlamak, mesleğin tanınmasını sağlamak ve bunu bir kenara koymak tavsiye edilir.
-                    </AccordionContent>
-                  </AccordionItem>
-                  <AccordionItem value="faq-21">
-                    <AccordionTrigger>Dr. unvanı Almanya'da kullanılabilir mi?</AccordionTrigger>
-                    <AccordionContent>
-                      Evet, Dr. unvanınızı kimlik ve ehliyete yazdırabilirsiniz.
-                    </AccordionContent>
-                  </AccordionItem>
-                </Accordion>
+              <div className="space-y-4">
+                <h3 className="font-semibold text-lg">İşsizlik Parası II (Bürgergeld) ve Haklar</h3>
+                <p className="text-slate-600 dark:text-slate-300 text-sm">
+                  İş arayanların temel ihtiyaçlarını karşılamak içindir. Çalışabilir durumda olanlar alır.
+                </p>
+                
+                <div className="grid sm:grid-cols-2 gap-4 mt-2">
+                  <div className="p-3 bg-slate-50 dark:bg-slate-900 rounded border text-sm">
+                    <strong>İhtiyaç Birliği (Bedarfsgemeinschaft):</strong> Aynı hanede yaşayan aile bireylerinin gelirleri toplu değerlendirilir.
+                  </div>
+                  <div className="p-3 bg-slate-50 dark:bg-slate-900 rounded border text-sm">
+                    <strong>Konut ve Isınma:</strong> Jobcenter makul giderleri karşılar. Yeni sözleşme öncesi onay şarttır.
+                  </div>
+                  <div className="p-3 bg-slate-50 dark:bg-slate-900 rounded border text-sm">
+                    <strong>Yaptırımlar:</strong> İşbirliği yapmamak, randevuya gitmemek kesintiye (Sanktion) yol açar.
+                  </div>
+                  <div className="p-3 bg-slate-50 dark:bg-slate-900 rounded border text-sm">
+                    <strong>Dil Eğitimi:</strong> Raporda C1-C2 hedefi belirtilirse, Job Center bu kursları finanse eder.
+                  </div>
+                </div>
               </div>
 
             </CardContent>
           </Card>
 
-          {/* Analoji */}
-          <Alert className="bg-indigo-50 border-indigo-200 dark:bg-indigo-900/20 dark:border-indigo-800">
-            <Lightbulb className="h-5 w-5 text-indigo-600 dark:text-indigo-400" />
-            <AlertTitle className="text-indigo-800 dark:text-indigo-300 font-semibold">Kavramsal Netlik Analojisi</AlertTitle>
-            <AlertDescription className="text-indigo-700 dark:text-indigo-400 mt-2 text-sm leading-relaxed">
-              Almanya'daki mesleki denklik sürecini, Türkiye'den getirdiğiniz bir elektronik cihazın uluslararası adaptör ve yerel şebekeye bağlanması olarak düşünebilirsiniz. 
-              <br/><br/>
-              <strong>ZAB (Zeugnisbewertung)</strong>, cihazınızın (diplomanızın) teknik özelliklerinin (seviyesinin) uluslararası standartlara (Alman yükseköğretim seviyelerine) uygun olup olmadığını kontrol eden bir "Uluslararası Teknik Şartname Belgesi"dir. Ancak bu belge, cihazın çalışmaya hazır olduğu anlamına gelmez.
-              <br/><br/>
-              <strong>Berufliche Anerkennung</strong> ise, cihazın ülkenin yerel voltajına ve fiş tipine (mesleki gerekliliklere ve eyalet kurallarına) göre ayarlanıp ayarlanmadığını kontrol eden, çalışmak için zorunlu olan "Yerel Çalışma İzni"dir. Düzenlenmiş meslekler için her iki aşamadan da geçmek gerekir.
-            </AlertDescription>
-          </Alert>
+          {/* Analojik Özet */}
+          <Card className="bg-gradient-to-br from-indigo-50 to-blue-50 dark:from-indigo-950/30 dark:to-blue-900/20 border-indigo-100 dark:border-indigo-800">
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2 text-xl text-indigo-800 dark:text-indigo-300">
+                <HelpCircle className="w-6 h-6" />
+                Analojik Özet: Sistemin Çalışma Prensibi
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="text-slate-700 dark:text-slate-300 leading-relaxed">
+              <p>
+                Almanya'daki Anerkennung süreci, uluslararası bir malı yerel bir pazara sokmaya benzer. 
+                <strong> ZAB (Bonn)</strong> değerlendirmesi, malınızın (diplomanızın) kalitesini ve uluslararası standartlara göre hangi kategoriye (Lisans/Master) girdiğini belirleyen bir <strong>"kalite kontrol raporudur"</strong>. 
+                Bu rapor, malın piyasaya genel girişini kolaylaştırır.
+              </p>
+              <p className="mt-4">
+                Ancak, <strong>Mesleki Tanınma (Berufliche Anerkennung)</strong> ise, eğer malınız yasal olarak düzenlenmiş bir ürünse (örneğin ilaç/öğretmenlik), yerel otoritelerden o malı burada kullanıp kullanamayacağınız veya hangi ek etiket/sertifikaları (İkinci Branş, C2 Dil) almanız gerektiğini belirten zorunlu <strong>"pazarlama iznini"</strong> almaktır.
+              </p>
+              <p className="mt-4 font-medium">
+                Başlangıçta Jobcenter ile doğru iletişim kurmak ve maliyet onaylarını almak, bu sürecin "finansal lojistiğini" sorunsuz halletmenin anahtarıdır.
+              </p>
+            </CardContent>
+          </Card>
 
         </div>
       </div>
