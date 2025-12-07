@@ -35,6 +35,7 @@ import Link from "next/link";
 import { ShareExperienceDialog } from '@/components/share-experience-dialog';
 import { UploadDocumentDialog } from '@/components/upload-document-dialog';
 import { DocumentSection } from '@/components/document-section';
+import { ProfessionVideoPlayer } from '@/components/profession-video-player';
 import { supabase } from '@/lib/supabase';
 import {
   Accordion,
@@ -66,8 +67,9 @@ export default function OkulOncesiPage() {
       <div className="relative bg-blue-900 text-white py-20 overflow-hidden">
         <div className="absolute inset-0 bg-[url('/grid.svg')] bg-center [mask-image:linear-gradient(180deg,white,rgba(255,255,255,0))]"></div>
         <div className="container mx-auto px-4 relative z-10">
-          <div className="max-w-3xl">
-            <div className="flex items-center gap-3 mb-6">
+          <div className="flex flex-col md:flex-row gap-10 items-center md:items-start">
+            <div className="flex-1 max-w-3xl text-center md:text-left">
+            <div className="flex items-center justify-center md:justify-start gap-3 mb-6">
               <Badge variant="secondary" className="bg-blue-100 text-blue-900 hover:bg-blue-200">
                 Eğitim & Pedagoji
               </Badge>
@@ -81,7 +83,7 @@ export default function OkulOncesiPage() {
             <p className="text-xl text-blue-100 mb-8 leading-relaxed">
               Erzieherin ve Kindheitspädagogin kariyer yolları, denklik süreçleri, dil şartları ve iş hayatına dair kapsamlı rehber.
             </p>
-            <div className="flex flex-wrap gap-4">
+            <div className="flex flex-wrap justify-center md:justify-start gap-4">
               <Button size="lg" className="bg-white text-blue-900 hover:bg-blue-50" asChild>
                 <Link href="#baslangic">Hemen Başla</Link>
               </Button>
@@ -89,6 +91,11 @@ export default function OkulOncesiPage() {
                 <Link href="#tecrube-paylas">Tecrübeni Paylaş</Link>
               </Button>
             </div>
+          </div>
+
+          <div className="w-full md:w-1/3">
+            <ProfessionVideoPlayer professionSlug="okul-oncesi-ogretmenligi" variant="hero" />
+          </div>
           </div>
         </div>
       </div>
