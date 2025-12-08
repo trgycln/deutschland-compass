@@ -27,6 +27,7 @@ import {
 import Link from "next/link";
 import { ShareExperienceDialog } from '@/components/share-experience-dialog';
 import { DocumentSection } from '@/components/document-section';
+import { ProfessionVideoPlayer } from '@/components/profession-video-player';
 import { supabase } from '@/lib/supabase';
 import {
   Accordion,
@@ -58,7 +59,7 @@ export default function TarihOgretmenligiPage() {
       <div className="bg-slate-900 text-white py-16">
         <div className="container mx-auto px-4">
           <div className="flex flex-col md:flex-row gap-8 items-start">
-            <div className="p-4 bg-white/10 rounded-2xl backdrop-blur-sm">
+            <div className="p-4 bg-white/10 rounded-2xl backdrop-blur-sm flex-shrink-0">
               <History className="w-12 h-12 text-blue-400" />
             </div>
             <div className="flex-1">
@@ -79,6 +80,9 @@ export default function TarihOgretmenligiPage() {
               <p className="text-xl text-slate-300 max-w-3xl leading-relaxed">
                 Tarih öğretmenleri için Almanya kariyer rehberi, denklik süreçleri, alternatif kariyer yolları ve iş bulma stratejileri.
               </p>
+            </div>
+            <div className="w-full md:w-1/3 mt-8 md:mt-0">
+              <ProfessionVideoPlayer professionSlug="tarih-ogretmenligi" variant="hero" />
             </div>
           </div>
         </div>

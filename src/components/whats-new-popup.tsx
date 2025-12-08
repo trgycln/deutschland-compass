@@ -108,13 +108,19 @@ export function WhatsNewPopup() {
             .replace(/[^a-z0-9-]/g, '-')
             .replace(/-+/g, '-')
             .replace(/^-|-$/g, '');
-            
-          const profession = professionsList.find(p => p.slug === slug);
-          let link = `/meslekler/${slug}`;
-          
-          if (profession?.customLink) {
-            link = profession.customLink;
+
+          // Önce slug ile eşleşme, yoksa başlık ile eşleşme
+          let profession = professionsList.find(p => p.slug === slug);
+          if (!profession) {
+            // Tam başlık eşleşmesi yoksa, öğretmenlik varyasyonlarını yakala
+            const expNormalized = exp.profession.toLowerCase().replace(/öğretmen[ıi]$/,'öğretmenliği').replace(/öğretmeni$/,'öğretmenliği');
+            profession = professionsList.find(p => p.title.toLowerCase().includes(expNormalized));
+            // Son çare: başlıkta 'öğretmen' geçen ilk rehber
+            if (!profession && exp.profession.toLowerCase().includes('öğretmen')) {
+              profession = professionsList.find(p => p.title.toLowerCase().includes('öğretmen'));
+            }
           }
+          let link = profession?.customLink ? profession.customLink : `/meslekler/${slug}`;
 
           newItems.push({
             id: `exp-${exp.id}`,
@@ -142,11 +148,7 @@ export function WhatsNewPopup() {
 
         videos?.forEach(video => {
           const profession = professionsList.find(p => p.slug === video.slug);
-          let link = `/meslekler/${video.slug}`;
-
-          if (profession?.customLink) {
-            link = profession.customLink;
-          }
+          let link = profession?.customLink ? profession.customLink : `/meslekler/${video.slug}`;
 
           newItems.push({
             id: `video-${video.slug}`,

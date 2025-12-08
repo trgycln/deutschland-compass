@@ -32,6 +32,7 @@ import Link from "next/link";
 import { supabase } from '@/lib/supabase';
 import { ShareExperienceDialog } from '@/components/share-experience-dialog';
 import { UploadDocumentDialog } from '@/components/upload-document-dialog';
+import { ProfessionVideoPlayer } from '@/components/profession-video-player';
 import {
   Accordion,
   AccordionContent,
@@ -72,28 +73,33 @@ export default function SinifOgretmenligiPage() {
       <div className="relative bg-emerald-900 text-white py-20 overflow-hidden">
         <div className="absolute inset-0 bg-[url('/grid.svg')] bg-center [mask-image:linear-gradient(180deg,white,rgba(255,255,255,0))]"></div>
         <div className="container mx-auto px-4 relative z-10">
-          <div className="max-w-3xl">
-            <div className="flex items-center gap-3 mb-6">
-              <Badge variant="secondary" className="bg-emerald-100 text-emerald-900 hover:bg-emerald-200">
-                Eğitim
-              </Badge>
-              <Badge variant="outline" className="text-emerald-100 border-emerald-400">
-                Grundschullehrer/in
-              </Badge>
+          <div className="flex flex-col md:flex-row gap-10 items-center md:items-start">
+            <div className="flex-1 max-w-3xl text-center md:text-left">
+              <div className="flex items-center justify-center md:justify-start gap-3 mb-6">
+                <Badge variant="secondary" className="bg-emerald-100 text-emerald-900 hover:bg-emerald-200">
+                  Eğitim
+                </Badge>
+                <Badge variant="outline" className="text-emerald-100 border-emerald-400">
+                  Grundschullehrer/in
+                </Badge>
+              </div>
+              <h1 className="text-4xl md:text-5xl font-bold mb-6 leading-tight">
+                Almanya'da Sınıf Öğretmenliği
+              </h1>
+              <p className="text-xl text-emerald-100 mb-8 leading-relaxed">
+                Sınıf öğretmenleri için denklik, dil yeterliliği, alternatif kariyer yolları ve yaşam rehberi.
+              </p>
+              <div className="flex flex-wrap justify-center md:justify-start gap-4">
+                <Button size="lg" className="bg-white text-emerald-900 hover:bg-emerald-50" asChild>
+                  <Link href="#baslangic">Rehbere Başla</Link>
+                </Button>
+                <Button size="lg" className="bg-emerald-700 text-white hover:bg-emerald-600 border-none" asChild>
+                  <Link href="#tecrube-paylas">Tecrübeni Paylaş</Link>
+                </Button>
+              </div>
             </div>
-            <h1 className="text-4xl md:text-5xl font-bold mb-6 leading-tight">
-              Almanya'da Sınıf Öğretmenliği
-            </h1>
-            <p className="text-xl text-emerald-100 mb-8 leading-relaxed">
-              Sınıf öğretmenleri için denklik, dil yeterliliği, alternatif kariyer yolları ve yaşam rehberi.
-            </p>
-            <div className="flex flex-wrap gap-4">
-              <Button size="lg" className="bg-white text-emerald-900 hover:bg-emerald-50" asChild>
-                <Link href="#baslangic">Rehbere Başla</Link>
-              </Button>
-              <Button size="lg" className="bg-emerald-700 text-white hover:bg-emerald-600 border-none" asChild>
-                <Link href="#tecrube-paylas">Tecrübeni Paylaş</Link>
-              </Button>
+            <div className="w-full md:w-1/3">
+              <ProfessionVideoPlayer professionSlug="sinif-ogretmenligi" variant="hero" />
             </div>
           </div>
         </div>

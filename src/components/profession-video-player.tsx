@@ -29,14 +29,15 @@ export function ProfessionVideoPlayer({ professionSlug, variant = 'default', fal
   useEffect(() => {
     let isCancelled = false;
 
+
     async function fetchVideo() {
       try {
-        const { data } = await supabase
+        const { data, error } = await supabase
           .from('professions')
           .select('video_url')
           .eq('slug', professionSlug)
           .single();
-
+        console.log('[ProfessionVideoPlayer]', { professionSlug, data, error });
         if (!isCancelled) {
           if (data?.video_url) {
             setVideoUrl(data.video_url);
