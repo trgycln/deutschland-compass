@@ -1,4 +1,5 @@
 import React from 'react';
+import { ProfessionVideoPlayer } from '@/components/profession-video-player';
 import { Metadata } from 'next';
 import { lkwDriverData } from '@/data/lkw-driver-data';
 import { ArrowLeft, BookOpen, Briefcase, GraduationCap, HelpCircle, FileText, Share2, Upload } from 'lucide-react';
@@ -41,15 +42,16 @@ export default function LkwDriverPage() {
                   Güncel: Aralık 2025
                 </Badge>
               </div>
-              
               <h1 className="text-4xl md:text-5xl font-bold mb-4 text-white">
                 {lkwDriverData.title}
               </h1>
-              
               <p className="text-xl text-slate-300 mb-8 max-w-2xl leading-relaxed">
                 {lkwDriverData.description}
               </p>
-              
+              {/* Video Input - Admin panelinden yüklenen video */}
+              <div className="mb-8">
+                <ProfessionVideoPlayer professionSlug="lkw-soforlugu" variant="hero" />
+              </div>
               <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
                 {lkwDriverData.stats.map((stat, index) => (
                   <div key={index} className="bg-slate-800/50 p-4 rounded-lg border border-slate-700 backdrop-blur-sm">
