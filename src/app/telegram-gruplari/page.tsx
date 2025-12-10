@@ -1,4 +1,5 @@
 "use client";
+import { Send } from 'lucide-react';
 
 import { useState } from 'react';
 import { telegramGroups } from '@/data/telegram-groups';
@@ -41,6 +42,19 @@ export default function TelegramGroupsPage() {
   return (
     <div className="min-h-screen bg-slate-50 dark:bg-slate-950 py-12">
       <div className="container mx-auto px-4">
+        {/* Telegram Kanalı Duyuru Kutusu */}
+        <div className="max-w-3xl mx-auto mb-8">
+          <div className="flex items-center gap-4 bg-blue-100 dark:bg-blue-900/30 border border-blue-200 dark:border-blue-800 rounded-xl p-4 shadow-sm">
+            <Send className="w-8 h-8 text-blue-600 dark:text-blue-400 shrink-0" />
+            <div className="flex-1">
+              <div className="font-semibold text-blue-800 dark:text-blue-200 text-base mb-1">Deutschland Compass Telegram Kanalı</div>
+              <div className="text-sm text-blue-900 dark:text-blue-100">
+                Web sitemiz ve topluluk gelişmeleri için <a href="https://t.me/+yI1or4k3nMswN2Ni" target="_blank" rel="noopener noreferrer" className="underline hover:text-blue-900">Telegram kanalımıza</a> katılabilirsiniz. Bu kanal, yeni eklenenleri ve önemli duyuruları kaçırmamanız için açıldı. Linkler Telegram gruplarında kaybolabiliyor; bu kanaldan hem siteye hem de gelişmelere kolayca ulaşabilirsiniz.
+              </div>
+            </div>
+          </div>
+        </div>
+
         <div className="max-w-4xl mx-auto text-center mb-12">
           <div className="inline-flex items-center justify-center p-3 bg-blue-100 dark:bg-blue-900/30 rounded-full mb-4">
             <MessageCircle className="w-8 h-8 text-blue-600 dark:text-blue-400" />

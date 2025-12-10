@@ -6,6 +6,7 @@ export type TelegramGroup = {
 };
 
 export const telegramGroups: TelegramGroup[] = [
+  { id: 'dc-kanal', name: 'DEUTSCHLANDCOMPASS KANALI', url: 'https://t.me/+yI1or4k3nMswN2Ni' },
   { id: 'abitur', name: 'ABITUR GRUBU', url: 'https://t.me/+C0Swd8ylxrU5Nzgy' },
   { id: 'aile-birlesim', name: 'AİLE BİRLEŞİM GRUBU', url: 'https://t.me/+hQPqtt_SuKMxM2Uy' },
   { id: 'almanca-ogretmeni', name: 'ALMANCA ÖĞRETMENİ OLMAK İSTİYORUM GRUBU', url: 'https://t.me/+a2fVAk2kZaVlMjEy' },
