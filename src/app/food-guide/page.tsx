@@ -66,7 +66,7 @@ export default function FoodGuidePage() {
           </TabsContent>
 
           <TabsContent value="experiences" className="space-y-8">
-            <ShareExperienceDialog category="food-guide" />
+            <ShareExperienceDialog professionSlug="food-guide" />
             <div className="space-y-4">
               {experiences.map(exp => (
                 <Card key={exp.id}>
@@ -80,7 +80,7 @@ export default function FoodGuidePage() {
           </TabsContent>
 
           <TabsContent value="documents" className="space-y-8">
-            <DocumentSection category="food-guide" documents={documents} />
+            <DocumentSection professionSlug="food-guide" />
           </TabsContent>
         </Tabs>
       </div>
