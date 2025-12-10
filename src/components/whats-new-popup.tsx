@@ -280,10 +280,10 @@ export function WhatsNewPopup() {
           </div>
         </ScrollArea>
         
-        <div className="p-4 bg-slate-50 dark:bg-slate-900 border-t border-slate-100 dark:border-slate-800 flex justify-end">
+        <div className="p-4 bg-slate-50 dark:bg-slate-900 border-t border-slate-100 dark:border-slate-800 flex justify-center w-full">
           <button 
             onClick={() => setIsOpen(false)}
-            className="text-sm text-slate-500 hover:text-slate-900 dark:text-slate-400 dark:hover:text-white transition-colors"
+            className="text-sm text-slate-500 hover:text-slate-900 dark:text-slate-400 dark:hover:text-white transition-colors w-full max-w-xs mx-auto rounded-lg py-2"
           >
             Kapat
           </button>

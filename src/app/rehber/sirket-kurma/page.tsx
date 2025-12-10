@@ -105,28 +105,28 @@ export default function BusinessGuidePage() {
         {/* Tab Navigation */}
         {hydrated ? (
         <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-          <TabsList className="grid w-full grid-cols-6 mb-8 sticky top-0 z-10 bg-gradient-to-b from-white to-slate-50 dark:from-slate-900 dark:to-slate-800 p-3 shadow-md rounded-xl border border-blue-100 dark:border-slate-700 gap-2">
-            <TabsTrigger value="main" className="gap-2 rounded-lg h-12 md:h-12 px-3 transition-all duration-200 data-[state=active]:bg-gradient-to-r data-[state=active]:from-blue-500 data-[state=active]:to-blue-600 data-[state=active]:text-white data-[state=active]:shadow-lg hover:bg-blue-50 dark:hover:bg-blue-900/20 text-sm md:text-[15px] font-semibold">
+          <TabsList className="w-full mb-8 sticky top-0 z-10 bg-gradient-to-b from-white to-slate-50 dark:from-slate-900 dark:to-slate-800 p-3 px-1 shadow-md rounded-xl border border-blue-100 dark:border-slate-700 gap-2 flex flex-nowrap overflow-x-auto sm:grid sm:grid-cols-6">
+            <TabsTrigger value="main" className="gap-2 rounded-lg h-12 md:h-12 px-3 min-w-[110px] flex-shrink-0 transition-all duration-200 data-[state=active]:bg-gradient-to-r data-[state=active]:from-blue-500 data-[state=active]:to-blue-600 data-[state=active]:text-white data-[state=active]:shadow-lg hover:bg-blue-50 dark:hover:bg-blue-900/20 text-sm md:text-[15px] font-semibold">
               <BookOpen className="w-5 h-5" />
               <span>Rehber</span>
             </TabsTrigger>
-            <TabsTrigger value="detailed" className="gap-2 rounded-lg h-12 md:h-12 px-3 transition-all duration-200 data-[state=active]:bg-gradient-to-r data-[state=active]:from-purple-500 data-[state=active]:to-purple-600 data-[state=active]:text-white data-[state=active]:shadow-lg hover:bg-purple-50 dark:hover:bg-purple-900/20 text-sm md:text-[15px] font-semibold">
+            <TabsTrigger value="detailed" className="gap-2 rounded-lg h-12 md:h-12 px-3 min-w-[110px] flex-shrink-0 transition-all duration-200 data-[state=active]:bg-gradient-to-r data-[state=active]:from-purple-500 data-[state=active]:to-purple-600 data-[state=active]:text-white data-[state=active]:shadow-lg hover:bg-purple-50 dark:hover:bg-purple-900/20 text-sm md:text-[15px] font-semibold">
               <Scale className="w-5 h-5" />
               <span>Mevzuat</span>
             </TabsTrigger>
-            <TabsTrigger value="jobcenter" className="gap-2 rounded-lg h-12 md:h-12 px-3 transition-all duration-200 data-[state=active]:bg-gradient-to-r data-[state=active]:from-teal-500 data-[state=active]:to-teal-600 data-[state=active]:text-white data-[state=active]:shadow-lg hover:bg-teal-50 dark:hover:bg-teal-900/20 text-sm md:text-[15px] font-semibold">
+            <TabsTrigger value="jobcenter" className="gap-2 rounded-lg h-12 md:h-12 px-3 min-w-[110px] flex-shrink-0 transition-all duration-200 data-[state=active]:bg-gradient-to-r data-[state=active]:from-teal-500 data-[state=active]:to-teal-600 data-[state=active]:text-white data-[state=active]:shadow-lg hover:bg-teal-50 dark:hover:bg-teal-900/20 text-sm md:text-[15px] font-semibold">
               <ClipboardCheck className="w-5 h-5" />
               <span>Jobcenter</span>
             </TabsTrigger>
-            <TabsTrigger value="faq" className="gap-2 rounded-lg h-12 md:h-12 px-3 transition-all duration-200 data-[state=active]:bg-gradient-to-r data-[state=active]:from-amber-500 data-[state=active]:to-amber-600 data-[state=active]:text-white data-[state=active]:shadow-lg hover:bg-amber-50 dark:hover:bg-amber-900/20 text-sm md:text-[15px] font-semibold">
+            <TabsTrigger value="faq" className="gap-2 rounded-lg h-12 md:h-12 px-3 min-w-[110px] flex-shrink-0 transition-all duration-200 data-[state=active]:bg-gradient-to-r data-[state=active]:from-amber-500 data-[state=active]:to-amber-600 data-[state=active]:text-white data-[state=active]:shadow-lg hover:bg-amber-50 dark:hover:bg-amber-900/20 text-sm md:text-[15px] font-semibold">
               <span className="text-lg">❓</span>
               <span>SSS</span>
             </TabsTrigger>
-            <TabsTrigger value="sharing" className="gap-2 rounded-lg h-12 md:h-12 px-3 transition-all duration-200 data-[state=active]:bg-gradient-to-r data-[state=active]:from-cyan-500 data-[state=active]:to-cyan-600 data-[state=active]:text-white data-[state=active]:shadow-lg hover:bg-cyan-50 dark:hover:bg-cyan-900/20 text-sm md:text-[15px] font-semibold">
+            <TabsTrigger value="sharing" className="gap-2 rounded-lg h-12 md:h-12 px-3 min-w-[110px] flex-shrink-0 transition-all duration-200 data-[state=active]:bg-gradient-to-r data-[state=active]:from-cyan-500 data-[state=active]:to-cyan-600 data-[state=active]:text-white data-[state=active]:shadow-lg hover:bg-cyan-50 dark:hover:bg-cyan-900/20 text-sm md:text-[15px] font-semibold">
               <FileText className="w-5 h-5" />
               <span>Dökümanlar</span>
             </TabsTrigger>
-            <TabsTrigger value="experiences" className="gap-2 rounded-lg h-12 md:h-12 px-3 transition-all duration-200 data-[state=active]:bg-gradient-to-r data-[state=active]:from-green-500 data-[state=active]:to-green-600 data-[state=active]:text-white data-[state=active]:shadow-lg hover:bg-green-50 dark:hover:bg-green-900/20 text-sm md:text-[15px] font-semibold">
+            <TabsTrigger value="experiences" className="gap-2 rounded-lg h-12 md:h-12 px-3 min-w-[110px] flex-shrink-0 transition-all duration-200 data-[state=active]:bg-gradient-to-r data-[state=active]:from-green-500 data-[state=active]:to-green-600 data-[state=active]:text-white data-[state=active]:shadow-lg hover:bg-green-50 dark:hover:bg-green-900/20 text-sm md:text-[15px] font-semibold">
               <Quote className="w-5 h-5" />
               <span>Tecrübeler</span>
             </TabsTrigger>

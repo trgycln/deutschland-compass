@@ -1,9 +1,8 @@
-
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
-import { ArrowRight, Users, BookOpen, MessageSquare, Info } from 'lucide-react';
+import { Card, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+// Send ikonunu ekledim (Telegram için en uygun ikon)
+import { Users, BookOpen, MessageSquare, Info, Send, ArrowRight } from 'lucide-react';
 import { HomeSearch } from '@/components/home-search';
 import { HomeProfessions } from '@/components/home-professions';
 import { professionsList } from '@/data/professions-list';
@@ -22,6 +21,10 @@ export default function Home() {
             <Info className="w-5 h-5 shrink-0 text-amber-600 dark:text-amber-400 mt-0.5 md:mt-0" />
             <p className="max-w-5xl leading-relaxed">
               <span className="font-semibold">Bilgilendirme:</span> Sitemizdeki dökümanlar, Telegram gruplarında paylaşılan ve topluluk yararına hazırlanmış açık kaynak içeriklerdir. Bilgilerin kaybolmaması adına derlenmiştir ve mümkün olduğunca hazırlayanların isimlerine yer verilmiştir. İçerik sahiplerinin talebi durumunda ilgili dökümanlar derhal kaldırılacaktır. Emek veren herkese teşekkür ederiz.
+              <br />
+              <span className="block mt-3 font-semibold text-blue-700 dark:text-blue-300">
+                Web sitemiz ve topluluk gelişmeleri için <a href="https://t.me/+yI1or4k3nMswN2Ni" target="_blank" rel="noopener noreferrer" className="underline hover:text-blue-900">Telegram kanalımıza</a> katılabilirsiniz. Bu kanal, yeni eklenenleri ve önemli duyuruları kaçırmamanız için açıldı. Linkler Telegram gruplarında kaybolabiliyor; bu kanaldan hem siteye hem de gelişmelere kolayca ulaşabilirsiniz.
+              </span>
             </p>
           </div>
         </div>
@@ -55,6 +58,32 @@ export default function Home() {
         </div>
       </section>
 
+      {/* YENİ EKLENEN: Telegram Community Banner */}
+      {/* Hero ile Features arasına yerleştirildi */}
+      <section className="border-y border-border bg-background relative z-10">
+        <div className="container mx-auto px-4 py-8">
+          <div className="flex flex-col md:flex-row items-center justify-between gap-6 bg-accent/5 dark:bg-accent/10 rounded-xl p-6 border border-accent/20">
+            <div className="flex items-start sm:items-center gap-4">
+              <div className="p-3 bg-accent text-primary-foreground rounded-full shrink-0 shadow-sm">
+                <Send className="w-6 h-6" />
+              </div>
+              <div className="space-y-1">
+                <h3 className="text-lg font-semibold text-foreground">Yalnız Değilsiniz!</h3>
+                <p className="text-muted-foreground max-w-xl text-sm sm:text-base">
+                  Anlık sorularınız, yardımlaşma ve tecrübe paylaşımı için <strong>Telegram</strong> gruplarımıza katılın.
+                  Binlerce kişilik topluluğumuz sizi bekliyor.
+                </p>
+              </div>
+            </div>
+            <Button variant="outline" className="border-accent text-accent-foreground hover:bg-accent hover:text-white w-full md:w-auto font-medium" asChild>
+              <Link href="/telegram-gruplari">
+                Telegram Grupları <ArrowRight className="ml-2 w-4 h-4" />
+              </Link>
+            </Button>
+          </div>
+        </div>
+      </section>
+
       {/* Features Section */}
       <section className="py-20 bg-white dark:bg-slate-900">
         <div className="container mx-auto px-4">
@@ -70,15 +99,20 @@ export default function Home() {
                 </CardHeader>
               </Card>
             </Link>
-            <Card className="border-none shadow-lg bg-secondary dark:bg-slate-800/50">
-              <CardHeader>
-                <Users className="h-10 w-10 text-primary dark:text-accent mb-4" />
-                <CardTitle>Topluluk Gücü</CardTitle>
-                <CardDescription className="text-base">
-                  Sadece teorik bilgi değil, gerçek insanların yaşadığı gerçek tecrübeler.
-                </CardDescription>
-              </CardHeader>
-            </Card>
+            
+            {/* GÜNCELLENEN: Topluluk Gücü Kartı artık link içeriyor */}
+            <Link href="/telegram-gruplari" className="block h-full">
+              <Card className="h-full border-none shadow-lg bg-secondary dark:bg-slate-800/50 hover:bg-secondary/80 dark:hover:bg-slate-800 transition-colors cursor-pointer">
+                <CardHeader>
+                  <Users className="h-10 w-10 text-primary dark:text-accent mb-4" />
+                  <CardTitle>Topluluk Gücü</CardTitle>
+                  <CardDescription className="text-base">
+                    Sadece teorik bilgi değil, gerçek insanların yaşadığı gerçek tecrübeler. <strong>Şimdi katılın.</strong>
+                  </CardDescription>
+                </CardHeader>
+              </Card>
+            </Link>
+
             <Link href="/rehber/egitim-ve-kariyer" className="block h-full">
               <Card className="h-full border-none shadow-lg bg-secondary dark:bg-slate-800/50 hover:bg-secondary/80 dark:hover:bg-slate-800 transition-colors cursor-pointer">
                 <CardHeader>
@@ -138,4 +172,3 @@ export default function Home() {
     </div>
   );
 }
-
