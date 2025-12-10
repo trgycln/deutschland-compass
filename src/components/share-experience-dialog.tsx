@@ -105,7 +105,7 @@ export function ShareExperienceDialog({ professionSlug, defaultProfessionName = 
                 </Label>
                 <Textarea 
                   id="experience" 
-                  placeholder="Denklik sürecinde yaşadıklarım..." 
+                  placeholder="Mekan, yemek, hizmet, ortam veya helallik hassasiyetiyle ilgili tecrübenizi paylaşın..." 
                   className="col-span-3 h-32"
                   value={formData.content}
                   onChange={(e) => setFormData({...formData, content: e.target.value})}

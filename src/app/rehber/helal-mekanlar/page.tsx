@@ -1,16 +1,48 @@
+
+"use client";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { MapPin, Utensils, AlertTriangle, Info, Car, CheckCircle2 } from "lucide-react";
 import { foodGuideData, travelTips } from "@/data/food-guide";
+import { ShareExperienceDialog } from '@/components/share-experience-dialog';
+import { DocumentSection } from '@/components/document-section';
+import { UploadDocumentDialog } from '@/components/upload-document-dialog';
+import { useEffect, useState } from 'react';
+import { supabase } from '@/lib/supabase';
 
-export const metadata = {
-  title: "Helal Mekanlar ve Gezi Rehberi | Deutschland Compass",
-  description: "Avrupa genelinde gönül rahatlığıyla yemek yiyebileceğiniz mekanlar ve seyahat ipuçları.",
-};
+// Metadata (moved from export for client component compatibility):
+// title: "Helal Mekanlar ve Gezi Rehberi | Deutschland Compass"
+// description: "Avrupa genelinde gönül rahatlığıyla yemek yiyebileceğiniz mekanlar ve seyahat ipuçları."
 
 export default function HalalPlacesPage() {
+  const [experiences, setExperiences] = useState<any[]>([]);
+  const [documents, setDocuments] = useState<any[]>([]);
+
+  useEffect(() => {
+    async function fetchExperiences() {
+      const { data } = await supabase
+        .from('experiences')
+        .select('*')
+        .eq('status', 'approved')
+        .eq('category', 'helal-mekanlar')
+        .order('created_at', { ascending: false });
+      if (data) setExperiences(data);
+    }
+    async function fetchDocuments() {
+      const { data } = await supabase
+        .from('documents')
+        .select('*')
+        .eq('status', 'approved')
+        .eq('category', 'helal-mekanlar')
+        .order('created_at', { ascending: false });
+      if (data) setDocuments(data);
+    }
+    fetchExperiences();
+    fetchDocuments();
+  }, []);
+
   return (
     <div className="flex flex-col min-h-screen bg-background">
       {/* Header Section */}
@@ -29,6 +61,15 @@ export default function HalalPlacesPage() {
       </section>
 
       <div className="container mx-auto px-4 py-12 space-y-12">
+        {/* Sekmeler: Mekanlar, Tecrübeler, Dökümanlar */}
+        <Tabs defaultValue="mekanlar" className="w-full">
+          <TabsList className="mb-8">
+            <TabsTrigger value="mekanlar">Mekanlar</TabsTrigger>
+            <TabsTrigger value="experiences">Tecrübeler</TabsTrigger>
+            <TabsTrigger value="documents">Dökümanlar</TabsTrigger>
+          </TabsList>
+
+          <TabsContent value="mekanlar">
         {/* Hassasiyet Uyarısı */}
         <Alert className="bg-amber-50 dark:bg-amber-900/20 border-amber-200 dark:border-amber-800">
           <AlertTriangle className="h-5 w-5 text-amber-600 dark:text-amber-400" />
@@ -45,7 +86,7 @@ export default function HalalPlacesPage() {
           </AlertDescription>
         </Alert>
 
-        {/* Mekanlar Listesi */}
+        {/* Mekanlar Listesi (ülke sekmeleriyle) */}
         <Tabs defaultValue="Almanya" className="w-full">
           <div className="flex items-center justify-between mb-6 flex-wrap gap-4">
             <h2 className="text-2xl font-bold flex items-center gap-2">
@@ -57,7 +98,6 @@ export default function HalalPlacesPage() {
               <TabsTrigger value="Avrupa">Diğer Avrupa</TabsTrigger>
             </TabsList>
           </div>
-
           {Object.entries(foodGuideData).map(([countryKey, regions]) => (
             <TabsContent key={countryKey} value={countryKey} className="space-y-8 animate-in fade-in-50">
               {regions.map((region, idx) => (
@@ -98,6 +138,32 @@ export default function HalalPlacesPage() {
               ))}
             </TabsContent>
           ))}
+        </Tabs>
+        {/* Mekanlar Listesi Sonu */}
+          </TabsContent>
+
+          <TabsContent value="experiences">
+            <div className="mb-4">
+              <ShareExperienceDialog professionSlug="helal-mekanlar" defaultProfessionName="Helal Mekanlar" />
+            </div>
+            <div className="space-y-4">
+              {experiences.map(exp => (
+                <Card key={exp.id}>
+                  <CardHeader>
+                    <CardTitle>{exp.title}</CardTitle>
+                  </CardHeader>
+                  <div className="p-4">{exp.content}</div>
+                </Card>
+              ))}
+            </div>
+          </TabsContent>
+
+          <TabsContent value="documents">
+            <div className="mb-4 flex flex-col gap-4">
+              <UploadDocumentDialog professionSlug="helal-mekanlar" />
+              <DocumentSection professionSlug="helal-mekanlar" />
+            </div>
+          </TabsContent>
         </Tabs>
 
         {/* Seyahat İpuçları */}

@@ -77,7 +77,7 @@ export function UploadDocumentDialog({ professionSlug }: { professionSlug: strin
             file_size: (file.size / 1024 / 1024).toFixed(2) + ' MB',
             uploader_name: 'Anonim',
             profession_slug: professionSlug,
-            status: 'approved'
+            status: 'pending'
           }
         ])
 
@@ -100,16 +100,19 @@ export function UploadDocumentDialog({ professionSlug }: { professionSlug: strin
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
-        <Button className="gap-2">
+        <Button
+          className="gap-2 bg-accent/90 hover:bg-accent text-white rounded-md px-4 py-2 text-sm font-medium border-0 shadow-sm"
+          size="sm"
+        >
           <UploadCloud className="w-4 h-4" />
-          Doküman Yükle
+          Döküman Ekle
         </Button>
       </DialogTrigger>
       <DialogContent className="sm:max-w-[500px]">
         <DialogHeader>
-          <DialogTitle>Doküman Paylaş</DialogTitle>
+          <DialogTitle>Döküman Paylaş</DialogTitle>
           <DialogDescription>
-            Faydalı olacağını düşündüğünüz ders notları, sunumlar veya rehberleri paylaşın.
+            Mekan listesi, menü, helal sertifika, açıklayıcı bilgi veya topluluğa faydalı olabilecek her türlü belgeyi paylaşabilirsiniz.
           </DialogDescription>
         </DialogHeader>
         
@@ -124,12 +127,12 @@ export function UploadDocumentDialog({ professionSlug }: { professionSlug: strin
           </Alert>
 
           <div className="grid gap-2">
-            <Label htmlFor="title">Doküman Başlığı *</Label>
+            <Label htmlFor="title">Döküman Başlığı *</Label>
             <Input 
               id="title" 
               value={formData.title}
               onChange={(e) => setFormData({...formData, title: e.target.value})}
-              placeholder="Örn: 9. Sınıf Geometri Ders Notları"
+              placeholder="Örn: Mekan listesi, helal sertifika, menü PDF'si, açıklayıcı belge..."
             />
           </div>
           
@@ -139,7 +142,7 @@ export function UploadDocumentDialog({ professionSlug }: { professionSlug: strin
               id="description" 
               value={formData.description}
               onChange={(e) => setFormData({...formData, description: e.target.value})}
-              placeholder="Doküman içeriği hakkında kısa bilgi..."
+              placeholder="Bu döküman hangi mekan, şehir veya konu için? İçeriği kısaca özetleyin. (örn: Köln'deki helal restoranlar listesi, Hagen Kapadokya Cafe menüsü, sertifika örneği vb.)"
             />
           </div>
 

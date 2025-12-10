@@ -1,4 +1,5 @@
 ﻿
+
 export type ProfessionStatus = 'active' | 'coming-soon';
 export type ProfessionPathType = 'continuation' | 'new-path';
 
@@ -852,6 +853,22 @@ export const professionsList: ProfessionCardData[] = [
     readingTime: '12dk Okuma',
     badgeColor: 'blue',
     keywords: ['kürtçe', 'öğretmen', 'hsu', 'anadil', 'eğitim', 'kurdisch', 'lehrer']
+
+  },
+  {
+    id: 'helal-mekanlar',
+    title: 'Helal Mekanlar',
+    slug: 'helal-mekanlar',
+    description: 'Avrupa genelinde helal hassasiyetli mekanlar, kullanıcı tecrübeleri ve döküman paylaşımı yönetimi.',
+    category: 'Topluluk',
+    status: 'active',
+    pathType: 'new-path',
+    customLink: '/rehber/helal-mekanlar',
+    icon: 'Utensils',
+    demand: 'Normal',
+    readingTime: '5dk Okuma',
+    badgeColor: 'green',
+    keywords: ['helal', 'mekan', 'yemek', 'restoran', 'topluluk', 'doküman', 'tecrübe']
   }
 ];
 
