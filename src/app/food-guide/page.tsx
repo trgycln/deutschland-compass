@@ -1,3 +1,4 @@
+"use client";
 import { ShareExperienceDialog } from '@/components/share-experience-dialog';
 import { DocumentSection } from '@/components/document-section';
 import { supabase } from '@/lib/supabase';
