@@ -27,6 +27,7 @@ import {
 } from "lucide-react";
 import Link from "next/link";
 import { ShareExperienceDialog } from '@/components/share-experience-dialog';
+import { ProfessionVideoPlayer } from '@/components/profession-video-player';
 import { DocumentSection } from '@/components/document-section';
 import { supabase } from '@/lib/supabase';
 import {
@@ -375,6 +376,10 @@ export default function TurkceOgretmenligiPage() {
                 <Badge variant="outline" className="text-slate-300 border-slate-700">
                   14dk Okuma
                 </Badge>
+              </div>
+              {/* Hero Video Section */}
+              <div className="mb-6">
+                <ProfessionVideoPlayer professionSlug="turkce-ogretmenligi" variant="hero" />
               </div>
               <h1 className="text-4xl md:text-5xl font-bold mb-4">
                 Türkçe Öğretmenleri

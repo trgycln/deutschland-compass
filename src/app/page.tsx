@@ -1,8 +1,8 @@
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import { Card, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-// Send ikonunu ekledim (Telegram için en uygun ikon)
-import { Users, BookOpen, MessageSquare, Info, Send, ArrowRight } from 'lucide-react';
+import { Badge } from '@/components/ui/badge';
+import { Users, BookOpen, MessageSquare, Info, Send, ArrowRight, Utensils } from 'lucide-react';
 import { HomeSearch } from '@/components/home-search';
 import { HomeProfessions } from '@/components/home-professions';
 import { professionsList } from '@/data/professions-list';
@@ -58,9 +58,8 @@ export default function Home() {
         </div>
       </section>
 
-      {/* YENİ EKLENEN: Telegram Community Banner */}
-      {/* Hero ile Features arasına yerleştirildi */}
-      <section className="border-y border-border bg-background relative z-10">
+      {/* Telegram Community Banner */}
+      <section className="border-t border-border bg-background relative z-10">
         <div className="container mx-auto px-4 py-8">
           <div className="flex flex-col md:flex-row items-center justify-between gap-6 bg-accent/5 dark:bg-accent/10 rounded-xl p-6 border border-accent/20">
             <div className="flex items-start sm:items-center gap-4">
@@ -84,6 +83,34 @@ export default function Home() {
         </div>
       </section>
 
+      {/* YENİ EKLENEN: Helal Mekanlar Rehberi Vurgusu */}
+      <section className="pb-8 bg-background relative z-10">
+        <div className="container mx-auto px-4">
+          <div className="flex flex-col md:flex-row items-center gap-6 justify-between bg-gradient-to-r from-amber-50 to-orange-50 dark:from-amber-950/30 dark:to-orange-950/20 rounded-xl p-6 border border-amber-100 dark:border-amber-900/50">
+            <div className="flex items-start gap-4">
+              <div className="bg-white dark:bg-amber-900/40 p-3 rounded-full shadow-sm border border-amber-100 dark:border-amber-800 text-amber-600 dark:text-amber-400">
+                <Utensils className="w-6 h-6" />
+              </div>
+              <div>
+                <div className="flex items-center gap-2 mb-1 flex-wrap">
+                  <Badge className="bg-amber-600 hover:bg-amber-700 text-white border-none shadow-sm">YENİ</Badge>
+                  <h3 className="font-bold text-lg text-amber-950 dark:text-amber-100">Helal Mekanlar & Lezzet Rehberi</h3>
+                </div>
+                <p className="text-amber-800/80 dark:text-amber-200/70 text-sm md:text-base max-w-2xl mt-1">
+                  Almanya ve Avrupa genelinde, topluluğumuzun tecrübeleriyle derlenen 
+                  güvenilir restoranlar ve seyahat ipuçları yayında.
+                </p>
+              </div>
+            </div>
+            <Button className="w-full md:w-auto bg-amber-600 text-white hover:bg-amber-700 border-none shadow-md" asChild>
+              <Link href="/rehber/helal-mekanlar">
+                Rehberi İncele <ArrowRight className="ml-2 w-4 h-4" />
+              </Link>
+            </Button>
+          </div>
+        </div>
+      </section>
+
       {/* Features Section */}
       <section className="py-20 bg-white dark:bg-slate-900">
         <div className="container mx-auto px-4">
@@ -100,7 +127,6 @@ export default function Home() {
               </Card>
             </Link>
             
-            {/* GÜNCELLENEN: Topluluk Gücü Kartı artık link içeriyor */}
             <Link href="/telegram-gruplari" className="block h-full">
               <Card className="h-full border-none shadow-lg bg-secondary dark:bg-slate-800/50 hover:bg-secondary/80 dark:hover:bg-slate-800 transition-colors cursor-pointer">
                 <CardHeader>
