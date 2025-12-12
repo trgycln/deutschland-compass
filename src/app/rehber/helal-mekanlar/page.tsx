@@ -52,6 +52,10 @@ export default function HalalPlacesPage() {
           (place.food && place.food.toLowerCase().includes(lowerQuery)) ||
           (place.note && place.note.toLowerCase().includes(lowerQuery))
         );
+        // Eğer şehirde hiç mekan eşleşmiyorsa ama şehir adı aramaya uyuyorsa, tüm mekanları göster
+        if (filteredPlaces.length === 0 && cityGroup.city.toLowerCase().includes(lowerQuery)) {
+          return { ...cityGroup };
+        }
         return { ...cityGroup, places: filteredPlaces };
       }).filter(cityGroup => cityGroup.places.length > 0);
     }

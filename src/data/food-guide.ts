@@ -260,10 +260,8 @@ export const foodGuideData: CountryGroup[] = [
         city: "Gießen",
         places: [
           { name: "Tuaz Börek (BGN GmbH)", city: "Gießen", address: "Moltkestraße 20, 35440 Linden", phone: "06403 7769633", mapLinks: ["https://g.co/kgs/B5Bw3D"], note: "Börek, baklava, pasta, cheesecake. Lezzetli ve güvenilir." },
-          { name: "İstanbul Restaurant", city: "Gießen", phone: "0641 87780520" },
           { name: "Restaurant Keyf-i Mangal", city: "Gießen", phone: "0641 97244005", mapLinks: ["https://g.co/kgs/bM97Sg"], note: "Güvenilir." },
           { name: "Simit Diyari (StadtBäckerei)", city: "Gießen", phone: "0641 98454718" },
-          { name: "HFC - Gießen", city: "Gießen", phone: "0641 97190056" },
           { name: "Turhan kebap", city: "Gießen" }
         ]
       },
