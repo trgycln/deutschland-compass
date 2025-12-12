@@ -30,6 +30,7 @@ import {
 import Link from "next/link";
 import { ShareExperienceDialog } from '@/components/share-experience-dialog';
 import { DocumentSection } from '@/components/document-section';
+import { ProfessionVideoPlayer } from '@/components/profession-video-player';
 import { supabase } from '@/lib/supabase';
 import {
   Accordion,
@@ -349,6 +350,9 @@ export default function TeknikOgretmenlerPage() {
               <p className="text-xl text-slate-300 max-w-3xl leading-relaxed">
                 Teknik öğretmenler için Almanya kariyer rehberi, mühendislik denkliği, öğretmenlik programları ve alternatif kariyer yolları.
               </p>
+            </div>
+            <div className="w-full md:w-1/3 mt-8 md:mt-0">
+              <ProfessionVideoPlayer professionSlug="teknik-ogretmenler" variant="hero" />
             </div>
           </div>
         </div>
