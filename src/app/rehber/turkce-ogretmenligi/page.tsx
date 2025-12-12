@@ -362,7 +362,7 @@ export default function TurkceOgretmenligiPage() {
       <div className="bg-slate-900 text-white py-16">
         <div className="container mx-auto px-4">
           <div className="flex flex-col md:flex-row gap-8 items-start">
-            <div className="p-4 bg-white/10 rounded-2xl backdrop-blur-sm">
+            <div className="p-4 bg-white/10 rounded-2xl backdrop-blur-sm flex-shrink-0">
               <Languages className="w-12 h-12 text-red-400" />
             </div>
             <div className="flex-1">
@@ -377,16 +377,15 @@ export default function TurkceOgretmenligiPage() {
                   14dk Okuma
                 </Badge>
               </div>
-              {/* Hero Video Section */}
-              <div className="mb-6">
-                <ProfessionVideoPlayer professionSlug="turkce-ogretmenligi" variant="hero" />
-              </div>
               <h1 className="text-4xl md:text-5xl font-bold mb-4">
                 Türkçe Öğretmenleri
               </h1>
               <p className="text-xl text-slate-300 max-w-3xl leading-relaxed">
                 Türk Dili ve Edebiyatı öğretmenleri için Almanya'da kariyer, HSU öğretmenliği, denklik süreçleri ve alternatif yollar hakkında kapsamlı rehber.
               </p>
+            </div>
+            <div className="w-full md:w-1/3 mt-8 md:mt-0">
+              <ProfessionVideoPlayer professionSlug="turkce-ogretmenligi" variant="hero" />
             </div>
           </div>
         </div>

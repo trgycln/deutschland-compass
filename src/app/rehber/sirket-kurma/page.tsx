@@ -105,7 +105,7 @@ export default function BusinessGuidePage() {
         {/* Tab Navigation */}
         {hydrated ? (
         <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-          <TabsList className="w-full mb-8 sticky top-0 z-10 bg-gradient-to-b from-white to-slate-50 dark:from-slate-900 dark:to-slate-800 p-3 px-1 shadow-md rounded-xl border border-blue-100 dark:border-slate-700 gap-2 flex flex-nowrap overflow-x-auto sm:grid sm:grid-cols-6">
+          <TabsList className="w-full mb-8 sticky top-0 z-10 bg-gradient-to-b from-white to-slate-50 dark:from-slate-900 dark:to-slate-800 p-3 px-2 shadow-md rounded-xl border border-blue-100 dark:border-slate-700 gap-2 flex flex-wrap overflow-x-auto">
             <TabsTrigger value="main" className="gap-2 rounded-lg h-12 md:h-12 px-3 min-w-[110px] flex-shrink-0 transition-all duration-200 data-[state=active]:bg-gradient-to-r data-[state=active]:from-blue-500 data-[state=active]:to-blue-600 data-[state=active]:text-white data-[state=active]:shadow-lg hover:bg-blue-50 dark:hover:bg-blue-900/20 text-sm md:text-[15px] font-semibold">
               <BookOpen className="w-5 h-5" />
               <span>Rehber</span>
