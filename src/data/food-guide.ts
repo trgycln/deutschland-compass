@@ -26,6 +26,24 @@ export type CountryGroup = {
 // I. BÖLÜM: YEMEK MEKANLARI VE FİYATLAR
 export const foodGuideData: CountryGroup[] = [
   {
+    country: "Portekiz",
+    cities: [
+      {
+        city: "Porto",
+        places: [
+          { name: "Pakistan Restauranı", city: "Porto" }
+        ]
+      },
+      {
+        city: "Lizbon",
+        places: [
+          { name: "Queijadas de Belem", city: "Lizbon", mapLinks: ["https://maps.app.goo.gl/WrYxgVVDzGxccsHV7"] },
+          { name: "Zaafran Restaurant & Cafe", city: "Lizbon", mapLinks: ["https://maps.app.goo.gl/1Q1Q1QZaafran"] }
+        ]
+      }
+    ]
+  },
+  {
     country: "Almanya",
     cities: [
       {
@@ -747,7 +765,7 @@ export const foodGuideData: CountryGroup[] = [
     ]
   },
   {
-    country: "Hollanda (Netherlands)",
+    country: "Hollanda",
     cities: [
       {
         city: "Almere",
@@ -816,7 +834,7 @@ export const foodGuideData: CountryGroup[] = [
     ]
   },
   {
-    country: "Belçika (Belgium)",
+    country: "Belçika",
     cities: [
       {
         city: "Anvers (Antwerpen)",
@@ -868,7 +886,7 @@ export const foodGuideData: CountryGroup[] = [
     ]
   },
   {
-    country: "Fransa (France)",
+    country: "Fransa",
     cities: [
       {
         city: "Paris",
@@ -1048,12 +1066,7 @@ export const foodGuideData: CountryGroup[] = [
           { name: "Simit House - cukiernia turecka", city: "Varşova", note: "Kahvaltı" }
         ]
       },
-      {
-        city: "Portekiz (Porto)",
-        places: [
-          { name: "Pakistan Restauranı", city: "Porto" }
-        ]
-      },
+      // Portekiz şehirleri Balkanlar & Diğer'den çıkarıldı
       {
         city: "Slovenya (Lubliyana)",
         places: [

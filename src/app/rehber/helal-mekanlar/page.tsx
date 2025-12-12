@@ -203,7 +203,7 @@ export default function HalalPlacesPage() {
               ) : (
                 <div className="hidden md:flex items-center gap-2 text-sm text-muted-foreground ml-auto bg-secondary/30 px-3 py-1 rounded-full">
                   <Filter className="w-3 h-3" />
-                  <span>{filteredCities.reduce((acc, c) => acc + c.places.length, 0)} Mekan</span>
+                  <span>{filteredCities.reduce((acc, c) => acc + (Array.isArray(c.places) ? c.places.length : 0), 0)} Mekan</span>
                 </div>
               )}
             </div>
@@ -237,15 +237,14 @@ export default function HalalPlacesPage() {
                       {cityGroup.city}
                     </div>
                     <Badge variant="outline" className="bg-background text-xs font-normal text-muted-foreground border-border/60">
-                      {cityGroup.places.length}
+                      {Array.isArray(cityGroup.places) ? cityGroup.places.length : 0}
                     </Badge>
                   </CardHeader>
 
                   <CardContent className="p-0 flex-grow">
                     <div className="divide-y divide-border/40">
-                      {cityGroup.places.map((place, pIdx) => (
+                      {Array.isArray(cityGroup.places) && cityGroup.places.map((place, pIdx) => (
                         <div key={pIdx} className="p-4 hover:bg-secondary/10 transition-colors">
-                          
                           {/* Mekan Başlığı & Etiket */}
                           <div className="flex justify-between items-start gap-3 mb-2">
                             <h4 className="font-bold text-base text-primary dark:text-primary-foreground leading-snug">
@@ -313,7 +312,6 @@ export default function HalalPlacesPage() {
                               </Button>
                             )}
                           </div>
-
                         </div>
                       ))}
                     </div>
