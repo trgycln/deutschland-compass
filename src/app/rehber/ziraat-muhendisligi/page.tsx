@@ -316,6 +316,9 @@ export default function ZiraatMuhendisligiPage() {
                 Almanya'da Ziraat Mühendisi olarak kariyer yapmak, denklik süreçleri, tarım teknolojileri (GIS) ve yaşam rehberi.
               </p>
             </div>
+            <div className="w-full md:w-1/3 mt-8 md:mt-0">
+              <ProfessionVideoPlayer professionSlug="ziraat-muhendisligi" variant="hero" />
+            </div>
           </div>
         </div>
       </div>
@@ -350,7 +353,7 @@ export default function ZiraatMuhendisligiPage() {
 
           <TabsContent value="guide" className="space-y-8">
             
-            <ProfessionVideoPlayer professionSlug="ziraat-muhendisligi" />
+
 
             {/* Bölüm 1: Hazırlık */}
             <Card>

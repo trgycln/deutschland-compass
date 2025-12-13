@@ -30,6 +30,7 @@ import {
   Shield
 } from "lucide-react";
 import Link from "next/link";
+import { ProfessionVideoPlayer } from '@/components/profession-video-player';
 import { supabase } from '@/lib/supabase';
 import { ShareExperienceDialog } from '@/components/share-experience-dialog';
 import { UploadDocumentDialog } from '@/components/upload-document-dialog';
@@ -71,30 +72,35 @@ export default function SozialarbeiterPage() {
     <div className="min-h-screen bg-slate-50 dark:bg-slate-950">
       {/* Hero Section */}
       <div className="relative bg-indigo-900 text-white py-20 overflow-hidden">
-        <div className="absolute inset-0 bg-[url('/grid.svg')] bg-center [mask-image:linear-gradient(180deg,white,rgba(255,255,255,0))]"></div>
+        <div className="absolute inset-0 bg-[url('/grid.svg')] bg-center [mask-image:linear-gradient(180deg,white,rgba(255,255,255,0))]" />
         <div className="container mx-auto px-4 relative z-10">
-          <div className="max-w-3xl">
-            <div className="flex items-center gap-3 mb-6">
-              <Badge variant="secondary" className="bg-indigo-100 text-indigo-900 hover:bg-indigo-200">
-                Sosyal & Sağlık
-              </Badge>
-              <Badge variant="outline" className="text-indigo-100 border-indigo-400">
-                Sozialarbeiter/in
-              </Badge>
+          <div className="flex flex-col md:flex-row gap-8 items-start">
+            <div className="flex-1 max-w-3xl">
+              <div className="flex items-center gap-3 mb-6">
+                <Badge variant="secondary" className="bg-indigo-100 text-indigo-900 hover:bg-indigo-200">
+                  Sosyal & Sağlık
+                </Badge>
+                <Badge variant="outline" className="text-indigo-100 border-indigo-400">
+                  Sozialarbeiter/in
+                </Badge>
+              </div>
+              <h1 className="text-4xl md:text-5xl font-bold mb-6 leading-tight">
+                Almanya'da Sosyal Hizmet Uzmanlığı
+              </h1>
+              <p className="text-xl text-indigo-100 mb-8 leading-relaxed">
+                Sosyal hizmet uzmanları için denklik, kariyer yolları, çalışma alanları ve yaşam rehberi.
+              </p>
+              <div className="flex flex-wrap gap-4">
+                <Button size="lg" className="bg-white text-indigo-900 hover:bg-indigo-50" asChild>
+                  <Link href="#baslangic">Rehbere Başla</Link>
+                </Button>
+                <Button size="lg" className="bg-indigo-700 text-white hover:bg-indigo-600 border-none" asChild>
+                  <Link href="#tecrube-paylas">Tecrübeni Paylaş</Link>
+                </Button>
+              </div>
             </div>
-            <h1 className="text-4xl md:text-5xl font-bold mb-6 leading-tight">
-              Almanya'da Sosyal Hizmet Uzmanlığı
-            </h1>
-            <p className="text-xl text-indigo-100 mb-8 leading-relaxed">
-              Sosyal hizmet uzmanları için denklik, kariyer yolları, çalışma alanları ve yaşam rehberi.
-            </p>
-            <div className="flex flex-wrap gap-4">
-              <Button size="lg" className="bg-white text-indigo-900 hover:bg-indigo-50" asChild>
-                <Link href="#baslangic">Rehbere Başla</Link>
-              </Button>
-              <Button size="lg" className="bg-indigo-700 text-white hover:bg-indigo-600 border-none" asChild>
-                <Link href="#tecrube-paylas">Tecrübeni Paylaş</Link>
-              </Button>
+            <div className="w-full md:w-1/3 mt-8 md:mt-0">
+              <ProfessionVideoPlayer professionSlug="sozialarbeiter" variant="hero" />
             </div>
           </div>
         </div>

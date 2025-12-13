@@ -74,30 +74,35 @@ export default function MuhendisMimarPage() {
     <div className="min-h-screen bg-slate-50 dark:bg-slate-950">
       {/* Hero Section */}
       <div className="relative bg-slate-900 text-white py-20 overflow-hidden">
-        <div className="absolute inset-0 bg-[url('/grid.svg')] bg-center [mask-image:linear-gradient(180deg,white,rgba(255,255,255,0))]"></div>
+        <div className="absolute inset-0 bg-[url('/grid.svg')] bg-center [mask-image:linear-gradient(180deg,white,rgba(255,255,255,0))]" />
         <div className="container mx-auto px-4 relative z-10">
-          <div className="max-w-3xl">
-            <div className="flex items-center gap-3 mb-6">
-              <Badge variant="secondary" className="bg-orange-100 text-orange-900 hover:bg-orange-200">
-                Mühendislik & Mimarlık
-              </Badge>
-              <Badge variant="outline" className="text-orange-100 border-orange-400">
-                Yüksek Talep
-              </Badge>
+          <div className="flex flex-col md:flex-row gap-8 items-start">
+            <div className="flex-1 max-w-3xl">
+              <div className="flex items-center gap-3 mb-6">
+                <Badge variant="secondary" className="bg-orange-100 text-orange-900 hover:bg-orange-200">
+                  Mühendislik & Mimarlık
+                </Badge>
+                <Badge variant="outline" className="text-orange-100 border-orange-400">
+                  Yüksek Talep
+                </Badge>
+              </div>
+              <h1 className="text-4xl md:text-5xl font-bold mb-6 leading-tight">
+                Mühendisler ve Mimarlar İçin Almanya Kariyer ve Yaşam Rehberi
+              </h1>
+              <p className="text-xl text-slate-300 mb-8 leading-relaxed">
+                Almanya'ya gelmeden önceki hazırlıklar, denklik süreçleri (ZAB, Meslek Odaları), iş arama stratejileri ve kariyer gelişimi hakkında kapsamlı rehber.
+              </p>
+              <div className="flex flex-wrap gap-4">
+                <Button size="lg" className="bg-white text-slate-900 hover:bg-slate-100" asChild>
+                  <Link href="#baslangic">Hemen Başla</Link>
+                </Button>
+                <Button size="lg" className="bg-orange-600 text-white hover:bg-orange-500 border-none" asChild>
+                  <Link href="#tecrube-paylas">Tecrübeni Paylaş</Link>
+                </Button>
+              </div>
             </div>
-            <h1 className="text-4xl md:text-5xl font-bold mb-6 leading-tight">
-              Mühendisler ve Mimarlar İçin Almanya Kariyer ve Yaşam Rehberi
-            </h1>
-            <p className="text-xl text-slate-300 mb-8 leading-relaxed">
-              Almanya'ya gelmeden önceki hazırlıklar, denklik süreçleri (ZAB, Meslek Odaları), iş arama stratejileri ve kariyer gelişimi hakkında kapsamlı rehber.
-            </p>
-            <div className="flex flex-wrap gap-4">
-              <Button size="lg" className="bg-white text-slate-900 hover:bg-slate-100" asChild>
-                <Link href="#baslangic">Hemen Başla</Link>
-              </Button>
-              <Button size="lg" className="bg-orange-600 text-white hover:bg-orange-500 border-none" asChild>
-                <Link href="#tecrube-paylas">Tecrübeni Paylaş</Link>
-              </Button>
+            <div className="w-full md:w-1/3 mt-8 md:mt-0">
+              <ProfessionVideoPlayer professionSlug="muhendis-mimar" variant="hero" />
             </div>
           </div>
         </div>

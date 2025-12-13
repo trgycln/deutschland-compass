@@ -430,17 +430,22 @@ export default function MyoMezunlariPage() {
           <div className="absolute inset-0 bg-gradient-to-br from-blue-900/50 via-slate-900/80 to-slate-900" />
         </div>
         <div className="relative max-w-7xl mx-auto px-6 lg:px-8">
-          <div className="max-w-2xl">
-            <div className="flex items-center gap-x-3 text-blue-400 mb-6">
-              <GraduationCap className="h-6 w-6" />
-              <span className="font-semibold">Meslek Yüksek Okulu Mezunları</span>
+          <div className="flex flex-col md:flex-row gap-8 items-start">
+            <div className="flex-1 max-w-2xl">
+              <div className="flex items-center gap-x-3 text-blue-400 mb-6">
+                <GraduationCap className="h-6 w-6" />
+                <span className="font-semibold">Meslek Yüksek Okulu Mezunları</span>
+              </div>
+              <h1 className="text-4xl font-bold tracking-tight text-white sm:text-6xl mb-6">
+                MYO Mezunları İçin Almanya Kariyer Rehberi
+              </h1>
+              <p className="text-lg leading-8 text-slate-300 mb-8">
+                Önlisans diplomanızla Almanya'da kariyer yapmanın yolları, denklik süreçleri ve mesleki fırsatlar.
+              </p>
             </div>
-            <h1 className="text-4xl font-bold tracking-tight text-white sm:text-6xl mb-6">
-              MYO Mezunları İçin Almanya Kariyer Rehberi
-            </h1>
-            <p className="text-lg leading-8 text-slate-300 mb-8">
-              Önlisans diplomanızla Almanya'da kariyer yapmanın yolları, denklik süreçleri ve mesleki fırsatlar.
-            </p>
+            <div className="w-full md:w-1/3 mt-8 md:mt-0">
+              <ProfessionVideoPlayer professionSlug="myo-mezunlari" variant="hero" />
+            </div>
           </div>
         </div>
       </div>

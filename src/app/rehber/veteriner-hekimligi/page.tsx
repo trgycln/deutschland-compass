@@ -306,6 +306,9 @@ export default function VeterinerHekimligiPage() {
                 Almanya'da veteriner hekim olarak çalışmak isteyenler için denklik (Approbation), mesleki izin (Berufserlaubnis), vize süreçleri ve klinik yaşam rehberi.
               </p>
             </div>
+            <div className="w-full md:w-1/3 mt-8 md:mt-0">
+              <ProfessionVideoPlayer professionSlug="veteriner-hekimligi" variant="hero" />
+            </div>
           </div>
         </div>
       </div>
