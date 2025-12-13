@@ -1,6 +1,7 @@
 "use client";
 
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
+import { supabase } from "@/lib/supabase";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -11,39 +12,97 @@ import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, Di
 import { 
   MapPin, Utensils, AlertTriangle, Info, Car, CheckCircle2, 
   Euro, Star, ShieldAlert, Search, Phone, ExternalLink, 
-  ChefHat, X, Filter
+  ChefHat, X, Filter, Loader2
 } from "lucide-react";
-import { foodGuideData, travelTips, generalAdvice } from "@/data/food-guide";
+import { PlaceFeedback } from "@/components/place-feedback";
+import { AddPlaceDialog } from "@/components/add-place-dialog";
+import { travelTips, generalAdvice } from "@/data/food-guide";
+
+// Veritabanı Tip Tanımı
+type DBPlace = {
+  id: string;
+  name: string;
+  country: string;
+  city: string;
+  food?: string;
+  address?: string;
+  phone?: string;
+  map_link?: string;
+  note?: string;
+  price?: string;
+  highlight?: boolean;
+  warning?: boolean;
+};
+
+type GroupedData = {
+  country: string;
+  cities: {
+    city: string;
+    places: DBPlace[];
+  }[];
+};
 
 export default function HalalPlacesPage() {
   // State
+  const [rawData, setRawData] = useState<DBPlace[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedCity, setSelectedCity] = useState<string>("all");
-  const [activeTab, setActiveTab] = useState("Almanya"); // Varsayılan sekme
+  const [activeTab, setActiveTab] = useState("Almanya");
 
-  // 1. Şehir Listesini Hazırla (Aktif Sekmeye Göre)
-  const currentCountryData = useMemo(() => {
-    return foodGuideData.find(g => g.country === activeTab);
-  }, [activeTab]);
+  // 1. Verileri Supabase'den Çek
+  const fetchPlaces = async () => {
+    setIsLoading(true);
+    const { data, error } = await supabase
+      .from('places')
+      .select('*')
+      .order('city', { ascending: true });
+    
+    if (error) {
+      console.error("Veri çekme hatası:", error);
+    } else if (data) {
+      setRawData(data);
+    }
+    setIsLoading(false);
+  };
 
+  useEffect(() => {
+    fetchPlaces();
+  }, []);
+
+  // 2. Verileri Grupla
+  const groupedData: GroupedData[] = useMemo(() => {
+    const groups: Record<string, Record<string, DBPlace[]>> = {};
+
+    rawData.forEach(place => {
+      if (!groups[place.country]) groups[place.country] = {};
+      if (!groups[place.country][place.city]) groups[place.country][place.city] = [];
+      groups[place.country][place.city].push(place);
+    });
+
+    return Object.entries(groups).map(([country, citiesObj]) => ({
+      country,
+      cities: Object.entries(citiesObj).map(([city, places]) => ({ city, places }))
+    })).sort((a, b) => a.country === "Almanya" ? -1 : 1);
+  }, [rawData]);
+
+  // 3. Mevcut Tab'a Göre Şehir Listesi
   const availableCities = useMemo(() => {
-    if (!currentCountryData) return [];
-    // Şehirleri alfabetik sırala
-    return currentCountryData.cities.map(c => c.city).sort();
-  }, [currentCountryData]);
+    const currentGroup = groupedData.find(g => g.country === activeTab);
+    return currentGroup ? currentGroup.cities.map(c => c.city).sort() : [];
+  }, [groupedData, activeTab]);
 
-  // 2. Veriyi Filtrele
-  const filteredCities = useMemo(() => {
-    if (!currentCountryData) return [];
+  // 4. Filtreleme Mantığı
+  const filteredDisplayData = useMemo(() => {
+    const currentGroup = groupedData.find(g => g.country === activeTab);
+    if (!currentGroup) return [];
 
-    let cities = currentCountryData.cities;
+    let cities = currentGroup.cities;
 
-    // Şehir Filtresi
     if (selectedCity !== "all") {
       cities = cities.filter(c => c.city === selectedCity);
     }
 
-    // Kelime Arama
     if (searchQuery.trim() !== "") {
       const lowerQuery = searchQuery.toLowerCase();
       cities = cities.map(cityGroup => {
@@ -52,24 +111,18 @@ export default function HalalPlacesPage() {
           (place.food && place.food.toLowerCase().includes(lowerQuery)) ||
           (place.note && place.note.toLowerCase().includes(lowerQuery))
         );
-        // Eğer şehirde hiç mekan eşleşmiyorsa ama şehir adı aramaya uyuyorsa, tüm mekanları göster
-        if (filteredPlaces.length === 0 && cityGroup.city.toLowerCase().includes(lowerQuery)) {
-          return { ...cityGroup };
-        }
         return { ...cityGroup, places: filteredPlaces };
       }).filter(cityGroup => cityGroup.places.length > 0);
     }
 
     return cities;
-  }, [currentCountryData, selectedCity, searchQuery]);
+  }, [groupedData, activeTab, selectedCity, searchQuery]);
 
-  // Filtre Temizleme
   const resetFilters = () => {
     setSearchQuery("");
     setSelectedCity("all");
   };
 
-  // Sekme değişince filtreleri sıfırla
   const handleTabChange = (value: string) => {
     setActiveTab(value);
     resetFilters();
@@ -78,52 +131,46 @@ export default function HalalPlacesPage() {
   return (
     <div className="flex flex-col min-h-screen bg-background pb-20">
       
-      {/* --- HERO SECTION --- */}
+      {/* HERO SECTION */}
       <section className="bg-primary text-primary-foreground pt-10 pb-16 md:pt-16 md:pb-20 relative overflow-hidden rounded-b-[2rem] md:rounded-b-[3rem] shadow-xl">
-        {/* Arkaplan Efekti */}
         <div className="absolute top-0 right-0 w-64 h-64 bg-accent/10 rounded-full blur-[80px] pointer-events-none" />
         <div className="absolute bottom-0 left-0 w-48 h-48 bg-accent/5 rounded-full blur-[60px] pointer-events-none" />
         
-        <div className="container mx-auto px-4 relative z-10">
-          <div className="flex flex-col items-center text-center">
-            <div className="inline-flex items-center justify-center p-3 bg-white/10 backdrop-blur-sm rounded-full mb-4 border border-white/20 shadow-inner">
-              <ChefHat className="w-8 h-8 text-accent" />
-            </div>
-            
-            <h1 className="text-3xl md:text-5xl font-bold tracking-tight mb-4 leading-tight">
-              Gönül Rahatlığıyla <span className="text-accent">Lezzet Rehberi</span>
-            </h1>
-            
-            <p className="text-base md:text-lg text-primary-foreground/80 max-w-2xl mx-auto mb-8 leading-relaxed">
-              Avrupa genelinde, topluluğumuzun tecrübeleriyle derlenen, 
-              helallik hassasiyeti gözetilen mekanlar.
-            </p>
+        <div className="container mx-auto px-4 relative z-10 text-center">
+          <div className="inline-flex items-center justify-center p-3 bg-white/10 backdrop-blur-sm rounded-full mb-4 border border-white/20 shadow-inner">
+            <ChefHat className="w-8 h-8 text-accent" />
+          </div>
+          
+          <h1 className="text-3xl md:text-5xl font-bold tracking-tight mb-4 leading-tight">
+            Gönül Rahatlığıyla <span className="text-accent">Lezzet Rehberi</span>
+          </h1>
+          
+          <p className="text-base md:text-lg text-primary-foreground/80 max-w-2xl mx-auto mb-8 leading-relaxed">
+            Avrupa genelinde, topluluğumuzun tecrübeleriyle derlenen ve sürekli güncellenen helal mekan rehberi.
+          </p>
 
-            {/* HASSASİYET UYARISI BUTONU */}
+          <div className="flex flex-wrap justify-center gap-4">
+            {/* MEKAN EKLEME BUTONU */}
+            <AddPlaceDialog onPlaceAdded={fetchPlaces} />
+
+            {/* HASSASİYET UYARISI */}
             <Dialog>
               <DialogTrigger asChild>
-                <Button 
-                  variant="secondary" 
-                  size="sm"
-                  className="bg-amber-100 text-amber-900 hover:bg-amber-200 border border-amber-300 font-semibold gap-2 shadow-lg transition-transform hover:scale-105 rounded-full px-6"
-                >
-                  <ShieldAlert className="w-4 h-4 md:w-5 md:h-5 text-amber-700" />
+                <Button variant="secondary" className="bg-amber-100 text-amber-900 hover:bg-amber-200 border border-amber-300 font-semibold gap-2 shadow-lg">
+                  <ShieldAlert className="w-5 h-5" />
                   Hassasiyet Uyarısı
                 </Button>
               </DialogTrigger>
               <DialogContent className="max-w-2xl bg-card w-[95%] sm:w-full rounded-xl">
                 <DialogHeader>
-                  <div className="flex items-center gap-3 mb-2">
-                    <div className="p-2 bg-amber-100 rounded-full">
-                      <ShieldAlert className="w-6 h-6 text-amber-700" />
-                    </div>
-                    <DialogTitle className="text-xl text-foreground">Önemli Hassasiyet Uyarısı</DialogTitle>
-                  </div>
-                  <DialogDescription className="text-base pt-2">
-                    Bu rehberdeki mekanlar topluluk tavsiyesidir. Lütfen aşağıdaki hususlara dikkat ediniz:
+                  <DialogTitle className="text-xl text-foreground flex items-center gap-2">
+                    <ShieldAlert className="text-amber-600" /> Önemli Uyarı
+                  </DialogTitle>
+                  <DialogDescription>
+                    Bu rehberdeki mekanlar topluluk tavsiyesidir. Lütfen dikkat ediniz:
                   </DialogDescription>
                 </DialogHeader>
-                <div className="bg-secondary/30 p-4 rounded-lg mt-2 border border-border max-h-[60vh] overflow-y-auto">
+                <div className="bg-secondary/30 p-4 rounded-lg mt-2 border border-border overflow-y-auto max-h-[60vh]">
                   <ul className="space-y-3">
                     {generalAdvice.map((advice, idx) => (
                       <li key={idx} className="flex items-start gap-2 text-sm leading-relaxed text-muted-foreground">
@@ -139,190 +186,175 @@ export default function HalalPlacesPage() {
         </div>
       </section>
 
-      {/* --- CONTENT SECTION --- */}
+      {/* CONTENT */}
       <div className="container mx-auto px-4 -mt-8 md:-mt-10 relative z-20">
         
-        {/* FİLTRE KARTI (Mobil Uyumlu) */}
+        {/* FİLTRE KARTI */}
         <div className="bg-card border border-border rounded-xl p-4 md:p-6 shadow-lg mb-8">
-          {/* Ülke Sekmeleri */}
+          
+          {/* SEKMELER (DÜZELTİLDİ: Flex-wrap ve auto width ile) */}
           <div className="mb-6">
             <Tabs value={activeTab} onValueChange={handleTabChange} className="w-full">
-              <TabsList className="bg-secondary/50 w-full h-auto p-1.5 flex flex-wrap justify-center gap-2 rounded-xl">
-                {foodGuideData.map((group, idx) => (
+              {/* h-auto ve flex-wrap ekledik, flex-1'i kaldırdık */}
+              <TabsList className="bg-secondary/50 w-full h-auto p-2 flex flex-wrap justify-center gap-2 rounded-xl">
+                {groupedData.map((group, idx) => (
                   <TabsTrigger 
                     key={idx} 
                     value={group.country}
-                    className="flex-1 min-w-[100px] py-2.5 text-sm md:text-base font-medium data-[state=active]:bg-background data-[state=active]:text-primary data-[state=active]:shadow-sm rounded-lg transition-all"
+                    // flex-1 ve min-w-100px KALDIRILDI. Yerine px-4 ve w-auto geldi.
+                    className="w-auto px-4 py-2 text-sm md:text-base font-medium rounded-lg transition-all data-[state=active]:bg-background data-[state=active]:text-primary data-[state=active]:shadow-sm"
                   >
                     {group.country}
                   </TabsTrigger>
                 ))}
+                {groupedData.length === 0 && <span className="text-sm text-muted-foreground p-2">Yükleniyor...</span>}
               </TabsList>
             </Tabs>
           </div>
 
-          {/* Arama ve Şehir Filtresi */}
+          {/* Filtreler */}
           <div className="grid grid-cols-1 md:grid-cols-12 gap-4 items-center">
-            
-            {/* Kelime Arama */}
             <div className="md:col-span-5 relative">
               <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
               <Input 
-                placeholder="Mekan, yemek adı..." 
+                placeholder="Mekan, yemek adı ara..." 
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                className="pl-10 h-12 bg-background border-input focus:border-accent text-base"
+                className="pl-10 h-12 bg-background"
               />
             </div>
-
-            {/* Şehir Filtresi */}
             <div className="md:col-span-4">
               <Select value={selectedCity} onValueChange={setSelectedCity} disabled={availableCities.length === 0}>
-                <SelectTrigger className="h-12 bg-background border-input focus:ring-accent w-full text-base">
+                <SelectTrigger className="h-12 bg-background">
                   <SelectValue placeholder="Şehir Seçin" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="all" className="font-medium">Tüm Şehirler ({activeTab})</SelectItem>
+                  <SelectItem value="all">Tüm Şehirler</SelectItem>
                   {availableCities.map((city, idx) => (
                     <SelectItem key={idx} value={city}>{city}</SelectItem>
                   ))}
                 </SelectContent>
               </Select>
             </div>
-
-            {/* Temizle Butonu */}
             <div className="md:col-span-3 flex md:justify-end">
               {(searchQuery || selectedCity !== "all") ? (
-                <Button 
-                  variant="destructive" 
-                  onClick={resetFilters} 
-                  className="w-full md:w-auto h-12 gap-2 bg-red-100 text-red-700 hover:bg-red-200 border border-red-200"
-                >
+                <Button variant="destructive" onClick={resetFilters} className="w-full md:w-auto h-12 gap-2 bg-red-100 text-red-700 hover:bg-red-200">
                   <X className="w-4 h-4" /> Filtreyi Temizle
                 </Button>
               ) : (
                 <div className="hidden md:flex items-center gap-2 text-sm text-muted-foreground ml-auto bg-secondary/30 px-3 py-1 rounded-full">
                   <Filter className="w-3 h-3" />
-                  <span>{filteredCities.reduce((acc, c) => acc + (Array.isArray(c.places) ? c.places.length : 0), 0)} Mekan</span>
+                  <span>{filteredDisplayData.reduce((acc, c) => acc + c.places.length, 0)} Mekan</span>
                 </div>
               )}
             </div>
           </div>
         </div>
 
-        {/* --- MEKAN LİSTESİ --- */}
-        <div className="space-y-8">
-          {filteredCities.length === 0 ? (
-            <div className="flex flex-col items-center justify-center py-20 bg-secondary/20 rounded-xl border border-dashed border-border text-center px-4">
-              <div className="p-4 bg-background rounded-full shadow-sm mb-4">
-                <Utensils className="w-10 h-10 text-muted-foreground/40" />
-              </div>
-              <h3 className="text-lg font-bold text-foreground">Sonuç Bulunamadı</h3>
-              <p className="text-muted-foreground mt-2 text-sm max-w-xs mx-auto">
-                Aradığınız kriterlere uygun mekan kaydı şimdilik yok. Filtreleri değiştirmeyi deneyebilirsiniz.
-              </p>
-              <Button variant="outline" onClick={resetFilters} className="mt-6">
-                Tümünü Göster
-              </Button>
-            </div>
-          ) : (
+        {/* MEKAN LİSTESİ */}
+        {isLoading ? (
+          <div className="flex justify-center py-20">
+            <Loader2 className="w-10 h-10 animate-spin text-accent" />
+          </div>
+        ) : filteredDisplayData.length === 0 ? (
+          <div className="text-center py-20 bg-secondary/20 rounded-xl border border-dashed border-border">
+            <Utensils className="w-12 h-12 text-muted-foreground/30 mx-auto mb-3" />
+            <h3 className="text-lg font-semibold">Sonuç Bulunamadı</h3>
+            <p className="text-muted-foreground mt-2">Bu kriterlere uygun mekan yok.</p>
+            <Button variant="outline" onClick={resetFilters} className="mt-4">Tümünü Göster</Button>
+          </div>
+        ) : (
+          <div className="space-y-12">
+            {/* Şehir Şehir Listele */}
             <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {filteredCities.map((cityGroup, cIdx) => (
-                <Card key={cIdx} className="bg-card hover:border-accent/40 transition-all duration-300 h-full flex flex-col overflow-hidden shadow-sm hover:shadow-md border-l-4 border-l-accent/20">
-                  
-                  {/* Kart Başlığı: Şehir */}
-                  <CardHeader className="bg-secondary/30 px-4 py-3 border-b border-border/50 flex flex-row items-center justify-between">
-                    <div className="flex items-center gap-2 font-bold text-foreground">
-                      <MapPin className="w-4 h-4 text-accent fill-accent/20" />
-                      {cityGroup.city}
-                    </div>
-                    <Badge variant="outline" className="bg-background text-xs font-normal text-muted-foreground border-border/60">
-                      {Array.isArray(cityGroup.places) ? cityGroup.places.length : 0}
-                    </Badge>
-                  </CardHeader>
+              {filteredDisplayData.map((cityGroup) => (
+                cityGroup.places.map((place) => (
+                  <Card key={place.id} className="bg-card hover:border-accent/40 transition-all duration-300 h-full flex flex-col overflow-hidden shadow-sm hover:shadow-md border-l-4 border-l-accent/20">
+                    
+                    {/* Kart Başlığı */}
+                    <CardHeader className="bg-secondary/30 px-4 py-3 border-b border-border/50 flex flex-row items-center justify-between">
+                      <div className="flex items-center gap-2 font-bold text-foreground">
+                        <MapPin className="w-4 h-4 text-accent fill-accent/20" />
+                        {cityGroup.city}
+                      </div>
+                    </CardHeader>
 
-                  <CardContent className="p-0 flex-grow">
-                    <div className="divide-y divide-border/40">
-                      {Array.isArray(cityGroup.places) && cityGroup.places.map((place, pIdx) => (
-                        <div key={pIdx} className="p-4 hover:bg-secondary/10 transition-colors">
-                          {/* Mekan Başlığı & Etiket */}
-                          <div className="flex justify-between items-start gap-3 mb-2">
-                            <h4 className="font-bold text-base text-primary dark:text-primary-foreground leading-snug">
-                              {place.name}
-                            </h4>
-                            {place.highlight && (
-                              <div className="bg-amber-100 dark:bg-amber-900/40 text-amber-700 dark:text-amber-400 text-[10px] px-1.5 py-0.5 rounded flex items-center gap-1 font-medium shrink-0">
-                                <Star className="w-3 h-3 fill-current" />
-                                <span className="hidden sm:inline">Öneri</span>
-                              </div>
-                            )}
+                    <CardContent className="p-4 flex flex-col flex-grow">
+                      <div className="flex justify-between items-start gap-3 mb-2">
+                        <h4 className="font-bold text-base text-primary dark:text-primary-foreground leading-snug">
+                          {place.name}
+                        </h4>
+                        {place.highlight && (
+                          <div className="bg-amber-100 dark:bg-amber-900/40 text-amber-700 dark:text-amber-400 text-[10px] px-1.5 py-0.5 rounded flex items-center gap-1 font-medium shrink-0">
+                            <Star className="w-3 h-3 fill-current" />
+                            <span className="hidden sm:inline">Öneri</span>
                           </div>
+                        )}
+                      </div>
 
-                          {/* Yemek Türü */}
-                          {place.food && (
-                            <div className="text-sm font-medium text-accent-foreground/80 mb-2 flex items-center gap-1.5">
-                              <Utensils className="w-3.5 h-3.5 opacity-60" />
-                              {place.food}
-                            </div>
-                          )}
-
-                          {/* Adres */}
-                          {place.address && (
-                            <div className="text-xs text-muted-foreground mb-3 italic pl-2 border-l-2 border-border/60">
-                              {place.address}
-                            </div>
-                          )}
-
-                          {/* Notlar & Fiyat */}
-                          {(place.note || place.price || place.warning) && (
-                            <div className={`text-xs rounded-md p-2.5 mb-3 ${place.warning ? 'bg-red-50 dark:bg-red-950/20 text-red-800 dark:text-red-200 border border-red-100 dark:border-red-900' : 'bg-secondary/40 text-muted-foreground'}`}>
-                              {place.note && (
-                                <div className="flex items-start gap-2 leading-relaxed">
-                                  {place.warning ? (
-                                    <AlertTriangle className="w-3.5 h-3.5 shrink-0 mt-0.5" />
-                                  ) : (
-                                    <CheckCircle2 className="w-3.5 h-3.5 shrink-0 mt-0.5 text-green-600/70" />
-                                  )}
-                                  <span>{place.note}</span>
-                                </div>
-                              )}
-                              {place.price && (
-                                <div className="mt-2 pt-2 border-t border-black/5 dark:border-white/5 flex items-center gap-1.5 font-semibold text-amber-700 dark:text-amber-500">
-                                  <Euro className="w-3.5 h-3.5" />
-                                  {place.price}
-                                </div>
-                              )}
-                            </div>
-                          )}
-
-                          {/* Butonlar */}
-                          <div className="flex items-center gap-2 mt-2">
-                            {place.phone && (
-                              <Button variant="outline" size="sm" className="h-8 text-xs flex-1 bg-transparent border-dashed text-muted-foreground hover:text-foreground hover:border-solid hover:bg-background" asChild>
-                                <a href={`tel:${place.phone}`}>
-                                  <Phone className="w-3 h-3 mr-1.5" /> Ara
-                                </a>
-                              </Button>
-                            )}
-                            {place.mapLinks && place.mapLinks.length > 0 && (
-                              <Button variant="default" size="sm" className="h-8 text-xs flex-1 bg-primary text-primary-foreground hover:bg-primary/90" asChild>
-                                <a href={place.mapLinks[0]} target="_blank" rel="noopener noreferrer">
-                                  <ExternalLink className="w-3 h-3 mr-1.5" /> Harita
-                                </a>
-                              </Button>
-                            )}
-                          </div>
+                      {place.food && (
+                        <div className="text-sm font-medium text-accent-foreground/90 mb-2 flex items-center gap-1.5">
+                          <Utensils className="w-3.5 h-3.5 opacity-60" />
+                          {place.food}
                         </div>
-                      ))}
-                    </div>
-                  </CardContent>
-                </Card>
+                      )}
+
+                      {place.address && (
+                        <div className="text-xs text-muted-foreground mb-3 italic pl-2 border-l-2 border-border/60">
+                          {place.address}
+                        </div>
+                      )}
+
+                      {(place.note || place.price || place.warning) && (
+                        <div className={`text-xs rounded-md p-2.5 mb-3 ${place.warning ? 'bg-red-50 dark:bg-red-950/20 text-red-800 dark:text-red-200 border border-red-100 dark:border-red-900' : 'bg-secondary/40 text-muted-foreground'}`}>
+                          {place.note && (
+                            <div className="flex items-start gap-2 leading-relaxed">
+                              {place.warning ? (
+                                <AlertTriangle className="w-3.5 h-3.5 shrink-0 mt-0.5" />
+                              ) : (
+                                <CheckCircle2 className="w-3.5 h-3.5 shrink-0 mt-0.5 text-green-600/70" />
+                              )}
+                              <span>{place.note}</span>
+                            </div>
+                          )}
+                          {place.price && (
+                            <div className="mt-2 pt-2 border-t border-black/5 dark:border-white/5 flex items-center gap-1.5 font-semibold text-amber-700 dark:text-amber-500">
+                              <Euro className="w-3.5 h-3.5" />
+                              {place.price}
+                            </div>
+                          )}
+                        </div>
+                      )}
+
+                      <div className="flex items-center gap-2 mt-auto">
+                        {place.phone && (
+                          <Button variant="outline" size="sm" className="h-8 text-xs flex-1 bg-transparent border-dashed" asChild>
+                            <a href={`tel:${place.phone}`}>
+                              <Phone className="w-3 h-3 mr-1.5" /> Ara
+                            </a>
+                          </Button>
+                        )}
+                        {place.map_link && (
+                          <Button variant="default" size="sm" className="h-8 text-xs flex-1" asChild>
+                            <a href={place.map_link} target="_blank" rel="noopener noreferrer">
+                              <ExternalLink className="w-3 h-3 mr-1.5" /> Harita
+                            </a>
+                          </Button>
+                        )}
+                      </div>
+
+                      {/* BEĞENİ VE YORUM ALANI */}
+                      <PlaceFeedback placeName={place.name} cityName={cityGroup.city} />
+
+                    </CardContent>
+                  </Card>
+                ))
               ))}
             </div>
-          )}
-        </div>
+          </div>
+        )}
 
-        {/* --- TRAVEL TIPS SECTION --- */}
+        {/* TRAVEL TIPS */}
         <section className="mt-20 bg-gradient-to-br from-secondary/30 to-background rounded-2xl p-5 md:p-8 border border-border shadow-sm">
           <h2 className="text-xl md:text-2xl font-bold mb-6 flex items-center gap-3">
             <div className="p-2 bg-accent/10 rounded-lg">
@@ -330,7 +362,6 @@ export default function HalalPlacesPage() {
             </div>
             Seyahat, Gezi ve Ulaşım İpuçları
           </h2>
-          
           <div className="grid md:grid-cols-2 gap-6">
             {travelTips.map((tip, idx) => (
               <div key={idx} className="bg-card rounded-xl p-5 border border-border/60 shadow-sm hover:border-accent/30 transition-colors">
