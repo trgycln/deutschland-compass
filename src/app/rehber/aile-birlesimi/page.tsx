@@ -12,6 +12,8 @@ import {
 } from "lucide-react";
 import { familyReunionData } from "@/data/family-reunion";
 import { ProfessionVideoPlayer } from "@/components/profession-video-player";
+import { FaqSection } from "@/components/faq-section";
+import { aileBirlesimiFaqs } from "@/data/aile-birlesimi-faqs";
 
 export default function FamilyReunionPage() {
   return (
@@ -154,6 +156,11 @@ export default function FamilyReunionPage() {
               </div>
             ))}
           </div>
+        </section>
+
+        {/* SSS (Sıkça Sorulan Sorular) */}
+        <section className="mt-12">
+          <FaqSection professionSlug="aile-birlesimi" initialFaqs={aileBirlesimiFaqs} />
         </section>
 
       </div>
