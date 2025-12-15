@@ -2,7 +2,7 @@ import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import { Card, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { Users, BookOpen, MessageSquare, Info, Send, ArrowRight, Utensils } from 'lucide-react';
+import { Users, BookOpen, MessageSquare, Info, Send, ArrowRight, Utensils } from 'lucide-react'; // Users ikonu zaten var
 import { HomeSearch } from '@/components/home-search';
 import { HomeProfessions } from '@/components/home-professions';
 import { professionsList } from '@/data/professions-list';
@@ -14,7 +14,7 @@ export default function Home() {
     <div className="flex flex-col min-h-screen">
       <WhatsNewPopup />
       
-      {/* Disclaimer Banner */}
+      {/* Disclaimer Banner - (Aynı Kalıyor) */}
       <div className="bg-amber-50 dark:bg-amber-900/20 border-b border-amber-100 dark:border-amber-800/50 relative z-20">
         <div className="container mx-auto px-4 py-3">
           <div className="flex items-start md:items-center gap-3 justify-center text-sm text-amber-900 dark:text-amber-100">
@@ -30,7 +30,7 @@ export default function Home() {
         </div>
       </div>
 
-      {/* Hero Section */}
+      {/* Hero Section - (Aynı Kalıyor) */}
       <section className="relative py-20 md:py-32 bg-secondary dark:bg-slate-950 overflow-hidden">
         <div className="container mx-auto px-4 relative z-10">
           <div className="max-w-3xl mx-auto text-center space-y-8">
@@ -51,14 +51,13 @@ export default function Home() {
           </div>
         </div>
         
-        {/* Decorative Background Elements */}
         <div className="absolute top-0 left-0 w-full h-full overflow-hidden -z-10 opacity-30 pointer-events-none">
           <div className="absolute top-1/4 left-1/4 w-64 h-64 bg-primary/10 rounded-full blur-3xl" />
           <div className="absolute bottom-1/4 right-1/4 w-96 h-96 bg-accent/10 rounded-full blur-3xl" />
         </div>
       </section>
 
-      {/* Telegram Community Banner */}
+      {/* Telegram Banner - (Aynı Kalıyor) */}
       <section className="border-t border-border bg-background relative z-10">
         <div className="container mx-auto px-4 py-8">
           <div className="flex flex-col md:flex-row items-center justify-between gap-6 bg-accent/5 dark:bg-accent/10 rounded-xl p-6 border border-accent/20">
@@ -83,7 +82,7 @@ export default function Home() {
         </div>
       </section>
 
-      {/* YENİ EKLENEN: Helal Mekanlar Rehberi Vurgusu */}
+      {/* Helal Mekanlar Banner - (Aynı Kalıyor) */}
       <section className="pb-8 bg-background relative z-10">
         <div className="container mx-auto px-4">
           <div className="flex flex-col md:flex-row items-center gap-6 justify-between bg-gradient-to-r from-amber-50 to-orange-50 dark:from-amber-950/30 dark:to-orange-950/20 rounded-xl p-6 border border-amber-100 dark:border-amber-900/50">
@@ -111,17 +110,31 @@ export default function Home() {
         </div>
       </section>
 
-      {/* Features Section */}
+      {/* FEATURES SECTION - GÜNCELLENDİ (4'lü Grid + Aile Birleşimi) */}
       <section className="py-20 bg-white dark:bg-slate-900">
         <div className="container mx-auto px-4">
-          <div className="grid md:grid-cols-3 gap-8">
+          <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
+            
+            {/* YENİ EKLENEN: AİLE BİRLEŞİMİ KARTI */}
+            <Link href="/rehber/aile-birlesimi" className="block h-full">
+              <Card className="h-full border-none shadow-lg bg-secondary dark:bg-slate-800/50 hover:bg-secondary/80 dark:hover:bg-slate-800 transition-colors cursor-pointer group">
+                <CardHeader>
+                  <Users className="h-10 w-10 text-primary dark:text-accent mb-4 group-hover:scale-110 transition-transform" />
+                  <CardTitle>Aile Birleşimi</CardTitle>
+                  <CardDescription className="text-base">
+                    Ön başvuru, vize randevusu, evrak hazırlığı ve varış süreci için adım adım, eksiksiz yol haritası.
+                  </CardDescription>
+                </CardHeader>
+              </Card>
+            </Link>
+
             <Link href="/rehber" className="block h-full">
               <Card className="h-full border-none shadow-lg bg-secondary dark:bg-slate-800/50 hover:bg-secondary/80 dark:hover:bg-slate-800 transition-colors cursor-pointer">
                 <CardHeader>
                   <BookOpen className="h-10 w-10 text-primary dark:text-accent mb-4" />
                   <CardTitle>Kapsamlı Rehberler</CardTitle>
                   <CardDescription className="text-base">
-                    Denklik, dil eğitimi ve iş bulma süreçleri hakkında adım adım, güncel bilgiler.
+                    Denklik, dil eğitimi ve iş bulma süreçleri hakkında detaylı bilgiler.
                   </CardDescription>
                 </CardHeader>
               </Card>
@@ -154,16 +167,15 @@ export default function Home() {
         </div>
       </section>
 
-      {/* Popular Professions Section */}
+      {/* Popular Professions Section - (Aynı Kalıyor) */}
       <section className="py-20 bg-secondary/30 dark:bg-slate-950">
         <div className="container mx-auto px-4">
           <HomeProfessions professions={professionsList} />
         </div>
       </section>
 
-      {/* Contribution Call to Action */}
+      {/* Contribution Call to Action - (Aynı Kalıyor) */}
       <section className="py-20 bg-primary text-primary-foreground relative overflow-hidden">
-        {/* Decorative Elements */}
         <div className="absolute top-0 left-0 w-full h-full overflow-hidden opacity-10 pointer-events-none">
           <div className="absolute -top-24 -left-24 w-96 h-96 bg-accent rounded-full blur-3xl" />
           <div className="absolute -bottom-24 -right-24 w-96 h-96 bg-accent rounded-full blur-3xl" />
@@ -174,21 +186,17 @@ export default function Home() {
             <div className="inline-flex items-center justify-center p-3 bg-accent/20 rounded-full mb-4">
               <Users className="h-8 w-8 text-accent" />
             </div>
-            
             <h2 className="text-3xl md:text-4xl font-bold tracking-tight">
               Aradığınız Mesleği Bulamadınız mı?
             </h2>
-            
             <p className="text-xl text-primary-foreground/90 leading-relaxed">
               Sistemimizi sürekli geliştiriyoruz. Eğer kendi mesleğinizle ilgili tecrübe, bilgi veya dökümana sahipseniz, 
               bizimle paylaşın. Editör ekibimiz gönderilerinizi incelesin ve yeni rehber sayfaları oluşturarak 
               topluluğa kazandıralım.
             </p>
-
             <div className="flex flex-col sm:flex-row gap-4 justify-center pt-4">
               <ContributionDialog />
             </div>
-            
             <p className="text-sm text-primary-foreground/60 pt-4">
               Yeni gelenlere ve ihtiyacı olanlara birlikte yol gösterelim.
             </p>

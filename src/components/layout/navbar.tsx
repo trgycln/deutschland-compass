@@ -5,7 +5,7 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { Button } from '@/components/ui/button';
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from '@/components/ui/sheet';
-import { Menu, Utensils } from 'lucide-react';
+import { Menu, Utensils, Users } from 'lucide-react'; // Users ikonu eklendi
 
 export function Navbar() {
   const [isOpen, setIsOpen] = useState(false);
@@ -34,11 +34,18 @@ export function Navbar() {
         {/* Desktop Navigation */}
         <nav className="hidden xl:flex items-center gap-6 text-sm font-medium text-slate-600 dark:text-slate-300">
           <Link href="/meslekler" className="hover:text-primary transition-colors">Meslekler</Link>
+          
+          {/* YENİ LİNK: AİLE BİRLEŞİMİ */}
+          <Link href="/rehber/aile-birlesimi" className="hover:text-primary transition-colors flex items-center gap-1.5">
+            <Users className="w-4 h-4" />
+            Aile Birleşimi
+          </Link>
+
           <Link href="/rehber/egitim-ve-kariyer" className="hover:text-primary transition-colors">Eğitim</Link>
           <Link href="/rehber/sirket-kurma" className="hover:text-primary transition-colors">Şirket Kurma</Link>
           <Link href="/rehber/anerkennung" className="hover:text-primary transition-colors">Denklik</Link>
           
-          {/* YENİ EKLENEN LINK - Dikkat Çekici */}
+          {/* Helal Mekanlar Linki */}
           <Link 
             href="/rehber/helal-mekanlar" 
             className="hover:text-amber-600 text-amber-700 dark:text-amber-400 transition-colors flex items-center gap-1.5 font-semibold bg-amber-50 dark:bg-amber-900/20 px-2 py-1 rounded-md"
@@ -52,11 +59,11 @@ export function Navbar() {
           <Link href="/hakkimizda" className="hover:text-primary transition-colors">Hakkımızda</Link>
         </nav>
 
-        {/* Tablet/Medium ekranlar için sadeleştirilmiş menü (Yer darlığı olursa diye) */}
+        {/* Tablet/Medium Navigation */}
         <nav className="hidden md:flex xl:hidden items-center gap-4 text-sm font-medium text-slate-600 dark:text-slate-300">
            <Link href="/meslekler" className="hover:text-primary">Meslekler</Link>
+           <Link href="/rehber/aile-birlesimi" className="hover:text-primary flex gap-1 items-center"><Users className="w-4 h-4"/> Aile</Link>
            <Link href="/rehber/helal-mekanlar" className="text-amber-600 font-semibold flex gap-1 items-center"><Utensils className="w-3 h-3"/> Mekanlar</Link>
-           <Link href="/telegram-gruplari" className="hover:text-primary">Telegram</Link>
         </nav>
 
         <div className="flex items-center gap-4">
@@ -100,6 +107,17 @@ export function Navbar() {
                 >
                   Meslekler
                 </Link>
+
+                {/* MOBİL MENÜ YENİ LİNK */}
+                <Link 
+                  href="/rehber/aile-birlesimi" 
+                  className="text-lg font-medium text-slate-600 hover:text-primary dark:text-slate-300 transition-colors flex items-center gap-2"
+                  onClick={() => setIsOpen(false)}
+                >
+                  <Users className="w-5 h-5" />
+                  Aile Birleşimi
+                </Link>
+
                 <Link 
                   href="/rehber/egitim-ve-kariyer" 
                   className="text-lg font-medium text-slate-600 hover:text-primary dark:text-slate-300 transition-colors"
@@ -122,7 +140,6 @@ export function Navbar() {
                   Denklik Rehberi
                 </Link>
 
-                {/* MOBİL İÇİN YENİ LİNK - Öne Çıkarılmış */}
                 <Link 
                   href="/rehber/helal-mekanlar" 
                   className="text-lg font-bold text-amber-700 dark:text-amber-400 bg-amber-50 dark:bg-amber-900/20 px-6 py-2 rounded-full transition-colors flex items-center gap-2"

@@ -1,6 +1,4 @@
-﻿
-
-export type ProfessionStatus = 'active' | 'coming-soon';
+﻿export type ProfessionStatus = 'active' | 'coming-soon';
 export type ProfessionPathType = 'continuation' | 'new-path';
 
 export interface ProfessionCardData {
@@ -869,6 +867,21 @@ export const professionsList: ProfessionCardData[] = [
     readingTime: '5dk Okuma',
     badgeColor: 'green',
     keywords: ['helal', 'mekan', 'yemek', 'restoran', 'topluluk', 'doküman', 'tecrübe']
+  },
+  {
+    id: 'aile-birlesimi',
+    title: 'Aile Birleşimi',
+    slug: 'aile-birlesimi',
+    description: 'Almanya aile birleşimi vizesi, başvuru adımları ve tecrübelerle rehber.',
+    category: 'Resmi İşlemler',
+    status: 'active',
+    pathType: 'new-path',
+    customLink: '/rehber/aile-birlesimi',
+    icon: 'Users',
+    demand: 'Normal',
+    readingTime: '15dk Okuma',
+    badgeColor: 'blue',
+    keywords: ['aile', 'birleşimi', 'family', 'reunion', 'vize', 'oturum', 'eş', 'çocuk', 'resmi']
   }
 ];
 
