@@ -692,7 +692,6 @@ export const foodGuideData: CountryGroup[] = [
           { name: "Henpoint", city: "Stuttgart", phone: "0711 55068577", mapLinks: ["https://goo.gl/maps/79UrXQohbJogD14T9"] },
           { name: "Arslan’s Kebap Stuttgart Mitte", city: "Stuttgart", phone: "0711 613333" },
           { name: "Köz Kebap", city: "Stuttgart", mapLinks: ["https://goo.gl/maps/FH6HHbNvVyr54nbZ8"], note: "Kebap çeşitleri. Lezzetli, ekmeği sıcak, pide/lahmacun ücretsiz." },
-          { name: "Mister Meal", city: "Stuttgart", note: "Hamburger, namaz kılınabilir" },
           { name: "Dedemoğlu", city: "Stuttgart" },
           { name: "Burger One", city: "Stuttgart", phone: "07144 818194" },
           { name: "Café Blüte", city: "Stuttgart", note: "Kahvaltı" },
