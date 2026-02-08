@@ -703,7 +703,7 @@ export const professionsList: ProfessionCardData[] = [
     keywords: ['sosyal bilgiler', 'sozialkunde', 'gemeinschaftskunde', 'politik', 'mpt', 'öğretmen', 'denklik']
   },
   {
-    id: 'tagesmutter',
+    id: 'tagesmutter-bakici',
     title: 'Tagesmutter (Çocuk Bakıcısı)',
     slug: 'tagesmutter',
     description: 'Evde çocuk bakımı, Tagesmutter/Tagesvater olma süreci ve gereklilikler.',
