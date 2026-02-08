@@ -41,6 +41,13 @@ export function HomeSearch() {
       href: '/rehber/anerkennung',
       category: 'Rehber',
       keywords: ['anerkennung', 'denklik', 'zab', 'diploma', 'üniversite', 'rehber']
+    },
+    {
+      id: 'vergi-beyani',
+      title: "Vergi Beyanı (Steuererklärung)",
+      href: '/rehber/vergi-beyani',
+      category: 'Rehber',
+      keywords: ['vergi', 'steuer', 'steuererklärung', 'finanzamt', 'elster', 'vergi iadesi', 'beyanname']
     }
   ];
 

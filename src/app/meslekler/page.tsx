@@ -65,6 +65,16 @@ export default async function ProfessionsPage({
       color: 'purple',
       tags: ['ZAB', 'Diploma', 'Süreç'],
       keywords: ['anerkennung', 'denklik', 'zab', 'diploma', 'üniversite', 'rehber']
+    },
+    {
+      id: 'vergi-beyani',
+      title: "Vergi Beyanı (Steuererklärung)",
+      description: "Kimler yapmalı, nasıl yapılır, neler düşülebilir? Tecrübelerle harmanlanmış kapsamlı vergi beyanı rehberi.",
+      href: '/rehber/vergi-beyani',
+      icon: BookOpen,
+      color: 'green',
+      tags: ['Finanzamt', 'ELSTER', 'Vergi İadesi'],
+      keywords: ['vergi', 'steuer', 'steuererklärung', 'finanzamt', 'elster', 'vergi iadesi', 'beyanname']
     }
   ];
 
@@ -107,12 +117,25 @@ export default async function ProfessionsPage({
             <div className="grid gap-6 md:grid-cols-2">
               {filteredGuides.map((guide) => {
                 const Icon = guide.icon;
+                const isGreen = guide.color === 'green';
                 const isPurple = guide.color === 'purple';
-                const bgColor = isPurple ? 'bg-purple-100 dark:bg-purple-900/30' : 'bg-blue-100 dark:bg-blue-900/30';
-                const textColor = isPurple ? 'text-purple-600 dark:text-purple-400' : 'text-blue-600 dark:text-blue-400';
-                const hoverBorder = isPurple ? 'group-hover:border-purple-500/50' : 'group-hover:border-blue-500/50';
-                const hoverText = isPurple ? 'group-hover:text-purple-600' : 'group-hover:text-blue-600';
-                const hoverIcon = isPurple ? 'group-hover:text-purple-500' : 'group-hover:text-blue-500';
+                const isBlue = guide.color === 'blue';
+                
+                const bgColor = isGreen ? 'bg-emerald-100 dark:bg-emerald-900/30' : 
+                               isPurple ? 'bg-purple-100 dark:bg-purple-900/30' : 
+                               'bg-blue-100 dark:bg-blue-900/30';
+                const textColor = isGreen ? 'text-emerald-600 dark:text-emerald-400' :
+                                 isPurple ? 'text-purple-600 dark:text-purple-400' : 
+                                 'text-blue-600 dark:text-blue-400';
+                const hoverBorder = isGreen ? 'group-hover:border-emerald-500/50' :
+                                   isPurple ? 'group-hover:border-purple-500/50' : 
+                                   'group-hover:border-blue-500/50';
+                const hoverText = isGreen ? 'group-hover:text-emerald-600' :
+                                 isPurple ? 'group-hover:text-purple-600' : 
+                                 'group-hover:text-blue-600';
+                const hoverIcon = isGreen ? 'group-hover:text-emerald-500' :
+                                 isPurple ? 'group-hover:text-purple-500' : 
+                                 'group-hover:text-blue-500';
 
                 return (
                   <Link key={guide.id} href={guide.href} className="group">

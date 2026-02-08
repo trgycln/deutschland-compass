@@ -110,6 +110,33 @@ export default function Home() {
         </div>
       </section>
 
+      {/* Vergi Beyanı Banner - YENİ */}
+      <section className="pb-8 bg-background relative z-10">
+        <div className="container mx-auto px-4">
+          <div className="flex flex-col md:flex-row items-center gap-6 justify-between bg-gradient-to-r from-emerald-50 to-green-50 dark:from-emerald-950/30 dark:to-green-950/20 rounded-xl p-6 border border-emerald-100 dark:border-emerald-900/50">
+            <div className="flex items-start gap-4">
+              <div className="bg-white dark:bg-emerald-900/40 p-3 rounded-full shadow-sm border border-emerald-100 dark:border-emerald-800 text-emerald-600 dark:text-emerald-400">
+                <BookOpen className="w-6 h-6" />
+              </div>
+              <div>
+                <div className="flex items-center gap-2 mb-1 flex-wrap">
+                  <Badge className="bg-emerald-600 hover:bg-emerald-700 text-white border-none shadow-sm">YENİ</Badge>
+                  <h3 className="font-bold text-lg text-emerald-950 dark:text-emerald-100">Vergi Beyanı Rehberi (Steuererklärung)</h3>
+                </div>
+                <p className="text-emerald-800/80 dark:text-emerald-200/70 text-sm md:text-base max-w-2xl mt-1">
+                  Kimler yapmalı, nasıl yapılır, neler düşülebilir? Tecrübelerle harmanlanmış kapsamlı vergi beyanı kılavuzu.
+                </p>
+              </div>
+            </div>
+            <Button className="w-full md:w-auto bg-emerald-600 text-white hover:bg-emerald-700 border-none shadow-md" asChild>
+              <Link href="/rehber/vergi-beyani">
+                Rehberi İncele <ArrowRight className="ml-2 w-4 h-4" />
+              </Link>
+            </Button>
+          </div>
+        </div>
+      </section>
+
       {/* FEATURES SECTION - GÜNCELLENDİ (4'lü Grid + Aile Birleşimi) */}
       <section className="py-20 bg-white dark:bg-slate-900">
         <div className="container mx-auto px-4">

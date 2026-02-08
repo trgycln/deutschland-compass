@@ -2,7 +2,7 @@
 import Link from 'next/link';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { BookOpen, GraduationCap, ArrowRight, Map } from 'lucide-react';
+import { BookOpen, GraduationCap, ArrowRight, Map, Euro } from 'lucide-react';
 
 export default function GuidesPage() {
   return (
@@ -94,6 +94,33 @@ export default function GuidesPage() {
                   <Badge variant="secondary">ZAB</Badge>
                   <Badge variant="secondary">Diploma</Badge>
                   <Badge variant="secondary">Süreç</Badge>
+                </div>
+              </CardContent>
+            </Card>
+          </Link>
+
+          {/* Vergi Beyanı Rehberi - YENİ */}
+          <Link href="/rehber/vergi-beyani" className="group">
+            <Card className="h-full hover:shadow-xl transition-all duration-300 border-slate-200 dark:border-slate-800 group-hover:border-emerald-500/50">
+              <CardHeader>
+                <div className="flex justify-between items-start mb-4">
+                  <div className="p-3 bg-emerald-100 dark:bg-emerald-900/30 rounded-lg text-emerald-600 dark:text-emerald-400">
+                    <Euro className="w-8 h-8" />
+                  </div>
+                  <ArrowRight className="h-6 w-6 text-slate-400 group-hover:text-emerald-500 transition-colors" />
+                </div>
+                <CardTitle className="text-2xl group-hover:text-emerald-600 transition-colors">
+                  Vergi Beyanı (Steuererklärung)
+                </CardTitle>
+                <CardDescription className="text-base mt-2">
+                  Kimler yapmalı, nasıl yapılır, neler düşülebilir? Tecrübelerle harmanlanmış kapsamlı vergi beyanı rehberi.
+                </CardDescription>
+              </CardHeader>
+              <CardContent>
+                <div className="flex flex-wrap gap-2">
+                  <Badge variant="secondary">Finanzamt</Badge>
+                  <Badge variant="secondary">ELSTER</Badge>
+                  <Badge variant="secondary">Vergi İadesi</Badge>
                 </div>
               </CardContent>
             </Card>
