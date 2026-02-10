@@ -5,7 +5,7 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { Button } from '@/components/ui/button';
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from '@/components/ui/sheet';
-import { Menu, Utensils, Users } from 'lucide-react'; // Users ikonu eklendi
+import { Menu, Utensils, BookOpen } from 'lucide-react';
 
 export function Navbar() {
   const [isOpen, setIsOpen] = useState(false);
@@ -34,16 +34,7 @@ export function Navbar() {
         {/* Desktop Navigation */}
         <nav className="hidden xl:flex items-center gap-6 text-sm font-medium text-slate-600 dark:text-slate-300">
           <Link href="/meslekler" className="hover:text-primary transition-colors">Meslekler</Link>
-          
-          {/* YENİ LİNK: AİLE BİRLEŞİMİ */}
-          <Link href="/rehber/aile-birlesimi" className="hover:text-primary transition-colors flex items-center gap-1.5">
-            <Users className="w-4 h-4" />
-            Aile Birleşimi
-          </Link>
-
-          <Link href="/rehber/egitim-ve-kariyer" className="hover:text-primary transition-colors">Eğitim</Link>
           <Link href="/rehber/sirket-kurma" className="hover:text-primary transition-colors">Şirket Kurma</Link>
-          <Link href="/rehber/anerkennung" className="hover:text-primary transition-colors">Denklik</Link>
           
           {/* Helal Mekanlar Linki */}
           <Link 
@@ -54,6 +45,15 @@ export function Navbar() {
             Helal Mekanlar
           </Link>
 
+          {/* Gurbet Kalemleri Linki */}
+          <Link 
+            href="/gurbet-kalemleri" 
+            className="hover:text-slate-700 text-slate-800 dark:text-slate-300 transition-colors flex items-center gap-1.5 font-semibold bg-slate-100 dark:bg-slate-800 px-2 py-1 rounded-md"
+          >
+            <BookOpen className="w-3.5 h-3.5" />
+            Gurbet Kalemleri
+          </Link>
+
           <Link href="/telegram-gruplari" className="hover:text-primary transition-colors">Telegram</Link>
           <Link href="/blog" className="hover:text-primary transition-colors">Blog</Link>
           <Link href="/hakkimizda" className="hover:text-primary transition-colors">Hakkımızda</Link>
@@ -62,8 +62,8 @@ export function Navbar() {
         {/* Tablet/Medium Navigation */}
         <nav className="hidden md:flex xl:hidden items-center gap-4 text-sm font-medium text-slate-600 dark:text-slate-300">
            <Link href="/meslekler" className="hover:text-primary">Meslekler</Link>
-           <Link href="/rehber/aile-birlesimi" className="hover:text-primary flex gap-1 items-center"><Users className="w-4 h-4"/> Aile</Link>
            <Link href="/rehber/helal-mekanlar" className="text-amber-600 font-semibold flex gap-1 items-center"><Utensils className="w-3 h-3"/> Mekanlar</Link>
+           <Link href="/gurbet-kalemleri" className="text-slate-700 dark:text-slate-300 font-semibold flex gap-1 items-center"><BookOpen className="w-3 h-3"/> Kalemler</Link>
         </nav>
 
         <div className="flex items-center gap-4">
@@ -108,36 +108,12 @@ export function Navbar() {
                   Meslekler
                 </Link>
 
-                {/* MOBİL MENÜ YENİ LİNK */}
-                <Link 
-                  href="/rehber/aile-birlesimi" 
-                  className="text-lg font-medium text-slate-600 hover:text-primary dark:text-slate-300 transition-colors flex items-center gap-2"
-                  onClick={() => setIsOpen(false)}
-                >
-                  <Users className="w-5 h-5" />
-                  Aile Birleşimi
-                </Link>
-
-                <Link 
-                  href="/rehber/egitim-ve-kariyer" 
-                  className="text-lg font-medium text-slate-600 hover:text-primary dark:text-slate-300 transition-colors"
-                  onClick={() => setIsOpen(false)}
-                >
-                  Eğitim Rehberi
-                </Link>
                 <Link 
                   href="/rehber/sirket-kurma" 
                   className="text-lg font-medium text-slate-600 hover:text-primary dark:text-slate-300 transition-colors"
                   onClick={() => setIsOpen(false)}
                 >
                   Şirket Kurma
-                </Link>
-                <Link 
-                  href="/rehber/anerkennung" 
-                  className="text-lg font-medium text-slate-600 hover:text-primary dark:text-slate-300 transition-colors"
-                  onClick={() => setIsOpen(false)}
-                >
-                  Denklik Rehberi
                 </Link>
 
                 <Link 
@@ -147,6 +123,15 @@ export function Navbar() {
                 >
                   <Utensils className="w-4 h-4" />
                   Helal Mekanlar
+                </Link>
+
+                <Link 
+                  href="/gurbet-kalemleri" 
+                  className="text-lg font-bold text-slate-800 dark:text-slate-200 bg-slate-100 dark:bg-slate-800 px-6 py-2 rounded-full transition-colors flex items-center gap-2"
+                  onClick={() => setIsOpen(false)}
+                >
+                  <BookOpen className="w-4 h-4" />
+                  Gurbet Kalemleri
                 </Link>
 
                 <Link 

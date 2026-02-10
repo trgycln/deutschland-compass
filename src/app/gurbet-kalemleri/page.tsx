@@ -1,0 +1,507 @@
+"use client";
+
+import { useEffect, useMemo, useState } from "react";
+import Link from "next/link";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Alert, AlertDescription } from "@/components/ui/alert";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import {
+  BookOpen,
+  Calendar,
+  Feather,
+  Loader2,
+  RefreshCcw,
+  Search,
+  Sparkles,
+  User,
+  AlertCircle,
+} from "lucide-react";
+import { LikeButton } from "@/components/like-button";
+import { CommentForm } from "@/components/comment-form";
+import { CommentsList } from "@/components/comments-list";
+
+interface LiteraryWork {
+  id: number;
+  title: string;
+  author: string;
+  date: string;
+  type: string;
+  tags: string[];
+  content: string;
+}
+
+const serifStyle = {
+  fontFamily: "'Cormorant Garamond', 'Times New Roman', serif",
+} as const;
+
+const accentStyle = {
+  fontFamily: "'Playfair Display', 'Times New Roman', serif",
+} as const;
+
+function hashString(value: string) {
+  let hash = 0;
+  for (let i = 0; i < value.length; i += 1) {
+    hash = (hash * 31 + value.charCodeAt(i)) % 100000;
+  }
+  return hash;
+}
+
+function getDailyIndex(total: number) {
+  if (total <= 0) return 0;
+  const today = new Date();
+  const dateKey = `${today.getFullYear()}-${today.getMonth() + 1}-${today.getDate()}`;
+  const hash = hashString(dateKey);
+  return hash % total;
+}
+
+export default function GurbetKalemleriPage() {
+  const [literaryWorks, setLiteraryWorks] = useState<LiteraryWork[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
+  const [searchQuery, setSearchQuery] = useState("");
+  const [selectedAuthor, setSelectedAuthor] = useState("all");
+  const [selectedType, setSelectedType] = useState("all");
+  const [selectedTags, setSelectedTags] = useState<string[]>([]);
+  const [featuredId, setFeaturedId] = useState<number | null>(null);
+  const [commentsRefresh, setCommentsRefresh] = useState(0);
+
+  useEffect(() => {
+    async function fetchWorks() {
+      try {
+        setLoading(true);
+        const response = await fetch("/api/literary-works");
+        if (!response.ok) throw new Error("Eserler yüklenemedi");
+        const data = await response.json();
+        setLiteraryWorks(data.works || []);
+      } catch (err: any) {
+        console.error("Fetch error:", err);
+        setError(err.message || "Bir hata oluştu");
+      } finally {
+        setLoading(false);
+      }
+    }
+
+    fetchWorks();
+  }, []);
+
+  useEffect(() => {
+    if (literaryWorks.length > 0 && featuredId === null) {
+      const dailyIndex = getDailyIndex(literaryWorks.length);
+      setFeaturedId(literaryWorks[dailyIndex].id);
+    }
+  }, [literaryWorks, featuredId]);
+
+  const authors = useMemo(
+    () => Array.from(new Set(literaryWorks.map((work) => work.author))).sort(),
+    [literaryWorks]
+  );
+  const types = useMemo(
+    () => Array.from(new Set(literaryWorks.map((work) => work.type))).sort(),
+    [literaryWorks]
+  );
+  const tags = useMemo(
+    () => Array.from(new Set(literaryWorks.flatMap((work) => work.tags || []))).sort(),
+    [literaryWorks]
+  );
+  const fallbackTags = [
+    // Orijinal temel temalar
+    "aci",
+    "ozlem",
+    "hasret",
+    "gurbet",
+    "umut",
+    "yalnizlik",
+    "sevda",
+    "yol",
+    "dus",
+    "hatira",
+    // İlişki ve aile temaları
+    "anne",
+    "aile",
+    "ayrilik",
+    "dostluk",
+    "baba",
+    // Kimlik ve dil
+    "dil",
+    "kimlik",
+    "kadin",
+    // Evrensel temalar
+    "kedi",
+    "ask",
+    "gonul",
+    "veda",
+    "adalet",
+    "insan",
+    "huzur",
+    "nur",
+    "umup",
+    "cuma",
+    // Felsefi ve analitik
+    "tefekur",
+    "bakis",
+    "goru",
+    "fark",
+    "kirma",
+    "aglamak",
+    "isa",
+    
+  ];
+  const popularTags = useMemo(() => {
+    const counts = new Map<string, number>();
+    literaryWorks.forEach((work) => {
+      (work.tags || []).forEach((tag) => {
+        counts.set(tag, (counts.get(tag) || 0) + 1);
+      });
+    });
+    const sorted = Array.from(counts.entries())
+      .sort((a, b) => b[1] - a[1] || a[0].localeCompare(b[0]))
+      .slice(0, 12)
+      .map(([tag]) => tag);
+    return sorted.length > 0 ? sorted : fallbackTags;
+  }, [literaryWorks]);
+
+  const filteredWorks = useMemo(() => {
+    const query = searchQuery.toLowerCase();
+    return literaryWorks.filter((work) => {
+      const matchesSearch =
+        !query ||
+        work.title.toLowerCase().includes(query) ||
+        work.author.toLowerCase().includes(query) ||
+        work.content.toLowerCase().includes(query);
+      const matchesAuthor = selectedAuthor === "all" || work.author === selectedAuthor;
+      const matchesType = selectedType === "all" || work.type === selectedType;
+      const matchesTag =
+        selectedTags.length === 0 ||
+        selectedTags.some((tag) => (work.tags || []).includes(tag));
+      return matchesSearch && matchesAuthor && matchesType && matchesTag;
+    });
+  }, [literaryWorks, searchQuery, selectedAuthor, selectedType, selectedTags]);
+
+  const featuredWork = useMemo(() => {
+    if (!featuredId) return null;
+    return literaryWorks.find((work) => work.id === featuredId) || null;
+  }, [literaryWorks, featuredId]);
+
+  const featuredTags = featuredWork?.tags || [];
+
+  const handleRefreshFeatured = () => {
+    if (filteredWorks.length === 0) return;
+    const randomIndex = Math.floor(Math.random() * filteredWorks.length);
+    setFeaturedId(filteredWorks[randomIndex].id);
+  };
+
+  const toggleTag = (tag: string) => {
+    setSelectedTags((prev) => {
+      if (prev.includes(tag)) return prev.filter((item) => item !== tag);
+      return [...prev, tag];
+    });
+  };
+
+  useEffect(() => {
+    if (filteredWorks.length === 0) return;
+    if (!featuredId || !filteredWorks.some((work) => work.id === featuredId)) {
+      setFeaturedId(filteredWorks[0].id);
+    }
+  }, [filteredWorks, featuredId]);
+
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-[#f7f1e8] flex items-center justify-center">
+        <div className="text-center">
+          <Loader2 className="w-12 h-12 animate-spin text-amber-700 mx-auto mb-4" />
+          <p className="text-stone-600">Eserler yükleniyor...</p>
+        </div>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="min-h-screen bg-[#f7f1e8] flex items-center justify-center p-4">
+        <Alert className="max-w-md bg-rose-50 border-rose-200">
+          <AlertCircle className="h-4 w-4 text-rose-600" />
+          <AlertDescription className="text-rose-800">{error}</AlertDescription>
+        </Alert>
+      </div>
+    );
+  }
+
+  return (
+    <div className="min-h-screen bg-[#f7f1e8] text-stone-900">
+      <div className="relative overflow-hidden">
+        <div className="absolute inset-0 bg-[radial-gradient(circle_at_top,#f6d7b8,transparent_55%),radial-gradient(circle_at_bottom,#f2c3c8,transparent_60%)] opacity-70"></div>
+        <div className="absolute inset-0 bg-[linear-gradient(115deg,rgba(247,241,232,0.9),rgba(255,248,235,0.6))]"></div>
+        <div className="container mx-auto px-4 py-16 relative z-10">
+          <div className="max-w-4xl">
+            <div className="inline-flex items-center gap-2 rounded-full bg-white/70 px-4 py-2 text-sm text-amber-900 shadow-sm border border-amber-100">
+              <Sparkles className="w-4 h-4" />
+              <span>Gurbetin sesi, kalemin susmayan izi</span>
+            </div>
+            <h1
+              className="mt-6 text-4xl md:text-5xl font-semibold text-stone-900"
+              style={accentStyle}
+            >
+              Gurbet Kalemleri
+            </h1>
+            <p className="mt-4 text-lg text-stone-700 max-w-2xl" style={serifStyle}>
+              Her gün bir eser, kalbe ağır gelen uzaklıkları bir sayfaya sığdırır. Okumak için
+              dur, nefeslen, yeniden hatırla.
+            </p>
+            <div className="mt-6 flex flex-wrap items-center gap-4 text-sm text-stone-600">
+              <div className="flex items-center gap-2">
+                <Feather className="w-4 h-4" />
+                <span>{literaryWorks.length} eser</span>
+              </div>
+              <div className="flex items-center gap-2">
+                <User className="w-4 h-4" />
+                <span>{new Set(literaryWorks.map((work) => work.author)).size} yazar</span>
+              </div>
+              <Link href="/gurbet-kalemleri/gonder" className="ml-auto">
+                <Button className="bg-amber-800 text-amber-50 hover:bg-amber-900">
+                  Eserini Paylas
+                </Button>
+              </Link>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div className="sticky top-16 z-30 border-y border-amber-100 bg-white/90 backdrop-blur">
+        <div className="container mx-auto px-4 py-4">
+          <div className="grid gap-3 md:grid-cols-[1.2fr_0.8fr_0.8fr_0.8fr]">
+            <div className="relative">
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-stone-400" />
+              <Input
+                placeholder="Eser, yazar veya icerikte ara..."
+                value={searchQuery}
+                onChange={(event) => setSearchQuery(event.target.value)}
+                className="pl-9 bg-white/80 border-amber-100"
+              />
+            </div>
+            <Select value={selectedAuthor} onValueChange={setSelectedAuthor}>
+              <SelectTrigger className="bg-white/80 border-amber-100">
+                <SelectValue placeholder="Yazar" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="all">Tum yazarlar</SelectItem>
+                {authors.map((author) => (
+                  <SelectItem key={author} value={author}>
+                    {author}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+            <Select value={selectedType} onValueChange={setSelectedType}>
+              <SelectTrigger className="bg-white/80 border-amber-100">
+                <SelectValue placeholder="Tur" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="all">Tum turler</SelectItem>
+                {types.map((type) => (
+                  <SelectItem key={type} value={type}>
+                    {type}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+            <Select
+              value={selectedTags.length === 1 ? selectedTags[0] : "all"}
+              onValueChange={(value) => {
+                if (value === "all") {
+                  setSelectedTags([]);
+                } else {
+                  setSelectedTags([value]);
+                }
+              }}
+            >
+              <SelectTrigger className="bg-white/80 border-amber-100">
+                <SelectValue placeholder="Etiket" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="all">Tum etiketler</SelectItem>
+                {tags.map((tag) => (
+                  <SelectItem key={tag} value={tag}>
+                    {tag}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
+          <div className="mt-4">
+            <div className="text-sm text-stone-500" style={serifStyle}>
+              Etiketlere dokun, duyguya gore kesfet.
+            </div>
+            {tags.length === 0 && (
+              <div className="mt-1 text-xs text-stone-400" style={serifStyle}>
+                Not: Etiket bilgisi olmayan eserlerde onerilen etiketler gosterilir.
+              </div>
+            )}
+            <div className="mt-3 flex flex-wrap gap-2">
+              {popularTags.map((tag) => {
+                const isActive = selectedTags.includes(tag);
+                return (
+                  <button
+                    key={tag}
+                    onClick={() => toggleTag(tag)}
+                    aria-pressed={isActive}
+                    className={`rounded-full border px-3 py-1 text-xs transition ${
+                      isActive
+                        ? "border-amber-400 bg-amber-100 text-amber-900"
+                        : "border-amber-100 bg-white/80 text-stone-600 hover:border-amber-200 hover:bg-amber-50"
+                    }`}
+                  >
+                    {tag}
+                  </button>
+                );
+              })}
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div className="container mx-auto px-4 py-10">
+        <div className="grid gap-8 lg:grid-cols-[320px_1fr]">
+          <aside className="rounded-3xl bg-white/80 shadow-lg border border-amber-100">
+            <div className="p-6 border-b border-amber-100">
+              <h2 className="text-xl text-stone-800" style={accentStyle}>
+                Tum Eserler
+              </h2>
+              <p className="text-sm text-stone-500 mt-1" style={serifStyle}>
+                Baslik veya yazar adina gore ara.
+              </p>
+              <div className="relative mt-4">
+                <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-stone-400" />
+                <Input
+                  placeholder="Ara..."
+                  value={searchQuery}
+                  onChange={(event) => setSearchQuery(event.target.value)}
+                  className="pl-9 bg-white/80 border-amber-100"
+                />
+              </div>
+            </div>
+            <div className="max-h-[60vh] overflow-y-auto p-4 space-y-2">
+              {filteredWorks.length === 0 && (
+                <div className="text-sm text-stone-500 px-2 py-6" style={serifStyle}>
+                  Aradigin kriterlerde eser bulunamadi.
+                </div>
+              )}
+              {filteredWorks.map((work) => {
+                const isActive = work.id === featuredId;
+                return (
+                  <button
+                    key={work.id}
+                    onClick={() => setFeaturedId(work.id)}
+                    className={`w-full text-left rounded-2xl border px-4 py-3 transition ${
+                      isActive
+                        ? "border-amber-400 bg-amber-50 shadow-sm"
+                        : "border-transparent hover:border-amber-100 hover:bg-amber-50/60"
+                    }`}
+                  >
+                    <div className="text-sm text-stone-500" style={serifStyle}>
+                      {work.author}
+                    </div>
+                    <div className="text-base text-stone-800 line-clamp-2" style={accentStyle}>
+                      {work.title}
+                    </div>
+                  </button>
+                );
+              })}
+            </div>
+          </aside>
+
+          <section className="rounded-[32px] bg-white/90 border border-amber-100 shadow-xl">
+            <div className="p-8 md:p-10">
+              <div className="flex flex-wrap items-center gap-3">
+                <Badge className="bg-amber-200 text-amber-900">Gunun Eseri</Badge>
+                <Button
+                  variant="outline"
+                  onClick={handleRefreshFeatured}
+                  className="border-amber-200 text-amber-900 hover:bg-amber-50"
+                >
+                  <RefreshCcw className="w-4 h-4 mr-2" />
+                  Baska bir eser
+                </Button>
+              </div>
+
+              {featuredWork ? (
+                <div className="mt-8">
+                  <div className="flex flex-wrap items-center gap-4 text-sm text-stone-500" style={serifStyle}>
+                    <div className="flex items-center gap-2">
+                      <User className="w-4 h-4" />
+                      <span>{featuredWork.author}</span>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <Calendar className="w-4 h-4" />
+                      <span>{featuredWork.date}</span>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <BookOpen className="w-4 h-4" />
+                      <span>{featuredWork.type}</span>
+                    </div>
+                  </div>
+
+                  <h2 className="mt-4 text-3xl text-stone-900" style={accentStyle}>
+                    {featuredWork.title}
+                  </h2>
+
+                  <div
+                    className="mt-6 text-[17px] leading-8 text-stone-700 whitespace-pre-wrap"
+                    style={serifStyle}
+                  >
+                    {featuredWork.content}
+                  </div>
+
+                  {featuredTags.length > 0 && (
+                    <div className="mt-6 flex flex-wrap gap-2">
+                      {featuredTags.slice(0, 6).map((tag) => (
+                        <Badge key={tag} variant="outline" className="border-amber-200 text-amber-900">
+                          {tag}
+                        </Badge>
+                      ))}
+                    </div>
+                  )}
+
+                  {/* Beğeni ve Yorumlar Bölümü */}
+                  <div className="mt-10 border-t border-amber-100 pt-8">
+                    <div className="mb-6">
+                      <LikeButton workId={featuredWork.id} />
+                    </div>
+
+                    <div className="mb-8">
+                      <h3 className="text-xl text-stone-800 mb-4" style={accentStyle}>
+                        Yorum Yap
+                      </h3>
+                      <CommentForm
+                        workId={featuredWork.id}
+                        onCommentAdded={() => setCommentsRefresh((prev) => prev + 1)}
+                      />
+                    </div>
+
+                    <div className="mt-8">
+                      <CommentsList
+                        workId={featuredWork.id}
+                        refresh={commentsRefresh}
+                      />
+                    </div>
+                  </div>
+                </div>
+              ) : (
+                <div className="mt-10 text-stone-500" style={serifStyle}>
+                  Gunun eseri hazirlaniyor.
+                </div>
+              )}
+            </div>
+          </section>
+        </div>
+      </div>
+    </div>
+  );
+}

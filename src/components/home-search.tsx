@@ -48,6 +48,13 @@ export function HomeSearch() {
       href: '/rehber/vergi-beyani',
       category: 'Rehber',
       keywords: ['vergi', 'steuer', 'steuererklärung', 'finanzamt', 'elster', 'vergi iadesi', 'beyanname']
+    },
+    {
+      id: 'gurbet-kalemleri',
+      title: "Gurbet Kalemleri",
+      href: '/gurbet-kalemleri',
+      category: 'Edebiyat',
+      keywords: ['gurbet', 'şiir', 'edebiyat', 'yazı', 'deneme', 'öykü', 'kalem', 'göç', 'diaspora', 'hapis', 'anne', 'hasret']
     }
   ];
 
@@ -146,7 +153,7 @@ export function HomeSearch() {
   };
 
   return (
-    <form onSubmit={handleSearch} className="relative flex-1">
+    <form onSubmit={handleSearch} className="relative flex-1 z-50">
       <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 h-5 w-5 z-10" />
       <Input 
         ref={inputRef}
@@ -165,7 +172,7 @@ export function HomeSearch() {
       {showDropdown && allResults.length > 0 && (
         <div 
           ref={dropdownRef}
-          className="absolute top-full left-0 right-0 mt-2 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg shadow-xl max-h-96 overflow-y-auto z-50"
+          className="absolute top-full left-0 right-0 mt-2 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg shadow-xl max-h-[500px] overflow-y-auto z-[100]"
         >
           {filteredGuides.length > 0 && (
             <div className="border-b border-slate-200 dark:border-slate-700">

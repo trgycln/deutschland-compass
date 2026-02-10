@@ -36,20 +36,39 @@ import {
 
 export default function VergiBeyaniPage() {
   const [experiences, setExperiences] = useState<any[]>([]);
+  const [supabaseReady, setSupabaseReady] = useState(false);
 
   useEffect(() => {
+    console.log('🔍 Vergi Beyani: Supabase bağlantı kontrol...');
+    console.log('URL:', process.env.NEXT_PUBLIC_SUPABASE_URL ? '✓ Var' : '✗ Eksik');
+    console.log('Key:', process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY ? '✓ Var' : '✗ Eksik');
+    setSupabaseReady(!!process.env.NEXT_PUBLIC_SUPABASE_URL && !!process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY);
+    
     async function fetchExperiences() {
-      const { data } = await supabase
-        .from('experiences')
-        .select('*')
-        .eq('status', 'approved')
-        .or('profession.ilike.%Vergi%,profession.ilike.%Steuererklärung%,profession.ilike.%Steuer%')
-        .order('created_at', { ascending: false });
-      
-      if (data) setExperiences(data);
+      try {
+        console.log('📥 Vergi Beyani: Tecrübeler yükleniyor...');
+        const { data, error } = await supabase
+          .from('experiences')
+          .select('*')
+          .eq('status', 'approved')
+          .or('profession.ilike.%Vergi%,profession.ilike.%Steuererklärung%,profession.ilike.%Steuer%')
+          .order('created_at', { ascending: false });
+        
+        if (error) {
+          console.error('❌ Vergi Beyani: Supabase hatası:', error);
+        } else {
+          console.log('✅ Vergi Beyani: Tecrübeler yüklendi:', data?.length || 0);
+          if (data) setExperiences(data);
+        }
+      } catch (err) {
+        console.error('💥 Vergi Beyani: Fetch hatası:', err);
+      }
     }
-    fetchExperiences();
-  }, []);
+    
+    if (supabaseReady) {
+      fetchExperiences();
+    }
+  }, [supabaseReady]);
 
   return (
     <div className="min-h-screen bg-slate-50 dark:bg-slate-950">

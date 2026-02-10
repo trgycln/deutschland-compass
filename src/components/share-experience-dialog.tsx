@@ -31,7 +31,12 @@ export function ShareExperienceDialog({ professionSlug, defaultProfessionName = 
     if (!formData.content) return
 
     setLoading(true)
+    console.log('📝 Tecrübe gönderilmeye çalışıyor:', { profession: formData.profession, contentLength: formData.content.length })
+    
     try {
+      console.log('🔌 Supabase URL:', process.env.NEXT_PUBLIC_SUPABASE_URL ? 'Tanımlı' : 'EKSIK')
+      console.log('🔑 Supabase Key:', process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY ? 'Tanımlı' : 'EKSIK')
+      
       const { error } = await supabase
         .from('experiences')
         .insert([
@@ -43,8 +48,12 @@ export function ShareExperienceDialog({ professionSlug, defaultProfessionName = 
           }
         ])
 
-      if (error) throw error
+      if (error) {
+        console.error('❌ Supabase hata:', error)
+        throw error
+      }
 
+      console.log('✅ Tecrübe başarıyla gönderildi')
       setSuccess(true)
       setTimeout(() => {
         setOpen(false)
@@ -52,8 +61,9 @@ export function ShareExperienceDialog({ professionSlug, defaultProfessionName = 
         setFormData({ ...formData, content: "" })
       }, 2000)
     } catch (error) {
-      console.error('Error submitting experience:', error)
-      alert('Bir hata oluştu. Lütfen tekrar deneyin.')
+      console.error('💥 Gönderim hatası:', error)
+      const errorMessage = error instanceof Error ? error.message : 'Bilinmeyen hata'
+      alert(`Gönderim başarısız: ${errorMessage}`)
     } finally {
       setLoading(false)
     }

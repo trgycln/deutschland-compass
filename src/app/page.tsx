@@ -2,12 +2,13 @@ import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import { Card, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { Users, BookOpen, MessageSquare, Info, Send, ArrowRight, Utensils } from 'lucide-react'; // Users ikonu zaten var
+import { Users, BookOpen, MessageSquare, Info, Send, ArrowRight, Utensils } from 'lucide-react';
 import { HomeSearch } from '@/components/home-search';
 import { HomeProfessions } from '@/components/home-professions';
 import { professionsList } from '@/data/professions-list';
 import { WhatsNewPopup } from '@/components/whats-new-popup';
 import { ContributionDialog } from '@/components/contribution-dialog';
+import { GuidesSidebar } from '@/components/layout/guides-sidebar';
 
 export default function Home() {
   return (
@@ -30,23 +31,31 @@ export default function Home() {
         </div>
       </div>
 
-      {/* Hero Section - (Aynı Kalıyor) */}
-      <section className="relative py-20 md:py-32 bg-secondary dark:bg-slate-950 overflow-hidden">
+      {/* Hero Section */}
+      <section className="relative py-12 md:py-20 bg-secondary dark:bg-slate-950 overflow-visible">
         <div className="container mx-auto px-4 relative z-10">
-          <div className="max-w-3xl mx-auto text-center space-y-8">
-            <h1 className="text-4xl md:text-6xl font-bold tracking-tight text-primary dark:text-white">
-              Almanya'daki <span className="text-accent">Pusulanız</span>
-            </h1>
-            <p className="text-xl text-primary/80 dark:text-slate-300 leading-relaxed">
-              Binlerce profesyonelin tecrübesiyle harmanlanmış, yaşayan bir rehber. 
-              Mesleğinizi seçin, süreci öğrenin, tecrübenizi paylaşın.
-            </p>
+          <div className="grid grid-cols-1 lg:grid-cols-[380px_1fr] gap-8 items-start">
+            {/* Sol - Rehberler Sidebar */}
+            <div className="hidden lg:block">
+              <GuidesSidebar />
+            </div>
             
-            <div className="flex flex-col sm:flex-row gap-4 max-w-lg mx-auto pt-4">
-              <HomeSearch />
-              <Button size="lg" className="h-12 px-8 text-lg bg-primary text-primary-foreground hover:bg-primary/90" asChild>
-                <Link href="/meslekler">Rehberi Keşfet</Link>
-              </Button>
+            {/* Sağ - Ana İçerik */}
+            <div className="text-center space-y-8 py-8">
+              <h1 className="text-4xl md:text-6xl font-bold tracking-tight text-primary dark:text-white">
+                Almanya'daki <span className="text-accent">Pusulanız</span>
+              </h1>
+              <p className="text-xl text-primary/80 dark:text-slate-300 leading-relaxed max-w-2xl mx-auto">
+                Binlerce profesyonelin tecrübesiyle harmanlanmış, yaşayan bir rehber. 
+                Mesleğinizi seçin, süreci öğrenin, tecrübenizi paylaşın.
+              </p>
+              
+              <div className="flex flex-col sm:flex-row gap-4 max-w-lg mx-auto pt-4 relative z-50">
+                <HomeSearch />
+                <Button size="lg" className="h-12 px-8 text-lg bg-primary text-primary-foreground hover:bg-primary/90" asChild>
+                  <Link href="/meslekler">Rehberi Keşfet</Link>
+                </Button>
+              </div>
             </div>
           </div>
         </div>
@@ -57,82 +66,81 @@ export default function Home() {
         </div>
       </section>
 
-      {/* Telegram Banner - (Aynı Kalıyor) */}
+      {/* Telegram Banner */}
       <section className="border-t border-border bg-background relative z-10">
         <div className="container mx-auto px-4 py-8">
-          <div className="flex flex-col md:flex-row items-center justify-between gap-6 bg-accent/5 dark:bg-accent/10 rounded-xl p-6 border border-accent/20">
-            <div className="flex items-start sm:items-center gap-4">
-              <div className="p-3 bg-accent text-primary-foreground rounded-full shrink-0 shadow-sm">
-                <Send className="w-6 h-6" />
+          <div className="space-y-8">
+            <div className="flex flex-col md:flex-row items-center justify-between gap-6 bg-accent/5 dark:bg-accent/10 rounded-xl p-6 border border-accent/20">
+                <div className="flex items-start sm:items-center gap-4">
+                  <div className="p-3 bg-accent text-primary-foreground rounded-full shrink-0 shadow-sm">
+                    <Send className="w-6 h-6" />
+                  </div>
+                  <div className="space-y-1">
+                    <h3 className="text-lg font-semibold text-foreground">Yalnız Değilsiniz!</h3>
+                    <p className="text-muted-foreground max-w-xl text-sm sm:text-base">
+                      Anlık sorularınız, yardımlaşma ve tecrübe paylaşımı için <strong>Telegram</strong> gruplarımıza katılın.
+                      Binlerce kişilik topluluğumuz sizi bekliyor.
+                    </p>
+                  </div>
+                </div>
+                <Button variant="outline" className="border-accent text-accent-foreground hover:bg-accent hover:text-white w-full md:w-auto font-medium" asChild>
+                  <Link href="/telegram-gruplari">
+                    Telegram Grupları <ArrowRight className="ml-2 w-4 h-4" />
+                  </Link>
+                </Button>
               </div>
-              <div className="space-y-1">
-                <h3 className="text-lg font-semibold text-foreground">Yalnız Değilsiniz!</h3>
-                <p className="text-muted-foreground max-w-xl text-sm sm:text-base">
-                  Anlık sorularınız, yardımlaşma ve tecrübe paylaşımı için <strong>Telegram</strong> gruplarımıza katılın.
-                  Binlerce kişilik topluluğumuz sizi bekliyor.
-                </p>
-              </div>
-            </div>
-            <Button variant="outline" className="border-accent text-accent-foreground hover:bg-accent hover:text-white w-full md:w-auto font-medium" asChild>
-              <Link href="/telegram-gruplari">
-                Telegram Grupları <ArrowRight className="ml-2 w-4 h-4" />
-              </Link>
-            </Button>
-          </div>
-        </div>
-      </section>
-
-      {/* Helal Mekanlar Banner - (Aynı Kalıyor) */}
-      <section className="pb-8 bg-background relative z-10">
-        <div className="container mx-auto px-4">
-          <div className="flex flex-col md:flex-row items-center gap-6 justify-between bg-gradient-to-r from-amber-50 to-orange-50 dark:from-amber-950/30 dark:to-orange-950/20 rounded-xl p-6 border border-amber-100 dark:border-amber-900/50">
             <div className="flex items-start gap-4">
               <div className="bg-white dark:bg-amber-900/40 p-3 rounded-full shadow-sm border border-amber-100 dark:border-amber-800 text-amber-600 dark:text-amber-400">
                 <Utensils className="w-6 h-6" />
               </div>
-              <div>
-                <div className="flex items-center gap-2 mb-1 flex-wrap">
-                  <Badge className="bg-amber-600 hover:bg-amber-700 text-white border-none shadow-sm">YENİ</Badge>
-                  <h3 className="font-bold text-lg text-amber-950 dark:text-amber-100">Helal Mekanlar & Lezzet Rehberi</h3>
-                </div>
-                <p className="text-amber-800/80 dark:text-amber-200/70 text-sm md:text-base max-w-2xl mt-1">
-                  Almanya ve Avrupa genelinde, topluluğumuzun tecrübeleriyle derlenen 
-                  güvenilir restoranlar ve seyahat ipuçları yayında.
-                </p>
               </div>
-            </div>
-            <Button className="w-full md:w-auto bg-amber-600 text-white hover:bg-amber-700 border-none shadow-md" asChild>
-              <Link href="/rehber/helal-mekanlar">
-                Rehberi İncele <ArrowRight className="ml-2 w-4 h-4" />
-              </Link>
-            </Button>
-          </div>
-        </div>
-      </section>
 
-      {/* Vergi Beyanı Banner - YENİ */}
-      <section className="pb-8 bg-background relative z-10">
-        <div className="container mx-auto px-4">
-          <div className="flex flex-col md:flex-row items-center gap-6 justify-between bg-gradient-to-r from-emerald-50 to-green-50 dark:from-emerald-950/30 dark:to-green-950/20 rounded-xl p-6 border border-emerald-100 dark:border-emerald-900/50">
-            <div className="flex items-start gap-4">
-              <div className="bg-white dark:bg-emerald-900/40 p-3 rounded-full shadow-sm border border-emerald-100 dark:border-emerald-800 text-emerald-600 dark:text-emerald-400">
-                <BookOpen className="w-6 h-6" />
-              </div>
-              <div>
-                <div className="flex items-center gap-2 mb-1 flex-wrap">
-                  <Badge className="bg-emerald-600 hover:bg-emerald-700 text-white border-none shadow-sm">YENİ</Badge>
-                  <h3 className="font-bold text-lg text-emerald-950 dark:text-emerald-100">Vergi Beyanı Rehberi (Steuererklärung)</h3>
+              {/* Helal Mekanlar Banner */}
+              <div className="flex flex-col md:flex-row items-center gap-6 justify-between bg-gradient-to-r from-amber-50 to-orange-50 dark:from-amber-950/30 dark:to-orange-950/20 rounded-xl p-6 border border-amber-100 dark:border-amber-900/50">
+                <div className="flex items-start gap-4">
+                  <div className="bg-white dark:bg-amber-900/40 p-3 rounded-full shadow-sm border border-amber-100 dark:border-amber-800 text-amber-600 dark:text-amber-400">
+                    <Utensils className="w-6 h-6" />
+                  </div>
+                  <div>
+                    <div className="flex items-center gap-2 mb-1 flex-wrap">
+                      <Badge className="bg-amber-600 hover:bg-amber-700 text-white border-none shadow-sm">YENİ</Badge>
+                      <h3 className="font-bold text-lg text-amber-950 dark:text-amber-100">Helal Mekanlar & Lezzet Rehberi</h3>
+                    </div>
+                    <p className="text-amber-800/80 dark:text-amber-200/70 text-sm md:text-base max-w-2xl mt-1">
+                      Almanya ve Avrupa genelinde, topluluğumuzun tecrübeleriyle derlenen 
+                      güvenilir restoranlar ve seyahat ipuçları yayında.
+                    </p>
+                  </div>
                 </div>
-                <p className="text-emerald-800/80 dark:text-emerald-200/70 text-sm md:text-base max-w-2xl mt-1">
-                  Kimler yapmalı, nasıl yapılır, neler düşülebilir? Tecrübelerle harmanlanmış kapsamlı vergi beyanı kılavuzu.
-                </p>
+                <Button className="w-full md:w-auto bg-amber-600 text-white hover:bg-amber-700 border-none shadow-md" asChild>
+                  <Link href="/rehber/helal-mekanlar">
+                    Rehberi İncele <ArrowRight className="ml-2 w-4 h-4" />
+                  </Link>
+                </Button>
               </div>
-            </div>
-            <Button className="w-full md:w-auto bg-emerald-600 text-white hover:bg-emerald-700 border-none shadow-md" asChild>
-              <Link href="/rehber/vergi-beyani">
-                Rehberi İncele <ArrowRight className="ml-2 w-4 h-4" />
-              </Link>
-            </Button>
+
+              {/* Vergi Beyanı Banner */}
+              <div className="flex flex-col md:flex-row items-center gap-6 justify-between bg-gradient-to-r from-emerald-50 to-green-50 dark:from-emerald-950/30 dark:to-green-950/20 rounded-xl p-6 border border-emerald-100 dark:border-emerald-900/50">
+                <div className="flex items-start gap-4">
+                  <div className="bg-white dark:bg-emerald-900/40 p-3 rounded-full shadow-sm border border-emerald-100 dark:border-emerald-800 text-emerald-600 dark:text-emerald-400">
+                    <BookOpen className="w-6 h-6" />
+                  </div>
+                  <div>
+                    <div className="flex items-center gap-2 mb-1 flex-wrap">
+                      <Badge className="bg-emerald-600 hover:bg-emerald-700 text-white border-none shadow-sm">YENİ</Badge>
+                      <h3 className="font-bold text-lg text-emerald-950 dark:text-emerald-100">Vergi Beyanı Rehberi (Steuererklärung)</h3>
+                    </div>
+                    <p className="text-emerald-800/80 dark:text-emerald-200/70 text-sm md:text-base max-w-2xl mt-1">
+                      Kimler yapmalı, nasıl yapılır, neler düşülebilir? Tecrübelerle harmanlanmış kapsamlı vergi beyanı kılavuzu.
+                    </p>
+                  </div>
+                </div>
+                <Button className="w-full md:w-auto bg-emerald-600 text-white hover:bg-emerald-700 border-none shadow-md" asChild>
+                  <Link href="/rehber/vergi-beyani">
+                    Rehberi İncele <ArrowRight className="ml-2 w-4 h-4" />
+                  </Link>
+                </Button>
+              </div>
           </div>
         </div>
       </section>
