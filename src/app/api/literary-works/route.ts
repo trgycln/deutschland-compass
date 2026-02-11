@@ -74,7 +74,7 @@ export async function POST(request: NextRequest) {
       );
     }
     
-    // Yeni eser ekle (moderasyon için is_approved = false)
+    // Yeni eser ekle (direkt yayınla)
     const { data, error } = await supabase
       .from('literary_works')
       .insert([
@@ -85,7 +85,7 @@ export async function POST(request: NextRequest) {
           type,
           tags: tags || [],
           content,
-          is_approved: false, // Moderasyon bekliyor
+          is_approved: true, // Direkt yayınla
           submitted_by: 'user' // TODO: Auth eklenince kullanıcı bilgisi
         }
       ])
@@ -100,7 +100,7 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ 
       success: true, 
       work: data,
-      message: 'Eseriniz başarıyla gönderildi. Onay sonrası yayınlanacaktır.'
+      message: 'Eseriniz başarıyla yayınlanmıştır.'
     }, { status: 201 });
   } catch (error: any) {
     console.error('API error:', error);

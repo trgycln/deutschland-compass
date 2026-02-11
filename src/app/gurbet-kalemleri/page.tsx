@@ -23,10 +23,12 @@ import {
   Sparkles,
   User,
   AlertCircle,
+  Music,
 } from "lucide-react";
 import { LikeButton } from "@/components/like-button";
 import { CommentForm } from "@/components/comment-form";
 import { CommentsList } from "@/components/comments-list";
+import { AudioPlayer } from "@/components/audio-player";
 
 interface LiteraryWork {
   id: number;
@@ -36,6 +38,7 @@ interface LiteraryWork {
   type: string;
   tags: string[];
   content: string;
+  audio_url?: string;
 }
 
 const serifStyle = {
@@ -72,6 +75,7 @@ export default function GurbetKalemleriPage() {
   const [selectedTags, setSelectedTags] = useState<string[]>([]);
   const [featuredId, setFeaturedId] = useState<number | null>(null);
   const [commentsRefresh, setCommentsRefresh] = useState(0);
+  const [showOnlyNarrated, setShowOnlyNarrated] = useState(false);
 
   useEffect(() => {
     async function fetchWorks() {
@@ -181,9 +185,10 @@ export default function GurbetKalemleriPage() {
       const matchesTag =
         selectedTags.length === 0 ||
         selectedTags.some((tag) => (work.tags || []).includes(tag));
-      return matchesSearch && matchesAuthor && matchesType && matchesTag;
+      const matchesNarration = !showOnlyNarrated || !!work.audio_url;
+      return matchesSearch && matchesAuthor && matchesType && matchesTag && matchesNarration;
     });
-  }, [literaryWorks, searchQuery, selectedAuthor, selectedType, selectedTags]);
+  }, [literaryWorks, searchQuery, selectedAuthor, selectedType, selectedTags, showOnlyNarrated]);
 
   const featuredWork = useMemo(() => {
     if (!featuredId) return null;
@@ -363,11 +368,47 @@ export default function GurbetKalemleriPage() {
                 );
               })}
             </div>
+
+            {/* Narrated Works Filter */}
+            <div className="mt-4 flex items-center gap-2">
+              <input
+                type="checkbox"
+                id="narrated-filter"
+                checked={showOnlyNarrated}
+                onChange={(e) => setShowOnlyNarrated(e.target.checked)}
+                className="w-4 h-4 cursor-pointer"
+              />
+              <label htmlFor="narrated-filter" className="flex items-center gap-2 cursor-pointer text-sm text-stone-700">
+                <Music className="w-4 h-4 text-amber-600" />
+                <span>Sadece Seslendirilenleri Göster</span>
+              </label>
+            </div>
           </div>
         </div>
       </div>
 
       <div className="container mx-auto px-4 py-10">
+        {/* AI-Generated Slogan Section */}
+        <div className="mb-10 relative">
+          <div className="rounded-3xl bg-gradient-to-r from-purple-50 via-pink-50 to-orange-50 border-2 border-purple-200 overflow-hidden shadow-lg">
+            <div className="absolute inset-0 opacity-10" style={{
+              backgroundImage: `radial-gradient(circle at 20% 50%, rgba(168,85,247,0.3), transparent 50%), 
+                               radial-gradient(circle at 80% 80%, rgba(236,72,153,0.3), transparent 50%)`
+            }}></div>
+            <div className="relative p-8 md:p-12 text-center">
+              <div className="inline-block mb-4 px-4 py-2 bg-purple-100 text-purple-900 rounded-full text-xs font-semibold">
+                ✨ Yapay Zeka ile Seçilmiş
+              </div>
+              <h2 className="text-2xl md:text-3xl font-bold text-purple-900 mb-3" style={accentStyle}>
+                "Gurbetin dili, kalbin sesi"
+              </h2>
+              <p className="text-lg text-purple-700 max-w-2xl mx-auto" style={serifStyle}>
+                Uzaklıkta kalan yürek, kağıda yazılan hasret. Her şiir, bir yolcunun dilinden çıkan sesler...
+              </p>
+            </div>
+          </div>
+        </div>
+
         <div className="grid gap-8 lg:grid-cols-[320px_1fr]">
           <aside className="rounded-3xl bg-white/80 shadow-lg border border-amber-100">
             <div className="p-6 border-b border-amber-100">
@@ -408,8 +449,13 @@ export default function GurbetKalemleriPage() {
                     <div className="text-sm text-stone-500" style={serifStyle}>
                       {work.author}
                     </div>
-                    <div className="text-base text-stone-800 line-clamp-2" style={accentStyle}>
-                      {work.title}
+                    <div className="flex items-start gap-2 justify-between">
+                      <div className="text-base text-stone-800 line-clamp-2 flex-1" style={accentStyle}>
+                        {work.title}
+                      </div>
+                      {work.audio_url && (
+                        <Music className="w-4 h-4 text-amber-600 flex-shrink-0 mt-0.5" />
+                      )}
                     </div>
                   </button>
                 );
@@ -421,6 +467,12 @@ export default function GurbetKalemleriPage() {
             <div className="p-8 md:p-10">
               <div className="flex flex-wrap items-center gap-3">
                 <Badge className="bg-amber-200 text-amber-900">Gunun Eseri</Badge>
+                {featuredWork?.audio_url && (
+                  <Badge className="bg-blue-100 text-blue-900 flex items-center gap-1">
+                    <Music className="w-3 h-3" />
+                    Seslendirilmis
+                  </Badge>
+                )}
                 <Button
                   variant="outline"
                   onClick={handleRefreshFeatured}
@@ -458,6 +510,13 @@ export default function GurbetKalemleriPage() {
                   >
                     {featuredWork.content}
                   </div>
+
+                  {/* Audio Player */}
+                  {featuredWork.audio_url && (
+                    <div className="mt-8">
+                      <AudioPlayer audioUrl={featuredWork.audio_url} title={featuredWork.title} />
+                    </div>
+                  )}
 
                   {featuredTags.length > 0 && (
                     <div className="mt-6 flex flex-wrap gap-2">

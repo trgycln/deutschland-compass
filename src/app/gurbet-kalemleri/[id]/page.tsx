@@ -6,8 +6,12 @@ import Link from 'next/link';
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
-import { ArrowLeft, Calendar, User, Tag, ChevronLeft, ChevronRight, BookOpen, Loader2, AlertCircle } from "lucide-react";
+import { ArrowLeft, Calendar, User, Tag, ChevronLeft, ChevronRight, BookOpen, Loader2, AlertCircle, Music } from "lucide-react";
 import { Alert, AlertDescription } from "@/components/ui/alert";
+import { AudioPlayer } from "@/components/audio-player";
+import { LikeButton } from "@/components/like-button";
+import { CommentForm } from "@/components/comment-form";
+import { CommentsList } from "@/components/comments-list";
 
 interface LiteraryWork {
   id: number;
@@ -17,6 +21,7 @@ interface LiteraryWork {
   type: string;
   tags: string[];
   content: string;
+  audio_url?: string;
 }
 
 export default function LiteraryWorkPage() {
@@ -40,6 +45,11 @@ export default function LiteraryWorkPage() {
         if (!response.ok) throw new Error('Eser bulunamadı');
         
         const data = await response.json();
+        console.log('Work fetched:', {
+          id: data.work.id,
+          title: data.work.title,
+          audio_url: data.work.audio_url,
+        });
         setWork(data.work);
         
         // Tüm eserleri çek (önceki/sonraki için)
@@ -106,12 +116,25 @@ export default function LiteraryWorkPage() {
       {/* Main Content */}
       <div className="container mx-auto px-4 py-12 max-w-4xl">
         <article className="space-y-8">
+          {/* Audio Player - First Thing User Sees */}
+          {work.audio_url && (
+            <div className="p-6 bg-gradient-to-r from-blue-50 to-indigo-50 dark:from-blue-900/20 dark:to-indigo-900/20 rounded-xl border border-blue-200 dark:border-blue-800">
+              <AudioPlayer audioUrl={work.audio_url} title={work.title} />
+            </div>
+          )}
+
           {/* Header */}
           <header className="space-y-4">
             <div className="flex flex-wrap items-center gap-2">
               <Badge className={`${getTypeBadgeColor(work.type)}`}>
                 {work.type}
               </Badge>
+              {work.audio_url && (
+                <Badge className="bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-300 flex items-center gap-1">
+                  <Music className="w-3 h-3" />
+                  Seslendirilmis
+                </Badge>
+              )}
               <span className="text-slate-400">•</span>
               <div className="flex items-center gap-1 text-sm text-slate-600 dark:text-slate-400">
                 <Calendar className="w-4 h-4" />
@@ -203,6 +226,30 @@ export default function LiteraryWorkPage() {
             ) : (
               <div></div>
             )}
+          </div>
+
+          {/* Like & Comments Section */}
+          <div className="space-y-8 mt-12 pt-8 border-t border-slate-200 dark:border-slate-700">
+            {/* Like Button */}
+            <div>
+              <h3 className="text-lg font-semibold text-slate-900 dark:text-slate-100 mb-4">
+                Bu eseri beğendin mi?
+              </h3>
+              <LikeButton workId={work.id} />
+            </div>
+
+            {/* Comments */}
+            <div>
+              <h3 className="text-lg font-semibold text-slate-900 dark:text-slate-100 mb-4">
+                Yorum Yap
+              </h3>
+              <CommentForm workId={work.id} onCommentAdded={() => {}} />
+            </div>
+
+            {/* Comments List */}
+            <div>
+              <CommentsList workId={work.id} />
+            </div>
           </div>
         </article>
       </div>
