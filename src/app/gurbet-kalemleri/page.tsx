@@ -281,7 +281,8 @@ export default function GurbetKalemleriPage() {
           </div>
         </div>
       </div>
-md:sticky top-16 z-30 border-y border-amber-100 bg-white/90 backdrop-blur">
+
+      <div className="md:sticky top-16 z-30 border-y border-amber-100 bg-white/90 backdrop-blur">
         <div className="container mx-auto px-4 py-3">
           {/* Mobil: Kompakt Filtre Butonu */}
           <div className="md:hidden">
@@ -506,8 +507,7 @@ md:sticky top-16 z-30 border-y border-amber-100 bg-white/90 backdrop-blur">
                   <Music className="w-4 h-4 text-amber-600" />
                   <span>Sadece Seslendirilenleri Göster</span>
                 </label>
-              </div>Sadece Seslendirilenleri Göster</span>
-              </label>
+              </div>
             </div>
           </div>
         </div>
