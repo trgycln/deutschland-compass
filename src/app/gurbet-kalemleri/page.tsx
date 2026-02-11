@@ -272,6 +272,19 @@ export default function GurbetKalemleriPage() {
                 <User className="w-4 h-4" />
                 <span>{new Set(literaryWorks.map((work) => work.author)).size} yazar</span>
               </div>
+              <div className="flex items-center gap-2">
+                <input
+                  type="checkbox"
+                  id="narrated-filter-header"
+                  checked={showOnlyNarrated}
+                  onChange={(e) => setShowOnlyNarrated(e.target.checked)}
+                  className="w-4 h-4 cursor-pointer"
+                />
+                <label htmlFor="narrated-filter-header" className="flex items-center gap-1 cursor-pointer text-stone-700">
+                  <Music className="w-4 h-4 text-amber-600" />
+                  <span>Seslendirilmiş</span>
+                </label>
+              </div>
               <Link href="/gurbet-kalemleri/gonder" className="ml-auto">
                 <Button className="bg-amber-800 text-amber-50 hover:bg-amber-900">
                   Eserini Paylas
@@ -387,20 +400,6 @@ export default function GurbetKalemleriPage() {
                     })}
                   </div>
                 </div>
-
-                <div className="flex items-center gap-2">
-                  <input
-                    type="checkbox"
-                    id="narrated-filter-mobile"
-                    checked={showOnlyNarrated}
-                    onChange={(e) => setShowOnlyNarrated(e.target.checked)}
-                    className="w-4 h-4 cursor-pointer"
-                  />
-                  <label htmlFor="narrated-filter-mobile" className="flex items-center gap-1 cursor-pointer text-xs text-stone-700">
-                    <Music className="w-3 h-3 text-amber-600" />
-                    <span>Seslendirilen</span>
-                  </label>
-                </div>
               </div>
             )}
           </div>
@@ -494,47 +493,12 @@ export default function GurbetKalemleriPage() {
                   );
                 })}
               </div>
-
-              <div className="mt-4 flex items-center gap-2">
-                <input
-                  type="checkbox"
-                  id="narrated-filter"
-                  checked={showOnlyNarrated}
-                  onChange={(e) => setShowOnlyNarrated(e.target.checked)}
-                  className="w-4 h-4 cursor-pointer"
-                />
-                <label htmlFor="narrated-filter" className="flex items-center gap-2 cursor-pointer text-sm text-stone-700">
-                  <Music className="w-4 h-4 text-amber-600" />
-                  <span>Sadece Seslendirilenleri Göster</span>
-                </label>
-              </div>
             </div>
           </div>
         </div>
       </div>
 
       <div className="container mx-auto px-4 py-10">
-        {/* AI-Generated Slogan Section */}
-        <div className="mb-10 relative">
-          <div className="rounded-3xl bg-gradient-to-r from-purple-50 via-pink-50 to-orange-50 border-2 border-purple-200 overflow-hidden shadow-lg">
-            <div className="absolute inset-0 opacity-10" style={{
-              backgroundImage: `radial-gradient(circle at 20% 50%, rgba(168,85,247,0.3), transparent 50%), 
-                               radial-gradient(circle at 80% 80%, rgba(236,72,153,0.3), transparent 50%)`
-            }}></div>
-            <div className="relative p-8 md:p-12 text-center">
-              <div className="inline-block mb-4 px-4 py-2 bg-purple-100 text-purple-900 rounded-full text-xs font-semibold">
-                ✨ Yapay Zeka ile Seçilmiş
-              </div>
-              <h2 className="text-2xl md:text-3xl font-bold text-purple-900 mb-3" style={accentStyle}>
-                "Gurbetin dili, kalbin sesi"
-              </h2>
-              <p className="text-lg text-purple-700 max-w-2xl mx-auto" style={serifStyle}>
-                Uzaklıkta kalan yürek, kağıda yazılan hasret. Her şiir, bir yolcunun dilinden çıkan sesler...
-              </p>
-            </div>
-          </div>
-        </div>
-
         <div className="grid gap-8 lg:grid-cols-[320px_1fr]">
           <aside className="rounded-3xl bg-white/80 shadow-lg border border-amber-100">
             <div className="p-6 border-b border-amber-100">
