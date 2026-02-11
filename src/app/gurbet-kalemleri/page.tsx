@@ -24,6 +24,8 @@ import {
   User,
   AlertCircle,
   Music,
+  Filter,
+  X,
 } from "lucide-react";
 import { LikeButton } from "@/components/like-button";
 import { CommentForm } from "@/components/comment-form";
@@ -76,6 +78,7 @@ export default function GurbetKalemleriPage() {
   const [featuredId, setFeaturedId] = useState<number | null>(null);
   const [commentsRefresh, setCommentsRefresh] = useState(0);
   const [showOnlyNarrated, setShowOnlyNarrated] = useState(false);
+  const [filtersOpen, setFiltersOpen] = useState(false);
 
   useEffect(() => {
     async function fetchWorks() {
@@ -278,109 +281,232 @@ export default function GurbetKalemleriPage() {
           </div>
         </div>
       </div>
-
-      <div className="sticky top-16 z-30 border-y border-amber-100 bg-white/90 backdrop-blur">
-        <div className="container mx-auto px-4 py-4">
-          <div className="grid gap-3 md:grid-cols-[1.2fr_0.8fr_0.8fr_0.8fr]">
-            <div className="relative">
-              <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-stone-400" />
-              <Input
-                placeholder="Eser, yazar veya icerikte ara..."
-                value={searchQuery}
-                onChange={(event) => setSearchQuery(event.target.value)}
-                className="pl-9 bg-white/80 border-amber-100"
-              />
-            </div>
-            <Select value={selectedAuthor} onValueChange={setSelectedAuthor}>
-              <SelectTrigger className="bg-white/80 border-amber-100">
-                <SelectValue placeholder="Yazar" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="all">Tum yazarlar</SelectItem>
-                {authors.map((author) => (
-                  <SelectItem key={author} value={author}>
-                    {author}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-            <Select value={selectedType} onValueChange={setSelectedType}>
-              <SelectTrigger className="bg-white/80 border-amber-100">
-                <SelectValue placeholder="Tur" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="all">Tum turler</SelectItem>
-                {types.map((type) => (
-                  <SelectItem key={type} value={type}>
-                    {type}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-            <Select
-              value={selectedTags.length === 1 ? selectedTags[0] : "all"}
-              onValueChange={(value) => {
-                if (value === "all") {
-                  setSelectedTags([]);
-                } else {
-                  setSelectedTags([value]);
-                }
-              }}
+md:sticky top-16 z-30 border-y border-amber-100 bg-white/90 backdrop-blur">
+        <div className="container mx-auto px-4 py-3">
+          {/* Mobil: Kompakt Filtre Butonu */}
+          <div className="md:hidden">
+            <button
+              onClick={() => setFiltersOpen(!filtersOpen)}
+              className="w-full flex items-center justify-between p-3 rounded-lg bg-white/80 border border-amber-100 hover:bg-amber-50 transition"
             >
-              <SelectTrigger className="bg-white/80 border-amber-100">
-                <SelectValue placeholder="Etiket" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="all">Tum etiketler</SelectItem>
-                {tags.map((tag) => (
-                  <SelectItem key={tag} value={tag}>
-                    {tag}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-          </div>
-          <div className="mt-4">
-            <div className="text-sm text-stone-500" style={serifStyle}>
-              Etiketlere dokun, duyguya gore kesfet.
-            </div>
-            {tags.length === 0 && (
-              <div className="mt-1 text-xs text-stone-400" style={serifStyle}>
-                Not: Etiket bilgisi olmayan eserlerde onerilen etiketler gosterilir.
+              <div className="flex items-center gap-2">
+                <Filter className="w-4 h-4 text-amber-700" />
+                <span className="text-sm font-medium text-stone-700">
+                  Filtrele
+                  {(searchQuery || selectedAuthor !== "all" || selectedType !== "all" || selectedTags.length > 0 || showOnlyNarrated) && 
+                    " (aktif)"}
+                </span>
+              </div>
+              {filtersOpen ? 
+                <X className="w-4 h-4 text-stone-500" /> : 
+                <Filter className="w-4 h-4 text-stone-500" />
+              }
+            </button>
+            
+            {filtersOpen && (
+              <div className="mt-3 space-y-3 pb-2">
+                <div className="relative">
+                  <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-stone-400" />
+                  <Input
+                    placeholder="Ara..."
+                    value={searchQuery}
+                    onChange={(event) => setSearchQuery(event.target.value)}
+                    className="pl-9 bg-white/80 border-amber-100"
+                  />
+                </div>
+                <div className="grid grid-cols-3 gap-2">
+                  <Select value={selectedAuthor} onValueChange={setSelectedAuthor}>
+                    <SelectTrigger className="bg-white/80 border-amber-100 text-xs">
+                      <SelectValue placeholder="Yazar" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="all">Tümü</SelectItem>
+                      {authors.map((author) => (
+                        <SelectItem key={author} value={author}>
+                          {author}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                  <Select value={selectedType} onValueChange={setSelectedType}>
+                    <SelectTrigger className="bg-white/80 border-amber-100 text-xs">
+                      <SelectValue placeholder="Tür" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="all">Tümü</SelectItem>
+                      {types.map((type) => (
+                        <SelectItem key={type} value={type}>
+                          {type}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                  <Select
+                    value={selectedTags.length === 1 ? selectedTags[0] : "all"}
+                    onValueChange={(value) => {
+                      if (value === "all") {
+                        setSelectedTags([]);
+                      } else {
+                        setSelectedTags([value]);
+                      }
+                    }}
+                  >
+                    <SelectTrigger className="bg-white/80 border-amber-100 text-xs">
+                      <SelectValue placeholder="Etiket" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="all">Tümü</SelectItem>
+                      {tags.map((tag) => (
+                        <SelectItem key={tag} value={tag}>
+                          {tag}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+                
+                {/* Popüler Etiketler - Horizontal Scroll */}
+                <div className="overflow-x-auto -mx-4 px-4">
+                  <div className="flex gap-2 pb-2">
+                    {popularTags.slice(0, 8).map((tag) => {
+                      const isActive = selectedTags.includes(tag);
+                      return (
+                        <button
+                          key={tag}
+                          onClick={() => toggleTag(tag)}
+                          className={`flex-shrink-0 rounded-full border px-3 py-1 text-xs transition ${
+                            isActive
+                              ? "border-amber-400 bg-amber-100 text-amber-900"
+                              : "border-amber-100 bg-white/80 text-stone-600"
+                          }`}
+                        >
+                          {tag}
+                        </button>
+                      );
+                    })}
+                  </div>
+                </div>
+
+                <div className="flex items-center gap-2">
+                  <input
+                    type="checkbox"
+                    id="narrated-filter-mobile"
+                    checked={showOnlyNarrated}
+                    onChange={(e) => setShowOnlyNarrated(e.target.checked)}
+                    className="w-4 h-4 cursor-pointer"
+                  />
+                  <label htmlFor="narrated-filter-mobile" className="flex items-center gap-1 cursor-pointer text-xs text-stone-700">
+                    <Music className="w-3 h-3 text-amber-600" />
+                    <span>Seslendirilen</span>
+                  </label>
+                </div>
               </div>
             )}
-            <div className="mt-3 flex flex-wrap gap-2">
-              {popularTags.map((tag) => {
-                const isActive = selectedTags.includes(tag);
-                return (
-                  <button
-                    key={tag}
-                    onClick={() => toggleTag(tag)}
-                    aria-pressed={isActive}
-                    className={`rounded-full border px-3 py-1 text-xs transition ${
-                      isActive
-                        ? "border-amber-400 bg-amber-100 text-amber-900"
-                        : "border-amber-100 bg-white/80 text-stone-600 hover:border-amber-200 hover:bg-amber-50"
-                    }`}
-                  >
-                    {tag}
-                  </button>
-                );
-              })}
-            </div>
+          </div>
 
-            {/* Narrated Works Filter */}
-            <div className="mt-4 flex items-center gap-2">
-              <input
-                type="checkbox"
-                id="narrated-filter"
-                checked={showOnlyNarrated}
-                onChange={(e) => setShowOnlyNarrated(e.target.checked)}
-                className="w-4 h-4 cursor-pointer"
-              />
-              <label htmlFor="narrated-filter" className="flex items-center gap-2 cursor-pointer text-sm text-stone-700">
-                <Music className="w-4 h-4 text-amber-600" />
-                <span>Sadece Seslendirilenleri Göster</span>
+          {/* Desktop: Tam Filtreler */}
+          <div className="hidden md:block">
+            <div className="grid gap-3 md:grid-cols-[1.2fr_0.8fr_0.8fr_0.8fr]">
+              <div className="relative">
+                <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-stone-400" />
+                <Input
+                  placeholder="Eser, yazar veya icerikte ara..."
+                  value={searchQuery}
+                  onChange={(event) => setSearchQuery(event.target.value)}
+                  className="pl-9 bg-white/80 border-amber-100"
+                />
+              </div>
+              <Select value={selectedAuthor} onValueChange={setSelectedAuthor}>
+                <SelectTrigger className="bg-white/80 border-amber-100">
+                  <SelectValue placeholder="Yazar" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="all">Tum yazarlar</SelectItem>
+                  {authors.map((author) => (
+                    <SelectItem key={author} value={author}>
+                      {author}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+              <Select value={selectedType} onValueChange={setSelectedType}>
+                <SelectTrigger className="bg-white/80 border-amber-100">
+                  <SelectValue placeholder="Tur" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="all">Tum turler</SelectItem>
+                  {types.map((type) => (
+                    <SelectItem key={type} value={type}>
+                      {type}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+              <Select
+                value={selectedTags.length === 1 ? selectedTags[0] : "all"}
+                onValueChange={(value) => {
+                  if (value === "all") {
+                    setSelectedTags([]);
+                  } else {
+                    setSelectedTags([value]);
+                  }
+                }}
+              >
+                <SelectTrigger className="bg-white/80 border-amber-100">
+                  <SelectValue placeholder="Etiket" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="all">Tum etiketler</SelectItem>
+                  {tags.map((tag) => (
+                    <SelectItem key={tag} value={tag}>
+                      {tag}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+            <div className="mt-4">
+              <div className="text-sm text-stone-500" style={serifStyle}>
+                Etiketlere dokun, duyguya gore kesfet.
+              </div>
+              {tags.length === 0 && (
+                <div className="mt-1 text-xs text-stone-400" style={serifStyle}>
+                  Not: Etiket bilgisi olmayan eserlerde onerilen etiketler gosterilir.
+                </div>
+              )}
+              <div className="mt-3 flex flex-wrap gap-2">
+                {popularTags.map((tag) => {
+                  const isActive = selectedTags.includes(tag);
+                  return (
+                    <button
+                      key={tag}
+                      onClick={() => toggleTag(tag)}
+                      aria-pressed={isActive}
+                      className={`rounded-full border px-3 py-1 text-xs transition ${
+                        isActive
+                          ? "border-amber-400 bg-amber-100 text-amber-900"
+                          : "border-amber-100 bg-white/80 text-stone-600 hover:border-amber-200 hover:bg-amber-50"
+                      }`}
+                    >
+                      {tag}
+                    </button>
+                  );
+                })}
+              </div>
+
+              <div className="mt-4 flex items-center gap-2">
+                <input
+                  type="checkbox"
+                  id="narrated-filter"
+                  checked={showOnlyNarrated}
+                  onChange={(e) => setShowOnlyNarrated(e.target.checked)}
+                  className="w-4 h-4 cursor-pointer"
+                />
+                <label htmlFor="narrated-filter" className="flex items-center gap-2 cursor-pointer text-sm text-stone-700">
+                  <Music className="w-4 h-4 text-amber-600" />
+                  <span>Sadece Seslendirilenleri Göster</span>
+                </label>
+              </div>Sadece Seslendirilenleri Göster</span>
               </label>
             </div>
           </div>
