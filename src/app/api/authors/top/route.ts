@@ -65,6 +65,12 @@ export async function GET(request: NextRequest) {
 
     works.forEach((work: any) => {
       const authorName = work.author;
+      
+      // "Anonim" yazarları listeden çıkar
+      if (authorName === 'Anonim') {
+        return;
+      }
+      
       if (!authorStats.has(authorName)) {
         authorStats.set(authorName, { count: 0, totalLikes: 0, totalViews: 0 });
       }

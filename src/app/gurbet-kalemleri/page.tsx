@@ -117,7 +117,9 @@ export default function GurbetKalemleriPage() {
   }, [literaryWorks, featuredId]);
 
   const authors = useMemo(
-    () => Array.from(new Set(literaryWorks.map((work) => work.author))).sort(),
+    () => Array.from(new Set(literaryWorks.map((work) => work.author)))
+      .filter((author) => author !== 'Anonim')
+      .sort(),
     [literaryWorks]
   );
   const types = useMemo(

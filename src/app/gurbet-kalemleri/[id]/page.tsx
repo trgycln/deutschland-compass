@@ -1,7 +1,7 @@
 "use client";
 
 import { useParams, useRouter } from 'next/navigation';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import Link from 'next/link';
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -78,9 +78,15 @@ export default function LiteraryWorkPage() {
     }
   }, [workId]);
   
-  const currentIndex = allWorks.findIndex(w => w.id === workId);
-  const prevWork = currentIndex > 0 ? allWorks[currentIndex - 1] : null;
-  const nextWork = currentIndex < allWorks.length - 1 ? allWorks[currentIndex + 1] : null;
+  // Aynı yazara ait eserleri filtrele
+  const authorWorks = useMemo(() => {
+    if (!work) return [];
+    return allWorks.filter(w => w.author === work.author).sort((a, b) => a.id - b.id);
+  }, [allWorks, work]);
+  
+  const currentIndex = authorWorks.findIndex(w => w.id === workId);
+  const prevWork = currentIndex > 0 ? authorWorks[currentIndex - 1] : null;
+  const nextWork = currentIndex < authorWorks.length - 1 ? authorWorks[currentIndex + 1] : null;
   
   if (!work) {
     return (
@@ -207,7 +213,13 @@ export default function LiteraryWorkPage() {
           </div>
 
           {/* Navigation: Previous/Next */}
-          <div className="grid md:grid-cols-2 gap-4 pt-8">
+          <div className="pt-8 space-y-4">
+            <div className="text-center text-sm text-slate-600 dark:text-slate-400">
+              <span className="font-semibold">{work.author}</span> yazarının {' '}
+              <span className="font-bold text-slate-900 dark:text-slate-100">{currentIndex + 1}</span>
+              /{authorWorks.length} eseri
+            </div>
+            <div className="grid md:grid-cols-2 gap-4">
             {prevWork ? (
               <Link href={`/gurbet-kalemleri/${prevWork.id}`}>
                 <Card className="h-full hover:shadow-lg transition-all duration-300 hover:-translate-y-1 cursor-pointer group border-l-4 border-l-slate-300 hover:border-l-slate-600">
@@ -219,9 +231,6 @@ export default function LiteraryWorkPage() {
                     <h3 className="font-semibold text-slate-900 dark:text-slate-100 group-hover:text-primary transition-colors line-clamp-2">
                       {prevWork.title}
                     </h3>
-                    <p className="text-sm text-slate-600 dark:text-slate-400 mt-1">
-                      {prevWork.author}
-                    </p>
                   </CardContent>
                 </Card>
               </Link>
@@ -240,15 +249,13 @@ export default function LiteraryWorkPage() {
                     <h3 className="font-semibold text-slate-900 dark:text-slate-100 group-hover:text-primary transition-colors line-clamp-2 text-right">
                       {nextWork.title}
                     </h3>
-                    <p className="text-sm text-slate-600 dark:text-slate-400 mt-1 text-right">
-                      {nextWork.author}
-                    </p>
                   </CardContent>
                 </Card>
               </Link>
             ) : (
               <div></div>
             )}
+            </div>
           </div>
 
           {/* Like & Comments Section */}
