@@ -6,15 +6,17 @@ import { Play, Pause, Volume2, Loader2 } from 'lucide-react'
 interface AudioPlayerProps {
   audioUrl: string
   title?: string
+  workId?: number
 }
 
-export function AudioPlayer({ audioUrl, title }: AudioPlayerProps) {
+export function AudioPlayer({ audioUrl, title, workId }: AudioPlayerProps) {
   const [isPlaying, setIsPlaying] = useState(false)
   const [currentTime, setCurrentTime] = useState(0)
   const [duration, setDuration] = useState(0)
   const [volume, setVolume] = useState(1)
   const [isLoading, setIsLoading] = useState(false)
   const audioRef = useRef<HTMLAudioElement>(null)
+  const hasLoggedRef = useRef(false)
 
   useEffect(() => {
     console.log('AudioPlayer mounted with audioUrl:', audioUrl)
@@ -24,24 +26,50 @@ export function AudioPlayer({ audioUrl, title }: AudioPlayerProps) {
     const audio = audioRef.current
     if (!audio) return
 
+    const handleGlobalPlay = (event: Event) => {
+      const customEvent = event as CustomEvent<HTMLAudioElement>
+      if (customEvent.detail !== audio) {
+        audio.pause()
+      }
+    }
+
     const updateTime = () => setCurrentTime(audio.currentTime)
     const updateDuration = () => setDuration(audio.duration)
+    const handlePlay = () => {
+      setIsPlaying(true)
+      if (!workId || hasLoggedRef.current) return
+      hasLoggedRef.current = true
+
+      fetch('/api/listens', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ workId }),
+      }).catch(() => undefined)
+      window.dispatchEvent(new CustomEvent('global-audio-play', { detail: audio }))
+    }
+    const handlePause = () => setIsPlaying(false)
     const handleEnded = () => setIsPlaying(false)
     const handleLoadStart = () => setIsLoading(true)
     const handleCanPlay = () => setIsLoading(false)
 
     audio.addEventListener('timeupdate', updateTime)
     audio.addEventListener('loadedmetadata', updateDuration)
+    audio.addEventListener('play', handlePlay)
+    audio.addEventListener('pause', handlePause)
     audio.addEventListener('ended', handleEnded)
     audio.addEventListener('loadstart', handleLoadStart)
     audio.addEventListener('canplay', handleCanPlay)
+    window.addEventListener('global-audio-play', handleGlobalPlay)
 
     return () => {
       audio.removeEventListener('timeupdate', updateTime)
       audio.removeEventListener('loadedmetadata', updateDuration)
+      audio.removeEventListener('play', handlePlay)
+      audio.removeEventListener('pause', handlePause)
       audio.removeEventListener('ended', handleEnded)
       audio.removeEventListener('loadstart', handleLoadStart)
       audio.removeEventListener('canplay', handleCanPlay)
+      window.removeEventListener('global-audio-play', handleGlobalPlay)
     }
   }, [])
 
@@ -52,7 +80,6 @@ export function AudioPlayer({ audioUrl, title }: AudioPlayerProps) {
       } else {
         audioRef.current.play()
       }
-      setIsPlaying(!isPlaying)
     }
   }
 

@@ -36,6 +36,40 @@ export async function GET(request: NextRequest) {
       return NextResponse.json({ authors: [], debug: 'No works in database' });
     }
 
+    const workIds = works.map((work: any) => work.id).filter((id: any) => id !== null);
+    const likeCounts = new Map<number, number>();
+    const viewCounts = new Map<number, number>();
+
+    if (workIds.length > 0) {
+      const { data: likesData, error: likesError } = await supabase
+        .from('literary_work_likes')
+        .select('work_id')
+        .in('work_id', workIds);
+
+      if (likesError) {
+        console.error('[API] Supabase likes error:', likesError);
+      } else {
+        (likesData || []).forEach((like: any) => {
+          likeCounts.set(like.work_id, (likeCounts.get(like.work_id) || 0) + 1);
+        });
+      }
+    }
+
+    if (workIds.length > 0) {
+      const { data: viewsData, error: viewsError } = await supabase
+        .from('literary_work_views')
+        .select('work_id')
+        .in('work_id', workIds);
+
+      if (viewsError) {
+        console.error('[API] Supabase views error:', viewsError);
+      } else {
+        (viewsData || []).forEach((view: any) => {
+          viewCounts.set(view.work_id, (viewCounts.get(view.work_id) || 0) + 1);
+        });
+      }
+    }
+
     // Yazarları grupla ve istatistik hesapla
     const authorStats = new Map<string, { count: number; totalLikes: number; totalViews: number }>();
 
@@ -46,8 +80,13 @@ export async function GET(request: NextRequest) {
       }
       const stats = authorStats.get(authorName)!;
       stats.count += 1;
-      stats.totalLikes += work.likes || 0;
-      stats.totalViews += work.views || 0;
+      const computedViews = viewCounts.get(work.id);
+      stats.totalLikes += likeCounts.get(work.id) || 0;
+      stats.totalViews += typeof computedViews === 'number'
+        ? computedViews
+        : typeof work.views === 'number'
+          ? work.views
+          : 0;
     });
 
     // Array'e çevir ve sırala (eser sayısına göre)

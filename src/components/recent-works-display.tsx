@@ -43,15 +43,17 @@ export function RecentWorksDisplay() {
   const [loading, setLoading] = useState(true);
 
   const mockWorks: Work[] = [
-    { id: 301, title: 'Son Eklenen Eser 1', author: 'Can Erkan', created_at: new Date(Date.now() - 1*24*60*60*1000).toISOString(), type: 'Şiir', views: 45 },
-    { id: 302, title: 'Son Eklenen Eser 2', author: 'Pınar Kaya', created_at: new Date(Date.now() - 3*24*60*60*1000).toISOString(), type: 'Deneme/Şiir', views: 32 },
-    { id: 303, title: 'Son Eklenen Eser 3', author: 'İbrahim Çetin', created_at: new Date(Date.now() - 7*24*60*60*1000).toISOString(), type: 'Şiir', views: 28 },
+    { id: 15, title: 'Babama Mektup 1', author: 'Halil (İsimsizler)', created_at: new Date('2022-01-16').toISOString(), type: 'Şiir', views: 354 },
+    { id: 14, title: 'Kar', author: 'Küçük Ömer', created_at: new Date('2022-01-21').toISOString(), type: 'Şiir', views: 289 },
+    { id: 8, title: 'Köprüden Önce Son Çıkış', author: 'Hava Çiftçiler', created_at: new Date('2022-01-21').toISOString(), type: 'Öykü', views: 312 },
+    { id: 7, title: 'Bu Muydu Kader?', author: 'Halil (İsimsizler)', created_at: new Date('2022-01-12').toISOString(), type: 'Şiir', views: 267 },
+    { id: 13, title: 'Bir Bebeğin Göç Hikayesi', author: 'Tuba (T.Ö.)', created_at: new Date('2025-05-18').toISOString(), type: 'Deneme', views: 298 },
   ];
 
   useEffect(() => {
     async function fetchRecentWorks() {
       try {
-        const response = await fetch('/api/literary-works?sort=recent&limit=5');
+        const response = await fetch('/api/literary-works?limit=5');
         const data = await response.json();
         
         if (!response.ok) {
@@ -91,9 +93,7 @@ export function RecentWorksDisplay() {
     <Card className="border-amber-100 bg-white/80 shadow-md">
       <CardHeader>
         <CardTitle style={accentStyle} className="text-xl">⏰ En Yeni Eserler</CardTitle>
-        <CardDescription style={serifStyle}>
-          {isMockData ? 'Verileri yüklenirken örnek eserler gösteriliyor' : 'Taze kalemlerin en son eserleri'}
-        </CardDescription>
+        <CardDescription style={serifStyle}>Taze kalemlerin en son eserleri</CardDescription>
       </CardHeader>
       <CardContent>
         <div className="space-y-3">
@@ -125,38 +125,6 @@ export function RecentWorksDisplay() {
                   </div>
                 </div>
               </div>
-          ))}
-        </div>
-      </CardContent>
-    </Card>
-  );
-            <div
-              key={work.id}
-              className="p-3 rounded-lg bg-gradient-to-r from-blue-50 to-transparent border border-blue-100/50 hover:border-blue-200 transition"
-            >
-              <div className="flex items-start justify-between gap-3">
-                <div className="flex-1">
-                  <div className="flex items-center gap-2 mb-1">
-                    <Clock className="w-3 h-3 text-blue-600" />
-                    <span className="text-xs font-medium text-blue-700">
-                      {formatRelativeTime(work.created_at)}
-                    </span>
-                  </div>
-                  <h3 style={accentStyle} className="text-sm text-stone-800 font-medium line-clamp-2">
-                    {work.title}
-                  </h3>
-                  <p style={serifStyle} className="text-xs text-stone-500 mt-1">
-                    <Link 
-                      href={`/gurbet-kalemleri?author=${encodeURIComponent(work.author)}`}
-                      className="hover:text-blue-700 hover:underline"
-                    >
-                      {work.author}
-                    </Link>
-                    {' '}• {work.type}
-                  </p>
-                </div>
-              </div>
-            </div>
           ))}
         </div>
       </CardContent>

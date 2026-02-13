@@ -119,7 +119,7 @@ export default function LiteraryWorkPage() {
           {/* Audio Player - First Thing User Sees */}
           {work.audio_url && (
             <div className="p-6 bg-gradient-to-r from-blue-50 to-indigo-50 dark:from-blue-900/20 dark:to-indigo-900/20 rounded-xl border border-blue-200 dark:border-blue-800">
-              <AudioPlayer audioUrl={work.audio_url} title={work.title} />
+              <AudioPlayer audioUrl={work.audio_url} title={work.title} workId={work.id} />
             </div>
           )}
 

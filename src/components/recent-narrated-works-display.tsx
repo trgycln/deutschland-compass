@@ -3,8 +3,8 @@
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
 import { Loader2, Music, Clock } from 'lucide-react';
+import { AudioPlayerCompact } from '@/components/audio-player-compact';
 
 interface Work {
   id: number;
@@ -42,11 +42,7 @@ export function RecentNarratedWorksDisplay() {
   const [works, setWorks] = useState<Work[]>([]);
   const [loading, setLoading] = useState(true);
 
-  const mockWorks: Work[] = [
-    { id: 201, title: 'Yeni Sesli Eser 1', author: 'Derya Yılmaz', created_at: new Date(Date.now() - 2*24*60*60*1000).toISOString(), type: 'Şiir', audio_url: 'mock' },
-    { id: 202, title: 'Yeni Sesli Eser 2', author: 'Serkan Aydın', created_at: new Date(Date.now() - 5*24*60*60*1000).toISOString(), type: 'Şiir', audio_url: 'mock' },
-    { id: 203, title: 'Yeni Sesli Eser 3', author: 'Leyla Öztürk', created_at: new Date(Date.now() - 8*24*60*60*1000).toISOString(), type: 'Deneme/Şiir', audio_url: 'mock' },
-  ];
+  const mockWorks: Work[] = [];
 
   useEffect(() => {
     async function fetchRecentNarratedWorks() {
@@ -96,9 +92,7 @@ export function RecentNarratedWorksDisplay() {
     <Card className="border-blue-100 bg-white/80 shadow-md">
       <CardHeader>
         <CardTitle style={accentStyle} className="text-xl">🎙️ En Son Seslendirilen</CardTitle>
-        <CardDescription style={serifStyle}>
-          {isMockData ? 'Verileri yüklenirken örnek sesler gösteriliyor' : 'Taze sesler, yeni eserler'}
-        </CardDescription>
+        <CardDescription style={serifStyle}>En son seslendirilen eserler</CardDescription>
       </CardHeader>
       <CardContent>
         <div className="space-y-3">
@@ -127,6 +121,11 @@ export function RecentNarratedWorksDisplay() {
                     </Link>
                     {' '}• {work.type}
                   </p>
+                  {work.audio_url && (
+                    <div className="mt-2">
+                      <AudioPlayerCompact audioUrl={work.audio_url} title={work.title} workId={work.id} />
+                    </div>
+                  )}
                 </div>
               </div>
             </div>

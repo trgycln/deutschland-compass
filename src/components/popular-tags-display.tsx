@@ -21,17 +21,43 @@ export function PopularTagsDisplay({ onTagClick }: { onTagClick?: (tag: string) 
   const [tags, setTags] = useState<{ tag: string; count: number }[]>([]);
   const [loading, setLoading] = useState(true);
 
+  // Fallback mock tags from real literary works
   const mockTags = [
-    { tag: 'gurbet', count: 24 },
-    { tag: 'özlem', count: 18 },
-    { tag: 'hasret', count: 16 },
-    { tag: 'vatan', count: 14 },
-    { tag: 'aile', count: 12 },
-    { tag: 'umut', count: 11 },
-    { tag: 'sevda', count: 10 },
-    { tag: 'yalnızlık', count: 9 },
-    { tag: 'anı', count: 8 },
-    { tag: 'ufuk', count: 7 },
+    { tag: 'Gurbet', count: 3 },
+    { tag: 'Anne', count: 3 },
+    { tag: 'Özlem', count: 2 },
+    { tag: 'Veda', count: 2 },
+    { tag: 'Hapis', count: 2 },
+    { tag: 'Ölüm', count: 2 },
+    { tag: 'Ayrılık', count: 2 },
+    { tag: 'Hicret', count: 1 },
+    { tag: 'Sessizlik', count: 1 },
+    { tag: 'Yolculuk', count: 1 },
+    { tag: 'Hüzün', count: 1 },
+    { tag: 'Hayal Kırıklığı', count: 1 },
+    { tag: 'İmtihan', count: 1 },
+    { tag: 'Sabır', count: 1 },
+    { tag: 'Helallik', count: 1 },
+    { tag: 'Rüya', count: 2 },
+    { tag: 'Hasret', count: 1 },
+    { tag: 'Göç', count: 2 },
+    { tag: 'Kadın', count: 1 },
+    { tag: 'Adalet', count: 1 },
+    { tag: 'Kul Hakkı', count: 1 },
+    { tag: 'İlahi', count: 1 },
+    { tag: 'Yenilgi', count: 1 },
+    { tag: 'Sitem', count: 2 },
+    { tag: 'Dostluk', count: 1 },
+    { tag: 'Bebek', count: 1 },
+    { tag: 'Kamp', count: 1 },
+    { tag: 'Meriç', count: 2 },
+    { tag: 'Yalnızlık', count: 1 },
+    { tag: 'Kış', count: 1 },
+    { tag: 'Baba', count: 1 },
+    { tag: 'Çocuk', count: 1 },
+    { tag: 'Kader', count: 2 },
+    { tag: 'İşçi', count: 1 },
+    { tag: 'Uyarı', count: 1 },
   ];
 
   useEffect(() => {
@@ -93,9 +119,7 @@ export function PopularTagsDisplay({ onTagClick }: { onTagClick?: (tag: string) 
     <Card className="border-amber-100 bg-white/80 shadow-md">
       <CardHeader>
         <CardTitle style={accentStyle} className="text-xl">📚 Popüler Etiketler</CardTitle>
-        <CardDescription style={serifStyle}>
-          {isMockData ? 'Verileri yüklenirken örnek etiketler gösteriliyor' : 'Duyguya göre keşfet'}
-        </CardDescription>
+        <CardDescription style={serifStyle}>Duyguya göre keşfet</CardDescription>
       </CardHeader>
       <CardContent>
         <div className="flex flex-wrap gap-2">

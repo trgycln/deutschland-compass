@@ -1,7 +1,6 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import Link from 'next/link';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Loader2, Heart, Eye, BookOpen } from 'lucide-react';
@@ -22,7 +21,11 @@ const accentStyle = {
   fontFamily: "'Playfair Display', 'Times New Roman', serif",
 } as const;
 
-export function TopAuthorsDisplay() {
+interface TopAuthorsDisplayProps {
+  onAuthorClick?: (authorName: string) => void;
+}
+
+export function TopAuthorsDisplay({ onAuthorClick }: TopAuthorsDisplayProps) {
   const [authors, setAuthors] = useState<Author[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
@@ -82,15 +85,15 @@ export function TopAuthorsDisplay() {
       <Card className="border-amber-100 bg-white/80 shadow-md">
         <CardHeader>
           <CardTitle style={accentStyle} className="text-xl">🔥 En Aktif Yazarlar</CardTitle>
-          <CardDescription style={serifStyle} className="text-xs text-amber-700">Verileri yüklenirken örnek yazarlar gösteriliyor</CardDescription>
+          <CardDescription style={serifStyle}>Kalemi en çok kullanan sanatçılar</CardDescription>
         </CardHeader>
         <CardContent>
-          <div className="space-y-3">
+        <div className="space-y-3">
             {mockAuthors.map((author, idx) => (
-              <Link
+              <button
                 key={author.name}
-                href={`/gurbet-kalemleri?author=${encodeURIComponent(author.name)}`}
-                className="block"
+                onClick={() => onAuthorClick?.(author.name)}
+                className="w-full text-left"
               >
                 <div className="flex items-start justify-between p-3 rounded-lg bg-gradient-to-r from-amber-50 to-transparent border border-amber-100/50 hover:border-amber-300 hover:bg-amber-100/50 transition cursor-pointer">
                   <div className="flex-1">
@@ -116,7 +119,7 @@ export function TopAuthorsDisplay() {
                     </div>
                   </div>
                 </div>
-              </Link>
+              </button>
             ))}
           </div>
         </CardContent>
@@ -134,10 +137,10 @@ export function TopAuthorsDisplay() {
       <CardContent>
         <div className="space-y-3">
           {authors.map((author, idx) => (
-            <Link
+            <button
               key={author.name}
-              href={`/gurbet-kalemleri?author=${encodeURIComponent(author.name)}`}
-              className="block"
+              onClick={() => onAuthorClick?.(author.name)}
+              className="w-full text-left"
             >
               <div className="flex items-start justify-between p-3 rounded-lg bg-gradient-to-r from-amber-50 to-transparent border border-amber-100/50 hover:border-amber-300 hover:bg-amber-100/50 transition cursor-pointer">
                 <div className="flex-1">
@@ -163,7 +166,7 @@ export function TopAuthorsDisplay() {
                   </div>
                 </div>
               </div>
-            </Link>
+            </button>
           ))}
         </div>
       </CardContent>

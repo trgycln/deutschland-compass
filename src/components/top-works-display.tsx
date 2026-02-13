@@ -26,19 +26,24 @@ export function TopWorksDisplay() {
   const [works, setWorks] = useState<Work[]>([]);
   const [loading, setLoading] = useState(true);
 
-  // Fallback mock data
+  // Fallback mock data - real literary works without synthetic metrics
   const mockWorks: Work[] = [
-    { id: 1, title: 'Hasreti Uzak Diyarlı', author: 'Ömer Yaman', likes: 87, views: 345, type: 'Şiir' },
-    { id: 2, title: 'Gecenin Kalbe Açtığı Kapı', author: 'Zeynep K.', likes: 62, views: 289, type: 'Şiir' },
-    { id: 3, title: 'Almanya Şarkısı', author: 'Ahmet Veli', likes: 56, views: 212, type: 'Deneme/Şiir' },
-    { id: 4, title: 'Vatan Özlemi', author: 'Ayşe Demir', likes: 48, views: 198, type: 'Şiir' },
-    { id: 5, title: 'Kalbim Yağmur Dinliyor', author: 'Mehmet Kaya', likes: 42, views: 176, type: 'Şiir' },
+    { id: 1, title: 'Bazen', author: 'Yusuf Salih', likes: 0, views: 0, type: 'Şiir' },
+    { id: 11, title: 'Anama Hasret', author: 'Ömer Yaman (Titaniumberatung)', likes: 0, views: 0, type: 'Şiir' },
+    { id: 10, title: 'İlahi Adalet Var', author: 'Ömer Yaman (Titaniumberatung)', likes: 0, views: 0, type: 'Şiir' },
+    { id: 6, title: 'Anneye', author: 'Halil (İsimsizler)', likes: 0, views: 0, type: 'Şiir' },
+    { id: 3, title: 'Sessiz Sedasız', author: 'Süleyman Sargın', likes: 0, views: 0, type: 'Şiir' },
+    { id: 12, title: 'Yenildim Anne', author: 'Sezer Bingöl', likes: 0, views: 0, type: 'Şiir' },
+    { id: 4, title: 'Ufukta Bir Yol Var', author: 'Halil (İsimsizler)', likes: 0, views: 0, type: 'Şiir' },
+    { id: 15, title: 'Babama Mektup 1', author: 'Halil (İsimsizler)', likes: 0, views: 0, type: 'Şiir' },
+    { id: 5, title: 'Dün Gece Rüyamda', author: 'Halil (İsimsizler)', likes: 0, views: 0, type: 'Şiir' },
+    { id: 9, title: 'Ben Bir Göçmen Kızım', author: 'Tuba (T.Ö.)', likes: 0, views: 0, type: 'Deneme' },
   ];
 
   useEffect(() => {
     async function fetchTopWorks() {
       try {
-        const response = await fetch('/api/literary-works?sort=likes&limit=10');
+        const response = await fetch('/api/literary-works?sort=likes&limit=1000');
         const data = await response.json();
         
         if (!response.ok) {
@@ -78,9 +83,7 @@ export function TopWorksDisplay() {
     <Card className="border-amber-100 bg-white/80 shadow-md">
       <CardHeader>
         <CardTitle style={accentStyle} className="text-xl">❤️ En Beğenilen Eserler</CardTitle>
-        <CardDescription style={serifStyle}>
-          {isMockData ? 'Verileri yüklenirken örnek eserler gösteriliyor' : 'Okurların en çok sevdiği 10 eser'}
-        </CardDescription>
+        <CardDescription style={serifStyle}>Okurların en çok sevdiği eserler</CardDescription>
       </CardHeader>
       <CardContent>
         <div className="space-y-2">

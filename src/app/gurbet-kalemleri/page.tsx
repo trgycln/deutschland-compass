@@ -33,6 +33,7 @@ import { CommentsList } from "@/components/comments-list";
 import { AudioPlayer } from "@/components/audio-player";
 import { TopAuthorsDisplay } from "@/components/top-authors-display";
 import { TopWorksDisplay } from "@/components/top-works-display";
+import { TopViewedWorksDisplay } from "@/components/top-viewed-works-display";
 import { RecentWorksDisplay } from "@/components/recent-works-display";
 import { PopularTagsDisplay } from "@/components/popular-tags-display";
 import { RandomDiscoveryDisplay } from "@/components/random-discovery-display";
@@ -310,7 +311,20 @@ export default function GurbetKalemleriPage() {
           {/* 3 KolonLayout: 6 kart + Random */}
           <div className="grid gap-4 md:grid-cols-3 mb-8">
             {/* Satır 1, Kolon 1: Yazarlar */}
-            <TopAuthorsDisplay />
+            <TopAuthorsDisplay onAuthorClick={(authorName) => {
+              setSelectedAuthor(authorName);
+              // Mobile'da filtreleri aç
+              if (window.innerWidth < 768) {
+                setFiltersOpen(true);
+              }
+              // Filtre bölümüne scroll
+              setTimeout(() => {
+                const filterSection = document.querySelector('[data-filter-section="true"]');
+                if (filterSection) {
+                  filterSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                }
+              }, 50);
+            }} />
             
             {/* Satır 1, Kolon 2: Eserler */}
             <TopWorksDisplay />
@@ -323,10 +337,15 @@ export default function GurbetKalemleriPage() {
             {/* Satır 2, Kolon 1: Sesli Recent */}
             <RecentNarratedWorksDisplay />
             
-            {/* Satır 2, Kolon 2: Son Eserler */}
-            <RecentWorksDisplay />
+            {/* Satır 2, Kolon 2: En Çok Görüntülenen */}
+            <TopViewedWorksDisplay />
             
-            {/* Satır 2, Kolon 3: Popüler Etiketler */}
+            {/* Satır 2, Kolon 3: Son Eserler */}
+            <RecentWorksDisplay />
+          </div>
+
+          {/* Satır 3: Popüler Etiketler + Random */}
+          <div className="grid gap-4 md:grid-cols-3 mb-8">
             <PopularTagsDisplay onTagClick={(tag) => {
               setSelectedTags([tag]);
               // Mobile'da filtreleri aç
@@ -334,10 +353,7 @@ export default function GurbetKalemleriPage() {
                 setFiltersOpen(true);
               }
             }} />
-          </div>
 
-          {/* Satır 3: Random (Full Width veya 1/3) */}
-          <div className="grid gap-4 md:grid-cols-3">
             <div className="md:col-span-1">
               <RandomDiscoveryDisplay onDiscoverClick={(workId) => {
                 setFeaturedId(workId);
@@ -349,11 +365,13 @@ export default function GurbetKalemleriPage() {
                 }, 50);
               }} />
             </div>
+
+            <div className="hidden md:block" />
           </div>
         </div>
       </div>
 
-      <div className="md:sticky top-16 z-30 border-y border-amber-100 bg-white/90 backdrop-blur">
+      <div className="md:sticky top-16 z-30 border-y border-amber-100 bg-white/90 backdrop-blur" data-filter-section="true">
         <div className="container mx-auto px-4 py-3">
           {/* Mobil: Kompakt Filtre Butonu */}
           <div className="md:hidden">
@@ -684,7 +702,7 @@ export default function GurbetKalemleriPage() {
                   {/* Audio Player */}
                   {featuredWork.audio_url && (
                     <div className="mt-8">
-                      <AudioPlayer audioUrl={featuredWork.audio_url} title={featuredWork.title} />
+                      <AudioPlayer audioUrl={featuredWork.audio_url} title={featuredWork.title} workId={featuredWork.id} />
                     </div>
                   )}
 
