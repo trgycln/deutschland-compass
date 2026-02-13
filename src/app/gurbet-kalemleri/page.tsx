@@ -31,6 +31,11 @@ import { LikeButton } from "@/components/like-button";
 import { CommentForm } from "@/components/comment-form";
 import { CommentsList } from "@/components/comments-list";
 import { AudioPlayer } from "@/components/audio-player";
+import { TopAuthorsDisplay } from "@/components/top-authors-display";
+import { TopWorksDisplay } from "@/components/top-works-display";
+import { RecentWorksDisplay } from "@/components/recent-works-display";
+import { PopularTagsDisplay } from "@/components/popular-tags-display";
+import { RandomDiscoveryDisplay } from "@/components/random-discovery-display";
 
 interface LiteraryWork {
   id: number;
@@ -290,6 +295,40 @@ export default function GurbetKalemleriPage() {
                   Eserini Paylas
                 </Button>
               </Link>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* 📊 İstatistikler ve Keşif Bölümü */}
+      <div className="bg-gradient-to-b from-amber-50/30 to-transparent py-16">
+        <div className="container mx-auto px-4">
+          <div className="grid gap-6 md:grid-cols-2 mb-12">
+            {/* Sol sütun: Yazarlar ve Eserler */}
+            <div className="space-y-6">
+              <TopAuthorsDisplay />
+              <TopWorksDisplay />
+            </div>
+            
+            {/* Sağ sütun: Son eserler, etiketler, şans butonu */}
+            <div className="space-y-6">
+              <RecentWorksDisplay />
+              <PopularTagsDisplay onTagClick={(tag) => {
+                setSelectedTags([tag]);
+                // Mobile'da filtreleri aç
+                if (window.innerWidth < 768) {
+                  setFiltersOpen(true);
+                }
+              }} />
+              <RandomDiscoveryDisplay onDiscoverClick={(workId) => {
+                setFeaturedId(workId);
+                setTimeout(() => {
+                  const section = document.querySelector('section.rounded-\\[32px\\]');
+                  if (section && window.innerWidth < 1024) {
+                    section.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                  }
+                }, 50);
+              }} />
             </div>
           </div>
         </div>
@@ -605,6 +644,10 @@ export default function GurbetKalemleriPage() {
                     <div className="flex items-center gap-2">
                       <BookOpen className="w-4 h-4" />
                       <span>{featuredWork.type}</span>
+                    </div>
+                    <div className="flex items-center gap-2 ml-auto">
+                      <span className="text-lg">👁️</span>
+                      <span className="font-semibold text-blue-600">{featuredWork.views || 0}</span>
                     </div>
                   </div>
 

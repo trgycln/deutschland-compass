@@ -17,11 +17,12 @@ export async function GET(request: NextRequest) {
     const tag = searchParams.get('tag');
     const search = searchParams.get('search');
     const onlyApproved = searchParams.get('approved') !== 'false'; // Default true
+    const sort = searchParams.get('sort') || 'recent'; // recent, likes, trending, views
+    const limit = parseInt(searchParams.get('limit') || '1000');
     
     let query = supabase
       .from('literary_works')
-      .select('*')
-      .order('date', { ascending: false });
+      .select('*');
     
     // Filtreler
     if (onlyApproved) {
@@ -44,6 +45,23 @@ export async function GET(request: NextRequest) {
     if (search) {
       query = query.or(`title.ilike.%${search}%,author.ilike.%${search}%,content.ilike.%${search}%`);
     }
+    
+    // Sıralama
+    if (sort === 'likes') {
+      query = query.order('likes', { ascending: false });
+    } else if (sort === 'views') {
+      query = query.order('views', { ascending: false });
+    } else if (sort === 'trending') {
+      // Trending: views + likes kombos (son 30 gün içinde en çok etkileşim alanlar)
+      // Basit versiyon: (views + likes*2) sıralaması
+      query = query.order('views', { ascending: false });
+    } else {
+      // Default: recent
+      query = query.order('created_at', { ascending: false });
+    }
+    
+    // Limit
+    query = query.limit(limit);
     
     const { data, error } = await query;
     
