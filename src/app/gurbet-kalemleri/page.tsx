@@ -329,54 +329,63 @@ export default function GurbetKalemleriPage() {
                   />
                 </div>
                 <div className="grid grid-cols-3 gap-2">
-                  <Select value={selectedAuthor} onValueChange={setSelectedAuthor}>
-                    <SelectTrigger className="bg-white/80 border-amber-100 text-xs">
-                      <SelectValue placeholder="Yazar" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="all">Tümü</SelectItem>
-                      {authors.map((author) => (
-                        <SelectItem key={author} value={author}>
-                          {author}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                  <Select value={selectedType} onValueChange={setSelectedType}>
-                    <SelectTrigger className="bg-white/80 border-amber-100 text-xs">
-                      <SelectValue placeholder="Tür" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="all">Tümü</SelectItem>
-                      {types.map((type) => (
-                        <SelectItem key={type} value={type}>
-                          {type}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                  <Select
-                    value={selectedTags.length === 1 ? selectedTags[0] : "all"}
-                    onValueChange={(value) => {
-                      if (value === "all") {
-                        setSelectedTags([]);
-                      } else {
-                        setSelectedTags([value]);
-                      }
-                    }}
-                  >
-                    <SelectTrigger className="bg-white/80 border-amber-100 text-xs">
-                      <SelectValue placeholder="Etiket" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="all">Tümü</SelectItem>
-                      {tags.map((tag) => (
-                        <SelectItem key={tag} value={tag}>
-                          {tag}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
+                  <div>
+                    <label className="text-xs font-medium text-stone-600 block mb-1">Yazar</label>
+                    <Select value={selectedAuthor} onValueChange={setSelectedAuthor}>
+                      <SelectTrigger className="bg-white/80 border-amber-100 text-xs">
+                        <SelectValue placeholder="Seç" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="all">Tümü</SelectItem>
+                        {authors.map((author) => (
+                          <SelectItem key={author} value={author}>
+                            {author}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
+                  <div>
+                    <label className="text-xs font-medium text-stone-600 block mb-1">Türü</label>
+                    <Select value={selectedType} onValueChange={setSelectedType}>
+                      <SelectTrigger className="bg-white/80 border-amber-100 text-xs">
+                        <SelectValue placeholder="Seç" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="all">Tümü</SelectItem>
+                        {types.map((type) => (
+                          <SelectItem key={type} value={type}>
+                            {type}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
+                  <div>
+                    <label className="text-xs font-medium text-stone-600 block mb-1">Etiket</label>
+                    <Select
+                      value={selectedTags.length === 1 ? selectedTags[0] : "all"}
+                      onValueChange={(value) => {
+                        if (value === "all") {
+                          setSelectedTags([]);
+                        } else {
+                          setSelectedTags([value]);
+                        }
+                      }}
+                    >
+                      <SelectTrigger className="bg-white/80 border-amber-100 text-xs">
+                        <SelectValue placeholder="Seç" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="all">Tümü</SelectItem>
+                        {tags.map((tag) => (
+                          <SelectItem key={tag} value={tag}>
+                            {tag}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
                 </div>
                 
                 {/* Popüler Etiketler - Horizontal Scroll */}
