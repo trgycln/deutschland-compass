@@ -305,23 +305,28 @@ export default function GurbetKalemleriPage() {
       </div>
 
       {/* 📊 İstatistikler ve Keşif Bölümü - FULL WIDTH */}
-      <div className="bg-gradient-to-b from-amber-50/30 to-transparent py-16 border-t border-amber-100">
+      <div className="bg-gradient-to-b from-amber-50/30 to-transparent py-8 border-t border-amber-100">
         <div className="container mx-auto px-4">
-          {/* Üst satır: Yazarlar ve Eserler (2 kolon) */}
-          <div className="grid gap-6 md:grid-cols-2 mb-8">
+          {/* 3 KolonLayout: 6 kart + Random */}
+          <div className="grid gap-4 md:grid-cols-3 mb-8">
+            {/* Satır 1, Kolon 1: Yazarlar */}
             <TopAuthorsDisplay />
+            
+            {/* Satır 1, Kolon 2: Eserler */}
             <TopWorksDisplay />
-          </div>
-
-          {/* Ortası: Seslendirilmiş eserler (2 kolon) */}
-          <div className="grid gap-6 md:grid-cols-2 mb-8">
+            
+            {/* Satır 1, Kolon 3: Sesli Dinlenenler */}
             <TopNarratedWorksDisplay />
-            <RecentNarratedWorksDisplay />
           </div>
 
-          {/* Alt satır: Son eserler, etiketler, şans butonu (3 kolon) */}
-          <div className="grid gap-6 md:grid-cols-3">
+          <div className="grid gap-4 md:grid-cols-3 mb-8">
+            {/* Satır 2, Kolon 1: Sesli Recent */}
+            <RecentNarratedWorksDisplay />
+            
+            {/* Satır 2, Kolon 2: Son Eserler */}
             <RecentWorksDisplay />
+            
+            {/* Satır 2, Kolon 3: Popüler Etiketler */}
             <PopularTagsDisplay onTagClick={(tag) => {
               setSelectedTags([tag]);
               // Mobile'da filtreleri aç
@@ -329,15 +334,21 @@ export default function GurbetKalemleriPage() {
                 setFiltersOpen(true);
               }
             }} />
-            <RandomDiscoveryDisplay onDiscoverClick={(workId) => {
-              setFeaturedId(workId);
-              setTimeout(() => {
-                const section = document.querySelector('section.rounded-\\[32px\\]');
-                if (section && window.innerWidth < 1024) {
-                  section.scrollIntoView({ behavior: 'smooth', block: 'start' });
-                }
-              }, 50);
-            }} />
+          </div>
+
+          {/* Satır 3: Random (Full Width veya 1/3) */}
+          <div className="grid gap-4 md:grid-cols-3">
+            <div className="md:col-span-1">
+              <RandomDiscoveryDisplay onDiscoverClick={(workId) => {
+                setFeaturedId(workId);
+                setTimeout(() => {
+                  const section = document.querySelector('section.rounded-\\[32px\\]');
+                  if (section && window.innerWidth < 1024) {
+                    section.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                  }
+                }, 50);
+              }} />
+            </div>
           </div>
         </div>
       </div>

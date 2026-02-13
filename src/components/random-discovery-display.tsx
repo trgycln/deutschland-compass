@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
+import Link from 'next/link';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -64,8 +65,75 @@ export function RandomDiscoveryDisplay({ onDiscoverClick }: { onDiscoverClick?: 
   };
 
   if (loading || !randomWork) {
+    // Fallback: Mock work göster
+    if (!randomWork && allWorks.length === 0) {
+      const mockWork: Work = {
+        id: 999,
+        title: 'Şanslı Eser',
+        author: 'Rastgele Yazar',
+        type: 'Şiir',
+        tags: ['gurbet', 'özlem'],
+        content: 'Bu bir örnek eser gösterimidir. Sayfayı kullandıkça eserler gösterilecektir.',
+        views: 0,
+        likes: 0,
+      };
+      setRandomWork(mockWork);
+      return (
+        <Card className="border-amber-100 bg-gradient-to-br from-amber-50 to-white/80 shadow-md">
+          <CardContent className="p-6">
+            <div className="text-center space-y-4">
+              <div>
+                <h3 style={accentStyle} className="text-2xl text-stone-800 mb-2">
+                  🎲 Şansını Dene
+                </h3>
+                <p style={serifStyle} className="text-sm text-stone-600">
+                  Rastgele bir eser keşfet
+                </p>
+              </div>
+
+              {mockWork && (
+                <div className="bg-white/80 rounded-lg border border-amber-100 p-4 text-left space-y-2">
+                  <div>
+                    <h4 style={accentStyle} className="text-lg text-stone-800 font-medium line-clamp-2">
+                      {mockWork.title}
+                    </h4>
+                    <p style={serifStyle} className="text-sm text-stone-500 mt-1">
+                      <Link 
+                        href={`/gurbet-kalemleri?author=${encodeURIComponent(mockWork.author)}`}
+                        className="hover:text-amber-700 hover:underline"
+                      >
+                        {mockWork.author}
+                      </Link>
+                    </p>
+                  </div>
+                  
+                  <div className="flex flex-wrap gap-2">
+                    <Badge variant="outline" className="border-amber-200 text-amber-900 text-xs">
+                      {mockWork.type}
+                    </Badge>
+                  </div>
+
+                  <p style={serifStyle} className="text-xs text-stone-600 line-clamp-3">
+                    {mockWork.content}
+                  </p>
+                </div>
+              )}
+
+              <Button 
+                onClick={handleDiscover}
+                className="w-full bg-amber-700 hover:bg-amber-800 text-white gap-2"
+              >
+                <Dices className="w-4 h-4" />
+                Başka Bir Eser Göster
+              </Button>
+            </div>
+          </CardContent>
+        </Card>
+      );
+    }
     return null;
   }
+
 
   return (
     <Card className="border-amber-100 bg-gradient-to-br from-amber-50 to-white/80 shadow-md">
@@ -87,7 +155,12 @@ export function RandomDiscoveryDisplay({ onDiscoverClick }: { onDiscoverClick?: 
                   {randomWork.title}
                 </h4>
                 <p style={serifStyle} className="text-sm text-stone-500 mt-1">
-                  {randomWork.author}
+                  <Link 
+                    href={`/gurbet-kalemleri?author=${encodeURIComponent(randomWork.author)}`}
+                    className="hover:text-amber-700 hover:underline"
+                  >
+                    {randomWork.author}
+                  </Link>
                 </p>
               </div>
               
