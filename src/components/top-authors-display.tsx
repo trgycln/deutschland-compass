@@ -31,12 +31,22 @@ export function TopAuthorsDisplay() {
     async function fetchTopAuthors() {
       try {
         const response = await fetch('/api/authors/top?limit=8');
-        if (!response.ok) throw new Error('Yazarlar yüklenemedi');
         const data = await response.json();
-        setAuthors(data.authors || []);
+        
+        if (!response.ok) {
+          console.error('API error response:', data);
+          throw new Error(data.error || 'Yazarlar yüklenemedi');
+        }
+        
+        if (data.authors && data.authors.length > 0) {
+          setAuthors(data.authors);
+          setError('');
+        } else {
+          setError('Yazar verisi bulunamadı');
+        }
       } catch (err: any) {
-        console.error('Fetch error:', err);
-        setError(err.message);
+        console.error('Fetch error:', err.message);
+        setError(err.message || 'Yazarlar yüklenemedi');
       } finally {
         setLoading(false);
       }

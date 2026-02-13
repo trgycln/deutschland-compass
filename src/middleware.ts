@@ -4,6 +4,9 @@ import type { NextRequest } from 'next/server';
 const PUBLIC_PATHS = [
   '/login',
   '/api/login',
+  '/api/authors/top',
+  '/api/literary-works',
+  '/api/comments',
   '/favicon.ico',
   '/robots.txt',
 ];

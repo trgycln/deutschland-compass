@@ -12,19 +12,28 @@ export async function GET(request: NextRequest) {
     const searchParams = request.nextUrl.searchParams;
     const limit = parseInt(searchParams.get('limit') || '8');
 
-    // Tüm onaylı eserleri al
+    console.log('[API] Authors/top called, limit:', limit);
+
+    // Tüm onaylı eserleri al - tüm sütunları kontrol et
     const { data: works, error } = await supabase
       .from('literary_works')
-      .select('author, likes, views')
+      .select('*')
       .eq('is_approved', true);
 
+    console.log('[API] Supabase query result:', { works: works?.length, error });
+
     if (error) {
-      console.error('Supabase error:', error);
-      return NextResponse.json({ error: error.message }, { status: 500 });
+      console.error('[API] Supabase error:', error);
+      return NextResponse.json({ 
+        error: error.message,
+        details: error,
+        debug: 'Check Supabase connection and table schema'
+      }, { status: 500 });
     }
 
     if (!works || works.length === 0) {
-      return NextResponse.json({ authors: [] });
+      console.warn('[API] No approved literary works found');
+      return NextResponse.json({ authors: [], debug: 'No works in database' });
     }
 
     // Yazarları grupla ve istatistik hesapla

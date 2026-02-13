@@ -41,21 +41,32 @@ function formatRelativeTime(date: string): string {
 export function RecentNarratedWorksDisplay() {
   const [works, setWorks] = useState<Work[]>([]);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState('');
+
+  const mockWorks: Work[] = [
+    { id: 201, title: 'Yeni Sesli Eser 1', author: 'Derya Yılmaz', created_at: new Date(Date.now() - 2*24*60*60*1000).toISOString(), type: 'Şiir', audio_url: 'mock' },
+    { id: 202, title: 'Yeni Sesli Eser 2', author: 'Serkan Aydın', created_at: new Date(Date.now() - 5*24*60*60*1000).toISOString(), type: 'Şiir', audio_url: 'mock' },
+    { id: 203, title: 'Yeni Sesli Eser 3', author: 'Leyla Öztürk', created_at: new Date(Date.now() - 8*24*60*60*1000).toISOString(), type: 'Deneme/Şiir', audio_url: 'mock' },
+  ];
 
   useEffect(() => {
     async function fetchRecentNarratedWorks() {
       try {
         const response = await fetch('/api/literary-works?sort=recent&limit=1000');
-        if (!response.ok) throw new Error('Eserler yüklenemedi');
         const data = await response.json();
+        
+        if (!response.ok) {
+          throw new Error(data.error || 'Eserler yüklenemedi');
+        }
+        
         const narrated = (data.works || [])
           .filter((w: any) => w.audio_url)
           .slice(0, 10);
-        setWorks(narrated);
+        
+        if (narrated.length > 0) {
+          setWorks(narrated);
+        }
       } catch (err: any) {
-        console.error('Fetch error:', err);
-        setError(err.message);
+        console.error('Fetch error:', err.message);
       } finally {
         setLoading(false);
       }
@@ -63,6 +74,9 @@ export function RecentNarratedWorksDisplay() {
 
     fetchRecentNarratedWorks();
   }, []);
+
+  const displayWorks = works.length > 0 ? works : mockWorks;
+  const isMockData = works.length === 0 && !loading;
 
   if (loading) {
     return (
@@ -77,67 +91,18 @@ export function RecentNarratedWorksDisplay() {
     );
   }
 
-  if (error || works.length === 0) {
-    // Fallback: Mock data göster
-    const mockWorks: Work[] = [
-      { id: 201, title: 'Yeni Sesli Eser 1', author: 'Derya Yılmaz', created_at: new Date(Date.now() - 2*24*60*60*1000).toISOString(), type: 'Şiir', audio_url: 'mock' },
-      { id: 202, title: 'Yeni Sesli Eser 2', author: 'Serkan Aydın', created_at: new Date(Date.now() - 5*24*60*60*1000).toISOString(), type: 'Şiir', audio_url: 'mock' },
-      { id: 203, title: 'Yeni Sesli Eser 3', author: 'Leyla Öztürk', created_at: new Date(Date.now() - 8*24*60*60*1000).toISOString(), type: 'Deneme/Şiir', audio_url: 'mock' },
-    ];
-    setWorks(mockWorks);
-    return (
-      <Card className="border-blue-100 bg-white/80 shadow-md">
-        <CardHeader>
-          <CardTitle style={accentStyle} className="text-xl">🎙️ En Son Seslendirilen</CardTitle>
-          <CardDescription style={serifStyle}>Taze sesler, yeni eserler</CardDescription>
-        </CardHeader>
-        <CardContent>
-          <div className="space-y-3">
-            {mockWorks.map((work, idx) => (
-              <div
-                key={work.id}
-                className="p-3 rounded-lg bg-gradient-to-r from-blue-50 to-transparent border border-blue-100/50 hover:border-blue-200 transition"
-              >
-                <div className="flex items-start justify-between gap-3">
-                  <div className="flex-1">
-                    <div className="flex items-center gap-2 mb-1">
-                      <Music className="w-4 h-4 text-blue-600" />
-                      <span className="text-xs font-medium text-blue-700">
-                        {formatRelativeTime(work.created_at)}
-                      </span>
-                    </div>
-                    <h3 style={accentStyle} className="text-sm text-stone-800 font-medium line-clamp-2">
-                      {work.title}
-                    </h3>
-                    <p style={serifStyle} className="text-xs text-stone-500 mt-1">
-                      <Link 
-                        href={`/gurbet-kalemleri?author=${encodeURIComponent(work.author)}`}
-                        className="hover:text-blue-700 hover:underline"
-                      >
-                        {work.author}
-                      </Link>
-                      {' '}• {work.type}
-                    </p>
-                  </div>
-                </div>
-              </div>
-            ))}
-          </div>
-        </CardContent>
-      </Card>
-    );
-  }
-
 
   return (
     <Card className="border-blue-100 bg-white/80 shadow-md">
       <CardHeader>
         <CardTitle style={accentStyle} className="text-xl">🎙️ En Son Seslendirilen</CardTitle>
-        <CardDescription style={serifStyle}>Taze sesler, yeni eserler</CardDescription>
+        <CardDescription style={serifStyle}>
+          {isMockData ? 'Verileri yüklenirken örnek sesler gösteriliyor' : 'Taze sesler, yeni eserler'}
+        </CardDescription>
       </CardHeader>
       <CardContent>
         <div className="space-y-3">
-          {works.map((work, idx) => (
+          {displayWorks.map((work, idx) => (
             <div
               key={work.id}
               className="p-3 rounded-lg bg-gradient-to-r from-blue-50 to-transparent border border-blue-100/50 hover:border-blue-200 transition"

@@ -2,7 +2,6 @@
 
 import { useEffect, useState } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
 import { Loader2 } from 'lucide-react';
 
 interface Work {
@@ -21,14 +20,30 @@ const accentStyle = {
 export function PopularTagsDisplay({ onTagClick }: { onTagClick?: (tag: string) => void }) {
   const [tags, setTags] = useState<{ tag: string; count: number }[]>([]);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState('');
+
+  const mockTags = [
+    { tag: 'gurbet', count: 24 },
+    { tag: 'özlem', count: 18 },
+    { tag: 'hasret', count: 16 },
+    { tag: 'vatan', count: 14 },
+    { tag: 'aile', count: 12 },
+    { tag: 'umut', count: 11 },
+    { tag: 'sevda', count: 10 },
+    { tag: 'yalnızlık', count: 9 },
+    { tag: 'anı', count: 8 },
+    { tag: 'ufuk', count: 7 },
+  ];
 
   useEffect(() => {
     async function fetchPopularTags() {
       try {
         const response = await fetch('/api/literary-works?limit=1000');
-        if (!response.ok) throw new Error('Etiketler yüklenemedi');
         const data = await response.json();
+        
+        if (!response.ok) {
+          throw new Error(data.error || 'Etiketler yüklenemedi');
+        }
+        
         const works: Work[] = data.works || [];
 
         // Etiketleri say
@@ -45,10 +60,11 @@ export function PopularTagsDisplay({ onTagClick }: { onTagClick?: (tag: string) 
           .sort((a, b) => b.count - a.count)
           .slice(0, 20);
 
-        setTags(sorted);
+        if (sorted.length > 0) {
+          setTags(sorted);
+        }
       } catch (err: any) {
-        console.error('Fetch error:', err);
-        setError(err.message);
+        console.error('Fetch error:', err.message);
       } finally {
         setLoading(false);
       }
@@ -56,6 +72,9 @@ export function PopularTagsDisplay({ onTagClick }: { onTagClick?: (tag: string) 
 
     fetchPopularTags();
   }, []);
+
+  const displayTags = tags.length > 0 ? tags : mockTags;
+  const isMockData = tags.length === 0 && !loading;
 
   if (loading) {
     return (
@@ -70,55 +89,17 @@ export function PopularTagsDisplay({ onTagClick }: { onTagClick?: (tag: string) 
     );
   }
 
-  if (error || tags.length === 0) {
-    // Fallback: Mock tags göster
-    const mockTags = [
-      { tag: 'gurbet', count: 24 },
-      { tag: 'özlem', count: 18 },
-      { tag: 'hasret', count: 16 },
-      { tag: 'vatan', count: 14 },
-      { tag: 'aile', count: 12 },
-      { tag: 'umut', count: 11 },
-      { tag: 'sevda', count: 10 },
-      { tag: 'yalnızlık', count: 9 },
-      { tag: 'anı', count: 8 },
-      { tag: 'ufuk', count: 7 },
-    ];
-    setTags(mockTags);
-    return (
-      <Card className="border-amber-100 bg-white/80 shadow-md">
-        <CardHeader>
-          <CardTitle style={accentStyle} className="text-xl">📚 Popüler Etiketler</CardTitle>
-          <CardDescription style={serifStyle}>Duyguya göre keşfet</CardDescription>
-        </CardHeader>
-        <CardContent>
-          <div className="flex flex-wrap gap-2">
-            {mockTags.map((item) => (
-              <button
-                key={item.tag}
-                className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full border border-amber-200 bg-amber-50/70 hover:bg-amber-100 text-amber-900 text-sm transition hover:border-amber-300 cursor-pointer"
-                title={`${item.count} eser`}
-              >
-                <span>{item.tag}</span>
-                <span className="text-xs opacity-70">({item.count})</span>
-              </button>
-            ))}
-          </div>
-        </CardContent>
-      </Card>
-    );
-  }
-
-
   return (
     <Card className="border-amber-100 bg-white/80 shadow-md">
       <CardHeader>
         <CardTitle style={accentStyle} className="text-xl">📚 Popüler Etiketler</CardTitle>
-        <CardDescription style={serifStyle}>Duyguya göre keşfet</CardDescription>
+        <CardDescription style={serifStyle}>
+          {isMockData ? 'Verileri yüklenirken örnek etiketler gösteriliyor' : 'Duyguya göre keşfet'}
+        </CardDescription>
       </CardHeader>
       <CardContent>
         <div className="flex flex-wrap gap-2">
-          {tags.map((item) => (
+          {displayTags.map((item) => (
             <button
               key={item.tag}
               onClick={() => onTagClick?.(item.tag)}

@@ -41,18 +41,28 @@ function formatRelativeTime(date: string): string {
 export function RecentWorksDisplay() {
   const [works, setWorks] = useState<Work[]>([]);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState('');
+
+  const mockWorks: Work[] = [
+    { id: 301, title: 'Son Eklenen Eser 1', author: 'Can Erkan', created_at: new Date(Date.now() - 1*24*60*60*1000).toISOString(), type: 'Şiir', views: 45 },
+    { id: 302, title: 'Son Eklenen Eser 2', author: 'Pınar Kaya', created_at: new Date(Date.now() - 3*24*60*60*1000).toISOString(), type: 'Deneme/Şiir', views: 32 },
+    { id: 303, title: 'Son Eklenen Eser 3', author: 'İbrahim Çetin', created_at: new Date(Date.now() - 7*24*60*60*1000).toISOString(), type: 'Şiir', views: 28 },
+  ];
 
   useEffect(() => {
     async function fetchRecentWorks() {
       try {
         const response = await fetch('/api/literary-works?sort=recent&limit=5');
-        if (!response.ok) throw new Error('Eserler yüklenemedi');
         const data = await response.json();
-        setWorks(data.works || []);
+        
+        if (!response.ok) {
+          throw new Error(data.error || 'Eserler yüklenemedi');
+        }
+        
+        if (data.works && data.works.length > 0) {
+          setWorks(data.works);
+        }
       } catch (err: any) {
-        console.error('Fetch error:', err);
-        setError(err.message);
+        console.error('Fetch error:', err.message);
       } finally {
         setLoading(false);
       }
@@ -74,23 +84,20 @@ export function RecentWorksDisplay() {
     );
   }
 
-  if (error || works.length === 0) {
-    // Fallback: Mock data göster
-    const mockWorks: Work[] = [
-      { id: 301, title: 'Son Eklenen Eser 1', author: 'Can Erkan', created_at: new Date(Date.now() - 1*24*60*60*1000).toISOString(), type: 'Şiir', views: 45 },
-      { id: 302, title: 'Son Eklenen Eser 2', author: 'Pınar Kaya', created_at: new Date(Date.now() - 3*24*60*60*1000).toISOString(), type: 'Deneme/Şiir', views: 32 },
-      { id: 303, title: 'Son Eklenen Eser 3', author: 'İbrahim Çetin', created_at: new Date(Date.now() - 7*24*60*60*1000).toISOString(), type: 'Şiir', views: 28 },
-    ];
-    setWorks(mockWorks);
-    return (
-      <Card className="border-amber-100 bg-white/80 shadow-md">
-        <CardHeader>
-          <CardTitle style={accentStyle} className="text-xl">⏰ En Yeni Eserler</CardTitle>
-          <CardDescription style={serifStyle}>Taze kalemlerin en son eserleri</CardDescription>
-        </CardHeader>
-        <CardContent>
-          <div className="space-y-3">
-            {mockWorks.map((work) => (
+  const displayWorks = works.length > 0 ? works : mockWorks;
+  const isMockData = works.length === 0 && !loading;
+
+  return (
+    <Card className="border-amber-100 bg-white/80 shadow-md">
+      <CardHeader>
+        <CardTitle style={accentStyle} className="text-xl">⏰ En Yeni Eserler</CardTitle>
+        <CardDescription style={serifStyle}>
+          {isMockData ? 'Verileri yüklenirken örnek eserler gösteriliyor' : 'Taze kalemlerin en son eserleri'}
+        </CardDescription>
+      </CardHeader>
+      <CardContent>
+        <div className="space-y-3">
+          {displayWorks.map((work) => (
               <div
                 key={work.id}
                 className="p-3 rounded-lg bg-gradient-to-r from-blue-50 to-transparent border border-blue-100/50 hover:border-blue-200 transition"
@@ -118,23 +125,11 @@ export function RecentWorksDisplay() {
                   </div>
                 </div>
               </div>
-            ))}
-          </div>
-        </CardContent>
-      </Card>
-    );
-  }
-
-
-  return (
-    <Card className="border-amber-100 bg-white/80 shadow-md">
-      <CardHeader>
-        <CardTitle style={accentStyle} className="text-xl">⏰ En Yeni Eserler</CardTitle>
-        <CardDescription style={serifStyle}>Taze kalemlerin en son eserleri</CardDescription>
-      </CardHeader>
-      <CardContent>
-        <div className="space-y-3">
-          {works.map((work) => (
+          ))}
+        </div>
+      </CardContent>
+    </Card>
+  );
             <div
               key={work.id}
               className="p-3 rounded-lg bg-gradient-to-r from-blue-50 to-transparent border border-blue-100/50 hover:border-blue-200 transition"
