@@ -6,6 +6,10 @@ const supabase = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
 );
 
+// Next.js cache ayarları - her zaman dinamik veri
+export const dynamic = 'force-dynamic';
+export const revalidate = 0;
+
 // GET /api/literary-works - Tüm eserleri listele (filtreleme ile)
 export async function GET(request: NextRequest) {
   try {
@@ -60,7 +64,6 @@ export async function GET(request: NextRequest) {
 
     const workIds = works.map((work: any) => work.id).filter((id: any) => id !== null);
     const likeCounts = new Map<number, number>();
-    const viewCounts = new Map<number, number>();
     const listenCounts = new Map<number, number>();
 
     if (workIds.length > 0) {
@@ -78,20 +81,7 @@ export async function GET(request: NextRequest) {
       }
     }
 
-    if (workIds.length > 0) {
-      const { data: viewsData, error: viewsError } = await supabase
-        .from('literary_work_views')
-        .select('work_id')
-        .in('work_id', workIds);
-
-      if (viewsError) {
-        console.error('Supabase views error:', viewsError);
-      } else {
-        (viewsData || []).forEach((view: any) => {
-          viewCounts.set(view.work_id, (viewCounts.get(view.work_id) || 0) + 1);
-        });
-      }
-    }
+    // Views artık literary_works.views field'ından geliyor (literary_work_views tablosu kullanılmıyor)
 
     if (workIds.length > 0) {
       const { data: listensData, error: listensError } = await supabase
@@ -110,13 +100,8 @@ export async function GET(request: NextRequest) {
 
     const enrichedWorks = works.map((work: any) => {
       const computedLikes = likeCounts.get(work.id) || 0;
-      const computedViews = viewCounts.get(work.id);
       const computedListens = listenCounts.get(work.id) || 0;
-      const views = typeof computedViews === 'number'
-        ? computedViews
-        : typeof work.views === 'number'
-          ? work.views
-          : 0;
+      const views = typeof work.views === 'number' ? work.views : 0;
 
       return {
         ...work,
@@ -139,6 +124,12 @@ export async function GET(request: NextRequest) {
         const viewDiff = (b.views || 0) - (a.views || 0);
         if (viewDiff !== 0) return viewDiff;
         return new Date(b.created_at || 0).getTime() - new Date(a.created_at || 0).getTime();
+      });
+      
+      // Debug: İlk 10 eserin views değerlerini logla
+      console.log('[Views Sort] Top 10 works by views:');
+      sortedWorks.slice(0, 10).forEach((w, idx) => {
+        console.log(`  ${idx + 1}. ${w.title} by ${w.author}: ${w.views} views`);
       });
     } else if (sort === 'listens') {
       sortedWorks = [...enrichedWorks].sort((a, b) => {

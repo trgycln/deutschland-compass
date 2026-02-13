@@ -2,14 +2,17 @@
 
 import { useState, useRef, useEffect } from 'react'
 import { Play, Pause, Volume2, Loader2 } from 'lucide-react'
+import { LyricsDialog } from './lyrics-dialog'
 
 interface AudioPlayerProps {
   audioUrl: string
   title?: string
   workId?: number
+  content?: string
+  author?: string
 }
 
-export function AudioPlayer({ audioUrl, title, workId }: AudioPlayerProps) {
+export function AudioPlayer({ audioUrl, title, workId, content, author }: AudioPlayerProps) {
   const [isPlaying, setIsPlaying] = useState(false)
   const [currentTime, setCurrentTime] = useState(0)
   const [duration, setDuration] = useState(0)
@@ -117,11 +120,21 @@ export function AudioPlayer({ audioUrl, title, workId }: AudioPlayerProps) {
         }}
       />
 
-      {title && (
-        <h3 className="text-sm font-semibold text-amber-900 mb-4">
-          🎵 Sesli Versiyon
-        </h3>
-      )}
+      <div className="flex items-center justify-between mb-4">
+        {title && (
+          <h3 className="text-sm font-semibold text-amber-900">
+            🎵 Sesli Versiyon
+          </h3>
+        )}
+        {content && title && (
+          <LyricsDialog
+            title={title}
+            author={author}
+            content={content}
+            triggerClassName="bg-amber-50 hover:bg-amber-100 text-amber-900 border-amber-300"
+          />
+        )}
+      </div>
 
       <div className="flex items-center gap-4">
         <button

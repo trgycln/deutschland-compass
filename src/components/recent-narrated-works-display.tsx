@@ -13,6 +13,7 @@ interface Work {
   created_at: string;
   type: string;
   audio_url: string;
+  content: string;
 }
 
 const serifStyle = {
@@ -47,7 +48,9 @@ export function RecentNarratedWorksDisplay() {
   useEffect(() => {
     async function fetchRecentNarratedWorks() {
       try {
-        const response = await fetch('/api/literary-works?sort=recent&limit=1000');
+        const response = await fetch('/api/literary-works?sort=recent&limit=1000', {
+          cache: 'no-store',
+        });
         const data = await response.json();
         
         if (!response.ok) {
@@ -69,6 +72,23 @@ export function RecentNarratedWorksDisplay() {
     }
 
     fetchRecentNarratedWorks();
+
+    // Her 30 saniyede bir güncelle
+    const interval = setInterval(fetchRecentNarratedWorks, 30000);
+
+    // Sayfa görünür olduğunda yeniden fetch yap
+    const handleVisibilityChange = () => {
+      if (!document.hidden) {
+        fetchRecentNarratedWorks();
+      }
+    };
+    document.addEventListener('visibilitychange', handleVisibilityChange);
+
+    // Cleanup
+    return () => {
+      clearInterval(interval);
+      document.removeEventListener('visibilitychange', handleVisibilityChange);
+    };
   }, []);
 
   const displayWorks = works.length > 0 ? works : mockWorks;
@@ -97,9 +117,10 @@ export function RecentNarratedWorksDisplay() {
       <CardContent>
         <div className="space-y-3">
           {displayWorks.map((work, idx) => (
-            <div
+            <Link
               key={work.id}
-              className="p-3 rounded-lg bg-gradient-to-r from-blue-50 to-transparent border border-blue-100/50 hover:border-blue-200 transition"
+              href={`/gurbet-kalemleri/${work.id}`}
+              className="block p-3 rounded-lg bg-gradient-to-r from-blue-50 to-transparent border border-blue-100/50 hover:border-blue-200 transition"
             >
               <div className="flex items-start justify-between gap-3">
                 <div className="flex-1">
@@ -109,26 +130,26 @@ export function RecentNarratedWorksDisplay() {
                       {formatRelativeTime(work.created_at)}
                     </span>
                   </div>
-                  <h3 style={accentStyle} className="text-sm text-stone-800 font-medium line-clamp-2">
+                  <h3 style={accentStyle} className="text-sm text-stone-800 font-medium line-clamp-2 hover:text-blue-700">
                     {work.title}
                   </h3>
                   <p style={serifStyle} className="text-xs text-stone-500 mt-1">
-                    <Link 
-                      href={`/gurbet-kalemleri?author=${encodeURIComponent(work.author)}`}
-                      className="hover:text-blue-700 hover:underline"
-                    >
-                      {work.author}
-                    </Link>
-                    {' '}• {work.type}
+                    {work.author} • {work.type}
                   </p>
                   {work.audio_url && (
-                    <div className="mt-2">
-                      <AudioPlayerCompact audioUrl={work.audio_url} title={work.title} workId={work.id} />
+                    <div className="mt-2" onClick={(e) => e.preventDefault()}>
+                      <AudioPlayerCompact 
+                        audioUrl={work.audio_url} 
+                        title={work.title} 
+                        workId={work.id}
+                        content={work.content}
+                        author={work.author}
+                      />
                     </div>
                   )}
                 </div>
               </div>
-            </div>
+            </Link>
           ))}
         </div>
       </CardContent>

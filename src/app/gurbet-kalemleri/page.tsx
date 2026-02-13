@@ -612,19 +612,10 @@ export default function GurbetKalemleriPage() {
               {filteredWorks.map((work) => {
                 const isActive = work.id === featuredId;
                 return (
-                  <button
+                  <Link
                     key={work.id}
-                    onClick={() => {
-                      setFeaturedId(work.id);
-                      // Mobil cihazlarda okunur alana scroll yap
-                      setTimeout(() => {
-                        const section = document.querySelector('section.rounded-\\[32px\\]');
-                        if (section && window.innerWidth < 1024) {
-                          section.scrollIntoView({ behavior: 'smooth', block: 'start' });
-                        }
-                      }, 50);
-                    }}
-                    className={`w-full text-left rounded-2xl border px-4 py-3 transition ${
+                    href={`/gurbet-kalemleri/${work.id}`}
+                    className={`block w-full text-left rounded-2xl border px-4 py-3 transition ${
                       isActive
                         ? "border-amber-400 bg-amber-50 shadow-sm"
                         : "border-transparent hover:border-amber-100 hover:bg-amber-50/60"
@@ -641,7 +632,7 @@ export default function GurbetKalemleriPage() {
                         <Music className="w-4 h-4 text-amber-600 flex-shrink-0 mt-0.5" />
                       )}
                     </div>
-                  </button>
+                  </Link>
                 );
               })}
             </div>
@@ -688,9 +679,17 @@ export default function GurbetKalemleriPage() {
                     </div>
                   </div>
 
-                  <h2 className="mt-4 text-3xl text-stone-900 pb-3 border-b-2 border-amber-200 md:border-b-0" style={accentStyle}>
-                    {featuredWork.title}
-                  </h2>
+                  <div className="flex items-start justify-between gap-4">
+                    <h2 className="mt-4 text-3xl text-stone-900 pb-3 border-b-2 border-amber-200 md:border-b-0 flex-1" style={accentStyle}>
+                      {featuredWork.title}
+                    </h2>
+                    <Link href={`/gurbet-kalemleri/${featuredWork.id}`}>
+                      <Button variant="outline" className="border-blue-200 text-blue-700 hover:bg-blue-50">
+                        <BookOpen className="w-4 h-4 mr-2" />
+                        Detaylı Görüntüle
+                      </Button>
+                    </Link>
+                  </div>
 
                   <div
                     className="mt-6 text-[17px] leading-8 text-stone-700 whitespace-pre-wrap"
@@ -702,7 +701,13 @@ export default function GurbetKalemleriPage() {
                   {/* Audio Player */}
                   {featuredWork.audio_url && (
                     <div className="mt-8">
-                      <AudioPlayer audioUrl={featuredWork.audio_url} title={featuredWork.title} workId={featuredWork.id} />
+                      <AudioPlayer 
+                        audioUrl={featuredWork.audio_url} 
+                        title={featuredWork.title} 
+                        workId={featuredWork.id}
+                        content={featuredWork.content}
+                        author={featuredWork.author}
+                      />
                     </div>
                   )}
 

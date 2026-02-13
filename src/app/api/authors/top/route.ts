@@ -6,6 +6,10 @@ const supabase = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
 );
 
+// Next.js cache ayarları - her zaman dinamik veri
+export const dynamic = 'force-dynamic';
+export const revalidate = 0;
+
 // GET /api/authors/top - En aktif yazarları listele
 export async function GET(request: NextRequest) {
   try {
@@ -38,7 +42,6 @@ export async function GET(request: NextRequest) {
 
     const workIds = works.map((work: any) => work.id).filter((id: any) => id !== null);
     const likeCounts = new Map<number, number>();
-    const viewCounts = new Map<number, number>();
 
     if (workIds.length > 0) {
       const { data: likesData, error: likesError } = await supabase
@@ -55,20 +58,7 @@ export async function GET(request: NextRequest) {
       }
     }
 
-    if (workIds.length > 0) {
-      const { data: viewsData, error: viewsError } = await supabase
-        .from('literary_work_views')
-        .select('work_id')
-        .in('work_id', workIds);
-
-      if (viewsError) {
-        console.error('[API] Supabase views error:', viewsError);
-      } else {
-        (viewsData || []).forEach((view: any) => {
-          viewCounts.set(view.work_id, (viewCounts.get(view.work_id) || 0) + 1);
-        });
-      }
-    }
+    // Views artık literary_works.views field'ından geliyor (literary_work_views tablosu kullanılmıyor)
 
     // Yazarları grupla ve istatistik hesapla
     const authorStats = new Map<string, { count: number; totalLikes: number; totalViews: number }>();
@@ -80,13 +70,8 @@ export async function GET(request: NextRequest) {
       }
       const stats = authorStats.get(authorName)!;
       stats.count += 1;
-      const computedViews = viewCounts.get(work.id);
       stats.totalLikes += likeCounts.get(work.id) || 0;
-      stats.totalViews += typeof computedViews === 'number'
-        ? computedViews
-        : typeof work.views === 'number'
-          ? work.views
-          : 0;
+      stats.totalViews += typeof work.views === 'number' ? work.views : 0;
     });
 
     // Array'e çevir ve sırala (eser sayısına göre)

@@ -5,6 +5,10 @@ const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || ''
 const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || ''
 const supabase = createClient(supabaseUrl, supabaseAnonKey)
 
+// Next.js cache ayarları - her zaman dinamik veri
+export const dynamic = 'force-dynamic';
+export const revalidate = 0;
+
 // Get IP address from request
 function getClientIdentifier(request: NextRequest): string {
   const ip =
@@ -128,7 +132,7 @@ export async function POST(request: NextRequest) {
 
       return NextResponse.json({
         action: 'like',
-        count: (count || 0) + 1,
+        count: count || 0,
         userLiked: true,
       })
     }

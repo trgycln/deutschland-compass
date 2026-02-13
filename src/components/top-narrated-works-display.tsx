@@ -13,6 +13,7 @@ interface Work {
   listens: number;
   type: string;
   audio_url: string;
+  content: string;
 }
 
 const serifStyle = {
@@ -32,7 +33,9 @@ export function TopNarratedWorksDisplay() {
   useEffect(() => {
     async function fetchTopNarratedWorks() {
       try {
-        const response = await fetch('/api/literary-works?sort=listens&limit=1000');
+        const response = await fetch('/api/literary-works?sort=listens&limit=1000', {
+          cache: 'no-store',
+        });
         const data = await response.json();
         
         if (!response.ok) {
@@ -54,6 +57,23 @@ export function TopNarratedWorksDisplay() {
     }
 
     fetchTopNarratedWorks();
+
+    // Her 30 saniyede bir güncelle
+    const interval = setInterval(fetchTopNarratedWorks, 30000);
+
+    // Sayfa görünür olduğunda yeniden fetch yap
+    const handleVisibilityChange = () => {
+      if (!document.hidden) {
+        fetchTopNarratedWorks();
+      }
+    };
+    document.addEventListener('visibilitychange', handleVisibilityChange);
+
+    // Cleanup
+    return () => {
+      clearInterval(interval);
+      document.removeEventListener('visibilitychange', handleVisibilityChange);
+    };
   }, []);
 
   const displayWorks = works.length > 0 ? works : mockWorks;
@@ -81,9 +101,10 @@ export function TopNarratedWorksDisplay() {
       <CardContent>
         <div className="space-y-2">
           {displayWorks.map((work, idx) => (
-            <div
+            <Link
               key={work.id}
-              className="p-3 rounded-lg bg-gradient-to-r from-blue-50 to-transparent border border-blue-100/50 hover:border-blue-200 transition"
+              href={`/gurbet-kalemleri/${work.id}`}
+              className="block p-3 rounded-lg bg-gradient-to-r from-blue-50 to-transparent border border-blue-100/50 hover:border-blue-200 transition"
             >
               <div className="flex items-start justify-between gap-3">
                 <div className="flex-1 min-w-0">
@@ -93,21 +114,21 @@ export function TopNarratedWorksDisplay() {
                     </span>
                     <Music className="w-4 h-4 text-blue-600" />
                   </div>
-                  <h3 style={accentStyle} className="text-sm text-stone-800 line-clamp-2 font-medium">
+                  <h3 style={accentStyle} className="text-sm text-stone-800 line-clamp-2 font-medium hover:text-blue-700">
                     {work.title}
                   </h3>
                   <p style={serifStyle} className="text-xs text-stone-500 mt-1">
-                    <Link 
-                      href={`/gurbet-kalemleri?author=${encodeURIComponent(work.author)}`}
-                      className="hover:text-blue-700 hover:underline"
-                    >
-                      {work.author}
-                    </Link>
-                    {' '}• {work.type}
+                    {work.author} • {work.type}
                   </p>
                   {work.audio_url && (
-                    <div className="mt-2">
-                      <AudioPlayerCompact audioUrl={work.audio_url} title={work.title} workId={work.id} />
+                    <div className="mt-2" onClick={(e) => e.preventDefault()}>
+                      <AudioPlayerCompact 
+                        audioUrl={work.audio_url} 
+                        title={work.title} 
+                        workId={work.id}
+                        content={work.content}
+                        author={work.author}
+                      />
                     </div>
                   )}
                 </div>
@@ -116,7 +137,7 @@ export function TopNarratedWorksDisplay() {
                   <span className="text-sm font-semibold text-blue-700">{work.listens ?? 0}</span>
                 </div>
               </div>
-            </div>
+            </Link>
           ))}
         </div>
       </CardContent>

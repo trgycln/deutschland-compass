@@ -5,6 +5,10 @@ const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || ''
 const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || ''
 const supabase = createClient(supabaseUrl, supabaseAnonKey)
 
+// Next.js cache ayarları - her zaman dinamik veri
+export const dynamic = 'force-dynamic';
+export const revalidate = 0;
+
 function getClientIdentifier(request: NextRequest): string {
   const ip =
     request.headers.get('x-forwarded-for')?.split(',')[0] ||

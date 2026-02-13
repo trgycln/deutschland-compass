@@ -22,6 +22,7 @@ interface LiteraryWork {
   tags: string[];
   content: string;
   audio_url?: string;
+  views?: number;
 }
 
 export default function LiteraryWorkPage() {
@@ -40,14 +41,21 @@ export default function LiteraryWorkPage() {
       try {
         setLoading(true);
         
-        // Mevcut eseri çek
-        const response = await fetch(`/api/literary-works/${workId}`);
+        // Mevcut eseri çek - cache bypass için timestamp ekle
+        console.log(`[Client] Fetching work ${workId}...`);
+        const response = await fetch(`/api/literary-works/${workId}?t=${Date.now()}`, {
+          cache: 'no-store',
+          headers: {
+            'Cache-Control': 'no-cache'
+          }
+        });
         if (!response.ok) throw new Error('Eser bulunamadı');
         
         const data = await response.json();
-        console.log('Work fetched:', {
+        console.log('[Client] Work fetched:', {
           id: data.work.id,
           title: data.work.title,
+          views: data.work.views,
           audio_url: data.work.audio_url,
         });
         setWork(data.work);
@@ -119,7 +127,13 @@ export default function LiteraryWorkPage() {
           {/* Audio Player - First Thing User Sees */}
           {work.audio_url && (
             <div className="p-6 bg-gradient-to-r from-blue-50 to-indigo-50 dark:from-blue-900/20 dark:to-indigo-900/20 rounded-xl border border-blue-200 dark:border-blue-800">
-              <AudioPlayer audioUrl={work.audio_url} title={work.title} workId={work.id} />
+              <AudioPlayer 
+                audioUrl={work.audio_url} 
+                title={work.title} 
+                workId={work.id} 
+                content={work.content}
+                author={work.author}
+              />
             </div>
           )}
 
@@ -140,6 +154,15 @@ export default function LiteraryWorkPage() {
                 <Calendar className="w-4 h-4" />
                 {work.date}
               </div>
+              {work.views !== undefined && (
+                <>
+                  <span className="text-slate-400">•</span>
+                  <div className="flex items-center gap-1 text-sm text-slate-600 dark:text-slate-400">
+                    <span className="text-lg">👁️</span>
+                    <span className="font-semibold">{work.views}</span>
+                  </div>
+                </>
+              )}
             </div>
             
             <h1 className="text-4xl md:text-5xl font-bold text-slate-900 dark:text-slate-100 leading-tight">

@@ -2,14 +2,17 @@
 
 import { useState, useRef, useEffect } from 'react'
 import { Play, Pause, Loader2 } from 'lucide-react'
+import { LyricsDialog } from './lyrics-dialog'
 
 interface AudioPlayerCompactProps {
   audioUrl: string
   title?: string
   workId?: number
+  content?: string
+  author?: string
 }
 
-export function AudioPlayerCompact({ audioUrl, title, workId }: AudioPlayerCompactProps) {
+export function AudioPlayerCompact({ audioUrl, title, workId, content, author }: AudioPlayerCompactProps) {
   const [isPlaying, setIsPlaying] = useState(false)
   const [isLoading, setIsLoading] = useState(false)
   const audioRef = useRef<HTMLAudioElement>(null)
@@ -114,6 +117,15 @@ export function AudioPlayerCompact({ audioUrl, title, workId }: AudioPlayerCompa
         <span className="text-xs text-stone-600 truncate flex-1">
           🎵 {title}
         </span>
+      )}
+      
+      {content && title && (
+        <LyricsDialog
+          title={title}
+          author={author}
+          content={content}
+          triggerClassName="text-xs h-7"
+        />
       )}
     </div>
   )
