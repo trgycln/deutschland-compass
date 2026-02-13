@@ -46,6 +46,8 @@ interface LiteraryWork {
   tags: string[];
   content: string;
   audio_url?: string;
+  views?: number;
+  likes?: number;
 }
 
 const serifStyle = {
