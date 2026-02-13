@@ -65,6 +65,11 @@ export default function LiteraryWorkPage() {
         const allData = await allResponse.json();
         setAllWorks(allData.works || []);
         
+        // Görüntüleme sayısını bir daha artır (sayfa her açıldığında +1)
+        // Çünkü yukarıdaki fetch GET işleminde RPC/UPDATE aracılığı ile 1 artıyor,
+        // ama biz bir daha sigortala +1
+        // YANL: Aslında GET endpoint'i zaten artırıyor, tekrar artırmazız
+        
       } catch (err: any) {
         console.error('Fetch error:', err);
         setError(err.message || 'Bir hata oluştu');

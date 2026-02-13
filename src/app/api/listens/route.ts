@@ -74,27 +74,20 @@ export async function POST(request: NextRequest) {
 
     const clientIdentifier = getClientIdentifier(request)
 
-    const { data: existingListen } = await supabase
+    // Her dinleme ayrı ayrı kaydedilir - kullanıcı fark etmeksizin sayı her zaman artır
+    const { error: insertError } = await supabase
       .from('literary_work_listens')
-      .select('id')
-      .eq('work_id', workId)
-      .eq('user_identifier', clientIdentifier)
-      .maybeSingle()
+      .insert([
+        {
+          work_id: workId,
+          user_identifier: clientIdentifier,
+          created_at: new Date().toISOString(),
+        },
+      ])
 
-    if (!existingListen) {
-      const { error: insertError } = await supabase
-        .from('literary_work_listens')
-        .insert([
-          {
-            work_id: workId,
-            user_identifier: clientIdentifier,
-          },
-        ])
-
-      if (insertError) {
-        console.error('Supabase error:', insertError)
-        return NextResponse.json({ error: insertError.message }, { status: 500 })
-      }
+    if (insertError) {
+      console.error('Supabase error:', insertError)
+      return NextResponse.json({ error: insertError.message }, { status: 500 })
     }
 
     const { count } = await supabase
@@ -103,7 +96,7 @@ export async function POST(request: NextRequest) {
       .eq('work_id', workId)
 
     return NextResponse.json({
-      action: existingListen ? 'exists' : 'listen',
+      action: 'listen',
       count: count || 0,
       userListened: true,
     })

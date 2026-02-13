@@ -38,50 +38,30 @@ export async function GET(
       return NextResponse.json({ error: error.message }, { status: 500 });
     }
     
-    // Görüntülenme sayısını artır (önce RPC fonksiyonu dene, sonra direkt UPDATE)
+    // Görüntülenme sayısını artır - direkt UPDATE kullan (her açılışta +1)
     let updatedViews = data.views || 0;
     let updateSuccess = false;
     
-    // Yöntem 1: SECURITY DEFINER fonksiyon (RLS bypass garantili)
     try {
-      const { error: rpcError } = await supabaseAdmin.rpc('increment_literary_work_views', {
-        work_id: parseInt(id)
-      });
+      const newViewCount = (data.views || 0) + 1;
+      const { error: updateError } = await supabaseAdmin
+        .from('literary_works')
+        .update({ views: newViewCount })
+        .eq('id', parseInt(id));
       
-      if (!rpcError) {
-        updatedViews = (data.views || 0) + 1;
+      if (!updateError) {
+        updatedViews = newViewCount;
         updateSuccess = true;
-        console.log(`[Views] ✓ RPC Success - Work ${id} (${data.title}): ${data.views || 0} -> ${updatedViews}`);
+        console.log(`[Views] ✓ Direct UPDATE Success - Work ${id} (${data.title}): ${data.views || 0} -> ${newViewCount}`);
       } else {
-        console.error(`[Views] ✗ RPC failed for work ${id}:`, rpcError.message);
+        console.error(`[Views] ✗ Direct UPDATE failed:`, updateError.message, updateError.details);
       }
-    } catch (rpcErr) {
-      console.warn('[Views] RPC Exception:', rpcErr);
-    }
-    
-    // Yöntem 2: Eğer RPC başarısız olduysa, direkt UPDATE dene
-    if (!updateSuccess) {
-      try {
-        const newViewCount = (data.views || 0) + 1;
-        const { error: updateError } = await supabaseAdmin
-          .from('literary_works')
-          .update({ views: newViewCount })
-          .eq('id', parseInt(id));
-        
-        if (!updateError) {
-          updatedViews = newViewCount;
-          updateSuccess = true;
-          console.log(`[Views] ✓ Direct UPDATE Success - Work ${id}: ${data.views || 0} -> ${newViewCount}`);
-        } else {
-          console.error(`[Views] ✗ Direct UPDATE failed:`, updateError.message, updateError.details);
-        }
-      } catch (updateErr) {
-        console.error('[Views] UPDATE Exception:', updateErr);
-      }
+    } catch (updateErr) {
+      console.error('[Views] UPDATE Exception:', updateErr);
     }
     
     if (!updateSuccess) {
-      console.error(`[Views] ✗✗✗ BOTH METHODS FAILED for work ${id} ✗✗✗`);
+      console.error(`[Views] ✗✗✗ UPDATE FAILED for work ${id} ✗✗✗`);
     }
     
     // Güncellenmiş views ile döndür
