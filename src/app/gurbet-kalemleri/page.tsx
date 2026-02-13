@@ -529,7 +529,16 @@ export default function GurbetKalemleriPage() {
                 return (
                   <button
                     key={work.id}
-                    onClick={() => setFeaturedId(work.id)}
+                    onClick={() => {
+                      setFeaturedId(work.id);
+                      // Mobil cihazlarda okunur alana scroll yap
+                      setTimeout(() => {
+                        const section = document.querySelector('section.rounded-\\[32px\\]');
+                        if (section && window.innerWidth < 1024) {
+                          section.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                        }
+                      }, 50);
+                    }}
                     className={`w-full text-left rounded-2xl border px-4 py-3 transition ${
                       isActive
                         ? "border-amber-400 bg-amber-50 shadow-sm"
@@ -553,10 +562,10 @@ export default function GurbetKalemleriPage() {
             </div>
           </aside>
 
-          <section className="rounded-[32px] bg-white/90 border border-amber-100 shadow-xl">
+          <section className="rounded-[32px] bg-white/90 border border-amber-100 shadow-xl animate-fadeIn">
             <div className="p-8 md:p-10">
               <div className="flex flex-wrap items-center gap-3">
-                <Badge className="bg-amber-200 text-amber-900">Gunun Eseri</Badge>
+                <Badge className="bg-amber-200 text-amber-900 animate-pulse">Seçilen Eser</Badge>
                 {featuredWork?.audio_url && (
                   <Badge className="bg-blue-100 text-blue-900 flex items-center gap-1">
                     <Music className="w-3 h-3" />
@@ -590,7 +599,7 @@ export default function GurbetKalemleriPage() {
                     </div>
                   </div>
 
-                  <h2 className="mt-4 text-3xl text-stone-900" style={accentStyle}>
+                  <h2 className="mt-4 text-3xl text-stone-900 pb-3 border-b-2 border-amber-200 md:border-b-0" style={accentStyle}>
                     {featuredWork.title}
                   </h2>
 
