@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import { Loader2, Trash2, Book, Search, X } from 'lucide-react'
+import { Loader2, Trash2, Book, Search, X, Pencil } from 'lucide-react'
 
 interface LiteraryWork {
   id: number
@@ -9,6 +9,8 @@ interface LiteraryWork {
   author: string
   type: string
   date: string
+  content: string
+  tags?: string[]
   audio_url?: string
 }
 
@@ -19,6 +21,20 @@ export default function AdminLiteraryWorksPage() {
   const [deletingId, setDeletingId] = useState<number | null>(null)
   const [deleteError, setDeleteError] = useState<string | null>(null)
   const [searchQuery, setSearchQuery] = useState('')
+  
+  // Edit dialog state
+  const [editingId, setEditingId] = useState<number | null>(null)
+  const [editingWork, setEditingWork] = useState<LiteraryWork | null>(null)
+  const [editError, setEditError] = useState<string | null>(null)
+  const [isSaving, setIsSaving] = useState(false)
+  const [formData, setFormData] = useState({
+    title: '',
+    author: '',
+    date: '',
+    type: '',
+    content: '',
+    tags: ''
+  })
 
   useEffect(() => {
     fetchWorks()
@@ -36,6 +52,94 @@ export default function AdminLiteraryWorksPage() {
       setError(err instanceof Error ? err.message : 'Bir hata oluştu')
     } finally {
       setLoading(false)
+    }
+  }
+
+  function openEditDialog(work: LiteraryWork) {
+    setEditingWork(work)
+    setEditingId(work.id)
+    setEditError(null)
+    setFormData({
+      title: work.title,
+      author: work.author,
+      date: work.date,
+      type: work.type,
+      content: work.content,
+      tags: work.tags?.join(', ') || ''
+    })
+  }
+
+  function closeEditDialog() {
+    setEditingId(null)
+    setEditingWork(null)
+    setEditError(null)
+    setFormData({
+      title: '',
+      author: '',
+      date: '',
+      type: '',
+      content: '',
+      tags: ''
+    })
+  }
+
+  async function handleSaveEdit() {
+    if (!editingWork) return
+
+    if (!formData.title || !formData.author || !formData.date || !formData.type || !formData.content) {
+      setEditError('Lütfen tüm zorunlu alanları doldurunuz')
+      return
+    }
+
+    try {
+      setIsSaving(true)
+      setEditError(null)
+
+      const tagsArray = formData.tags
+        .split(',')
+        .map(tag => tag.trim())
+        .filter(tag => tag.length > 0)
+
+      const response = await fetch(`/api/literary-works/${editingWork.id}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          title: formData.title,
+          author: formData.author,
+          date: formData.date,
+          type: formData.type,
+          content: formData.content,
+          tags: tagsArray
+        })
+      })
+
+      if (!response.ok) {
+        const data = await response.json()
+        throw new Error(data.error || 'Güncelleme başarısız')
+      }
+
+      const updatedData = await response.json()
+
+      // Listeyi güncelle
+      setWorks(works.map(w =>
+        w.id === editingWork.id
+          ? {
+              ...w,
+              title: formData.title,
+              author: formData.author,
+              date: formData.date,
+              type: formData.type,
+              content: formData.content,
+              tags: tagsArray
+            }
+          : w
+      ))
+
+      closeEditDialog()
+    } catch (err) {
+      setEditError(err instanceof Error ? err.message : 'Hata oluştu')
+    } finally {
+      setIsSaving(false)
     }
   }
 
@@ -174,7 +278,15 @@ export default function AdminLiteraryWorksPage() {
                   </div>
                 </div>
 
-                <div className="flex justify-end">
+                <div className="flex justify-end gap-2">
+                  <button
+                    onClick={() => openEditDialog(work)}
+                    disabled={editingId !== null}
+                    className="px-4 py-2 bg-blue-100 text-blue-600 hover:bg-blue-200 rounded-lg transition flex items-center gap-2 disabled:opacity-50"
+                  >
+                    <Pencil className="w-4 h-4" />
+                    Düzelt
+                  </button>
                   <button
                     onClick={() => handleDelete(work.id, work.title)}
                     disabled={deletingId === work.id}
@@ -205,6 +317,147 @@ export default function AdminLiteraryWorksPage() {
             <span className="font-semibold ml-4">Sesli Eserler:</span> {works.filter(w => w.audio_url).length}
           </p>
         </div>
+
+        {/* Edit Dialog */}
+        {editingWork && (
+          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+            <div className="bg-white rounded-lg shadow-xl max-w-2xl w-full max-h-[90vh] overflow-y-auto">
+              <div className="p-6 border-b border-slate-200 flex items-center justify-between sticky top-0 bg-white">
+                <h2 className="text-2xl font-bold text-slate-900">Eseri Düzelt</h2>
+                <button
+                  onClick={closeEditDialog}
+                  disabled={isSaving}
+                  className="text-slate-400 hover:text-slate-600 disabled:opacity-50"
+                >
+                  <X className="w-6 h-6" />
+                </button>
+              </div>
+
+              <div className="p-6 space-y-4">
+                {editError && (
+                  <div className="p-4 bg-red-50 border border-red-200 rounded-lg text-red-700">
+                    {editError}
+                  </div>
+                )}
+
+                <div>
+                  <label className="block text-sm font-medium text-slate-900 mb-2">
+                    Başlık *
+                  </label>
+                  <input
+                    type="text"
+                    value={formData.title}
+                    onChange={(e) => setFormData({ ...formData, title: e.target.value })}
+                    className="w-full px-4 py-2 border border-slate-300 rounded-lg focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-200"
+                    disabled={isSaving}
+                  />
+                </div>
+
+                <div className="grid grid-cols-2 gap-4">
+                  <div>
+                    <label className="block text-sm font-medium text-slate-900 mb-2">
+                      Yazar *
+                    </label>
+                    <input
+                      type="text"
+                      value={formData.author}
+                      onChange={(e) => setFormData({ ...formData, author: e.target.value })}
+                      className="w-full px-4 py-2 border border-slate-300 rounded-lg focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-200"
+                      disabled={isSaving}
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-medium text-slate-900 mb-2">
+                      Tarih *
+                    </label>
+                    <input
+                      type="text"
+                      value={formData.date}
+                      onChange={(e) => setFormData({ ...formData, date: e.target.value })}
+                      className="w-full px-4 py-2 border border-slate-300 rounded-lg focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-200"
+                      disabled={isSaving}
+                    />
+                  </div>
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-slate-900 mb-2">
+                    Tür *
+                  </label>
+                  <select
+                    value={formData.type}
+                    onChange={(e) => setFormData({ ...formData, type: e.target.value })}
+                    className="w-full px-4 py-2 border border-slate-300 rounded-lg focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-200"
+                    disabled={isSaving}
+                  >
+                    <option value="">Bir tür seçiniz</option>
+                    <option value="Şiir">Şiir</option>
+                    <option value="Deneme">Deneme</option>
+                    <option value="Öykü">Öykü</option>
+                    <option value="Deneme/Şiir">Deneme/Şiir</option>
+                    <option value="Akrostiş Şiir">Akrostiş Şiir</option>
+                    <option value="Kısa Öykü">Kısa Öykü</option>
+                    <option value="Deneme/Not">Deneme/Not</option>
+                    <option value="Mensur Şiir">Mensur Şiir</option>
+                    <option value="Aforizma/Deneme">Aforizma/Deneme</option>
+                    <option value="Deneme (Yanıt)">Deneme (Yanıt)</option>
+                  </select>
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-slate-900 mb-2">
+                    Etiketler (virgülle ayrılmış)
+                  </label>
+                  <input
+                    type="text"
+                    value={formData.tags}
+                    onChange={(e) => setFormData({ ...formData, tags: e.target.value })}
+                    placeholder="etiket1, etiket2, etiket3"
+                    className="w-full px-4 py-2 border border-slate-300 rounded-lg focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-200"
+                    disabled={isSaving}
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-slate-900 mb-2">
+                    İçerik *
+                  </label>
+                  <textarea
+                    value={formData.content}
+                    onChange={(e) => setFormData({ ...formData, content: e.target.value })}
+                    className="w-full px-4 py-2 border border-slate-300 rounded-lg focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-200 h-48"
+                    disabled={isSaving}
+                  />
+                </div>
+              </div>
+
+              <div className="p-6 border-t border-slate-200 flex gap-3 justify-end sticky bottom-0 bg-white">
+                <button
+                  onClick={closeEditDialog}
+                  disabled={isSaving}
+                  className="px-6 py-2 border border-slate-300 text-slate-700 hover:bg-slate-50 rounded-lg transition disabled:opacity-50"
+                >
+                  İptal
+                </button>
+                <button
+                  onClick={handleSaveEdit}
+                  disabled={isSaving}
+                  className="px-6 py-2 bg-blue-600 text-white hover:bg-blue-700 rounded-lg transition flex items-center gap-2 disabled:opacity-50"
+                >
+                  {isSaving ? (
+                    <>
+                      <Loader2 className="w-4 h-4 animate-spin" />
+                      Kaydediliyor...
+                    </>
+                  ) : (
+                    'Kaydet'
+                  )}
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
       </div>
     </div>
   )

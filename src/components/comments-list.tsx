@@ -116,9 +116,9 @@ export function CommentsList({ workId, refresh }: CommentsListProps) {
                 </p>
               </div>
             </div>
-            <p className="text-gray-700 text-sm leading-relaxed">
+            <div className="text-gray-700 text-sm leading-relaxed whitespace-pre-wrap font-serif">
               {comment.content}
-            </p>
+            </div>
           </div>
         ))}
       </div>

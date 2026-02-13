@@ -21,7 +21,7 @@ import { PenTool, Loader2, CheckCircle, AlertCircle, X } from "lucide-react";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 
 // Mevcut yazarlar (Supabase'den çekilebilir ama şimdilik static)
-const EXISTING_AUTHORS = [
+const DEFAULT_AUTHORS = [
   'Yusuf Salih',
   'Halil (İsimsizler)',
   'Tuba (T.Ö.)',
@@ -59,6 +59,9 @@ export function SubmitLiteraryWorkForm() {
   const [submitStatus, setSubmitStatus] = useState<'idle' | 'success' | 'error'>('idle');
   const [errorMessage, setErrorMessage] = useState('');
   
+  // Dinamik yazarlar listesi
+  const [authorsList, setAuthorsList] = useState<string[]>(DEFAULT_AUTHORS);
+  
   // Form state
   const [authorType, setAuthorType] = useState<'existing' | 'new'>('existing');
   const [selectedAuthor, setSelectedAuthor] = useState('');
@@ -69,6 +72,28 @@ export function SubmitLiteraryWorkForm() {
   const [content, setContent] = useState('');
   const [tags, setTags] = useState<string[]>([]);
   const [customTag, setCustomTag] = useState('');
+
+  // Yazarları veritabanından fetch et
+  useEffect(() => {
+    async function fetchAuthors() {
+      try {
+        const response = await fetch('/api/literary-works');
+        if (!response.ok) throw new Error('Yazarlar yüklenemedi');
+        const data = await response.json();
+        
+        // Benzersiz yazarları al ve sırala
+        const uniqueAuthors = Array.from(
+          new Set((data.works || []).map((work: any) => work.author))
+        ).sort((a: any, b: any) => (a as string).localeCompare(b as string, 'tr-TR'));
+        
+        setAuthorsList(uniqueAuthors as string[]);
+      } catch (error) {
+        console.error('Error fetching authors:', error);
+        // Fallback olarak default yazarlar kalır
+      }
+    }
+    fetchAuthors();
+  }, []);
 
   // Tarih otomatik (bugünün tarihi)
   useEffect(() => {
@@ -121,6 +146,12 @@ export function SubmitLiteraryWorkForm() {
 
       if (!response.ok) {
         throw new Error(data.error || 'Bir hata oluştu');
+      }
+
+      // Yeni yazar eklendiyse listeye ekle
+      const submittedAuthor = authorType === 'existing' ? selectedAuthor : newAuthor;
+      if (authorType === 'new' && submittedAuthor && !authorsList.includes(submittedAuthor)) {
+        setAuthorsList([...authorsList, submittedAuthor].sort((a: any, b: any) => (a as string).localeCompare(b as string, 'tr-TR')));
       }
 
       setSubmitStatus('success');
@@ -212,7 +243,7 @@ export function SubmitLiteraryWorkForm() {
                     <SelectContent className="max-h-[300px]">
                       <SelectGroup>
                         <SelectLabel>Mevcut Yazarlar</SelectLabel>
-                        {EXISTING_AUTHORS.map(author => (
+                        {authorsList.map(author => (
                           <SelectItem key={author} value={author}>{author}</SelectItem>
                         ))}
                       </SelectGroup>

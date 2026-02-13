@@ -29,10 +29,6 @@ export function CommentForm({ workId, onCommentAdded }: CommentFormProps) {
       setError('Yorum en az 2 karakter olmalı')
       return
     }
-    if (content.trim().length > 500) {
-      setError('Yorum en fazla 500 karakter olabilir')
-      return
-    }
 
     try {
       setLoading(true)
@@ -83,17 +79,13 @@ export function CommentForm({ workId, onCommentAdded }: CommentFormProps) {
 
       <div>
         <textarea
-          placeholder="Yorumunuzu yazınız (en fazla 500 karakter)..."
+          placeholder="Yorumunuzu yazınız..."
           value={content}
           onChange={(e) => setContent(e.target.value)}
           disabled={loading}
           rows={3}
-          className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:bg-gray-100 resize-none"
-          maxLength={500}
+          className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:bg-gray-100 resize-none font-serif"
         />
-        <div className="text-xs text-gray-500 mt-1">
-          {content.length}/500
-        </div>
       </div>
 
       {error && (

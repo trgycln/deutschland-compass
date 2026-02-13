@@ -6,12 +6,7 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Badge } from '@/components/ui/badge';
-import { Loader2, CheckCircle, XCircle, Trash2, Mail, ExternalLink } from 'lucide-react';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import { Textarea } from '@/components/ui/textarea';
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
-import { PlusCircle, Pencil, UploadCloud, Download, FileText } from 'lucide-react';
+import { Loader2, CheckCircle, XCircle, Trash2, Mail, ExternalLink, Pencil, UploadCloud, Download, FileText, MessageCircle } from 'lucide-react';
 import { professionsList } from '@/data/professions-list';
 
 // Types
@@ -56,6 +51,16 @@ type BlogPost = {
   is_published: boolean;
   tags: string[];
   created_at: string;
+};
+
+type Comment = {
+  id: number;
+  work_id: number;
+  author_name: string;
+  content: string;
+  status: 'pending' | 'approved' | 'rejected';
+  created_at: string;
+  updated_at?: string;
 };
 
 export default function AdminPage() {
@@ -111,6 +116,14 @@ export default function AdminPage() {
   const [editingDoc, setEditingDoc] = useState<Document | null>(null);
   const [docEditForm, setDocEditForm] = useState({ title: '', description: '' });
 
+  // Comments State
+  const [comments, setComments] = useState<Comment[]>([]);
+  const [allComments, setAllComments] = useState<Comment[]>([]);
+  const [isCommentEditDialogOpen, setIsCommentEditDialogOpen] = useState(false);
+  const [editingComment, setEditingComment] = useState<Comment | null>(null);
+  const [commentForm, setCommentForm] = useState({ author_name: '', content: '' });
+  const [commentOperationInProgress, setCommentOperationInProgress] = useState(false);
+
   // Helper to render content with links
   const renderContent = (content: string) => {
     if (!content) return null;
@@ -142,6 +155,7 @@ export default function AdminPage() {
     setMounted(true);
     fetchProfessions();
     fetchDashboardData();
+    fetchAllComments();
   }, []);
 
   useEffect(() => {
@@ -723,6 +737,103 @@ export default function AdminPage() {
     }
   }
 
+  // Fetch all comments for moderation
+  async function fetchAllComments() {
+    try {
+      const { data, error } = await supabase
+        .from('literary_work_comments')
+        .select('*')
+        .order('created_at', { ascending: false })
+      
+      if (error) throw error
+      setAllComments(data || [])
+    } catch (error) {
+      console.error('Error fetching comments:', error)
+      alert('Yorumlar yüklenemedi.')
+    }
+  }
+
+  // Open comment edit dialog
+  function openCommentEditDialog(comment: Comment) {
+    setEditingComment(comment)
+    setCommentForm({
+      author_name: comment.author_name,
+      content: comment.content
+    })
+    setIsCommentEditDialogOpen(true)
+  }
+
+  // Close comment edit dialog
+  function closeCommentEditDialog() {
+    setIsCommentEditDialogOpen(false)
+    setEditingComment(null)
+    setCommentForm({ author_name: '', content: '' })
+  }
+
+  // Save comment
+  async function handleSaveComment() {
+    if (!editingComment) return
+
+    if (!commentForm.author_name.trim() || !commentForm.content.trim()) {
+      alert('Lütfen tüm alanları doldurunuz')
+      return
+    }
+
+    try {
+      setCommentOperationInProgress(true)
+      const response = await fetch('/api/comments', {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          id: editingComment.id,
+          author_name: commentForm.author_name,
+          content: commentForm.content
+        })
+      })
+
+      if (!response.ok) {
+        const data = await response.json()
+        throw new Error(data.error || 'Güncelleme başarısız')
+      }
+
+      // Update local state
+      const updated = await response.json()
+      setAllComments(allComments.map(c => c.id === editingComment.id ? updated.comment : c))
+      closeCommentEditDialog()
+      alert('Yorum başarıyla güncellendi.')
+    } catch (error) {
+      console.error('Güncelleme hatası:', error)
+      alert('Hata oluştu. Lütfen tekrar deneyin.')
+    } finally {
+      setCommentOperationInProgress(false)
+    }
+  }
+
+  // Delete comment
+  async function deleteComment(id: number) {
+    if (!confirm('Bu yorumu silmek istediğinize emin misiniz?')) return
+
+    try {
+      setCommentOperationInProgress(true)
+      const response = await fetch(`/api/comments?id=${id}`, {
+        method: 'DELETE'
+      })
+
+      if (!response.ok) {
+        const data = await response.json()
+        throw new Error(data.error || 'Silme başarısız')
+      }
+
+      setAllComments(allComments.filter(c => c.id !== id))
+      alert('Yorum başarıyla silindi.')
+    } catch (error) {
+      console.error('Silme hatası:', error)
+      alert('Hata oluştu. Lütfen tekrar deneyin.')
+    } finally {
+      setCommentOperationInProgress(false)
+    }
+  }
+
   async function deleteFaq(id: number) {
     if (!confirm('Bu soruyu silmek istediğinize emin misiniz?')) return;
 
@@ -846,6 +957,7 @@ export default function AdminPage() {
           <TabsTrigger value="faqs">Sıkça Sorulan Sorular</TabsTrigger>
           <TabsTrigger value="documents">Dokümanlar</TabsTrigger>
           <TabsTrigger value="blogs">Blog Yönetimi</TabsTrigger>
+          <TabsTrigger value="comments">Yorumlar</TabsTrigger>
           <TabsTrigger value="settings">Meslek Ayarları</TabsTrigger>
         </TabsList>
 
@@ -1215,6 +1327,116 @@ export default function AdminPage() {
                 <Button onClick={handleSaveBlog} className="w-full">
                   {editingBlog ? 'Değişiklikleri Kaydet' : 'Yazıyı Yayınla'}
                 </Button>
+              </div>
+            </DialogContent>
+          </Dialog>
+        </TabsContent>
+
+        <TabsContent value="comments">
+          <Card>
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <MessageCircle className="w-5 h-5 text-blue-600" />
+                Yorum Yönetimi
+                {allComments.length > 0 && (
+                  <Badge variant="secondary" className="ml-auto">
+                    {allComments.length} Toplam
+                  </Badge>
+                )}
+              </CardTitle>
+              <CardDescription>
+                Tüm şiir ve yazılara yapılan yorumları düzenleyin ve silin.
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              {allComments.length === 0 ? (
+                <div className="text-center py-12">
+                  <MessageCircle className="w-12 h-12 text-slate-300 mx-auto mb-4" />
+                  <p className="text-slate-600">Henüz yorum yok</p>
+                </div>
+              ) : (
+                <div className="space-y-4">
+                  {allComments.map((comment) => (
+                    <div key={comment.id} className="p-4 border rounded-lg bg-white dark:bg-slate-900 shadow-sm">
+                      <div className="flex justify-between items-start mb-3">
+                        <div className="flex-1">
+                          <p className="font-semibold text-sm">{comment.author_name}</p>
+                          <p className="text-xs text-slate-500">Eser ID: {comment.work_id} • {new Date(comment.created_at).toLocaleDateString('tr-TR')}</p>
+                        </div>
+                        <Badge className={
+                          comment.status === 'approved' ? 'bg-green-600' :
+                          comment.status === 'rejected' ? 'bg-red-600' : 'bg-yellow-600'
+                        }>
+                          {comment.status === 'approved' ? 'Onaylandı' : 
+                           comment.status === 'rejected' ? 'Reddedildi' : 'Bekliyor'}
+                        </Badge>
+                      </div>
+                      <p className="text-sm text-slate-700 dark:text-slate-300 mb-3 whitespace-pre-wrap bg-slate-50 dark:bg-slate-800 p-3 rounded-md font-serif">
+                        {comment.content}
+                      </p>
+                      <div className="flex gap-2">
+                        <Button 
+                          size="sm" 
+                          variant="ghost"
+                          className="text-blue-600 hover:text-blue-700 hover:bg-blue-50"
+                          onClick={() => openCommentEditDialog(comment)}
+                          disabled={commentOperationInProgress}
+                        >
+                          <Pencil className="w-4 h-4 mr-1" />
+                          Düzelt
+                        </Button>
+                        <Button 
+                          size="sm" 
+                          variant="ghost"
+                          className="text-red-600 hover:text-red-700 hover:bg-red-50"
+                          onClick={() => deleteComment(comment.id)}
+                          disabled={commentOperationInProgress}
+                        >
+                          <Trash2 className="w-4 h-4 mr-1" />
+                          Sil
+                        </Button>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </CardContent>
+          </Card>
+
+          {/* Comment Edit Dialog */}
+          <Dialog open={isCommentEditDialogOpen} onOpenChange={setIsCommentEditDialogOpen}>
+            <DialogContent className="max-w-2xl">
+              <DialogHeader>
+                <DialogTitle>Yorumu Düzelt</DialogTitle>
+              </DialogHeader>
+              <div className="space-y-4">
+                <div>
+                  <Label htmlFor="commentAuthor">Yorum Yapan Kişi</Label>
+                  <Input
+                    id="commentAuthor"
+                    value={commentForm.author_name}
+                    onChange={(e) => setCommentForm({ ...commentForm, author_name: e.target.value })}
+                    disabled={commentOperationInProgress}
+                  />
+                </div>
+                <div>
+                  <Label htmlFor="commentContent">Yorum İçeriği</Label>
+                  <Textarea
+                    id="commentContent"
+                    value={commentForm.content}
+                    onChange={(e) => setCommentForm({ ...commentForm, content: e.target.value })}
+                    className="h-40 font-serif"
+                    disabled={commentOperationInProgress}
+                  />
+                </div>
+                <div className="flex gap-2 justify-end">
+                  <Button variant="outline" onClick={closeCommentEditDialog} disabled={commentOperationInProgress}>
+                    İptal
+                  </Button>
+                  <Button onClick={handleSaveComment} disabled={commentOperationInProgress}>
+                    {commentOperationInProgress ? 'Kaydediliyor...' : 'Kaydet'}
+                  </Button>
+                </div>
               </div>
             </DialogContent>
           </Dialog>
