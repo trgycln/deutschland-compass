@@ -36,6 +36,8 @@ import { TopWorksDisplay } from "@/components/top-works-display";
 import { RecentWorksDisplay } from "@/components/recent-works-display";
 import { PopularTagsDisplay } from "@/components/popular-tags-display";
 import { RandomDiscoveryDisplay } from "@/components/random-discovery-display";
+import { TopNarratedWorksDisplay } from "@/components/top-narrated-works-display";
+import { RecentNarratedWorksDisplay } from "@/components/recent-narrated-works-display";
 
 interface LiteraryWork {
   id: number;
@@ -302,36 +304,40 @@ export default function GurbetKalemleriPage() {
         </div>
       </div>
 
-      {/* 📊 İstatistikler ve Keşif Bölümü */}
-      <div className="bg-gradient-to-b from-amber-50/30 to-transparent py-16">
+      {/* 📊 İstatistikler ve Keşif Bölümü - FULL WIDTH */}
+      <div className="bg-gradient-to-b from-amber-50/30 to-transparent py-16 border-t border-amber-100">
         <div className="container mx-auto px-4">
-          <div className="grid gap-6 md:grid-cols-2 mb-12">
-            {/* Sol sütun: Yazarlar ve Eserler */}
-            <div className="space-y-6">
-              <TopAuthorsDisplay />
-              <TopWorksDisplay />
-            </div>
-            
-            {/* Sağ sütun: Son eserler, etiketler, şans butonu */}
-            <div className="space-y-6">
-              <RecentWorksDisplay />
-              <PopularTagsDisplay onTagClick={(tag) => {
-                setSelectedTags([tag]);
-                // Mobile'da filtreleri aç
-                if (window.innerWidth < 768) {
-                  setFiltersOpen(true);
+          {/* Üst satır: Yazarlar ve Eserler (2 kolon) */}
+          <div className="grid gap-6 md:grid-cols-2 mb-8">
+            <TopAuthorsDisplay />
+            <TopWorksDisplay />
+          </div>
+
+          {/* Ortası: Seslendirilmiş eserler (2 kolon) */}
+          <div className="grid gap-6 md:grid-cols-2 mb-8">
+            <TopNarratedWorksDisplay />
+            <RecentNarratedWorksDisplay />
+          </div>
+
+          {/* Alt satır: Son eserler, etiketler, şans butonu (3 kolon) */}
+          <div className="grid gap-6 md:grid-cols-3">
+            <RecentWorksDisplay />
+            <PopularTagsDisplay onTagClick={(tag) => {
+              setSelectedTags([tag]);
+              // Mobile'da filtreleri aç
+              if (window.innerWidth < 768) {
+                setFiltersOpen(true);
+              }
+            }} />
+            <RandomDiscoveryDisplay onDiscoverClick={(workId) => {
+              setFeaturedId(workId);
+              setTimeout(() => {
+                const section = document.querySelector('section.rounded-\\[32px\\]');
+                if (section && window.innerWidth < 1024) {
+                  section.scrollIntoView({ behavior: 'smooth', block: 'start' });
                 }
-              }} />
-              <RandomDiscoveryDisplay onDiscoverClick={(workId) => {
-                setFeaturedId(workId);
-                setTimeout(() => {
-                  const section = document.querySelector('section.rounded-\\[32px\\]');
-                  if (section && window.innerWidth < 1024) {
-                    section.scrollIntoView({ behavior: 'smooth', block: 'start' });
-                  }
-                }, 50);
-              }} />
-            </div>
+              }, 50);
+            }} />
           </div>
         </div>
       </div>
