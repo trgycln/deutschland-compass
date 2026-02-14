@@ -92,12 +92,12 @@ export default function AdminAudioPage() {
 
       if (!response.ok) {
         let errorMsg = 'Yükleme başarısız'
+        const rawText = await response.text()
         try {
-          const data = await response.json()
+          const data = JSON.parse(rawText)
           errorMsg = data.error || errorMsg
         } catch (parseErr) {
-          const text = await response.text()
-          errorMsg = text?.substring(0, 120) || `HTTP ${response.status}: ${response.statusText}` || errorMsg
+          errorMsg = rawText?.substring(0, 120) || `HTTP ${response.status}: ${response.statusText}` || errorMsg
         }
         console.log('Upload error:', errorMsg)
         throw new Error(errorMsg)
@@ -133,12 +133,12 @@ export default function AdminAudioPage() {
 
       if (!response.ok) {
         let errorMsg = 'Silme başarısız'
+        const rawText = await response.text()
         try {
-          const data = await response.json()
+          const data = JSON.parse(rawText)
           errorMsg = data.error || errorMsg
         } catch (parseErr) {
-          const text = await response.text()
-          errorMsg = text?.substring(0, 120) || `HTTP ${response.status}: ${response.statusText}` || errorMsg
+          errorMsg = rawText?.substring(0, 120) || `HTTP ${response.status}: ${response.statusText}` || errorMsg
         }
         throw new Error(errorMsg)
       }
