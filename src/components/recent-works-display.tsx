@@ -114,7 +114,7 @@ export function RecentWorksDisplay() {
         <CardTitle style={accentStyle} className="text-xl">⏰ En Yeni Eserler</CardTitle>
         <CardDescription style={serifStyle}>Taze kalemlerin en son eserleri</CardDescription>
       </CardHeader>
-      <CardContent>
+      <CardContent className="overflow-x-auto">
         <div className="space-y-3">
           {displayWorks.map((work) => (
               <Link

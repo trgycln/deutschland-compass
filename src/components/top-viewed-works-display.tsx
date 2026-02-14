@@ -102,7 +102,7 @@ export function TopViewedWorksDisplay() {
         <CardTitle style={accentStyle} className="text-xl">👁️ En Çok Görüntülenen</CardTitle>
         <CardDescription style={serifStyle}>Okurların en çok görüntülediği eserler</CardDescription>
       </CardHeader>
-      <CardContent>
+      <CardContent className="overflow-x-auto">
         <div className="space-y-2">
           {displayWorks.map((work, idx) => (
             <Link

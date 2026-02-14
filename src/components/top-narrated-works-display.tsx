@@ -98,7 +98,7 @@ export function TopNarratedWorksDisplay() {
         <CardTitle style={accentStyle} className="text-xl">🎧 En Çok Dinlenen Seslendirilmiş</CardTitle>
         <CardDescription style={serifStyle}>En çok dinlenen seslendirilmiş eserler</CardDescription>
       </CardHeader>
-      <CardContent>
+      <CardContent className="overflow-x-auto">
         <div className="space-y-2">
           {displayWorks.map((work, idx) => (
             <Link

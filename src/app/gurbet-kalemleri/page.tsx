@@ -352,7 +352,7 @@ export default function GurbetKalemleriPage() {
       </div>
 
       {/* 📊 İstatistikler ve Keşif Bölümü - FULL WIDTH */}
-      <div className="bg-gradient-to-b from-amber-50/30 to-transparent py-8 border-t border-amber-100 w-full overflow-x-hidden">
+      <div className="bg-gradient-to-b from-amber-50/30 to-transparent py-8 border-t border-amber-100 w-full">
         <div className="mx-auto px-4 w-full">
           {/* 3 KolonLayout: 6 kart + Random */}
           <div className="grid gap-4 md:grid-cols-3 mb-8 w-full">

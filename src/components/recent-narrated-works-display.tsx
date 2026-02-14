@@ -114,7 +114,7 @@ export function RecentNarratedWorksDisplay() {
         <CardTitle style={accentStyle} className="text-xl">🎙️ En Son Seslendirilen</CardTitle>
         <CardDescription style={serifStyle}>En son seslendirilen eserler</CardDescription>
       </CardHeader>
-      <CardContent>
+      <CardContent className="overflow-x-auto">
         <div className="space-y-3">
           {displayWorks.map((work, idx) => (
             <Link

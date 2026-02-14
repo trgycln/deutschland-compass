@@ -104,7 +104,7 @@ export function TopWorksDisplay() {
         <CardTitle style={accentStyle} className="text-xl">❤️ En Beğenilen Eserler</CardTitle>
         <CardDescription style={serifStyle}>Okurların en çok sevdiği eserler</CardDescription>
       </CardHeader>
-      <CardContent>
+      <CardContent className="overflow-x-auto">
         <div className="space-y-2">
           {displayWorks.map((work, idx) => (
             <Link
