@@ -117,10 +117,13 @@ export async function POST(request: NextRequest) {
       .from('literary-works-audio')
       .getPublicUrl(filePath)
 
-    // Database'e audio_url'i kaydet
+    // Database'e audio_url'i kaydet ve narration_added_at'ı güncelle
     const { error: updateError } = await supabase
       .from('literary_works')
-      .update({ audio_url: publicUrl })
+      .update({ 
+        audio_url: publicUrl,
+        narration_added_at: new Date().toISOString()
+      })
       .eq('id', workId)
 
     if (updateError) {

@@ -11,6 +11,7 @@ interface Work {
   title: string;
   author: string;
   created_at: string;
+  narration_added_at?: string;
   type: string;
   audio_url: string;
   content: string;
@@ -59,6 +60,12 @@ export function RecentNarratedWorksDisplay() {
         
         const narrated = (data.works || [])
           .filter((w: any) => w.audio_url)
+          // En son seslendirilen field'a göre sırala
+          .sort((a: any, b: any) => {
+            const dateA = new Date(a.narration_added_at || a.created_at).getTime();
+            const dateB = new Date(b.narration_added_at || b.created_at).getTime();
+            return dateB - dateA; // En yeni ilk
+          })
           .slice(0, 10);
         
         if (narrated.length > 0) {
@@ -127,7 +134,7 @@ export function RecentNarratedWorksDisplay() {
                   <div className="flex items-center gap-2 mb-1">
                     <Music className="w-4 h-4 text-blue-600" />
                     <span className="text-xs font-medium text-blue-700">
-                      {formatRelativeTime(work.created_at)}
+                      {formatRelativeTime(work.narration_added_at || work.created_at)}
                     </span>
                   </div>
                   <h3 style={accentStyle} className="text-sm text-stone-800 font-medium line-clamp-2 hover:text-blue-700">
