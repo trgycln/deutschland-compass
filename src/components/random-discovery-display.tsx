@@ -32,6 +32,15 @@ export function RandomDiscoveryDisplay({ onDiscoverClick, triggerId }: { onDisco
   const [randomWork, setRandomWork] = useState<Work | null>(null);
   const [loading, setLoading] = useState(true);
 
+  // Verilen array'dan gerçekten rastgele eser seç
+  const getRandomWork = (works: Work[]) => {
+    if (works.length === 0) return null;
+    // Truly random: timestamp + Math.random() kombinasyonu
+    const seed = Date.now() + Math.random();
+    const index = Math.floor((seed % works.length) * Math.random()) % works.length;
+    return works[index];
+  };
+
   useEffect(() => {
     async function fetchWorks() {
       try {
@@ -41,9 +50,9 @@ export function RandomDiscoveryDisplay({ onDiscoverClick, triggerId }: { onDisco
         const works = data.works || [];
         setAllWorks(works);
         
-        // İlk rastgele eseri seç
+        // Rastgele eseri seç (truly random)
         if (works.length > 0) {
-          const random = works[Math.floor(Math.random() * works.length)];
+          const random = getRandomWork(works);
           setRandomWork(random);
         }
       } catch (error) {
@@ -59,16 +68,18 @@ export function RandomDiscoveryDisplay({ onDiscoverClick, triggerId }: { onDisco
   // Featured work değişince yeni random eser seç
   useEffect(() => {
     if (allWorks.length > 0 && triggerId) {
-      const random = allWorks[Math.floor(Math.random() * allWorks.length)];
+      const random = getRandomWork(allWorks);
       setRandomWork(random);
     }
   }, [triggerId, allWorks]);
 
   const handleDiscover = () => {
     if (allWorks.length > 0) {
-      const random = allWorks[Math.floor(Math.random() * allWorks.length)];
-      setRandomWork(random);
-      onDiscoverClick?.(random.id);
+      const random = getRandomWork(allWorks);
+      if (random) {
+        setRandomWork(random);
+        onDiscoverClick?.(random.id);
+      }
     }
   };
 

@@ -1,6 +1,6 @@
 'use client'
 
-import React, { createContext, useContext, useState, useRef, ReactNode, useCallback } from 'react'
+import React, { createContext, useContext, useState, useRef, ReactNode, useCallback, useEffect } from 'react'
 
 interface AudioTrack {
   id: number
@@ -33,6 +33,42 @@ export function AudioProvider({ children }: { children: ReactNode }) {
   const [isPlaying, setIsPlaying] = useState(false)
   const [currentTime, setCurrentTime] = useState(0)
   const [duration, setDuration] = useState(0)
+
+  // localStorage'den audio state'i restore et
+  useEffect(() => {
+    try {
+      const stored = localStorage.getItem('musikStorage')
+      if (stored) {
+        const state = JSON.parse(stored)
+        if (state.currentTrack) {
+          setCurrentTrack(state.currentTrack)
+        }
+      }
+    } catch (error) {
+      console.error('Failed to restore audio state', error)
+    }
+  }, [])
+
+  // currentTrack değişince localStorage'e save et
+  useEffect(() => {
+    try {
+      localStorage.setItem('musikStorage', JSON.stringify({ currentTrack }))
+    } catch (error) {
+      console.error('Failed to save audio state', error)
+    }
+  }, [currentTrack])
+
+  // currentTrack restorlandığında audio src'ını set et ve play et
+  useEffect(() => {
+    if (currentTrack && audioRef.current) {
+      audioRef.current.src = currentTrack.audioUrl
+      audioRef.current.play().catch(() => {
+        // Autoplay fail edebilir, silent ignore
+        setIsPlaying(false)
+      })
+      setIsPlaying(true)
+    }
+  }, [currentTrack])
 
   const playTrack = useCallback((track: AudioTrack) => {
     if (audioRef.current) {
