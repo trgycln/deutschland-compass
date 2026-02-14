@@ -629,9 +629,9 @@ export default function GurbetKalemleriPage() {
         </div>
       </div>
 
-      <div className="container mx-auto px-4 py-10">
+      <div className="w-full mx-auto px-4 py-10">
         <div className="grid gap-8 lg:grid-cols-[320px_1fr]">
-          <aside className="rounded-3xl bg-white/80 shadow-lg border border-amber-100">
+          <aside className="rounded-3xl bg-white/80 shadow-lg border border-amber-100 hidden lg:block">
             <div className="p-6 border-b border-amber-100">
               <h2 className="text-xl text-stone-800" style={accentStyle}>
                 Tum Eserler
