@@ -48,13 +48,6 @@ export function AudioPlayer({ audioUrl, title, workId, content, author }: AudioP
       }
     }
   }
-      if (isPlaying) {
-        audioRef.current.pause()
-      } else {
-        audioRef.current.play()
-      }
-    }
-  }
 
   const handleProgressChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     // Global audio işleminde progress'ı güncelle
