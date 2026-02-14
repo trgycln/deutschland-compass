@@ -404,7 +404,7 @@ export default function GurbetKalemleriPage() {
 
             <div className="md:col-span-1">
               <RandomDiscoveryDisplay 
-                triggerId={featuredId}
+                triggerId={featuredId || undefined}
                 onDiscoverClick={(workId) => {
                 setFeaturedId(workId);
                 setTimeout(() => {
