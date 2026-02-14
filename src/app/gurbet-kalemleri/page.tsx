@@ -403,7 +403,9 @@ export default function GurbetKalemleriPage() {
             }} />
 
             <div className="md:col-span-1">
-              <RandomDiscoveryDisplay onDiscoverClick={(workId) => {
+              <RandomDiscoveryDisplay 
+                triggerId={featuredId}
+                onDiscoverClick={(workId) => {
                 setFeaturedId(workId);
                 setTimeout(() => {
                   const section = document.querySelector('section.rounded-\\[32px\\]');

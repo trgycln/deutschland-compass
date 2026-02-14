@@ -27,7 +27,7 @@ const accentStyle = {
   fontFamily: "'Playfair Display', 'Times New Roman', serif",
 } as const;
 
-export function RandomDiscoveryDisplay({ onDiscoverClick }: { onDiscoverClick?: (workId: number) => void }) {
+export function RandomDiscoveryDisplay({ onDiscoverClick, triggerId }: { onDiscoverClick?: (workId: number) => void; triggerId?: number }) {
   const [allWorks, setAllWorks] = useState<Work[]>([]);
   const [randomWork, setRandomWork] = useState<Work | null>(null);
   const [loading, setLoading] = useState(true);
@@ -55,6 +55,14 @@ export function RandomDiscoveryDisplay({ onDiscoverClick }: { onDiscoverClick?: 
 
     fetchWorks();
   }, []);
+
+  // Featured work değişince yeni random eser seç
+  useEffect(() => {
+    if (allWorks.length > 0 && triggerId) {
+      const random = allWorks[Math.floor(Math.random() * allWorks.length)];
+      setRandomWork(random);
+    }
+  }, [triggerId, allWorks]);
 
   const handleDiscover = () => {
     if (allWorks.length > 0) {
@@ -144,39 +152,40 @@ export function RandomDiscoveryDisplay({ onDiscoverClick }: { onDiscoverClick?: 
           </div>
 
           {randomWork && (
-            <Link href={`/gurbet-kalemleri/${randomWork.id}`}>
-              <div className="bg-white/80 rounded-lg border border-amber-100 p-4 text-left space-y-2 hover:border-amber-300 hover:shadow-md transition cursor-pointer">
-                <div>
-                  <h4 style={accentStyle} className="text-lg text-stone-800 font-medium line-clamp-2 hover:text-amber-700">
-                    {randomWork.title}
-                  </h4>
-                  <p style={serifStyle} className="text-sm text-stone-500 mt-1">
-                    {randomWork.author}
-                  </p>
-                </div>
-                
-                <div className="flex flex-wrap gap-2">
-                  <Badge variant="outline" className="border-amber-200 text-amber-900 text-xs">
-                    {randomWork.type}
-                  </Badge>
-                  {randomWork.audio_url && (
-                    <Badge className="bg-blue-100 text-blue-900 text-xs gap-1">
-                      <Music className="w-3 h-3" />
-                      Seslendirilmiş
-                    </Badge>
-                  )}
-                </div>
-
-                <p style={serifStyle} className="text-sm text-stone-600 line-clamp-5">
-                  {randomWork.content}
+            <div 
+              onClick={() => onDiscoverClick?.(randomWork.id)}
+              className="bg-white/80 rounded-lg border border-amber-100 p-4 text-left space-y-2 hover:border-amber-300 hover:shadow-md transition cursor-pointer"
+            >
+              <div>
+                <h4 style={accentStyle} className="text-lg text-stone-800 font-medium line-clamp-2 hover:text-amber-700">
+                  {randomWork.title}
+                </h4>
+                <p style={serifStyle} className="text-sm text-stone-500 mt-1">
+                  {randomWork.author}
                 </p>
-
-                <div className="flex gap-2 text-xs text-stone-500">
-                  {randomWork.likes > 0 && <span>❤️ {randomWork.likes}</span>}
-                  {randomWork.views > 0 && <span>👁️ {randomWork.views}</span>}
-                </div>
               </div>
-            </Link>
+              
+              <div className="flex flex-wrap gap-2">
+                <Badge variant="outline" className="border-amber-200 text-amber-900 text-xs">
+                  {randomWork.type}
+                </Badge>
+                {randomWork.audio_url && (
+                  <Badge className="bg-blue-100 text-blue-900 text-xs gap-1">
+                    <Music className="w-3 h-3" />
+                    Seslendirilmiş
+                  </Badge>
+                )}
+              </div>
+
+              <p style={serifStyle} className="text-sm text-stone-600 line-clamp-5">
+                {randomWork.content}
+              </p>
+
+              <div className="flex gap-2 text-xs text-stone-500">
+                {randomWork.likes > 0 && <span>❤️ {randomWork.likes}</span>}
+                {randomWork.views > 0 && <span>👁️ {randomWork.views}</span>}
+              </div>
+            </div>
           )}
 
           <Button 
