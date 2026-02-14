@@ -260,7 +260,7 @@ export default function GurbetKalemleriPage() {
         <div className="absolute inset-0 bg-[radial-gradient(circle_at_top,#f6d7b8,transparent_55%),radial-gradient(circle_at_bottom,#f2c3c8,transparent_60%)] opacity-70"></div>
         <div className="absolute inset-0 bg-[linear-gradient(115deg,rgba(247,241,232,0.9),rgba(255,248,235,0.6))]"></div>
         <div className="container mx-auto px-4 py-16 relative z-10">
-          <div className="max-w-4xl">
+          <div className="w-full max-w-none lg:max-w-4xl">
             <div className="inline-flex items-center gap-2 rounded-full bg-white/70 px-4 py-2 text-sm text-amber-900 shadow-sm border border-amber-100">
               <Sparkles className="w-4 h-4" />
               <span>Gurbetin sesi, kalemin susmayan izi</span>
@@ -277,7 +277,7 @@ export default function GurbetKalemleriPage() {
             </p>
 
             {/* Telegram Linkleri */}
-            <div className="mt-6 grid grid-cols-1 md:grid-cols-2 gap-4 max-w-3xl">
+            <div className="mt-6 grid grid-cols-1 md:grid-cols-2 gap-4 w-full max-w-none lg:max-w-3xl">
               <a
                 href="https://t.me/+JSmuDvozRY43OGMy"
                 target="_blank"
