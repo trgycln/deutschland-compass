@@ -110,22 +110,24 @@ export function TopViewedWorksDisplay() {
               href={`/gurbet-kalemleri/${work.id}`}
               className="block p-3 rounded-lg bg-gradient-to-r from-sky-50 to-transparent border border-sky-100/50 hover:border-sky-200 transition"
             >
-              <div className="flex flex-col gap-2">
-                <div className="flex items-center gap-2">
-                  <span className="text-xs font-bold text-sky-700 bg-sky-100 px-2 py-0.5 rounded-full flex-shrink-0">
-                    #{idx + 1}
-                  </span>
-                  <h3 style={accentStyle} className="text-sm text-stone-800 line-clamp-1 font-medium hover:text-sky-700 flex-1 min-w-0">
+              <div className="flex items-start justify-between gap-3">
+                <div className="flex-1 min-w-0">
+                  <div className="flex items-center gap-2 mb-1">
+                    <span className="text-xs font-bold text-sky-700 bg-sky-100 px-2 py-0.5 rounded-full">
+                      #{idx + 1}
+                    </span>
+                  </div>
+                  <h3 style={accentStyle} className="text-sm text-stone-800 line-clamp-2 font-medium hover:text-sky-700">
                     {work.title}
                   </h3>
-                  <div className="flex items-center gap-1 whitespace-nowrap flex-shrink-0">
-                    <Eye className="w-3.5 h-3.5 text-sky-500" />
-                    <span className="text-xs font-semibold text-sky-600">{work.views}</span>
-                  </div>
+                  <p style={serifStyle} className="text-xs text-stone-500 mt-1">
+                    {work.author} • {work.type}
+                  </p>
                 </div>
-                <p style={serifStyle} className="text-xs text-stone-500 ml-12">
-                  {work.author} • {work.type}
-                </p>
+                <div className="flex items-center gap-1 whitespace-nowrap text-right">
+                  <Eye className="w-4 h-4 text-sky-500" />
+                  <span className="text-sm font-semibold text-sky-600">{work.views}</span>
+                </div>
               </div>
             </Link>
           ))}
