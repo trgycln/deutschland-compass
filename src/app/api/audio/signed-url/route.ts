@@ -25,7 +25,7 @@ export async function POST(request: NextRequest) {
 
     const { data, error } = await supabase.storage
       .from('literary-works-audio')
-      .createSignedUploadUrl(filePath, 60 * 10)
+      .createSignedUploadUrl(filePath, { upsert: false })
 
     if (error || !data?.signedUrl) {
       return NextResponse.json(
