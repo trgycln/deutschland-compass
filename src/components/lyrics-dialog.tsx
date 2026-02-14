@@ -40,11 +40,14 @@ export function LyricsDialog({ title, author, content, triggerClassName }: Lyric
             <FileText className="w-5 h-5" />
             {title}
           </DialogTitle>
-          {author && (
-            <DialogDescription className="text-base">
-              {author}
-            </DialogDescription>
-          )}
+          <DialogDescription className="text-base">
+            <span className="block">
+              <span className="font-semibold">Söz:</span> {author || 'Bilinmiyor'}
+            </span>
+            <span className="block">
+              <span className="font-semibold">Müzik:</span> DeutschlandCompass (KI)
+            </span>
+          </DialogDescription>
         </DialogHeader>
         <div className="mt-4">
           <div className="prose prose-slate dark:prose-invert max-w-none">
