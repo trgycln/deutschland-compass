@@ -112,28 +112,24 @@ export function TopWorksDisplay() {
               href={`/gurbet-kalemleri/${work.id}`}
               className="block p-3 rounded-lg bg-gradient-to-r from-rose-50 to-transparent border border-rose-100/50 hover:border-rose-200 transition"
             >
-              <div className="flex flex-col md:flex-row md:items-start md:justify-between gap-2 md:gap-3">
-                <div className="flex-1 min-w-0">
-                  <div className="flex items-center gap-2 mb-1">
-                    <span className="text-xs font-bold text-rose-700 bg-rose-100 px-2 py-0.5 rounded-full">
-                      #{idx + 1}
-                    </span>
-                    <div className="flex gap-1">
-                      {work.likes > 30 && <span className="text-2xl">🔥</span>}
-                      {work.likes > 20 && work.likes <= 30 && <span className="text-lg">⭐</span>}
-                    </div>
-                  </div>
-                  <h3 style={accentStyle} className="text-sm text-stone-800 line-clamp-2 font-medium hover:text-rose-700">
+              <div className="flex flex-col gap-2">
+                <div className="flex items-center gap-2">
+                  <span className="text-xs font-bold text-rose-700 bg-rose-100 px-2 py-0.5 rounded-full flex-shrink-0">
+                    #{idx + 1}
+                  </span>
+                  <h3 style={accentStyle} className="text-sm text-stone-800 line-clamp-1 font-medium hover:text-rose-700 flex-1 min-w-0">
                     {work.title}
                   </h3>
-                  <p style={serifStyle} className="text-xs text-stone-500 mt-1">
-                    {work.author} • {work.type}
-                  </p>
+                  <div className="flex items-center gap-1 whitespace-nowrap flex-shrink-0">
+                    <Heart className="w-3.5 h-3.5 text-rose-500 fill-rose-500" />
+                    <span className="text-xs font-semibold text-rose-600">{work.likes}</span>
+                  </div>
                 </div>
-                <div className="flex items-center gap-1 whitespace-nowrap text-right">
-                  <Heart className="w-4 h-4 text-rose-500 fill-rose-500" />
-                  <span className="text-sm font-semibold text-rose-600">{work.likes}</span>
-                </div>
+                <p style={serifStyle} className="text-xs text-stone-500 ml-12">
+                  {work.author} • {work.type}
+                  {work.likes > 30 && <span className="ml-2">🔥</span>}
+                  {work.likes > 20 && work.likes <= 30 && <span className="ml-2">⭐</span>}
+                </p>
               </div>
             </Link>
           ))}

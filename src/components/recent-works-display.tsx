@@ -122,21 +122,19 @@ export function RecentWorksDisplay() {
                 href={`/gurbet-kalemleri/${work.id}`}
                 className="block p-3 rounded-lg bg-gradient-to-r from-blue-50 to-transparent border border-blue-100/50 hover:border-blue-200 transition"
               >
-                <div className="flex flex-col md:flex-row md:items-start md:justify-between gap-2 md:gap-3">
-                  <div className="flex-1">
-                    <div className="flex items-center gap-2 mb-1">
-                      <Clock className="w-3 h-3 text-blue-600" />
-                      <span className="text-xs font-medium text-blue-700">
-                        {formatRelativeTime(work.created_at)}
-                      </span>
-                    </div>
-                    <h3 style={accentStyle} className="text-sm text-stone-800 font-medium line-clamp-2 hover:text-blue-700">
+                <div className="flex flex-col gap-2">
+                  <div className="flex items-center gap-2">
+                    <Clock className="w-3 h-3 text-blue-600 flex-shrink-0" />
+                    <span className="text-xs font-medium text-blue-700 flex-shrink-0">
+                      {formatRelativeTime(work.created_at)}
+                    </span>
+                    <h3 style={accentStyle} className="text-sm text-stone-800 font-medium line-clamp-1 hover:text-blue-700 flex-1 min-w-0">
                       {work.title}
                     </h3>
-                    <p style={serifStyle} className="text-xs text-stone-500 mt-1">
-                      {work.author} • {work.type}
-                    </p>
                   </div>
+                  <p style={serifStyle} className="text-xs text-stone-500 ml-5">
+                    {work.author} • {work.type}
+                  </p>
                 </div>
               </Link>
           ))}

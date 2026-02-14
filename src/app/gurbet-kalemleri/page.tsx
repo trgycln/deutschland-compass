@@ -685,11 +685,11 @@ export default function GurbetKalemleriPage() {
           </aside>
 
           <section className="rounded-[32px] bg-white/90 border border-amber-100 shadow-xl animate-fadeIn">
-            <div className="p-8 md:p-10">
-              <div className="flex flex-wrap items-center gap-3">
-                <Badge className="bg-amber-200 text-amber-900 animate-pulse">Seçilen Eser</Badge>
+            <div className="p-4 md:p-8 md:p-10">
+              <div className="flex flex-col sm:flex-row sm:items-center sm:gap-3 gap-2">
+                <Badge className="bg-amber-200 text-amber-900 animate-pulse w-fit">Seçilen Eser</Badge>
                 {featuredWork?.audio_url && (
-                  <Badge className="bg-blue-100 text-blue-900 flex items-center gap-1">
+                  <Badge className="bg-blue-100 text-blue-900 flex items-center gap-1 w-fit">
                     <Music className="w-3 h-3" />
                     Seslendirilmis
                   </Badge>
@@ -697,7 +697,7 @@ export default function GurbetKalemleriPage() {
                 <Button
                   variant="outline"
                   onClick={handleRefreshFeatured}
-                  className="border-amber-200 text-amber-900 hover:bg-amber-50"
+                  className="border-amber-200 text-amber-900 hover:bg-amber-50 w-full sm:w-auto"
                 >
                   <RefreshCcw className="w-4 h-4 mr-2" />
                   Baska bir eser
@@ -706,10 +706,10 @@ export default function GurbetKalemleriPage() {
 
               {featuredWork ? (
                 <div className="mt-8">
-                  <div className="flex flex-wrap items-center gap-4 text-sm text-stone-500" style={serifStyle}>
+                  <div className="grid grid-cols-2 md:flex md:flex-wrap md:items-center gap-2 md:gap-4 text-xs md:text-sm text-stone-500" style={serifStyle}>
                     <div className="flex items-center gap-2">
                       <User className="w-4 h-4" />
-                      <span>{featuredWork.author}</span>
+                      <span className="line-clamp-1">{featuredWork.author}</span>
                     </div>
                     <div className="flex items-center gap-2">
                       <Calendar className="w-4 h-4" />
@@ -719,7 +719,7 @@ export default function GurbetKalemleriPage() {
                       <BookOpen className="w-4 h-4" />
                       <span>{featuredWork.type}</span>
                     </div>
-                    <div className="flex items-center gap-2 ml-auto">
+                    <div className="flex items-center gap-2 md:ml-auto">
                       <span className="text-lg">👁️</span>
                       <span className="font-semibold text-blue-600">{featuredWork.views || 0}</span>
                     </div>
