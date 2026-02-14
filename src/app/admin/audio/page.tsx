@@ -79,28 +79,47 @@ export default function AdminAudioPage() {
 
       setUploadingId(workId)
 
-      const formData = new FormData()
-      formData.append('file', file)
-      formData.append('workId', workId.toString())
+      const signResponse = await fetch('/api/audio/signed-url', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ workId, fileName: file.name }),
+      })
+
+      console.log('Signed URL response status:', signResponse.status)
+
+      if (!signResponse.ok) {
+        const text = await signResponse.text()
+        throw new Error(text || 'Yükleme linki oluşturulamadı')
+      }
+
+      const signData = await signResponse.json()
+
+      const uploadResponse = await fetch(signData.signedUrl, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': file.type || 'audio/mpeg',
+        },
+        body: file,
+      })
+
+      console.log('Direct upload status:', uploadResponse.status)
+
+      if (!uploadResponse.ok) {
+        const text = await uploadResponse.text()
+        throw new Error(text || 'Dosya yüklenemedi')
+      }
 
       const response = await fetch('/api/audio', {
         method: 'POST',
-        body: formData,
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ workId, publicUrl: signData.publicUrl }),
       })
 
-      console.log('Upload response status:', response.status)
+      console.log('DB update status:', response.status)
 
       if (!response.ok) {
-        let errorMsg = 'Yükleme başarısız'
-        const rawText = await response.text()
-        try {
-          const data = JSON.parse(rawText)
-          errorMsg = data.error || errorMsg
-        } catch (parseErr) {
-          errorMsg = rawText?.substring(0, 120) || `HTTP ${response.status}: ${response.statusText}` || errorMsg
-        }
-        console.log('Upload error:', errorMsg)
-        throw new Error(errorMsg)
+        const text = await response.text()
+        throw new Error(text || 'Ses kaydı güncellenemedi')
       }
       
       const data = await response.json()

@@ -49,27 +49,41 @@ export function AudioUpload({ workId, onUploadSuccess }: AudioUploadProps) {
       setError(null)
       setSuccess(false)
 
-      const formData = new FormData()
-      formData.append('file', file)
-      formData.append('workId', workId.toString())
+      const signResponse = await fetch('/api/audio/signed-url', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ workId, fileName: file.name }),
+      })
+
+      if (!signResponse.ok) {
+        const text = await signResponse.text()
+        throw new Error(text || 'Yükleme linki oluşturulamadı')
+      }
+
+      const signData = await signResponse.json()
+
+      const uploadResponse = await fetch(signData.signedUrl, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': file.type || 'audio/mpeg',
+        },
+        body: file,
+      })
+
+      if (!uploadResponse.ok) {
+        const text = await uploadResponse.text()
+        throw new Error(text || 'Dosya yüklenemedi')
+      }
 
       const response = await fetch('/api/audio', {
         method: 'POST',
-        body: formData,
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ workId, publicUrl: signData.publicUrl }),
       })
 
       if (!response.ok) {
-        let errorMessage = 'Ses dosyası yüklenemedi'
-        try {
-          const data = await response.json()
-          errorMessage = data.error || errorMessage
-        } catch (parseErr) {
-          // JSON parse başarısız olursa response text'ini al
-          const text = await response.text()
-          console.error('Response text:', text)
-          errorMessage = text?.substring(0, 100) || `HTTP ${response.status}: ${response.statusText}` || errorMessage
-        }
-        throw new Error(errorMessage)
+        const text = await response.text()
+        throw new Error(text || 'Ses kaydı güncellenemedi')
       }
 
       const data = await response.json()

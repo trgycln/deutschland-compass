@@ -12,6 +12,46 @@ export const maxDuration = 60; // 60 saniye timeout
 
 export async function POST(request: NextRequest) {
   try {
+    const contentType = request.headers.get('content-type') || ''
+
+    if (contentType.includes('application/json')) {
+      const body = await request.json()
+      const workId = body?.workId as string | number | undefined
+      const publicUrl = body?.publicUrl as string | undefined
+
+      if (!workId || !publicUrl) {
+        return NextResponse.json(
+          { error: 'workId and publicUrl are required' },
+          { status: 400 }
+        )
+      }
+
+      const { error: updateError } = await supabase
+        .from('literary_works')
+        .update({
+          audio_url: publicUrl,
+          narration_added_at: new Date().toISOString(),
+        })
+        .eq('id', workId)
+
+      if (updateError) {
+        console.error('Update error:', updateError)
+        return NextResponse.json(
+          { error: 'Failed to save audio URL to database' },
+          { status: 500 }
+        )
+      }
+
+      return NextResponse.json(
+        {
+          success: true,
+          audioUrl: publicUrl,
+          message: 'Audio URL saved successfully',
+        },
+        { status: 200 }
+      )
+    }
+
     const formData = await request.formData()
     const file = formData.get('file') as File
     const workId = formData.get('workId') as string
