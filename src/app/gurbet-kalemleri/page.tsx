@@ -259,91 +259,77 @@ export default function GurbetKalemleriPage() {
       <div className="relative overflow-hidden w-full">
         <div className="absolute inset-0 bg-[radial-gradient(circle_at_top,#f6d7b8,transparent_55%),radial-gradient(circle_at_bottom,#f2c3c8,transparent_60%)] opacity-70"></div>
         <div className="absolute inset-0 bg-[linear-gradient(115deg,rgba(247,241,232,0.9),rgba(255,248,235,0.6))]"></div>
-        <div className="w-full mx-auto px-4 py-16 relative z-10">
+        <div className="max-w-5xl mx-auto px-4 py-12 relative z-10">
           <div className="w-full">
             <div className="inline-flex items-center gap-2 rounded-full bg-white/70 px-4 py-2 text-sm text-amber-900 shadow-sm border border-amber-100">
               <Sparkles className="w-4 h-4" />
               <span>Gurbetin sesi, kalemin susmayan izi</span>
             </div>
             <h1
-              className="mt-6 text-4xl md:text-5xl font-semibold text-stone-900"
+              className="mt-4 text-3xl md:text-4xl font-semibold text-stone-900"
               style={accentStyle}
             >
               Gurbet Kalemleri
             </h1>
-            <p className="mt-4 text-lg text-stone-700 max-w-2xl" style={serifStyle}>
+            <p className="mt-3 text-base md:text-lg text-stone-700 max-w-2xl" style={serifStyle}>
               Her gün bir eser, kalbe ağır gelen uzaklıkları bir sayfaya sığdırır. Okumak için
               dur, nefeslen, yeniden hatırla.
             </p>
 
             {/* Telegram Linkleri */}
-            <div className="mt-6 grid grid-cols-1 md:grid-cols-2 gap-4 w-full">
+            <div className="mt-5 flex flex-col sm:flex-row gap-3 max-w-lg">
               <a
                 href="https://t.me/+JSmuDvozRY43OGMy"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="group relative overflow-hidden rounded-xl bg-gradient-to-br from-blue-500 to-blue-600 p-4 shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-[1.02]"
+                className="inline-flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white px-4 py-2.5 rounded-lg transition-colors text-sm font-medium"
               >
-                <div className="absolute inset-0 bg-gradient-to-br from-white/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
-                <div className="relative flex items-center gap-3">
-                  <div className="p-2 bg-white/20 backdrop-blur-sm rounded-lg">
-                    <svg className="w-5 h-5 text-white" fill="currentColor" viewBox="0 0 24 24">
-                      <path d="M12 0C5.373 0 0 5.373 0 12s5.373 12 12 12 12-5.373 12-12S18.627 0 12 0zm5.894 8.221l-1.97 9.28c-.145.658-.537.818-1.084.508l-3-2.21-1.446 1.394c-.14.18-.357.295-.6.295-.002 0-.003 0-.005 0l.213-3.054 5.56-5.022c.24-.213-.054-.334-.373-.121l-6.869 4.326-2.96-.924c-.64-.203-.658-.64.135-.954l11.566-4.458c.538-.196 1.006.128.832.941z"/>
-                    </svg>
-                  </div>
-                  <div>
-                    <div className="text-white font-semibold text-sm">Yazilarini Paylas</div>
-                    <div className="text-blue-100 text-xs">Telegram Grubu</div>
-                  </div>
-                </div>
+                <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
+                  <path d="M12 0C5.373 0 0 5.373 0 12s5.373 12 12 12 12-5.373 12-12S18.627 0 12 0zm5.894 8.221l-1.97 9.28c-.145.658-.537.818-1.084.508l-3-2.21-1.446 1.394c-.14.18-.357.295-.6.295-.002 0-.003 0-.005 0l.213-3.054 5.56-5.022c.24-.213-.054-.334-.373-.121l-6.869 4.326-2.96-.924c-.64-.203-.658-.64.135-.954l11.566-4.458c.538-.196 1.006.128.832.941z"/>
+                </svg>
+                <span>Yazılarını Paylaş</span>
               </a>
 
               <a
                 href="https://t.me/+yI1or4k3nMswN2Ni"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="group relative overflow-hidden rounded-xl bg-gradient-to-br from-amber-500 to-amber-600 p-4 shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-[1.02]"
+                className="inline-flex items-center gap-2 bg-amber-600 hover:bg-amber-700 text-white px-4 py-2.5 rounded-lg transition-colors text-sm font-medium"
               >
-                <div className="absolute inset-0 bg-gradient-to-br from-white/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
-                <div className="relative flex items-center gap-3">
-                  <div className="p-2 bg-white/20 backdrop-blur-sm rounded-lg">
-                    <svg className="w-5 h-5 text-white" fill="currentColor" viewBox="0 0 24 24">
-                      <path d="M12 0C5.373 0 0 5.373 0 12s5.373 12 12 12 12-5.373 12-12S18.627 0 12 0zm5.894 8.221l-1.97 9.28c-.145.658-.537.818-1.084.508l-3-2.21-1.446 1.394c-.14.18-.357.295-.6.295-.002 0-.003 0-.005 0l.213-3.054 5.56-5.022c.24-.213-.054-.334-.373-.121l-6.869 4.326-2.96-.924c-.64-.203-.658-.64.135-.954l11.566-4.458c.538-.196 1.006.128.832.941z"/>
-                    </svg>
-                  </div>
-                  <div>
-                    <div className="text-white font-semibold text-sm">Deutschland Compass</div>
-                    <div className="text-amber-100 text-xs">Telegram Kanali</div>
-                  </div>
-                </div>
+                <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
+                  <path d="M12 0C5.373 0 0 5.373 0 12s5.373 12 12 12 12-5.373 12-12S18.627 0 12 0zm5.894 8.221l-1.97 9.28c-.145.658-.537.818-1.084.508l-3-2.21-1.446 1.394c-.14.18-.357.295-.6.295-.002 0-.003 0-.005 0l.213-3.054 5.56-5.022c.24-.213-.054-.334-.373-.121l-6.869 4.326-2.96-.924c-.64-.203-.658-.64.135-.954l11.566-4.458c.538-.196 1.006.128.832.941z"/>
+                </svg>
+                <span>Kanal</span>
               </a>
             </div>
 
-            <div className="mt-6 flex flex-wrap items-center gap-4 text-sm text-stone-600">
-              <div className="flex items-center gap-2">
-                <Feather className="w-4 h-4" />
-                <span>{literaryWorks.length} eser</span>
+            <div className="mt-5 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 text-sm text-stone-600">
+              <div className="flex flex-wrap items-center gap-4">
+                <div className="flex items-center gap-2">
+                  <Feather className="w-4 h-4" />
+                  <span>{literaryWorks.length} eser</span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <User className="w-4 h-4" />
+                  <span>{new Set(literaryWorks.map((work) => work.author)).size} yazar</span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <input
+                    type="checkbox"
+                    id="narrated-filter-header"
+                    checked={showOnlyNarrated}
+                    onChange={(e) => setShowOnlyNarrated(e.target.checked)}
+                    className="w-4 h-4 cursor-pointer"
+                  />
+                  <label htmlFor="narrated-filter-header" className="flex items-center gap-1 cursor-pointer text-stone-700">
+                    <Music className="w-4 h-4 text-amber-600" />
+                    <span>Seslendirilmiş</span>
+                  </label>
+                </div>
               </div>
-              <div className="flex items-center gap-2">
-                <User className="w-4 h-4" />
-                <span>{new Set(literaryWorks.map((work) => work.author)).size} yazar</span>
-              </div>
-              <div className="flex items-center gap-2">
-                <input
-                  type="checkbox"
-                  id="narrated-filter-header"
-                  checked={showOnlyNarrated}
-                  onChange={(e) => setShowOnlyNarrated(e.target.checked)}
-                  className="w-4 h-4 cursor-pointer"
-                />
-                <label htmlFor="narrated-filter-header" className="flex items-center gap-1 cursor-pointer text-stone-700">
-                  <Music className="w-4 h-4 text-amber-600" />
-                  <span>Seslendirilmiş</span>
-                </label>
-              </div>
-              <Link href="/gurbet-kalemleri/gonder" className="ml-auto">
-                <Button className="bg-amber-800 text-amber-50 hover:bg-amber-900">
-                  Eserini Paylas
+              <Link href="/gurbet-kalemleri/gonder">
+                <Button className="bg-amber-800 text-amber-50 hover:bg-amber-900 text-sm">
+                  Eserini Paylaş
                 </Button>
               </Link>
             </div>
@@ -351,9 +337,9 @@ export default function GurbetKalemleriPage() {
         </div>
       </div>
 
-      {/* 📊 İstatistikler ve Keşif Bölümü - FULL WIDTH */}
+      {/* 📊 İstatistikler ve Keşif Bölümü */}
       <div className="bg-gradient-to-b from-amber-50/30 to-transparent py-8 border-t border-amber-100 w-full">
-        <div className="mx-auto px-4 w-full">
+        <div className="max-w-5xl mx-auto px-4 py-8 relative z-10">
           {/* 3 KolonLayout: 6 kart + Random */}
           <div className="grid gap-4 md:grid-cols-3 mb-8 w-full">
             {/* Satır 1, Kolon 1: Yazarlar */}
@@ -418,7 +404,7 @@ export default function GurbetKalemleriPage() {
       </div>
 
       <div className="md:sticky top-16 z-30 border-y border-amber-100 bg-white/90 backdrop-blur w-full" data-filter-section="true">
-        <div className="mx-auto px-4 py-3 w-full">
+        <div className="max-w-5xl mx-auto px-4 py-3 w-full">
           {/* Mobil: Kompakt Filtre Butonu */}
           <div className="md:hidden">
             <button
@@ -629,7 +615,7 @@ export default function GurbetKalemleriPage() {
         </div>
       </div>
 
-      <div className="w-full mx-auto px-4 py-10">
+      <div className="max-w-7xl mx-auto px-4 py-10">
         <div className="grid gap-8 lg:grid-cols-[320px_1fr]">
           <aside className="rounded-3xl bg-white/80 shadow-lg border border-amber-100 hidden lg:block">
             <div className="p-6 border-b border-amber-100">
