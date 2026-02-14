@@ -22,7 +22,7 @@ interface AudioContextType {
   stopTrack: () => void
   seekTo: (time: number) => void
   
-  audioRef: React.RefObject<HTMLAudioElement>
+  audioRef: React.RefObject<HTMLAudioElement | null>
 }
 
 const AudioContext = createContext<AudioContextType | undefined>(undefined)
