@@ -122,7 +122,7 @@ export function RecentNarratedWorksDisplay() {
               href={`/gurbet-kalemleri/${work.id}`}
               className="block p-3 rounded-lg bg-gradient-to-r from-blue-50 to-transparent border border-blue-100/50 hover:border-blue-200 transition"
             >
-              <div className="flex items-start justify-between gap-3">
+              <div className="flex flex-col md:flex-row md:items-start md:justify-between gap-2 md:gap-3">
                 <div className="flex-1">
                   <div className="flex items-center gap-2 mb-1">
                     <Music className="w-4 h-4 text-blue-600" />
