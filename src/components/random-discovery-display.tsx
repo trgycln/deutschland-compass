@@ -98,12 +98,7 @@ export function RandomDiscoveryDisplay({ onDiscoverClick }: { onDiscoverClick?: 
                       {mockWork.title}
                     </h4>
                     <p style={serifStyle} className="text-sm text-stone-500 mt-1">
-                      <Link 
-                        href={`/gurbet-kalemleri?author=${encodeURIComponent(mockWork.author)}`}
-                        className="hover:text-amber-700 hover:underline"
-                      >
-                        {mockWork.author}
-                      </Link>
+                      {mockWork.author}
                     </p>
                   </div>
                   
@@ -113,7 +108,7 @@ export function RandomDiscoveryDisplay({ onDiscoverClick }: { onDiscoverClick?: 
                     </Badge>
                   </div>
 
-                  <p style={serifStyle} className="text-xs text-stone-600 line-clamp-3">
+                  <p style={serifStyle} className="text-sm text-stone-600 line-clamp-5">
                     {mockWork.content}
                   </p>
                 </div>
@@ -149,42 +144,39 @@ export function RandomDiscoveryDisplay({ onDiscoverClick }: { onDiscoverClick?: 
           </div>
 
           {randomWork && (
-            <div className="bg-white/80 rounded-lg border border-amber-100 p-4 text-left space-y-2">
-              <div>
-                <h4 style={accentStyle} className="text-lg text-stone-800 font-medium line-clamp-2">
-                  {randomWork.title}
-                </h4>
-                <p style={serifStyle} className="text-sm text-stone-500 mt-1">
-                  <Link 
-                    href={`/gurbet-kalemleri?author=${encodeURIComponent(randomWork.author)}`}
-                    className="hover:text-amber-700 hover:underline"
-                  >
+            <Link href={`/gurbet-kalemleri/${randomWork.id}`}>
+              <div className="bg-white/80 rounded-lg border border-amber-100 p-4 text-left space-y-2 hover:border-amber-300 hover:shadow-md transition cursor-pointer">
+                <div>
+                  <h4 style={accentStyle} className="text-lg text-stone-800 font-medium line-clamp-2 hover:text-amber-700">
+                    {randomWork.title}
+                  </h4>
+                  <p style={serifStyle} className="text-sm text-stone-500 mt-1">
                     {randomWork.author}
-                  </Link>
-                </p>
-              </div>
-              
-              <div className="flex flex-wrap gap-2">
-                <Badge variant="outline" className="border-amber-200 text-amber-900 text-xs">
-                  {randomWork.type}
-                </Badge>
-                {randomWork.audio_url && (
-                  <Badge className="bg-blue-100 text-blue-900 text-xs gap-1">
-                    <Music className="w-3 h-3" />
-                    Seslendirilmiş
+                  </p>
+                </div>
+                
+                <div className="flex flex-wrap gap-2">
+                  <Badge variant="outline" className="border-amber-200 text-amber-900 text-xs">
+                    {randomWork.type}
                   </Badge>
-                )}
-              </div>
+                  {randomWork.audio_url && (
+                    <Badge className="bg-blue-100 text-blue-900 text-xs gap-1">
+                      <Music className="w-3 h-3" />
+                      Seslendirilmiş
+                    </Badge>
+                  )}
+                </div>
 
-              <p style={serifStyle} className="text-xs text-stone-600 line-clamp-3">
-                {randomWork.content.substring(0, 150)}...
-              </p>
+                <p style={serifStyle} className="text-sm text-stone-600 line-clamp-5">
+                  {randomWork.content}
+                </p>
 
-              <div className="flex gap-2 text-xs text-stone-500">
-                {randomWork.likes > 0 && <span>❤️ {randomWork.likes}</span>}
-                {randomWork.views > 0 && <span>👁️ {randomWork.views}</span>}
+                <div className="flex gap-2 text-xs text-stone-500">
+                  {randomWork.likes > 0 && <span>❤️ {randomWork.likes}</span>}
+                  {randomWork.views > 0 && <span>👁️ {randomWork.views}</span>}
+                </div>
               </div>
-            </div>
+            </Link>
           )}
 
           <Button 

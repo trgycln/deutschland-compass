@@ -100,18 +100,24 @@ export default function AdminLiteraryWorksPage() {
         .map(tag => tag.trim())
         .filter(tag => tag.length > 0)
 
+      const payload = {
+        title: formData.title,
+        author: formData.author,
+        date: formData.date,
+        type: formData.type,
+        content: formData.content,
+        tags: tagsArray
+      }
+
+      console.log('[Admin] Saving work:', { id: editingWork.id, payloadKeys: Object.keys(payload) })
+
       const response = await fetch(`/api/literary-works/${editingWork.id}`, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          title: formData.title,
-          author: formData.author,
-          date: formData.date,
-          type: formData.type,
-          content: formData.content,
-          tags: tagsArray
-        })
+        body: JSON.stringify(payload)
       })
+
+      console.log('[Admin] Response status:', response.status)
 
       if (!response.ok) {
         const data = await response.json()
@@ -119,6 +125,7 @@ export default function AdminLiteraryWorksPage() {
       }
 
       const updatedData = await response.json()
+      console.log('[Admin] Update successful')
 
       // Listeyi güncelle
       setWorks(works.map(w =>
@@ -137,6 +144,7 @@ export default function AdminLiteraryWorksPage() {
 
       closeEditDialog()
     } catch (err) {
+      console.error('[Admin] Save error:', err)
       setEditError(err instanceof Error ? err.message : 'Hata oluştu')
     } finally {
       setIsSaving(false)

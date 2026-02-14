@@ -7,6 +7,9 @@ const supabaseServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY || ''
 // Service role key'i kullan (dosya yükleme için daha güvenli)
 const supabase = createClient(supabaseUrl, supabaseServiceKey)
 
+// Next.js 15+ App Router configuration
+export const maxDuration = 60; // 60 saniye timeout
+
 export async function POST(request: NextRequest) {
   try {
     const formData = await request.formData()
