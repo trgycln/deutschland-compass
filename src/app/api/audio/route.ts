@@ -66,12 +66,22 @@ export async function POST(request: NextRequest) {
     // Maksimum 50MB
     if (file.size > 50 * 1024 * 1024) {
       return NextResponse.json(
-        { error: 'File size must be less than 50MB' },
+        { error: 'Dosya 50MB\'dan küçük olmalı' },
         { status: 400 }
       )
     }
 
-    const buffer = await file.arrayBuffer()
+    // Dosyayı buffer'a çevir
+    let buffer: ArrayBuffer
+    try {
+      buffer = await file.arrayBuffer()
+    } catch (err) {
+      console.error('Error reading file:', err)
+      return NextResponse.json(
+        { error: 'Sesli dosyası okunurken hata oluştu' },
+        { status: 400 }
+      )
+    }
     const uploadFileName = `work_${workId}_${Date.now()}.mp3`
     const filePath = `audio/${uploadFileName}`
     
@@ -135,8 +145,9 @@ export async function POST(request: NextRequest) {
     )
   } catch (err) {
     console.error('Error:', err)
+    const errorMessage = err instanceof Error ? err.message : 'Failed to upload audio'
     return NextResponse.json(
-      { error: 'Failed to upload audio' },
+      { error: errorMessage },
       { status: 500 }
     )
   }

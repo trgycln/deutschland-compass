@@ -59,8 +59,17 @@ export function AudioUpload({ workId, onUploadSuccess }: AudioUploadProps) {
       })
 
       if (!response.ok) {
-        const data = await response.json()
-        throw new Error(data.error || 'Ses dosyası yüklenemedi')
+        let errorMessage = 'Ses dosyası yüklenemedi'
+        try {
+          const data = await response.json()
+          errorMessage = data.error || errorMessage
+        } catch (parseErr) {
+          // JSON parse başarısız olursa response text'ini al
+          const text = await response.text()
+          console.error('Response text:', text)
+          errorMessage = text?.substring(0, 100) || `HTTP ${response.status}: ${response.statusText}` || errorMessage
+        }
+        throw new Error(errorMessage)
       }
 
       const data = await response.json()

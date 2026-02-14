@@ -3,6 +3,7 @@
 import { useState, useRef, useEffect } from 'react'
 import { Play, Pause, Volume2, Loader2 } from 'lucide-react'
 import { LyricsDialog } from './lyrics-dialog'
+import { useAudio } from '@/context/AudioContext'
 
 interface AudioPlayerProps {
   audioUrl: string
@@ -13,71 +14,40 @@ interface AudioPlayerProps {
 }
 
 export function AudioPlayer({ audioUrl, title, workId, content, author }: AudioPlayerProps) {
-  const [isPlaying, setIsPlaying] = useState(false)
-  const [currentTime, setCurrentTime] = useState(0)
-  const [duration, setDuration] = useState(0)
-  const [volume, setVolume] = useState(1)
+  const { currentTrack, isPlaying, currentTime, duration, playTrack, pauseTrack, resumeTrack } = useAudio()
   const [isLoading, setIsLoading] = useState(false)
-  const audioRef = useRef<HTMLAudioElement>(null)
   const hasLoggedRef = useRef(false)
+  const localAudioRef = useRef<HTMLAudioElement>(null)
 
-  useEffect(() => {
-    console.log('AudioPlayer mounted with audioUrl:', audioUrl)
-  }, [audioUrl])
-
-  useEffect(() => {
-    const audio = audioRef.current
-    if (!audio) return
-
-    const handleGlobalPlay = (event: Event) => {
-      const customEvent = event as CustomEvent<HTMLAudioElement>
-      if (customEvent.detail !== audio) {
-        audio.pause()
+  // Global audio context ile kontrol et
+  const isThisTrackPlaying = currentTrack?.id === workId && isPlaying
+  
+  const handlePlayClick = () => {
+    if (isThisTrackPlaying) {
+      pauseTrack()
+    } else if (currentTrack?.id === workId) {
+      resumeTrack()
+    } else {
+      // Yeni track başlat
+      playTrack({
+        id: workId || 0,
+        title: title || 'Unknown',
+        author: author || 'Unknown',
+        audioUrl,
+        content: content || '',
+      })
+      
+      // Listen log et
+      if (workId && !hasLoggedRef.current) {
+        hasLoggedRef.current = true
+        fetch('/api/listens', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ workId }),
+        }).catch(() => undefined)
       }
     }
-
-    const updateTime = () => setCurrentTime(audio.currentTime)
-    const updateDuration = () => setDuration(audio.duration)
-    const handlePlay = () => {
-      setIsPlaying(true)
-      if (!workId || hasLoggedRef.current) return
-      hasLoggedRef.current = true
-
-      fetch('/api/listens', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ workId }),
-      }).catch(() => undefined)
-      window.dispatchEvent(new CustomEvent('global-audio-play', { detail: audio }))
-    }
-    const handlePause = () => setIsPlaying(false)
-    const handleEnded = () => setIsPlaying(false)
-    const handleLoadStart = () => setIsLoading(true)
-    const handleCanPlay = () => setIsLoading(false)
-
-    audio.addEventListener('timeupdate', updateTime)
-    audio.addEventListener('loadedmetadata', updateDuration)
-    audio.addEventListener('play', handlePlay)
-    audio.addEventListener('pause', handlePause)
-    audio.addEventListener('ended', handleEnded)
-    audio.addEventListener('loadstart', handleLoadStart)
-    audio.addEventListener('canplay', handleCanPlay)
-    window.addEventListener('global-audio-play', handleGlobalPlay)
-
-    return () => {
-      audio.removeEventListener('timeupdate', updateTime)
-      audio.removeEventListener('loadedmetadata', updateDuration)
-      audio.removeEventListener('play', handlePlay)
-      audio.removeEventListener('pause', handlePause)
-      audio.removeEventListener('ended', handleEnded)
-      audio.removeEventListener('loadstart', handleLoadStart)
-      audio.removeEventListener('canplay', handleCanPlay)
-      window.removeEventListener('global-audio-play', handleGlobalPlay)
-    }
-  }, [])
-
-  const togglePlay = () => {
-    if (audioRef.current) {
+  }
       if (isPlaying) {
         audioRef.current.pause()
       } else {
@@ -87,19 +57,12 @@ export function AudioPlayer({ audioUrl, title, workId, content, author }: AudioP
   }
 
   const handleProgressChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const newTime = parseFloat(e.target.value)
-    setCurrentTime(newTime)
-    if (audioRef.current) {
-      audioRef.current.currentTime = newTime
-    }
+    // Global audio işleminde progress'ı güncelle
+    // (Global audio player tarafından handle edilecek)
   }
 
   const handleVolumeChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const newVolume = parseFloat(e.target.value)
-    setVolume(newVolume)
-    if (audioRef.current) {
-      audioRef.current.volume = newVolume
-    }
+    // Volume işlemi global audio tarafından handle edilecek
   }
 
   const formatTime = (time: number) => {
@@ -111,15 +74,6 @@ export function AudioPlayer({ audioUrl, title, workId, content, author }: AudioP
 
   return (
     <div className="bg-gradient-to-r from-amber-50 to-amber-100 rounded-2xl p-6 border border-amber-200 shadow-sm">
-      <audio
-        ref={audioRef}
-        src={audioUrl}
-        onError={() => {
-          setIsPlaying(false)
-          setIsLoading(false)
-        }}
-      />
-
       <div className="flex items-center justify-between mb-4">
         {title && (
           <h3 className="text-sm font-semibold text-amber-900">
@@ -138,19 +92,19 @@ export function AudioPlayer({ audioUrl, title, workId, content, author }: AudioP
 
       <div className="flex items-center gap-4">
         <button
-          onClick={togglePlay}
+          onClick={handlePlayClick}
           disabled={isLoading}
           className={`flex-shrink-0 w-12 h-12 rounded-full flex items-center justify-center transition-all ${
             isLoading
               ? 'bg-gray-300 text-gray-500 cursor-not-allowed'
-              : isPlaying
+              : isThisTrackPlaying
                 ? 'bg-amber-600 text-white hover:bg-amber-700'
                 : 'bg-amber-600 text-white hover:bg-amber-700'
           }`}
         >
           {isLoading ? (
             <Loader2 size={20} className="animate-spin" />
-          ) : isPlaying ? (
+          ) : isThisTrackPlaying ? (
             <Pause size={20} />
           ) : (
             <Play size={20} className="ml-1" />
@@ -162,13 +116,14 @@ export function AudioPlayer({ audioUrl, title, workId, content, author }: AudioP
             type="range"
             min="0"
             max={duration || 0}
-            value={currentTime}
+            value={isThisTrackPlaying ? currentTime : 0}
             onChange={handleProgressChange}
             className="w-full h-2 bg-amber-300 rounded-lg appearance-none cursor-pointer accent-amber-700"
+            disabled={!isThisTrackPlaying}
           />
           <div className="flex justify-between mt-1 text-xs text-amber-900">
-            <span>{formatTime(currentTime)}</span>
-            <span>{formatTime(duration)}</span>
+            <span>{formatTime(isThisTrackPlaying ? currentTime : 0)}</span>
+            <span>{formatTime(isThisTrackPlaying ? duration : 0)}</span>
           </div>
         </div>
 
@@ -179,7 +134,7 @@ export function AudioPlayer({ audioUrl, title, workId, content, author }: AudioP
             min="0"
             max="1"
             step="0.1"
-            value={volume}
+            defaultValue="1"
             onChange={handleVolumeChange}
             className="w-20 h-2 bg-amber-300 rounded-lg appearance-none cursor-pointer accent-amber-700"
           />

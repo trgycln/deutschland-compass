@@ -2,6 +2,8 @@ import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import { AppShell } from "@/components/layout/app-shell";
+import { AudioProvider } from "@/context/AudioContext";
+import { GlobalAudioPlayer } from "@/components/global-audio-player";
 import { Analytics } from "@vercel/analytics/react";
 
 const geistSans = Geist({
@@ -49,10 +51,13 @@ export default function RootLayout({
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased min-h-screen flex flex-col`}
       >
-        <AppShell>
-          {children}
-        </AppShell>
-        <Analytics />
+        <AudioProvider>
+          <AppShell>
+            {children}
+          </AppShell>
+          <GlobalAudioPlayer />
+          <Analytics />
+        </AudioProvider>
       </body>
     </html>
   );
