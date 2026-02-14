@@ -91,8 +91,14 @@ export default function AdminAudioPage() {
       console.log('Upload response status:', response.status)
 
       if (!response.ok) {
-        const data = await response.json()
-        const errorMsg = data.error || 'Yükleme başarısız'
+        let errorMsg = 'Yükleme başarısız'
+        try {
+          const data = await response.json()
+          errorMsg = data.error || errorMsg
+        } catch (parseErr) {
+          const text = await response.text()
+          errorMsg = text?.substring(0, 120) || `HTTP ${response.status}: ${response.statusText}` || errorMsg
+        }
         console.log('Upload error:', errorMsg)
         throw new Error(errorMsg)
       }
@@ -126,8 +132,15 @@ export default function AdminAudioPage() {
       )
 
       if (!response.ok) {
-        const data = await response.json()
-        throw new Error(data.error || 'Silme başarısız')
+        let errorMsg = 'Silme başarısız'
+        try {
+          const data = await response.json()
+          errorMsg = data.error || errorMsg
+        } catch (parseErr) {
+          const text = await response.text()
+          errorMsg = text?.substring(0, 120) || `HTTP ${response.status}: ${response.statusText}` || errorMsg
+        }
+        throw new Error(errorMsg)
       }
 
       // Listeyi yenile
