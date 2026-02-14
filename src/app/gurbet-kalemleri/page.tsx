@@ -255,7 +255,7 @@ export default function GurbetKalemleriPage() {
   }
 
   return (
-    <div className="min-h-screen bg-[#f7f1e8] text-stone-900 w-full overflow-x-hidden">
+    <div className="min-h-screen bg-[#f7f1e8] text-stone-900 w-full">
       <div className="relative overflow-hidden w-full">
         <div className="absolute inset-0 bg-[radial-gradient(circle_at_top,#f6d7b8,transparent_55%),radial-gradient(circle_at_bottom,#f2c3c8,transparent_60%)] opacity-70"></div>
         <div className="absolute inset-0 bg-[linear-gradient(115deg,rgba(247,241,232,0.9),rgba(255,248,235,0.6))]"></div>
@@ -417,7 +417,7 @@ export default function GurbetKalemleriPage() {
         </div>
       </div>
 
-      <div className="md:sticky top-16 z-30 border-y border-amber-100 bg-white/90 backdrop-blur w-full overflow-x-hidden" data-filter-section="true">
+      <div className="md:sticky top-16 z-30 border-y border-amber-100 bg-white/90 backdrop-blur w-full" data-filter-section="true">
         <div className="mx-auto px-4 py-3 w-full">
           {/* Mobil: Kompakt Filtre Butonu */}
           <div className="md:hidden">
