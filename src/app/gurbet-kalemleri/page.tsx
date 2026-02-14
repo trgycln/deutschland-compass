@@ -255,12 +255,12 @@ export default function GurbetKalemleriPage() {
   }
 
   return (
-    <div className="min-h-screen bg-[#f7f1e8] text-stone-900">
-      <div className="relative overflow-hidden">
+    <div className="min-h-screen bg-[#f7f1e8] text-stone-900 w-full overflow-x-hidden">
+      <div className="relative overflow-hidden w-full">
         <div className="absolute inset-0 bg-[radial-gradient(circle_at_top,#f6d7b8,transparent_55%),radial-gradient(circle_at_bottom,#f2c3c8,transparent_60%)] opacity-70"></div>
         <div className="absolute inset-0 bg-[linear-gradient(115deg,rgba(247,241,232,0.9),rgba(255,248,235,0.6))]"></div>
-        <div className="container mx-auto px-4 py-16 relative z-10">
-          <div className="w-full max-w-none lg:max-w-4xl">
+        <div className="w-full mx-auto px-4 py-16 relative z-10">
+          <div className="w-full">
             <div className="inline-flex items-center gap-2 rounded-full bg-white/70 px-4 py-2 text-sm text-amber-900 shadow-sm border border-amber-100">
               <Sparkles className="w-4 h-4" />
               <span>Gurbetin sesi, kalemin susmayan izi</span>
@@ -277,7 +277,7 @@ export default function GurbetKalemleriPage() {
             </p>
 
             {/* Telegram Linkleri */}
-            <div className="mt-6 grid grid-cols-1 md:grid-cols-2 gap-4 w-full max-w-none lg:max-w-3xl">
+            <div className="mt-6 grid grid-cols-1 md:grid-cols-2 gap-4 w-full">
               <a
                 href="https://t.me/+JSmuDvozRY43OGMy"
                 target="_blank"
@@ -352,10 +352,10 @@ export default function GurbetKalemleriPage() {
       </div>
 
       {/* 📊 İstatistikler ve Keşif Bölümü - FULL WIDTH */}
-      <div className="bg-gradient-to-b from-amber-50/30 to-transparent py-8 border-t border-amber-100">
-        <div className="container mx-auto px-4">
+      <div className="bg-gradient-to-b from-amber-50/30 to-transparent py-8 border-t border-amber-100 w-full overflow-x-hidden">
+        <div className="mx-auto px-4 w-full">
           {/* 3 KolonLayout: 6 kart + Random */}
-          <div className="grid gap-4 md:grid-cols-3 mb-8">
+          <div className="grid gap-4 md:grid-cols-3 mb-8 w-full">
             {/* Satır 1, Kolon 1: Yazarlar */}
             <TopAuthorsDisplay onAuthorClick={(authorName) => {
               setSelectedAuthor(authorName);
@@ -379,7 +379,7 @@ export default function GurbetKalemleriPage() {
             <TopNarratedWorksDisplay />
           </div>
 
-          <div className="grid gap-4 md:grid-cols-3 mb-8">
+          <div className="grid gap-4 md:grid-cols-3 mb-8 w-full">
             {/* Satır 2, Kolon 1: Sesli Recent */}
             <RecentNarratedWorksDisplay />
             
@@ -391,7 +391,7 @@ export default function GurbetKalemleriPage() {
           </div>
 
           {/* Satır 3: Popüler Etiketler + Random */}
-          <div className="grid gap-4 md:grid-cols-3 mb-8">
+          <div className="grid gap-4 md:grid-cols-3 mb-8 w-full">
             <PopularTagsDisplay onTagClick={(tag) => {
               setSelectedTags([tag]);
               // Mobile'da filtreleri aç
@@ -417,8 +417,8 @@ export default function GurbetKalemleriPage() {
         </div>
       </div>
 
-      <div className="md:sticky top-16 z-30 border-y border-amber-100 bg-white/90 backdrop-blur" data-filter-section="true">
-        <div className="container mx-auto px-4 py-3">
+      <div className="md:sticky top-16 z-30 border-y border-amber-100 bg-white/90 backdrop-blur w-full overflow-x-hidden" data-filter-section="true">
+        <div className="mx-auto px-4 py-3 w-full">
           {/* Mobil: Kompakt Filtre Butonu */}
           <div className="md:hidden">
             <button
