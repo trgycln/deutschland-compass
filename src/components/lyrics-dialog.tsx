@@ -40,7 +40,7 @@ export function LyricsDialog({ title, author, content, triggerClassName }: Lyric
             <FileText className="w-5 h-5" />
             {title}
           </DialogTitle>
-          <DialogDescription className="text-base">
+          <DialogDescription className="text-base text-left">
             <span className="block">
               <span className="font-semibold">Söz:</span> {author || 'Bilinmiyor'}
             </span>
