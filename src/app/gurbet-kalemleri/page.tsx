@@ -350,7 +350,7 @@ export default function GurbetKalemleriPage() {
               </Link>
             </div>
 
-            <div className="mt-5 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 text-sm text-stone-600">
+            <div className="mt-5 text-sm text-stone-600">
               <div className="flex flex-wrap items-center gap-4">
                 <div className="flex items-center gap-2">
                   <Feather className="w-4 h-4" />
@@ -359,19 +359,6 @@ export default function GurbetKalemleriPage() {
                 <div className="flex items-center gap-2">
                   <User className="w-4 h-4" />
                   <span>{new Set(literaryWorks.map((work) => work.author)).size} yazar</span>
-                </div>
-                <div className="flex items-center gap-2">
-                  <input
-                    type="checkbox"
-                    id="narrated-filter-header"
-                    checked={showOnlyNarrated}
-                    onChange={(e) => setShowOnlyNarrated(e.target.checked)}
-                    className="w-4 h-4 cursor-pointer"
-                  />
-                  <label htmlFor="narrated-filter-header" className="flex items-center gap-1 cursor-pointer text-stone-700">
-                    <Music className="w-4 h-4 text-amber-600" />
-                    <span>Seslendirilmiş</span>
-                  </label>
                 </div>
               </div>
             </div>
@@ -431,15 +418,7 @@ export default function GurbetKalemleriPage() {
             <div className="md:col-span-1">
               <RandomDiscoveryDisplay 
                 triggerId={featuredId || undefined}
-                onDiscoverClick={(workId) => {
-                setFeaturedId(workId);
-                setTimeout(() => {
-                  const section = document.querySelector('section.rounded-\\[32px\\]');
-                  if (section && window.innerWidth < 1024) {
-                    section.scrollIntoView({ behavior: 'smooth', block: 'start' });
-                  }
-                }, 50);
-              }} />
+              />
             </div>
 
             <div className="hidden md:block" />
@@ -540,6 +519,21 @@ export default function GurbetKalemleriPage() {
                   </div>
                 </div>
                 
+                {/* Seslendirilmiş Filtresi */}
+                <div className="flex items-center gap-2 px-3 py-2 bg-white/80 rounded-lg border border-amber-100">
+                  <input
+                    type="checkbox"
+                    id="narrated-filter-mobile"
+                    checked={showOnlyNarrated}
+                    onChange={(e) => setShowOnlyNarrated(e.target.checked)}
+                    className="w-4 h-4 cursor-pointer"
+                  />
+                  <label htmlFor="narrated-filter-mobile" className="flex items-center gap-1 cursor-pointer text-stone-700 text-sm">
+                    <Music className="w-4 h-4 text-amber-600" />
+                    <span>Sadece Seslendirilmiş Eserler</span>
+                  </label>
+                </div>
+                
                 {/* Popüler Etiketler - Horizontal Scroll */}
                 <div className="overflow-x-auto -mx-4 px-4">
                   <div className="flex gap-2 pb-2">
@@ -626,6 +620,22 @@ export default function GurbetKalemleriPage() {
                 </SelectContent>
               </Select>
             </div>
+            
+            {/* Seslendirilmiş Filtresi */}
+            <div className="flex items-center gap-2 px-3 py-2 bg-white/80 rounded-lg border border-amber-100 w-fit">
+              <input
+                type="checkbox"
+                id="narrated-filter-desktop"
+                checked={showOnlyNarrated}
+                onChange={(e) => setShowOnlyNarrated(e.target.checked)}
+                className="w-4 h-4 cursor-pointer"
+              />
+              <label htmlFor="narrated-filter-desktop" className="flex items-center gap-1 cursor-pointer text-stone-700 text-sm">
+                <Music className="w-4 h-4 text-amber-600" />
+                <span>Sadece Seslendirilmiş Eserler</span>
+              </label>
+            </div>
+            
             <div className="mt-4">
               <div className="text-sm text-stone-500" style={serifStyle}>
                 Etiketlere dokun, duyguya gore kesfet.

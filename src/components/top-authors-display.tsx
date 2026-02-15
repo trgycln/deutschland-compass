@@ -33,7 +33,7 @@ export function TopAuthorsDisplay({ onAuthorClick }: TopAuthorsDisplayProps) {
   useEffect(() => {
     async function fetchTopAuthors() {
       try {
-        const response = await fetch('/api/authors/top?limit=8');
+        const response = await fetch('/api/authors/top?limit=10');
         const data = await response.json();
         
         if (!response.ok) {

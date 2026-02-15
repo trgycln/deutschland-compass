@@ -44,7 +44,7 @@ export function TopNarratedWorksDisplay() {
         
         const narrated = (data.works || [])
           .filter((w: any) => w.audio_url)
-          .slice(0, 10);
+          .slice(0, 7);
         
         if (narrated.length > 0) {
           setWorks(narrated);

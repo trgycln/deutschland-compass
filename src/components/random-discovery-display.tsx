@@ -73,12 +73,15 @@ export function RandomDiscoveryDisplay({ onDiscoverClick, triggerId }: { onDisco
     }
   }, [triggerId, allWorks]);
 
-  const handleDiscover = () => {
+  const handleDiscover = (e?: React.MouseEvent) => {
+    // Butona tıklanınca kartın onClick'ini tetikleme
+    e?.stopPropagation();
+    
     if (allWorks.length > 0) {
       const random = getRandomWork(allWorks);
       if (random) {
         setRandomWork(random);
-        onDiscoverClick?.(random.id);
+        // onDiscoverClick'i çağırma, sadece random değiştir
       }
     }
   };
@@ -111,30 +114,32 @@ export function RandomDiscoveryDisplay({ onDiscoverClick, triggerId }: { onDisco
               </div>
 
               {mockWork && (
-                <div className="bg-white/80 rounded-lg border border-amber-100 p-4 text-left space-y-2">
-                  <div>
-                    <h4 style={accentStyle} className="text-lg text-stone-800 font-medium line-clamp-2">
-                      {mockWork.title}
-                    </h4>
-                    <p style={serifStyle} className="text-sm text-stone-500 mt-1">
-                      {mockWork.author}
+                <Link href={`/gurbet-kalemleri/${mockWork.id}`}>
+                  <div className="bg-white/80 rounded-lg border border-amber-100 p-4 text-left space-y-2 hover:border-amber-300 hover:shadow-md transition cursor-pointer">
+                    <div>
+                      <h4 style={accentStyle} className="text-lg text-stone-800 font-medium line-clamp-2 hover:text-amber-700">
+                        {mockWork.title}
+                      </h4>
+                      <p style={serifStyle} className="text-sm text-stone-500 mt-1">
+                        {mockWork.author}
+                      </p>
+                    </div>
+                    
+                    <div className="flex flex-wrap gap-2">
+                      <Badge variant="outline" className="border-amber-200 text-amber-900 text-xs">
+                        {mockWork.type}
+                      </Badge>
+                    </div>
+
+                    <p style={serifStyle} className="text-sm text-stone-600 line-clamp-5">
+                      {mockWork.content}
                     </p>
                   </div>
-                  
-                  <div className="flex flex-wrap gap-2">
-                    <Badge variant="outline" className="border-amber-200 text-amber-900 text-xs">
-                      {mockWork.type}
-                    </Badge>
-                  </div>
-
-                  <p style={serifStyle} className="text-sm text-stone-600 line-clamp-5">
-                    {mockWork.content}
-                  </p>
-                </div>
+                </Link>
               )}
 
               <Button 
-                onClick={handleDiscover}
+                onClick={(e) => handleDiscover(e)}
                 className="w-full bg-amber-700 hover:bg-amber-800 text-white gap-2"
               >
                 <Dices className="w-4 h-4" />
@@ -163,44 +168,43 @@ export function RandomDiscoveryDisplay({ onDiscoverClick, triggerId }: { onDisco
           </div>
 
           {randomWork && (
-            <div 
-              onClick={() => onDiscoverClick?.(randomWork.id)}
-              className="bg-white/80 rounded-lg border border-amber-100 p-4 text-left space-y-2 hover:border-amber-300 hover:shadow-md transition cursor-pointer"
-            >
-              <div>
-                <h4 style={accentStyle} className="text-lg text-stone-800 font-medium line-clamp-2 hover:text-amber-700">
-                  {randomWork.title}
-                </h4>
-                <p style={serifStyle} className="text-sm text-stone-500 mt-1">
-                  {randomWork.author}
-                </p>
-              </div>
-              
-              <div className="flex flex-wrap gap-2">
-                <Badge variant="outline" className="border-amber-200 text-amber-900 text-xs">
-                  {randomWork.type}
-                </Badge>
-                {randomWork.audio_url && (
-                  <Badge className="bg-blue-100 text-blue-900 text-xs gap-1">
-                    <Music className="w-3 h-3" />
-                    Seslendirilmiş
+            <Link href={`/gurbet-kalemleri/${randomWork.id}`}>
+              <div className="bg-white/80 rounded-lg border border-amber-100 p-4 text-left space-y-2 hover:border-amber-300 hover:shadow-md transition cursor-pointer">
+                <div>
+                  <h4 style={accentStyle} className="text-lg text-stone-800 font-medium line-clamp-2 hover:text-amber-700">
+                    {randomWork.title}
+                  </h4>
+                  <p style={serifStyle} className="text-sm text-stone-500 mt-1">
+                    {randomWork.author}
+                  </p>
+                </div>
+                
+                <div className="flex flex-wrap gap-2">
+                  <Badge variant="outline" className="border-amber-200 text-amber-900 text-xs">
+                    {randomWork.type}
                   </Badge>
-                )}
-              </div>
+                  {randomWork.audio_url && (
+                    <Badge className="bg-blue-100 text-blue-900 text-xs gap-1">
+                      <Music className="w-3 h-3" />
+                      Seslendirilmiş
+                    </Badge>
+                  )}
+                </div>
 
-              <p style={serifStyle} className="text-sm text-stone-600 line-clamp-5">
-                {randomWork.content}
-              </p>
+                <p style={serifStyle} className="text-sm text-stone-600 line-clamp-5">
+                  {randomWork.content}
+                </p>
 
-              <div className="flex gap-2 text-xs text-stone-500">
-                {randomWork.likes > 0 && <span>❤️ {randomWork.likes}</span>}
-                {randomWork.views > 0 && <span>👁️ {randomWork.views}</span>}
+                <div className="flex gap-2 text-xs text-stone-500">
+                  {randomWork.likes > 0 && <span>❤️ {randomWork.likes}</span>}
+                  {randomWork.views > 0 && <span>👁️ {randomWork.views}</span>}
+                </div>
               </div>
-            </div>
+            </Link>
           )}
 
           <Button 
-            onClick={handleDiscover}
+            onClick={(e) => handleDiscover(e)}
             className="w-full bg-amber-700 hover:bg-amber-800 text-white gap-2"
           >
             <Dices className="w-4 h-4" />
