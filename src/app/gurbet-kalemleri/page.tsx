@@ -26,6 +26,8 @@ import {
   Music,
   Filter,
   X,
+  PenTool,
+  Send,
 } from "lucide-react";
 import { LikeButton } from "@/components/like-button";
 import { CommentForm } from "@/components/comment-form";
@@ -319,6 +321,35 @@ export default function GurbetKalemleriPage() {
               </a>
             </div>
 
+            {/* 📝 Eser Paylaşım CTA Banner */}
+            <div className="mt-6 mb-2">
+              <Link href="/gurbet-kalemleri/gonder">
+                <div className="group relative overflow-hidden rounded-2xl bg-gradient-to-br from-emerald-500 via-teal-500 to-cyan-500 p-6 md:p-8 shadow-2xl hover:shadow-3xl transition-all duration-300 hover:scale-[1.02] cursor-pointer">
+                  <div className="absolute inset-0 bg-gradient-to-br from-white/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+                  <div className="absolute top-0 right-0 w-64 h-64 bg-white/10 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2" />
+                  <div className="relative flex flex-col md:flex-row items-center justify-between gap-4">
+                    <div className="flex items-start gap-4 flex-1">
+                      <div className="p-4 bg-white/20 backdrop-blur-sm rounded-2xl group-hover:scale-110 transition-transform duration-300">
+                        <PenTool className="w-8 h-8 text-white" />
+                      </div>
+                      <div className="flex-1 text-center md:text-left">
+                        <h3 className="text-white font-bold text-2xl md:text-3xl mb-2" style={accentStyle}>
+                          Kalemin Sesin Olsun
+                        </h3>
+                        <p className="text-white/90 text-sm md:text-base" style={serifStyle}>
+                          Şiirini, öykünü ya da denemeni paylaş. Gurbetin sesine ses ol, kalplere dokunacak cümlelerini bizimle buluştur.
+                        </p>
+                      </div>
+                    </div>
+                    <div className="flex items-center gap-3 px-6 py-3 bg-white/20 backdrop-blur-sm rounded-full border-2 border-white/30 group-hover:bg-white/30 transition-all duration-300">
+                      <span className="text-white font-semibold text-lg">Eserini Paylaş</span>
+                      <Send className="w-5 h-5 text-white group-hover:translate-x-1 transition-transform duration-300" />
+                    </div>
+                  </div>
+                </div>
+              </Link>
+            </div>
+
             <div className="mt-5 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 text-sm text-stone-600">
               <div className="flex flex-wrap items-center gap-4">
                 <div className="flex items-center gap-2">
@@ -343,11 +374,6 @@ export default function GurbetKalemleriPage() {
                   </label>
                 </div>
               </div>
-              <Link href="/gurbet-kalemleri/gonder">
-                <Button className="bg-amber-800 text-amber-50 hover:bg-amber-900 text-sm">
-                  Eserini Paylaş
-                </Button>
-              </Link>
             </div>
           </div>
         </div>
@@ -804,6 +830,25 @@ export default function GurbetKalemleriPage() {
           </section>
         </div>
       </div>
+
+      {/* 🎯 Sticky Floating Action Button */}
+      <Link href="/gurbet-kalemleri/gonder">
+        <div className="fixed bottom-8 right-8 z-50 group">
+          <div className="relative">
+            {/* Pulse animation ring */}
+            <div className="absolute inset-0 bg-gradient-to-r from-emerald-500 to-teal-500 rounded-full animate-ping opacity-75"></div>
+            {/* Main button */}
+            <button className="relative flex items-center gap-3 px-6 py-4 bg-gradient-to-r from-emerald-600 to-teal-600 text-white rounded-full shadow-2xl hover:shadow-3xl hover:scale-110 transition-all duration-300 group-hover:from-emerald-700 group-hover:to-teal-700">
+              <PenTool className="w-6 h-6" />
+              <span className="hidden md:inline font-semibold text-lg">Eser Paylaş</span>
+            </button>
+            {/* Tooltip for mobile */}
+            <div className="md:hidden absolute bottom-full right-0 mb-2 px-3 py-2 bg-slate-900 text-white text-sm rounded-lg opacity-0 group-hover:opacity-100 transition-opacity duration-200 whitespace-nowrap pointer-events-none">
+              Eserini Paylaş
+            </div>
+          </div>
+        </div>
+      </Link>
     </div>
   );
 }
