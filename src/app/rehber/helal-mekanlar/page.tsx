@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useMemo, useEffect } from "react";
+import { useState, useMemo, useEffect, useSyncExternalStore } from "react";
 import { supabase } from "@/lib/supabase";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
@@ -12,11 +12,18 @@ import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, Di
 import { 
   MapPin, Utensils, AlertTriangle, Info, Car, CheckCircle2, 
   Euro, Star, ShieldAlert, Search, Phone, ExternalLink, 
-  ChefHat, X, Filter, Loader2
+  ChefHat, X, Filter, Loader2, Map
 } from "lucide-react";
 import { PlaceFeedback } from "@/components/place-feedback";
 import { AddPlaceDialog } from "@/components/add-place-dialog";
 import { travelTips, generalAdvice } from "@/data/food-guide";
+import { PlacesMap } from "@/components/places-map";
+import { FeaturedPlacesCarousel } from "@/components/featured-places-carousel";
+import { QuickFilters } from "@/components/quick-filters";
+import { ActivityFeed } from "@/components/activity-feed";
+import { PlaceReactions } from "@/components/place-reactions";
+import { FavoritePlaceButton } from "@/components/favorite-place-button";
+import { PlaceCheckin } from "@/components/place-checkin";
 
 // Veritabanı Tip Tanımı
 type DBPlace = {
@@ -32,6 +39,11 @@ type DBPlace = {
   price?: string;
   highlight?: boolean;
   warning?: boolean;
+  category?: string;
+  latitude?: number;
+  longitude?: number;
+  avg_rating?: number;
+  total_checkins?: number;
 };
 
 type GroupedData = {
@@ -43,12 +55,21 @@ type GroupedData = {
 };
 
 export default function HalalPlacesPage() {
+  const isHydrated = useSyncExternalStore(
+    () => () => {},
+    () => true,
+    () => false
+  );
+
   // State
   const [rawData, setRawData] = useState<DBPlace[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedCity, setSelectedCity] = useState<string>("all");
   const [activeTab, setActiveTab] = useState("Almanya");
+  const [viewMode, setViewMode] = useState<"list" | "map">("list");
+  const [selectedFilters, setSelectedFilters] = useState({});
+  const [selectedPlace, setSelectedPlace] = useState<DBPlace | null>(null);
 
   // 1. Verileri Supabase'den Çek
   const fetchPlaces = async () => {
@@ -92,7 +113,7 @@ export default function HalalPlacesPage() {
     return currentGroup ? currentGroup.cities.map(c => c.city).sort() : [];
   }, [groupedData, activeTab]);
 
-  // 4. Filtreleme Mantığı
+  // 4. Filtreleme Mantığı (Hızlı filtrelerle birlikte)
   const filteredDisplayData = useMemo(() => {
     const currentGroup = groupedData.find(g => g.country === activeTab);
     if (!currentGroup) return [];
@@ -115,12 +136,38 @@ export default function HalalPlacesPage() {
       }).filter(cityGroup => cityGroup.places.length > 0);
     }
 
+    // Hızlı filtreler uygulanır
+    if (selectedFilters && (selectedFilters as any).categories?.length > 0) {
+      cities = cities.map(cityGroup => {
+        const filteredPlaces = cityGroup.places.filter(place =>
+          (selectedFilters as any).categories.includes(place.category)
+        );
+        return { ...cityGroup, places: filteredPlaces };
+      }).filter(cityGroup => cityGroup.places.length > 0);
+    }
+
+    // Fiyat filtresi
+    if (selectedFilters && (selectedFilters as any).priceRanges?.length > 0) {
+      // Fiyat bazlı filtreleme (daha çok veri bulunduğunda)
+    }
+
+    // Rating filtresi
+    if (selectedFilters && (selectedFilters as any).rating) {
+      cities = cities.map(cityGroup => {
+        const filteredPlaces = cityGroup.places.filter(place =>
+          (place.avg_rating || 0) >= (selectedFilters as any).rating
+        );
+        return { ...cityGroup, places: filteredPlaces };
+      }).filter(cityGroup => cityGroup.places.length > 0);
+    }
+
     return cities;
-  }, [groupedData, activeTab, selectedCity, searchQuery]);
+  }, [groupedData, activeTab, selectedCity, searchQuery, selectedFilters]);
 
   const resetFilters = () => {
     setSearchQuery("");
     setSelectedCity("all");
+    setSelectedFilters({});
   };
 
   const handleTabChange = (value: string) => {
@@ -128,8 +175,35 @@ export default function HalalPlacesPage() {
     resetFilters();
   };
 
+  // Öne çıkan mekanları ve hepsi içinden al
+  const allPlaces = useMemo(() => {
+    return rawData.filter(p => p.highlight || p.avg_rating || p.total_checkins);
+  }, [rawData]);
+
+  const featuredPlaces = useMemo(() => {
+    return allPlaces.slice(0, 6).sort((a, b) => {
+      const scoreA = (a.avg_rating || 0) + (a.total_checkins || 0) / 10;
+      const scoreB = (b.avg_rating || 0) + (b.total_checkins || 0) / 10;
+      return scoreB - scoreA;
+    });
+  }, [allPlaces]);
+
+  // Harita için filtreli mekanları al
+  const mapPlaces = useMemo(() => {
+    return filteredDisplayData.flatMap(cityGroup => cityGroup.places);
+  }, [filteredDisplayData]);
+
+  // Toplam sonuç sayısı
+  const totalResults = useMemo(() => {
+    return filteredDisplayData.reduce((acc, c) => acc + c.places.length, 0);
+  }, [filteredDisplayData]);
+
+  if (!isHydrated) {
+    return <div suppressHydrationWarning className="flex flex-col min-h-screen bg-background pb-20" />;
+  }
+
   return (
-    <div className="flex flex-col min-h-screen bg-background pb-20">
+    <div suppressHydrationWarning className="flex flex-col min-h-screen bg-background pb-20">
       
       {/* HERO SECTION */}
       <section className="bg-primary text-primary-foreground pt-10 pb-16 md:pt-16 md:pb-20 relative overflow-hidden rounded-b-[2rem] md:rounded-b-[3rem] shadow-xl">
@@ -235,21 +309,72 @@ export default function HalalPlacesPage() {
       </section>
 
       {/* CONTENT */}
-      <div className="container mx-auto px-4 -mt-8 md:-mt-10 relative z-20">
+      <div className="container mx-auto px-4 mt-6 md:mt-8 relative z-20">
+        
+        {/* ÖNE ÇIKAN MEKANLAR CAROUSEL */}
+        {featuredPlaces.length > 0 && (
+          <section className="mb-8 bg-gradient-to-br from-primary/5 to-accent/5 rounded-xl p-4 md:p-6 border border-accent/20">
+            <h2 className="text-2xl md:text-3xl font-bold mb-6 flex items-center gap-3">
+              <Star className="w-6 h-6 md:w-8 md:h-8 text-amber-500 fill-amber-500" />
+              Öne Çıkan Mekanlar
+            </h2>
+            <FeaturedPlacesCarousel 
+              places={featuredPlaces}
+              onPlaceClick={setSelectedPlace}
+            />
+          </section>
+        )}
+
+        {/* HARITA / LİSTE TOGGLE */}
+        <div className="flex justify-end mb-4 gap-2">
+          <Button
+            variant={viewMode === "list" ? "default" : "outline"}
+            size="sm"
+            onClick={() => setViewMode("list")}
+            className="gap-2"
+          >
+            <Utensils className="w-4 h-4" />
+            Listeyi Göster
+          </Button>
+          <Button
+            variant={viewMode === "map" ? "default" : "outline"}
+            size="sm"
+            onClick={() => setViewMode("map")}
+            className="gap-2"
+          >
+            <Map className="w-4 h-4" />
+            Haritayı Göster
+          </Button>
+        </div>
+
+        {/* HARITA GÖRÜNÜMÜ */}
+        {viewMode === "map" && mapPlaces.length > 0 && (
+          <div className="w-full h-[500px] rounded-xl overflow-hidden mb-8 shadow-lg border border-border">
+            <PlacesMap 
+              places={mapPlaces}
+              onPlaceSelect={setSelectedPlace}
+            />
+          </div>
+        )}
         
         {/* FİLTRE KARTI */}
-        <div className="bg-card border border-border rounded-xl p-4 md:p-6 shadow-lg mb-8">
+        <div className="bg-card border border-border rounded-xl p-4 md:p-6 shadow-lg mb-8 space-y-6">
           
-          {/* SEKMELER (DÜZELTİLDİ: Flex-wrap ve auto width ile) */}
-          <div className="mb-6">
+          {/* Hızlı Filtreler */}
+          <QuickFilters 
+            onFilterChange={setSelectedFilters}
+            totalResults={totalResults}
+          />
+
+          {/* SEKMELER */}
+          <div className="border-t border-border/50 pt-6">
+            <h3 className="font-semibold text-sm mb-3">Ülke / Bölge</h3>
             <Tabs value={activeTab} onValueChange={handleTabChange} className="w-full">
-              {/* h-auto ve flex-wrap ekledik, flex-1'i kaldırdık */}
-              <TabsList className="bg-secondary/50 w-full h-auto p-2 flex flex-wrap justify-center gap-2 rounded-xl">
+              <TabsList className="bg-secondary/50 w-full h-auto p-2 flex flex-wrap justify-start gap-2 rounded-xl">
                 {groupedData.map((group, idx) => (
                   <TabsTrigger 
                     key={idx} 
                     value={group.country}
-                    // flex-1 ve min-w-100px KALDIRILDI. Yerine px-4 ve w-auto geldi.
                     className="w-auto px-4 py-2 text-sm md:text-base font-medium rounded-lg transition-all data-[state=active]:bg-background data-[state=active]:text-primary data-[state=active]:shadow-sm"
                   >
                     {group.country}
@@ -260,20 +385,21 @@ export default function HalalPlacesPage() {
             </Tabs>
           </div>
 
-          {/* Filtreler */}
-          <div className="grid grid-cols-1 md:grid-cols-12 gap-4 items-center">
-            <div className="md:col-span-5 relative">
-              <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-              <Input 
-                placeholder="Mekan, yemek adı ara..." 
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                className="pl-10 h-12 bg-background"
-              />
-            </div>
-            <div className="md:col-span-4">
+          {/* Metin ve Şehir Filtreleri */}
+          <div className="border-t border-border/50 pt-6">
+            <h3 className="font-semibold text-sm mb-3">Detaylı Ara</h3>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div className="relative">
+                <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                <Input 
+                  placeholder="Mekan, yemek adı ara..." 
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  className="pl-10 h-10 bg-background"
+                />
+              </div>
               <Select value={selectedCity} onValueChange={setSelectedCity} disabled={availableCities.length === 0}>
-                <SelectTrigger className="h-12 bg-background">
+                <SelectTrigger className="h-10 bg-background">
                   <SelectValue placeholder="Şehir Seçin" />
                 </SelectTrigger>
                 <SelectContent>
@@ -284,19 +410,19 @@ export default function HalalPlacesPage() {
                 </SelectContent>
               </Select>
             </div>
-            <div className="md:col-span-3 flex md:justify-end">
-              {(searchQuery || selectedCity !== "all") ? (
-                <Button variant="destructive" onClick={resetFilters} className="w-full md:w-auto h-12 gap-2 bg-red-100 text-red-700 hover:bg-red-200">
-                  <X className="w-4 h-4" /> Filtreyi Temizle
-                </Button>
-              ) : (
-                <div className="hidden md:flex items-center gap-2 text-sm text-muted-foreground ml-auto bg-secondary/30 px-3 py-1 rounded-full">
-                  <Filter className="w-3 h-3" />
-                  <span>{filteredDisplayData.reduce((acc, c) => acc + c.places.length, 0)} Mekan</span>
-                </div>
-              )}
-            </div>
           </div>
+
+          {(searchQuery || selectedCity !== "all" || Object.keys(selectedFilters).length > 0) && (
+            <div className="flex items-center justify-between pt-4 border-t border-border/50">
+              <div className="text-sm text-muted-foreground">
+                <span className="font-semibold text-primary">{totalResults}</span> mekan bulundu
+              </div>
+              <Button variant="ghost" size="sm" onClick={resetFilters} className="text-xs text-red-600 hover:bg-red-50">
+                <X className="w-3.5 h-3.5 mr-1" />
+                Tüm Filtreleri Temizle
+              </Button>
+            </div>
+          )}
         </div>
 
         {/* MEKAN LİSTESİ */}
@@ -374,7 +500,7 @@ export default function HalalPlacesPage() {
                         </div>
                       )}
 
-                      <div className="flex items-center gap-2 mt-auto">
+                      <div className="flex items-center gap-2 mt-auto mb-3">
                         {place.phone && (
                           <Button variant="outline" size="sm" className="h-8 text-xs flex-1 bg-transparent border-dashed" asChild>
                             <a href={`tel:${place.phone}`}>
@@ -391,6 +517,29 @@ export default function HalalPlacesPage() {
                         )}
                       </div>
 
+                      {/* FAVORİ BUTONU */}
+                      <div className="mb-3">
+                        <FavoritePlaceButton 
+                          placeSlug={`${cityGroup.city.toLowerCase()}-${place.name.toLowerCase().replace(/\s+/g, '-')}`}
+                          placeName={place.name}
+                          size="sm"
+                          showText={true}
+                        />
+                      </div>
+
+                      {/* EMOJİ REAKSİYONLAR */}
+                      <PlaceReactions 
+                        placeSlug={`${cityGroup.city.toLowerCase()}-${place.name.toLowerCase().replace(/\s+/g, '-')}`}
+                        placeName={place.name}
+                      />
+
+                      {/* CHECK-IN SISTEMI */}
+                      <PlaceCheckin 
+                        placeSlug={`${cityGroup.city.toLowerCase()}-${place.name.toLowerCase().replace(/\s+/g, '-')}`}
+                        placeName={place.name}
+                        cityName={cityGroup.city}
+                      />
+
                       {/* BEĞENİ VE YORUM ALANI */}
                       <PlaceFeedback placeName={place.name} cityName={cityGroup.city} />
 
@@ -401,6 +550,11 @@ export default function HalalPlacesPage() {
             </div>
           </div>
         )}
+
+        {/* CANLI AKTİVİTE FEED */}
+        <section className="mt-20 mb-20 bg-gradient-to-br from-secondary/30 to-background rounded-2xl p-5 md:p-8 border border-border shadow-sm">
+          <ActivityFeed />
+        </section>
 
         {/* TRAVEL TIPS */}
         <section className="mt-20 bg-gradient-to-br from-secondary/30 to-background rounded-2xl p-5 md:p-8 border border-border shadow-sm">
@@ -429,6 +583,11 @@ export default function HalalPlacesPage() {
           </div>
         </section>
 
+      </div>
+
+      {/* 🎯 Sticky Floating Action Button */}
+      <div className="fixed bottom-8 right-8 z-50 group">
+        <AddPlaceDialog onPlaceAdded={fetchPlaces} floatingButton={true} />
       </div>
     </div>
   );

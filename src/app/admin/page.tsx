@@ -12,6 +12,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Loader2, CheckCircle, XCircle, Trash2, Mail, ExternalLink, Pencil, UploadCloud, Download, FileText, MessageCircle, PlusCircle } from 'lucide-react';
 import { professionsList } from '@/data/professions-list';
+import { SiteStatsSummary } from '@/components/site-stats-summary';
 
 // Types
 type Experience = {
@@ -965,7 +966,8 @@ export default function AdminPage() {
           <TabsTrigger value="settings">Meslek Ayarları</TabsTrigger>
         </TabsList>
 
-        <TabsContent value="dashboard">
+        <TabsContent value="dashboard" className="space-y-6">
+          <SiteStatsSummary compact />
           <div className="grid gap-6 md:grid-cols-2">
             {/* Pending Experiences & Contributions */}
             <Card className="md:col-span-2 lg:col-span-1">

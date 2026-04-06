@@ -21,7 +21,7 @@ import { toast } from "sonner";
 
 const COUNTRIES = ["Almanya", "Hollanda", "Belçika", "Fransa", "Avusturya", "İsviçre", "İtalya", "Diğer"];
 
-export function AddPlaceDialog({ onPlaceAdded }: { onPlaceAdded: () => void }) {
+export function AddPlaceDialog({ onPlaceAdded, floatingButton }: { onPlaceAdded: () => void; floatingButton?: boolean }) {
   const [open, setOpen] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   
@@ -77,16 +77,34 @@ export function AddPlaceDialog({ onPlaceAdded }: { onPlaceAdded: () => void }) {
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
-      <DialogTrigger asChild>
-        <Button className="bg-accent hover:bg-accent/90 text-white font-semibold gap-2 shadow-lg hover:scale-105 transition-all">
-          <PlusCircle className="w-5 h-5" />
-          Yeni Mekan Ekle
-        </Button>
-      </DialogTrigger>
-      <DialogContent className="sm:max-w-[500px] bg-card">
+      {floatingButton ? (
+        <div className="relative">
+          {/* Pulse animation ring */}
+          <div className="absolute inset-0 bg-gradient-to-r from-amber-400 to-orange-500 rounded-full animate-pulse opacity-70"></div>
+          {/* Main button */}
+          <DialogTrigger asChild>
+            <button className="relative flex items-center gap-3 px-6 py-4 bg-gradient-to-r from-amber-500 to-orange-500 text-white rounded-full shadow-2xl hover:shadow-3xl hover:scale-110 transition-all duration-300 hover:from-amber-600 hover:to-orange-600 font-bold cursor-pointer">
+              <PlusCircle className="w-6 h-6" />
+              <span className="hidden md:inline font-semibold text-lg">Mekan Ekle</span>
+            </button>
+          </DialogTrigger>
+          {/* Tooltip for mobile */}
+          <div className="md:hidden absolute bottom-full right-0 mb-2 px-3 py-2 bg-slate-900 text-white text-sm rounded-lg opacity-0 hover:opacity-100 transition-opacity duration-200 whitespace-nowrap pointer-events-none">
+            Mekan Ekle
+          </div>
+        </div>
+      ) : (
+        <DialogTrigger asChild>
+          <Button className="bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-600 hover:to-orange-600 text-white font-bold gap-2 shadow-xl hover:shadow-2xl hover:scale-110 transition-all duration-300 px-6 py-6 text-base">
+            <PlusCircle className="w-6 h-6" />
+            Mekan Ekle
+          </Button>
+        </DialogTrigger>
+      )}
+      <DialogContent className="sm:max-w-[500px] bg-card border-2 border-amber-300/50">
         <DialogHeader>
-          <DialogTitle className="flex items-center gap-2 text-foreground">
-            <MapPin className="w-5 h-5 text-accent" />
+          <DialogTitle className="flex items-center gap-2 text-foreground text-xl font-bold bg-gradient-to-r from-amber-500 to-orange-500 bg-clip-text text-transparent">
+            <MapPin className="w-6 h-6 text-amber-500" />
             Topluluğa Katkıda Bulun
           </DialogTitle>
           <DialogDescription>

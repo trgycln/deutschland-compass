@@ -5,8 +5,8 @@ import { Github, Twitter } from 'lucide-react';
 
 export function Footer() {
   return (
-    <footer className="border-t bg-slate-50 dark:bg-slate-950">
-      <div className="container mx-auto px-4 py-12">
+    <footer suppressHydrationWarning className="border-t bg-slate-50 dark:bg-slate-950">
+      <div suppressHydrationWarning className="container mx-auto px-4 py-12">
         <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
           <div className="space-y-4">
             <Link href="/" className="flex items-center gap-2 font-bold text-xl text-slate-900 dark:text-white">
@@ -52,8 +52,8 @@ export function Footer() {
           </div>
         </div>
         
-        <div className="mt-12 pt-8 border-t border-slate-200 dark:border-slate-800 text-center text-sm text-slate-500">
-          © {new Date().getFullYear()} Deutschland Compass. Topluluk yararına, gönüllüler tarafından geliştirilmiştir.
+        <div suppressHydrationWarning className="mt-12 pt-8 border-t border-slate-200 dark:border-slate-800 text-center text-sm text-slate-500">
+          © 2026 Deutschland Compass. Topluluk yararına, gönüllüler tarafından geliştirilmiştir.
         </div>
       </div>
     </footer>

@@ -15,6 +15,7 @@ export interface ProfessionCardData {
   readingTime: string;
   badgeColor: 'blue' | 'red' | 'green' | 'slate' | 'orange' | 'purple';
   keywords?: string[];
+  isNew?: boolean;
 }
 
 export const professionsList: ProfessionCardData[] = [
@@ -218,6 +219,22 @@ export const professionsList: ProfessionCardData[] = [
     demand: 'Yüksek Talep',
     readingTime: '15dk Okuma',
     badgeColor: 'orange'
+  },
+  {
+    id: 'yapay-zeka-kariyerleri',
+    title: 'Yapay Zeka ile Yeni Kariyerler',
+    slug: 'yapay-zeka-kariyerleri',
+    description: 'Kodlama şartı olmadan AI okuryazarlığı, etik, süreç yönetimi ve veri etiketleme alanlarında yön bulma rehberi.',
+    category: 'Yapay Zeka & Dijital Dönüşüm',
+    status: 'active',
+    pathType: 'new-path',
+    customLink: '/rehber/yapay-zeka-kariyerleri',
+    icon: 'Psychology',
+    demand: 'Yüksek Talep',
+    readingTime: '12dk Okuma',
+    badgeColor: 'purple',
+    isNew: true,
+    keywords: ['yapay zeka', 'ai', 'prompt', 'etik', 'uyumluluk', 'compliance', 'data annotator', 'ai project manager']
   },
   {
     id: 'bilisim-it',

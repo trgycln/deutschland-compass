@@ -46,7 +46,7 @@ const guideCategories: GuideCategory[] = [
     color: 'text-blue-600',
     guides: [
       { title: 'Aile Birleşimi', href: '/rehber/aile-birlesimi', isPopular: true },
-      { title: 'Vergi Beyanı (Steuererklärung)', href: '/rehber/vergi-beyani', isNew: true },
+      { title: 'Vergi Beyanı (Steuererklärung)', href: '/rehber/vergi-beyani' },
       { title: 'Denklik (Anerkennung)', href: '/rehber/anerkennung' },
     ]
   },
@@ -103,6 +103,7 @@ const guideCategories: GuideCategory[] = [
     icon: Code,
     color: 'text-indigo-600',
     guides: [
+      { title: 'AI ile Yeni Kariyerler', href: '/rehber/yapay-zeka-kariyerleri', isNew: true },
       { title: 'Yazılım Geliştirici', href: '/rehber/yazilim' },
       { title: 'DevOps & Bulut', href: '/rehber/devops' },
       { title: 'Siber Güvenlik', href: '/rehber/siber-guvenlik' },

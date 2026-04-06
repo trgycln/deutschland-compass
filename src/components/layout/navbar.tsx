@@ -1,24 +1,32 @@
 "use client";
 
-import { useState, useEffect } from 'react';
+import { useState, useSyncExternalStore } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { Button } from '@/components/ui/button';
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from '@/components/ui/sheet';
-import { Menu, Utensils, BookOpen } from 'lucide-react';
+import { Menu, Utensils, Sparkles } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 
 export function Navbar() {
   const [isOpen, setIsOpen] = useState(false);
-  const [isMounted, setIsMounted] = useState(false);
+  const isHydrated = useSyncExternalStore(
+    () => () => {},
+    () => true,
+    () => false
+  );
 
-  useEffect(() => {
-    setIsMounted(true);
-  }, []);
+  if (!isHydrated) {
+    return (
+      <header suppressHydrationWarning className="sticky top-0 z-50 w-full border-b bg-white/95 backdrop-blur supports-[backdrop-filter]:bg-white/60 dark:bg-slate-950/95 dark:supports-[backdrop-filter]:bg-slate-950/60">
+        <div suppressHydrationWarning className="container mx-auto flex h-16 items-center justify-between px-4" />
+      </header>
+    );
+  }
 
   return (
-    <header className="sticky top-0 z-50 w-full border-b bg-white/95 backdrop-blur supports-[backdrop-filter]:bg-white/60 dark:bg-slate-950/95 dark:supports-[backdrop-filter]:bg-slate-950/60">
-      <div className="container mx-auto flex h-16 items-center justify-between px-4">
+    <header suppressHydrationWarning className="sticky top-0 z-50 w-full border-b bg-white/95 backdrop-blur supports-[backdrop-filter]:bg-white/60 dark:bg-slate-950/95 dark:supports-[backdrop-filter]:bg-slate-950/60">
+      <div suppressHydrationWarning className="container mx-auto flex h-16 items-center justify-between px-4">
         <Link href="/" className="flex items-center gap-2 font-bold text-xl text-slate-900 dark:text-white">
           <div className="relative w-10 h-10 rounded-full overflow-hidden border border-slate-200 dark:border-slate-700 bg-white flex items-center justify-center shadow-sm">
             <Image 
@@ -47,15 +55,16 @@ export function Navbar() {
             Helal Mekanlar
           </Link>
 
-          {/* Gurbet Kalemleri Linki */}
           <Link 
-            href="/gurbet-kalemleri" 
-            className="hover:text-purple-700 text-purple-800 dark:text-purple-300 transition-colors flex items-center gap-1.5 font-semibold bg-purple-50 dark:bg-purple-900/20 px-2 py-1 rounded-md"
+            href="/rehber/yapay-zeka-kariyerleri" 
+            className="hover:text-fuchsia-700 text-fuchsia-800 dark:text-fuchsia-300 transition-colors flex items-center gap-1.5 font-semibold bg-fuchsia-50 dark:bg-fuchsia-900/20 px-2 py-1 rounded-md"
           >
-            <BookOpen className="w-3.5 h-3.5" />
-            Gurbet Kalemleri
-            <Badge className="ml-1 text-[10px] px-1.5 py-0 bg-purple-600 text-white border-none">Yeni</Badge>
+            <Sparkles className="w-3.5 h-3.5" />
+            AI Kariyerleri
+            <Badge className="ml-1 text-[10px] px-1.5 py-0 bg-fuchsia-600 text-white border-none">Yeni</Badge>
           </Link>
+
+          <Link href="/gurbet-kalemleri" className="hover:text-primary transition-colors">Gurbet Kalemleri</Link>
 
           <Link href="/telegram-gruplari" className="hover:text-primary transition-colors">Telegram</Link>
           <Link href="/blog" className="hover:text-primary transition-colors">Blog</Link>
@@ -66,20 +75,14 @@ export function Navbar() {
         <nav className="hidden md:flex xl:hidden items-center gap-4 text-sm font-medium text-slate-600 dark:text-slate-300">
            <Link href="/meslekler" className="hover:text-primary">Meslekler</Link>
            <Link href="/rehber/helal-mekanlar" className="text-amber-600 font-semibold flex gap-1 items-center"><Utensils className="w-3 h-3"/> Mekanlar</Link>
-           <Link href="/gurbet-kalemleri" className="text-purple-700 dark:text-purple-300 font-semibold flex gap-1 items-center bg-purple-50 dark:bg-purple-900/20 px-2 py-1 rounded-md relative">
-             <BookOpen className="w-3 h-3"/> Kalemler
-             <Badge className="ml-1 text-[9px] px-1 py-0 bg-purple-600 text-white border-none">Yeni</Badge>
+           <Link href="/rehber/yapay-zeka-kariyerleri" className="text-fuchsia-700 dark:text-fuchsia-300 font-semibold flex gap-1 items-center bg-fuchsia-50 dark:bg-fuchsia-900/20 px-2 py-1 rounded-md relative">
+             <Sparkles className="w-3 h-3"/> AI Kariyerleri
+             <Badge className="ml-1 text-[9px] px-1 py-0 bg-fuchsia-600 text-white border-none">Yeni</Badge>
            </Link>
         </nav>
 
         <div className="flex items-center gap-4">
           {/* Mobile Menu */}
-          {!isMounted ? (
-            <Button variant="ghost" size="icon" className="md:hidden">
-              <Menu className="h-6 w-6" />
-              <span className="sr-only">Menüyü aç</span>
-            </Button>
-          ) : (
           <Sheet open={isOpen} onOpenChange={setIsOpen}>
             <SheetTrigger asChild>
               <Button variant="ghost" size="icon" className="md:hidden">
@@ -136,13 +139,13 @@ export function Navbar() {
                 </Link>
 
                 <Link 
-                  href="/gurbet-kalemleri" 
-                  className="text-lg font-bold text-purple-800 dark:text-purple-200 bg-purple-50 dark:bg-purple-900/20 px-6 py-2 rounded-full transition-colors flex items-center gap-2"
+                  href="/rehber/yapay-zeka-kariyerleri" 
+                  className="text-lg font-bold text-fuchsia-800 dark:text-fuchsia-200 bg-fuchsia-50 dark:bg-fuchsia-900/20 px-6 py-2 rounded-full transition-colors flex items-center gap-2"
                   onClick={() => setIsOpen(false)}
                 >
-                  <BookOpen className="w-4 h-4" />
-                  Gurbet Kalemleri
-                  <Badge className="ml-1 text-[10px] px-1.5 py-0 bg-purple-600 text-white border-none">Yeni</Badge>
+                  <Sparkles className="w-4 h-4" />
+                  AI Kariyerleri
+                  <Badge className="ml-1 text-[10px] px-1.5 py-0 bg-fuchsia-600 text-white border-none">Yeni</Badge>
                 </Link>
 
                 <Link 
@@ -173,7 +176,6 @@ export function Navbar() {
               </div>
             </SheetContent>
           </Sheet>
-          )}
         </div>
       </div>
     </header>

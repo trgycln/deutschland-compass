@@ -2,7 +2,7 @@
 import Link from 'next/link';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { BookOpen, GraduationCap, ArrowRight, Map, Euro } from 'lucide-react';
+import { BookOpen, GraduationCap, ArrowRight, Map, Euro, Sparkles } from 'lucide-react';
 
 export default function GuidesPage() {
   return (
@@ -18,6 +18,35 @@ export default function GuidesPage() {
         </div>
 
         <div className="grid md:grid-cols-2 gap-8 max-w-4xl mx-auto">
+          <Link href="/rehber/yapay-zeka-kariyerleri" className="group">
+            <Card className="h-full hover:shadow-xl transition-all duration-300 border-slate-200 dark:border-slate-800 group-hover:border-fuchsia-500/50">
+              <CardHeader>
+                <div className="flex justify-between items-start mb-4">
+                  <div className="p-3 bg-fuchsia-100 dark:bg-fuchsia-900/30 rounded-lg text-fuchsia-600 dark:text-fuchsia-400">
+                    <Sparkles className="w-8 h-8" />
+                  </div>
+                  <ArrowRight className="h-6 w-6 text-slate-400 group-hover:text-fuchsia-500 transition-colors" />
+                </div>
+                <div className="flex items-center gap-2">
+                  <CardTitle className="text-2xl group-hover:text-fuchsia-600 transition-colors">
+                    Yapay Zeka ile Yeni Kariyerler
+                  </CardTitle>
+                  <Badge className="bg-fuchsia-600 text-white border-none">Yeni</Badge>
+                </div>
+                <CardDescription className="text-base mt-2">
+                  Kodlama şartı olmadan yönelinebilecek AI rollerini, ücretsiz kaynakları ve bu alanın neden araştırma odaklı okunması gerektiğini anlatan yeni rehber.
+                </CardDescription>
+              </CardHeader>
+              <CardContent>
+                <div className="flex flex-wrap gap-2">
+                  <Badge variant="secondary">AI Okuryazarlığı</Badge>
+                  <Badge variant="secondary">Prompt</Badge>
+                  <Badge variant="secondary">Ücretsiz Kaynaklar</Badge>
+                </div>
+              </CardContent>
+            </Card>
+          </Link>
+
           {/* Kariyer Yolu Rehberi */}
           <Link href="/rehber/kariyer-yolu" className="group">
             <Card className="h-full hover:shadow-xl transition-all duration-300 border-slate-200 dark:border-slate-800 group-hover:border-blue-500/50">

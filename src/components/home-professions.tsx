@@ -134,10 +134,17 @@ export function HomeProfessions({ professions }: { professions: ProfessionCardDa
       <CardWrapper key={profession.id}>
         <Card className={`h-full transition-all duration-300 hover:shadow-xl border-slate-200 dark:border-slate-800 ${!isComingSoon ? hoverBorderColorMap[profession.badgeColor] : ''} ${isComingSoon ? 'opacity-75' : ''}`}>
           <CardHeader>
-            <div className="flex justify-between items-start mb-4">
-              <Badge variant="secondary" className={`${badgeColorMap[profession.badgeColor]} border`}>
-                {profession.category}
-              </Badge>
+            <div className="flex justify-between items-start gap-3 mb-4">
+              <div className="flex flex-wrap gap-2">
+                <Badge variant="secondary" className={`${badgeColorMap[profession.badgeColor]} border`}>
+                  {profession.category}
+                </Badge>
+                {profession.isNew && !isComingSoon && (
+                  <Badge className="bg-fuchsia-600 text-white border-none hover:bg-fuchsia-700">
+                    Yeni
+                  </Badge>
+                )}
+              </div>
               {!isComingSoon && (
                 <ArrowRight className={`h-5 w-5 text-slate-400 transition-colors ${hoverTextColorMap[profession.badgeColor]}`} />
               )}
@@ -207,7 +214,7 @@ export function HomeProfessions({ professions }: { professions: ProfessionCardDa
           <div className="flex flex-col md:flex-row justify-between items-center mb-10 gap-4">
             <div>
               <div className="flex items-center gap-2 mb-2">
-                <Badge className="bg-primary/10 text-primary hover:bg-primary/20 border-primary/20">Yeni Fırsatlar</Badge>
+                <Badge className="bg-primary/10 text-primary hover:bg-primary/20 border-primary/20">Öne Çıkan Fırsatlar</Badge>
               </div>
               <h2 className="text-3xl font-bold text-primary dark:text-white mb-2">
                 Alternatif Kariyer Yolları

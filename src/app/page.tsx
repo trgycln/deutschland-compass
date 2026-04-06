@@ -9,12 +9,13 @@ import { Users, BookOpen, MessageSquare, Info, Send, ArrowRight, Utensils, FileC
 import { HomeProfessions } from '@/components/home-professions';
 import { professionsList } from '@/data/professions-list';
 import { WhatsNewPopup } from '@/components/whats-new-popup';
+import { SiteStatsSummary } from '@/components/site-stats-summary';
 
 export default function Home() {
   const [isDisclaimerOpen, setIsDisclaimerOpen] = useState(false);
 
   return (
-    <div className="flex flex-col min-h-screen">
+    <div suppressHydrationWarning className="flex flex-col min-h-screen">
       <WhatsNewPopup />
       
 
@@ -44,7 +45,7 @@ export default function Home() {
                 <h3 className="font-semibold text-xs sm:text-sm text-slate-900 dark:text-slate-100">Bilgilendirme</h3>
               </div>
               <p className="text-[11px] sm:text-xs text-slate-600 dark:text-slate-300 leading-relaxed">
-                Sitemizdeki dökümanlar, Telegram gruplarında paylaşılan ve topluluk yararına hazırlanmış açık kaynak içeriklerdir. İçerik sahiplerinin talebi durumunda ilgili dökümanlar derhal kaldırılacaktır.
+                Sitemizdeki içeriklerin önemli bir bölümü Telegram gruplarında paylaşılan topluluk tecrübelerinden derlenir. Bazı sayfalar ise güncel araştırma ve açık kaynak kaynaklarla hazırlanan yön bulma dosyalarıdır.
               </p>
             </div>
           </div>
@@ -73,8 +74,8 @@ export default function Home() {
               Almanya'daki <span className="text-accent">Pusulanız</span>
             </h1>
             <p className="text-xl text-primary/80 dark:text-slate-300 leading-relaxed max-w-2xl mx-auto">
-              Binlerce profesyonelin tecrübesiyle harmanlanmış, yaşayan bir rehber. 
-              Mesleğinizi seçin, süreci öğrenin, tecrübenizi paylaşın.
+              Topluluk tecrübeleri ve güncel araştırma dosyalarıyla büyüyen yaşayan bir rehber.
+              Mesleğinizi seçin, süreci öğrenin, yönünüzü netleştirin.
             </p>
             
             <div className="flex flex-col sm:flex-row gap-4 max-w-lg mx-auto pt-4 relative z-50">
@@ -91,6 +92,14 @@ export default function Home() {
         <div className="absolute top-0 left-0 w-full h-full overflow-hidden -z-10 opacity-30 pointer-events-none">
           <div className="absolute top-1/4 left-1/4 w-64 h-64 bg-primary/10 rounded-full blur-3xl" />
           <div className="absolute bottom-1/4 right-1/4 w-96 h-96 bg-accent/10 rounded-full blur-3xl" />
+        </div>
+      </section>
+
+      <section className="py-8 bg-white dark:bg-slate-900 border-y border-border">
+        <div className="container mx-auto px-4">
+          <div className="max-w-5xl mx-auto">
+            <SiteStatsSummary />
+          </div>
         </div>
       </section>
 
@@ -115,9 +124,8 @@ export default function Home() {
                   <span>Aile Birleşimi</span>
                   <Badge variant="secondary" className="text-xs">Popüler</Badge>
                 </Link>
-                <Link href="/rehber/vergi-beyani" className="flex items-center justify-between text-sm hover:text-primary dark:hover:text-accent transition-colors group">
+                <Link href="/rehber/vergi-beyani" className="flex items-center text-sm hover:text-primary dark:hover:text-accent transition-colors">
                   <span>Vergi Beyanı</span>
-                  <Badge variant="secondary" className="text-xs bg-emerald-100 text-emerald-800 dark:bg-emerald-900/30">Yeni</Badge>
                 </Link>
                 <Link href="/rehber/anerkennung" className="flex items-center text-sm hover:text-primary dark:hover:text-accent transition-colors">
                   <span>Denklik (Anerkennung)</span>
@@ -182,7 +190,7 @@ export default function Home() {
               <CardHeader className="pb-3">
                 <div className="flex items-center gap-2 mb-2">
                   <Code className="w-5 h-5 text-indigo-600 dark:text-indigo-400" />
-                  <CardTitle className="text-base">IT & Diğerleri</CardTitle>
+                  <CardTitle className="text-base">IT, AI & Diğerleri</CardTitle>
                 </div>
               </CardHeader>
               <CardContent className="space-y-1.5">
@@ -195,12 +203,15 @@ export default function Home() {
                 <Link href="/meslekler/lkw-soforlugu" className="flex items-center text-sm hover:text-primary dark:hover:text-accent transition-colors">
                   <span>LKW Şoförlüğü</span>
                 </Link>
+                <Link href="/rehber/yapay-zeka-kariyerleri" className="flex items-center justify-between text-sm hover:text-primary dark:hover:text-accent transition-colors group">
+                  <span>AI ile Yeni Kariyerler</span>
+                  <Badge variant="secondary" className="text-xs bg-fuchsia-100 text-fuchsia-800 dark:bg-fuchsia-900/30 dark:text-fuchsia-200">Yeni</Badge>
+                </Link>
                 <Link href="/rehber/helal-mekanlar" className="flex items-center text-sm hover:text-primary dark:hover:text-accent transition-colors">
                   <span>Helal Mekanlar</span>
                 </Link>
-                <Link href="/gurbet-kalemleri" className="flex items-center justify-between text-sm hover:text-primary dark:hover:text-accent transition-colors group">
+                <Link href="/gurbet-kalemleri" className="flex items-center text-sm hover:text-primary dark:hover:text-accent transition-colors">
                   <span>Gurbet Kalemleri</span>
-                  <Badge variant="secondary" className="text-xs bg-blue-100 text-blue-800 dark:bg-blue-900/30">Yeni</Badge>
                 </Link>
               </CardContent>
             </Card>

@@ -41,7 +41,7 @@ const guideCategories: GuideCategory[] = [
     color: 'text-blue-600',
     guides: [
       { title: 'Aile Birleşimi', href: '/rehber/aile-birlesimi', isPopular: true },
-      { title: 'Vergi Beyanı', href: '/rehber/vergi-beyani', isNew: true },
+      { title: 'Vergi Beyanı', href: '/rehber/vergi-beyani' },
       { title: 'Denklik', href: '/rehber/anerkennung' },
     ]
   },
@@ -98,6 +98,7 @@ const guideCategories: GuideCategory[] = [
     icon: Code,
     color: 'text-indigo-600',
     guides: [
+      { title: 'AI ile Yeni Kariyerler', href: '/rehber/yapay-zeka-kariyerleri', isNew: true },
       { title: 'Yazılım', href: '/rehber/yazilim' },
       { title: 'DevOps', href: '/rehber/devops' },
       { title: 'Siber Güvenlik', href: '/rehber/siber-guvenlik' },
@@ -135,7 +136,7 @@ const guideCategories: GuideCategory[] = [
     icon: Briefcase,
     color: 'text-slate-600',
     guides: [
-      { title: 'Gurbet Kalemleri', href: '/gurbet-kalemleri', isNew: true },
+      { title: 'Gurbet Kalemleri', href: '/gurbet-kalemleri' },
       { title: 'Sosyal Çalışmacı', href: '/rehber/sozialarbeiter' },
       { title: 'Seelsorge', href: '/rehber/seelsorge' },
       { title: 'SHK', href: '/rehber/sihhi-tesisat' },

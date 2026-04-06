@@ -159,6 +159,11 @@ export function ProfessionsTabs({ professions }: { professions: ProfessionCardDa
                 <h4 className={`font-semibold text-slate-900 dark:text-slate-100 truncate transition-colors ${!isComingSoon ? hoverTextColorMap[profession.badgeColor] : ''}`}>
                   {profession.title}
                 </h4>
+                {profession.isNew && !isComingSoon && (
+                  <span className="text-[10px] font-medium px-1.5 py-0.5 bg-fuchsia-100 dark:bg-fuchsia-900/40 rounded-full text-fuchsia-700 dark:text-fuchsia-300">
+                    Yeni
+                  </span>
+                )}
                 {isComingSoon && (
                   <span className="text-[10px] font-medium px-1.5 py-0.5 bg-slate-100 dark:bg-slate-800 rounded-full text-slate-500">
                     Yakında

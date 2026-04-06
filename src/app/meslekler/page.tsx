@@ -100,7 +100,7 @@ export default async function ProfessionsPage({
             Meslek Rehberleri
           </h1>
           <p className="text-lg text-slate-600 dark:text-slate-400 mb-8">
-            Almanya'da kariyer yolculuğunuzda size rehberlik edecek detaylı meslek analizleri.
+            Topluluk tecrübeleri ve yeni araştırma dosyalarıyla hazırlanan detaylı kariyer içerikleri.
           </p>
           
           <div className="relative max-w-md mx-auto flex">

@@ -3,6 +3,7 @@
 import { usePathname } from 'next/navigation'
 import { Navbar } from './navbar'
 import { Footer } from './footer'
+import { SiteVisitTracker } from '@/components/site-visit-tracker'
 
 const HIDE_CHROME_PATHS = ['/login']
 
@@ -16,8 +17,9 @@ export function AppShell({ children }: { children: React.ReactNode }) {
 
   return (
     <>
+      <SiteVisitTracker />
       <Navbar />
-      <main className="flex-1">{children}</main>
+      <main suppressHydrationWarning className="flex-1">{children}</main>
       <Footer />
     </>
   )

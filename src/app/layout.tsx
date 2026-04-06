@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import Script from "next/script";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import { AppShell } from "@/components/layout/app-shell";
@@ -47,8 +48,68 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="tr">
+    <html lang="tr" suppressHydrationWarning>
+      <head>
+        <link
+          rel="stylesheet"
+          href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/leaflet.min.css"
+        />
+        <Script id="cleanup-extension-attributes" strategy="beforeInteractive">
+          {`
+            (() => {
+              const attrs = ['bis_skin_checked', 'data-new-gr-c-s-check-loaded', 'data-gr-ext-installed'];
+
+              const stripAttrs = (root) => {
+                if (!root || typeof root.querySelectorAll !== 'function') return;
+
+                attrs.forEach((attr) => {
+                  if (typeof root.removeAttribute === 'function') {
+                    root.removeAttribute(attr);
+                  }
+
+                  root.querySelectorAll('[' + attr + ']').forEach((element) => {
+                    element.removeAttribute(attr);
+                  });
+                });
+              };
+
+              const start = () => {
+                stripAttrs(document.documentElement);
+                stripAttrs(document.body);
+
+                const observer = new MutationObserver((mutations) => {
+                  mutations.forEach((mutation) => {
+                    if (mutation.type === 'attributes' && mutation.target instanceof Element) {
+                      attrs.forEach((attr) => mutation.target.removeAttribute(attr));
+                    }
+
+                    mutation.addedNodes.forEach((node) => {
+                      if (node instanceof Element) {
+                        stripAttrs(node);
+                      }
+                    });
+                  });
+                });
+
+                observer.observe(document.documentElement, {
+                  subtree: true,
+                  childList: true,
+                  attributes: true,
+                  attributeFilter: attrs,
+                });
+              };
+
+              if (document.readyState === 'loading') {
+                document.addEventListener('DOMContentLoaded', start, { once: true });
+              } else {
+                start();
+              }
+            })();
+          `}
+        </Script>
+      </head>
       <body
+        suppressHydrationWarning
         className={`${geistSans.variable} ${geistMono.variable} antialiased min-h-screen flex flex-col`}
       >
         <AudioProvider>
