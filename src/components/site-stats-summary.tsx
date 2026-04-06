@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { BarChart3, Eye, TrendingUp } from 'lucide-react';
+import { BarChart3, Eye } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 
@@ -56,11 +56,21 @@ export function SiteStatsSummary({ compact = false }: { compact?: boolean }) {
       }
     };
 
+    const handleStatsUpdated = (event: Event) => {
+      const detail = (event as CustomEvent<SiteStats>).detail;
+      if (active && detail) {
+        setStats({ ...DEFAULT_STATS, ...detail });
+        setLoading(false);
+      }
+    };
+
     fetchStats();
-    const interval = window.setInterval(fetchStats, 60000);
+    window.addEventListener('site-stats-updated', handleStatsUpdated as EventListener);
+    const interval = window.setInterval(fetchStats, 15000);
 
     return () => {
       active = false;
+      window.removeEventListener('site-stats-updated', handleStatsUpdated as EventListener);
       window.clearInterval(interval);
     };
   }, []);
@@ -76,53 +86,37 @@ export function SiteStatsSummary({ compact = false }: { compact?: boolean }) {
           <div>
             <CardTitle className="flex items-center gap-2 text-xl">
               <BarChart3 className="w-5 h-5 text-blue-600" />
-              Site İstatistikleri
+              Site Sayacı
             </CardTitle>
             <CardDescription>
-              Topluluğun bugüne kadarki trafik özeti ve canlı sayaç bilgisi.
+              Toplam sayfa açılış sayısı otomatik olarak güncellenir.
             </CardDescription>
           </div>
           <Badge variant="secondary" className="w-fit bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-200">
-            Canlı Sayaç
+            Toplam Ziyaret
           </Badge>
         </div>
       </CardHeader>
       <CardContent>
-        <div className="grid gap-3 md:grid-cols-3">
-          <div className="rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-900 p-4">
+        <div className="grid gap-3 md:grid-cols-1">
+          <div className="rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-900 p-5">
             <div className="flex items-center gap-2 text-sm text-slate-500 mb-2">
               <Eye className="w-4 h-4 text-blue-600" />
               Toplam ziyaret
             </div>
-            <div className="text-2xl font-bold text-slate-900 dark:text-white">
+            <div className="text-3xl font-bold text-slate-900 dark:text-white">
               {loading ? '...' : totalDisplay}
-            </div>
-          </div>
-
-          <div className="rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-900 p-4">
-            <div className="flex items-center gap-2 text-sm text-slate-500 mb-2">
-              <TrendingUp className="w-4 h-4 text-emerald-600" />
-              Son 7 gün
-            </div>
-            <div className="text-2xl font-bold text-slate-900 dark:text-white">
-              {loading ? '...' : formatNumber(stats.last7DaysPageViews)}
-            </div>
-          </div>
-
-          <div className="rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-900 p-4">
-            <div className="flex items-center gap-2 text-sm text-slate-500 mb-2">
-              <BarChart3 className="w-4 h-4 text-fuchsia-600" />
-              Bugün
-            </div>
-            <div className="text-2xl font-bold text-slate-900 dark:text-white">
-              {loading ? '...' : formatNumber(stats.todayPageViews)}
             </div>
           </div>
         </div>
 
+        <p className="mt-4 text-xs text-slate-500 dark:text-slate-400">
+          Bu alan anlık online kişi sayısını değil, toplam ziyaret sayısını gösterir.
+        </p>
+
         {stats.isApproximate && (
-          <p className="mt-4 text-xs text-slate-500 dark:text-slate-400">
-            Geçmiş ziyaretler başlangıç baz değeriyle dahil edildi. İsterseniz bu sayı panelden tam rakama göre güncellenebilir.
+          <p className="mt-2 text-xs text-slate-500 dark:text-slate-400">
+            Geçmiş ziyaretler başlangıç baz değeriyle dahil edildi. Yeni açılışlar birkaç saniye içinde sayaca yansır.
           </p>
         )}
       </CardContent>

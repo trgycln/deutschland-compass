@@ -54,11 +54,11 @@ begin
 
   return query
   select
-    st.baseline_page_views + st.tracked_page_views,
-    st.tracked_unique_visitors,
-    coalesce((select sum(page_views) from public.site_daily_stats where stat_date >= current_date - 6), 0),
-    coalesce((select page_views from public.site_daily_stats where stat_date = current_date), 0),
-    coalesce((select unique_visitors from public.site_daily_stats where stat_date = current_date), 0)
+    (st.baseline_page_views + st.tracked_page_views)::bigint,
+    st.tracked_unique_visitors::bigint,
+    coalesce((select sum(page_views)::bigint from public.site_daily_stats where stat_date >= current_date - 6), 0::bigint),
+    coalesce((select page_views::bigint from public.site_daily_stats where stat_date = current_date), 0::bigint),
+    coalesce((select unique_visitors::bigint from public.site_daily_stats where stat_date = current_date), 0::bigint)
   from public.site_totals st
   where st.site_key = 'global';
 end;
