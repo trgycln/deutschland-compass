@@ -53,19 +53,9 @@ export function PlaceCheckin({ placeSlug, placeName, cityName }: PlaceCheckinPro
           setTotalCheckins(count);
         }
 
-        // Bugün zaten check-in yaptı mı kontrol et
-        const today = new Date().toISOString().split('T')[0];
-        const fingerprint = getUserFingerprint();
-
-        const { data: todayCheckin, error: todayError } = await supabase
-          .from('place_checkins')
-          .select('id')
-          .eq('place_slug', placeSlug)
-          .eq('user_fingerprint', fingerprint)
-          .gte('created_at', `${today}T00:00:00`)
-          .single();
-
-        if (!todayError && todayCheckin) {
+        // Bugün check-in yapıldı mı? localStorage ile kontrol et (DB'de fingerprint sütunu yok)
+        const todayKey = `checkin_${placeSlug}_${new Date().toISOString().split('T')[0]}`;
+        if (typeof window !== 'undefined' && localStorage.getItem(todayKey)) {
           setHasCheckedIn(true);
         }
 
@@ -108,10 +98,13 @@ export function PlaceCheckin({ placeSlug, placeName, cityName }: PlaceCheckinPro
         .insert([{
           place_slug: placeSlug,
           user_name: 'Ziyaretçi',
-          user_fingerprint: getUserFingerprint(),
         }]);
 
       if (error) throw error;
+
+      // Bugünkü check-in'i localStorage'a kaydet
+      const todayKey = `checkin_${placeSlug}_${new Date().toISOString().split('T')[0]}`;
+      if (typeof window !== 'undefined') localStorage.setItem(todayKey, '1');
 
       setHasCheckedIn(true);
       setTotalCheckins(prev => prev + 1);
@@ -153,17 +146,6 @@ export function PlaceCheckin({ placeSlug, placeName, cityName }: PlaceCheckinPro
     } finally {
       setLoading(false);
     }
-  };
-
-  // Browser fingerprint
-  const getUserFingerprint = () => {
-    const stored = localStorage.getItem('user_fingerprint');
-    if (stored) return stored;
-    
-    const fingerprint = Math.random().toString(36).substring(2, 15) + 
-                       Math.random().toString(36).substring(2, 15);
-    localStorage.setItem('user_fingerprint', fingerprint);
-    return fingerprint;
   };
 
   if (loading) return null;
