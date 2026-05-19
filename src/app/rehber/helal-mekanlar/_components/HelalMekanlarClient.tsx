@@ -1,5 +1,5 @@
 "use client";
-// Client Component — all filtering, search, city grouping, and UI state for the halal places page
+// Client Component — all filtering, search, country/city grouping, and UI state
 
 import { useState, useMemo } from "react";
 import type { HelalMekan } from "../page";
@@ -9,7 +9,7 @@ import { CheckCircle2, MapPin, Phone, Search, X, ExternalLink } from "lucide-rea
 
 // ─── Constants ────────────────────────────────────────────────────────────────
 
-const QUICK_CITIES = [
+const ALMANYA_QUICK_CITIES = [
   "Berlin", "Hamburg", "München", "Frankfurt",
   "Köln", "Stuttgart", "Düsseldorf", "Bremen",
 ];
@@ -39,21 +39,36 @@ const KATEGORI_RENK: Record<string, string> = {
 // ─── Main Client Component ────────────────────────────────────────────────────
 
 export default function HelalMekanlarClient({ initialData }: { initialData: HelalMekan[] }) {
-  const [searchQuery, setSearchQuery]         = useState("");
-  const [selectedCity, setSelectedCity]       = useState("all");
+  const [searchQuery, setSearchQuery]           = useState("");
+  const [selectedCountry, setSelectedCountry]   = useState("all");
+  const [selectedCity, setSelectedCity]         = useState("all");
   const [selectedCategory, setSelectedCategory] = useState("Tümü");
-  const [selectedMekan, setSelectedMekan]     = useState<HelalMekan | null>(null);
-  const [showOnerModal, setShowOnerModal]     = useState(false);
+  const [selectedMekan, setSelectedMekan]       = useState<HelalMekan | null>(null);
+  const [showOnerModal, setShowOnerModal]       = useState(false);
 
   // ── Derived data ───────────────────────────────────────────────────────────
 
-  const cities = useMemo(
-    () => [...new Set(initialData.map((m) => m.sehir))].sort(),
-    [initialData]
-  );
+  // All unique countries, Almanya first
+  const countries = useMemo(() => {
+    const unique = [...new Set(initialData.map((m) => m.ulke))];
+    return unique.sort((a, b) =>
+      a === "Almanya" ? -1 : b === "Almanya" ? 1 : a.localeCompare(b)
+    );
+  }, [initialData]);
+
+  // Cities available for the selected country
+  const cities = useMemo(() => {
+    const source = selectedCountry === "all"
+      ? initialData
+      : initialData.filter((m) => m.ulke === selectedCountry);
+    return [...new Set(source.map((m) => m.sehir))].sort();
+  }, [initialData, selectedCountry]);
 
   const filtered = useMemo(() => {
     let result = initialData;
+    if (selectedCountry !== "all") {
+      result = result.filter((m) => m.ulke === selectedCountry);
+    }
     if (selectedCity !== "all") {
       result = result.filter((m) => m.sehir === selectedCity);
     }
@@ -66,31 +81,54 @@ export default function HelalMekanlarClient({ initialData }: { initialData: Hela
         (m) =>
           m.isim.toLowerCase().includes(q) ||
           m.adres.toLowerCase().includes(q) ||
-          m.sehir.toLowerCase().includes(q)
+          m.sehir.toLowerCase().includes(q) ||
+          m.ulke.toLowerCase().includes(q)
       );
     }
     return result;
-  }, [initialData, selectedCity, selectedCategory, searchQuery]);
+  }, [initialData, selectedCountry, selectedCity, selectedCategory, searchQuery]);
 
-  // Group by city, most populated first
+  // Group by country → city, most populated countries/cities first
   const grouped = useMemo(() => {
-    const map = new Map<string, HelalMekan[]>();
+    const countryMap = new Map<string, Map<string, HelalMekan[]>>();
     filtered.forEach((m) => {
-      if (!map.has(m.sehir)) map.set(m.sehir, []);
-      map.get(m.sehir)!.push(m);
+      if (!countryMap.has(m.ulke)) countryMap.set(m.ulke, new Map());
+      const cityMap = countryMap.get(m.ulke)!;
+      if (!cityMap.has(m.sehir)) cityMap.set(m.sehir, []);
+      cityMap.get(m.sehir)!.push(m);
     });
-    return Array.from(map.entries())
-      .map(([sehir, mekanlar]) => ({ sehir, mekanlar }))
-      .sort((a, b) => b.mekanlar.length - a.mekanlar.length);
+
+    return Array.from(countryMap.entries())
+      .map(([ulke, cityMap]) => ({
+        ulke,
+        cities: Array.from(cityMap.entries())
+          .map(([sehir, mekanlar]) => ({ sehir, mekanlar }))
+          .sort((a, b) => b.mekanlar.length - a.mekanlar.length),
+        total: Array.from(cityMap.values()).reduce((s, v) => s + v.length, 0),
+      }))
+      .sort((a, b) =>
+        a.ulke === "Almanya" ? -1 : b.ulke === "Almanya" ? 1 : b.total - a.total
+      );
   }, [filtered]);
 
+  const showCountryHeader = selectedCountry === "all" && countries.length > 1;
+
   const isFiltered =
-    selectedCity !== "all" || selectedCategory !== "Tümü" || searchQuery.trim() !== "";
+    selectedCountry !== "all" ||
+    selectedCity !== "all" ||
+    selectedCategory !== "Tümü" ||
+    searchQuery.trim() !== "";
 
   const resetFilters = () => {
     setSearchQuery("");
+    setSelectedCountry("all");
     setSelectedCity("all");
     setSelectedCategory("Tümü");
+  };
+
+  const handleCountryChange = (country: string) => {
+    setSelectedCountry(country);
+    setSelectedCity("all"); // reset city when country changes
   };
 
   // ── Render ─────────────────────────────────────────────────────────────────
@@ -99,7 +137,7 @@ export default function HelalMekanlarClient({ initialData }: { initialData: Hela
     <div className="min-h-screen bg-gray-50 pb-28">
 
       {/* ══════════════════════════════════════════
-          HERO SECTION
+          HERO
       ══════════════════════════════════════════ */}
       <section className="bg-gradient-to-br from-green-600 to-green-800 text-white pt-10 pb-8 px-4">
         <div className="max-w-3xl mx-auto text-center">
@@ -107,28 +145,33 @@ export default function HelalMekanlarClient({ initialData }: { initialData: Hela
             🕌 Topluluk Helal Rehberi
           </div>
           <h1 className="text-3xl sm:text-4xl font-extrabold leading-tight mb-3">
-            Almanya&apos;da Helal Mekanlar
+            Avrupa&apos;da Helal Mekanlar
           </h1>
           <p className="text-green-100 text-base sm:text-lg max-w-xl mx-auto mb-6">
             Bulunduğun şehirdeki helal restoranları, kasapları ve daha fazlasını keşfet
           </p>
 
-          {/* City quick-select chips */}
-          <div className="flex flex-wrap justify-center gap-2">
-            {QUICK_CITIES.map((city) => (
-              <button
-                key={city}
-                onClick={() => setSelectedCity(city === selectedCity ? "all" : city)}
-                className={`px-4 py-1.5 rounded-full text-sm font-medium transition-all ${
-                  selectedCity === city
-                    ? "bg-white text-green-700 shadow-md"
-                    : "bg-white/20 text-white hover:bg-white/30"
-                }`}
-              >
-                {city}
-              </button>
-            ))}
-          </div>
+          {/* German city quick-select chips — only shown when Almanya is active */}
+          {(selectedCountry === "all" || selectedCountry === "Almanya") && (
+            <div className="flex flex-wrap justify-center gap-2">
+              {ALMANYA_QUICK_CITIES.map((city) => (
+                <button
+                  key={city}
+                  onClick={() => {
+                    handleCountryChange("Almanya");
+                    setSelectedCity(city === selectedCity ? "all" : city);
+                  }}
+                  className={`px-4 py-1.5 rounded-full text-sm font-medium transition-all ${
+                    selectedCity === city
+                      ? "bg-white text-green-700 shadow-md"
+                      : "bg-white/20 text-white hover:bg-white/30"
+                  }`}
+                >
+                  {city}
+                </button>
+              ))}
+            </div>
+          )}
         </div>
       </section>
 
@@ -138,12 +181,26 @@ export default function HelalMekanlarClient({ initialData }: { initialData: Hela
       <div className="sticky top-0 z-40 bg-white/95 backdrop-blur-sm border-b border-gray-200 shadow-sm">
         <div className="max-w-6xl mx-auto px-4 py-3 space-y-2">
 
-          {/* Row 1: City select + text search */}
+          {/* Row 1: Country + City + Search */}
           <div className="flex gap-2">
+            {/* Country select — only rendered when there are multiple countries */}
+            {countries.length > 1 && (
+              <select
+                value={selectedCountry}
+                onChange={(e) => handleCountryChange(e.target.value)}
+                className="h-10 rounded-lg border border-gray-300 bg-white px-3 text-sm text-gray-700 focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent min-w-[130px]"
+              >
+                <option value="all">Tüm Ülkeler</option>
+                {countries.map((c) => (
+                  <option key={c} value={c}>{c}</option>
+                ))}
+              </select>
+            )}
+
             <select
               value={selectedCity}
               onChange={(e) => setSelectedCity(e.target.value)}
-              className="h-10 rounded-lg border border-gray-300 bg-white px-3 text-sm text-gray-700 focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent min-w-[140px]"
+              className="h-10 rounded-lg border border-gray-300 bg-white px-3 text-sm text-gray-700 focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent min-w-[130px]"
             >
               <option value="all">Tüm Şehirler</option>
               {cities.map((city) => (
@@ -203,8 +260,11 @@ export default function HelalMekanlarClient({ initialData }: { initialData: Hela
           {/* Results count */}
           <p className="text-xs text-gray-500">
             <span className="font-semibold text-gray-800">{filtered.length}</span> mekan bulundu
+            {selectedCountry !== "all" && (
+              <span className="text-green-600"> — {selectedCountry}</span>
+            )}
             {selectedCity !== "all" && (
-              <span className="text-green-600"> — {selectedCity}</span>
+              <span className="text-green-600">, {selectedCity}</span>
             )}
           </p>
         </div>
@@ -239,30 +299,49 @@ export default function HelalMekanlarClient({ initialData }: { initialData: Hela
             </div>
           </div>
         ) : (
-          /* ── City-grouped place grid ─────────────────── */
-          <div className="space-y-10">
-            {grouped.map(({ sehir, mekanlar }) => (
-              <div key={sehir}>
-                {/* City section header */}
-                <div className="flex items-center gap-3 mb-4">
-                  <div className="flex items-center gap-2 bg-white border border-gray-200 rounded-full px-4 py-1.5 shadow-sm">
-                    <MapPin className="w-3.5 h-3.5 text-green-600" />
-                    <span className="font-bold text-gray-800 text-sm">{sehir}</span>
-                    <span className="bg-green-100 text-green-700 text-xs font-semibold px-2 py-0.5 rounded-full">
-                      {mekanlar.length}
-                    </span>
+          /* ── Grouped list ────────────────────────────── */
+          <div className="space-y-12">
+            {grouped.map(({ ulke, cities: cityGroups, total }) => (
+              <div key={ulke}>
+                {/* Country header — only shown when viewing all countries */}
+                {showCountryHeader && (
+                  <div className="flex items-center gap-3 mb-6">
+                    <div className="flex items-center gap-2 bg-green-600 text-white rounded-xl px-4 py-2 shadow-sm">
+                      <span className="font-bold text-sm">{ulke}</span>
+                      <span className="bg-white/25 text-white text-xs font-semibold px-2 py-0.5 rounded-full">
+                        {total}
+                      </span>
+                    </div>
+                    <div className="flex-1 h-px bg-gray-200" />
                   </div>
-                  <div className="flex-1 h-px bg-gray-200" />
-                </div>
+                )}
 
-                {/* Place cards grid */}
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                  {mekanlar.map((mekan) => (
-                    <MekanKarti
-                      key={mekan.id}
-                      mekan={mekan}
-                      onDetay={() => setSelectedMekan(mekan)}
-                    />
+                <div className="space-y-8">
+                  {cityGroups.map(({ sehir, mekanlar }) => (
+                    <div key={sehir}>
+                      {/* City header */}
+                      <div className="flex items-center gap-3 mb-4">
+                        <div className="flex items-center gap-2 bg-white border border-gray-200 rounded-full px-4 py-1.5 shadow-sm">
+                          <MapPin className="w-3.5 h-3.5 text-green-600" />
+                          <span className="font-bold text-gray-800 text-sm">{sehir}</span>
+                          <span className="bg-green-100 text-green-700 text-xs font-semibold px-2 py-0.5 rounded-full">
+                            {mekanlar.length}
+                          </span>
+                        </div>
+                        <div className="flex-1 h-px bg-gray-100" />
+                      </div>
+
+                      {/* Cards grid */}
+                      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                        {mekanlar.map((mekan) => (
+                          <MekanKarti
+                            key={mekan.id}
+                            mekan={mekan}
+                            onDetay={() => setSelectedMekan(mekan)}
+                          />
+                        ))}
+                      </div>
+                    </div>
                   ))}
                 </div>
               </div>
@@ -278,7 +357,10 @@ export default function HelalMekanlarClient({ initialData }: { initialData: Hela
         <MekanModal mekan={selectedMekan} onClose={() => setSelectedMekan(null)} />
       )}
       {showOnerModal && (
-        <MekanOnerModal onClose={() => setShowOnerModal(false)} />
+        <MekanOnerModal
+          countries={countries}
+          onClose={() => setShowOnerModal(false)}
+        />
       )}
 
       {/* ══════════════════════════════════════════
@@ -311,7 +393,7 @@ function MekanKarti({
 
   return (
     <div className="bg-white rounded-2xl border border-gray-100 p-4 shadow-sm hover:shadow-md transition-shadow duration-200 flex flex-col">
-      {/* Header row */}
+      {/* Header */}
       <div className="flex items-start justify-between gap-2 mb-3">
         <div className="flex-1 min-w-0">
           <div className="flex items-center gap-2 mb-1 flex-wrap">
@@ -321,8 +403,12 @@ function MekanKarti({
           <div className="flex items-center gap-1 text-xs text-gray-500 mt-0.5">
             <MapPin className="w-3 h-3 shrink-0 text-green-500" />
             <span className="font-medium">{mekan.sehir}</span>
-            <span className="text-gray-300">·</span>
-            <span className="truncate">{mekan.adres}</span>
+            {mekan.adres && (
+              <>
+                <span className="text-gray-300">·</span>
+                <span className="truncate">{mekan.adres}</span>
+              </>
+            )}
           </div>
         </div>
 

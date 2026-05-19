@@ -7,8 +7,20 @@ import { X, CheckCircle2, Loader2 } from "lucide-react";
 
 const KATEGORILER = ["Restoran", "Kasap", "Döner", "Café", "Bakkal", "Otel", "Diğer"] as const;
 
+// Maps Turkish display labels back to DB category slugs used in the `places` table
+const CATEGORY_DB: Record<string, string> = {
+  Restoran: "restaurant",
+  Kasap:    "butcher",
+  Döner:    "fast_food",
+  Café:     "cafe",
+  Bakkal:   "market",
+  Otel:     "restaurant",
+  Diğer:    "restaurant",
+};
+
 type FormState = {
   isim:     string;
+  ulke:     string;
   sehir:    string;
   adres:    string;
   kategori: string;
@@ -18,6 +30,7 @@ type FormState = {
 
 const INITIAL_FORM: FormState = {
   isim:     "",
+  ulke:     "Almanya",
   sehir:    "",
   adres:    "",
   kategori: "Restoran",
@@ -28,7 +41,13 @@ const INITIAL_FORM: FormState = {
 const inputClass =
   "w-full h-10 px-3 rounded-xl border border-gray-300 text-sm text-gray-800 focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent bg-white";
 
-export default function MekanOnerModal({ onClose }: { onClose: () => void }) {
+export default function MekanOnerModal({
+  onClose,
+  countries,
+}: {
+  onClose: () => void;
+  countries: string[];
+}) {
   const [form, setForm]         = useState<FormState>(INITIAL_FORM);
   const [isLoading, setIsLoading] = useState(false);
   const [isSuccess, setIsSuccess] = useState(false);
@@ -45,15 +64,15 @@ export default function MekanOnerModal({ onClose }: { onClose: () => void }) {
     setIsLoading(true);
     setError(null);
 
-    const { error: dbError } = await supabase.from("helal_mekanlar").insert({
-      isim:           form.isim.trim(),
-      sehir:          form.sehir.trim(),
-      adres:          form.adres.trim(),
-      kategori:       form.kategori,
-      telefon:        form.iletisim.trim() || null,
-      // google_maps_url left empty — admin fills this during review
-      google_maps_url: "",
-      onaylandi:      false,
+    const { error: dbError } = await supabase.from("places").insert({
+      name:     form.isim.trim(),
+      city:     form.sehir.trim(),
+      country:  form.ulke,
+      address:  form.adres.trim(),
+      category: CATEGORY_DB[form.kategori] ?? "restaurant",
+      phone:    form.iletisim.trim() || null,
+      note:     form.notunuz.trim() || null,
+      warning:  true,
     });
 
     setIsLoading(false);
@@ -126,6 +145,36 @@ export default function MekanOnerModal({ onClose }: { onClose: () => void }) {
                   placeholder="örn. Berliner Döner Kebap"
                   className={inputClass}
                 />
+              </div>
+
+              {/* Ülke */}
+              <div>
+                <label className="block text-sm font-semibold text-gray-700 mb-1.5">
+                  Ülke <span className="text-red-500">*</span>
+                </label>
+                {countries.length > 1 ? (
+                  <select
+                    name="ulke"
+                    value={form.ulke}
+                    onChange={handleChange}
+                    required
+                    className={inputClass}
+                  >
+                    {countries.map((c) => (
+                      <option key={c} value={c}>{c}</option>
+                    ))}
+                  </select>
+                ) : (
+                  <input
+                    type="text"
+                    name="ulke"
+                    value={form.ulke}
+                    onChange={handleChange}
+                    required
+                    placeholder="örn. Almanya"
+                    className={inputClass}
+                  />
+                )}
               </div>
 
               {/* Şehir */}
