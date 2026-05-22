@@ -1,4 +1,5 @@
-// Server Component — reads from the existing `places` table and maps to the HelalMekan display type
+// Server Component — fetches all places from Supabase and passes to client; wraps in Suspense for useSearchParams
+import { Suspense } from "react";
 import { supabase } from "@/lib/supabase";
 import HelalMekanlarClient from "./_components/HelalMekanlarClient";
 
@@ -16,7 +17,6 @@ export type HelalMekan = {
   created_at: string;
 };
 
-// Raw shape coming back from the `places` table
 type DBPlace = {
   id: string;
   name: string;
@@ -32,7 +32,6 @@ type DBPlace = {
   [key: string]: unknown;
 };
 
-// English DB slugs → Turkish display labels
 const CATEGORY_MAP: Record<string, string> = {
   restaurant: "Restoran",
   cafe:       "Café",
@@ -42,10 +41,28 @@ const CATEGORY_MAP: Record<string, string> = {
   butcher:    "Kasap",
 };
 
+// ── Suspense fallback skeleton ─────────────────────────────────────────────────
+
+function PageSkeleton() {
+  return (
+    <div className="min-h-screen bg-gray-50">
+      <div className="h-52 bg-green-600 animate-pulse" />
+      <div className="h-24 bg-white border-b animate-pulse" />
+      <div className="max-w-6xl mx-auto px-4 mt-6 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+        {Array.from({ length: 9 }).map((_, i) => (
+          <div key={i} className="h-52 bg-white rounded-2xl border border-gray-100 animate-pulse" />
+        ))}
+      </div>
+    </div>
+  );
+}
+
+// ── Page ──────────────────────────────────────────────────────────────────────
+
 export default async function HelalMekanlarPage() {
   const { data, error } = await supabase
     .from("places")
-    .select("*")
+    .select("id, name, country, city, address, phone, map_link, category, warning, highlight, created_at")
     .order("city", { ascending: true });
 
   if (error) {
@@ -78,5 +95,9 @@ export default async function HelalMekanlarPage() {
     created_at:      p.created_at ?? "",
   }));
 
-  return <HelalMekanlarClient initialData={mekanlar} />;
+  return (
+    <Suspense fallback={<PageSkeleton />}>
+      <HelalMekanlarClient initialData={mekanlar} />
+    </Suspense>
+  );
 }

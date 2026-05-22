@@ -1,22 +1,12 @@
 "use client";
-// Modal form for suggesting a new halal place — inserts with onaylandi: false pending admin review
+// Suggest-a-place modal — client-side Supabase insert into `places` with warning:true (pending review)
 
 import { useState } from "react";
 import { supabase } from "@/lib/supabase";
 import { X, CheckCircle2, Loader2 } from "lucide-react";
+import { KATEGORILER, KATEGORI_DB } from "./constants";
 
-const KATEGORILER = ["Restoran", "Kasap", "Döner", "Café", "Bakkal", "Otel", "Diğer"] as const;
-
-// Maps Turkish display labels back to DB category slugs used in the `places` table
-const CATEGORY_DB: Record<string, string> = {
-  Restoran: "restaurant",
-  Kasap:    "butcher",
-  Döner:    "fast_food",
-  Café:     "cafe",
-  Bakkal:   "market",
-  Otel:     "restaurant",
-  Diğer:    "restaurant",
-};
+// ─── Types ────────────────────────────────────────────────────────────────────
 
 type FormState = {
   isim:     string;
@@ -38,19 +28,24 @@ const INITIAL_FORM: FormState = {
   notunuz:  "",
 };
 
-const inputClass =
-  "w-full h-10 px-3 rounded-xl border border-gray-300 text-sm text-gray-800 focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent bg-white";
+// ─── Shared input style ───────────────────────────────────────────────────────
+
+const inputCls =
+  "w-full h-11 px-3 rounded-xl border border-gray-300 text-sm text-gray-800 " +
+  "focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent bg-white";
+
+// ─── Component ────────────────────────────────────────────────────────────────
 
 export default function MekanOnerModal({
-  onClose,
   countries,
+  onClose,
 }: {
-  onClose: () => void;
   countries: string[];
+  onClose: () => void;
 }) {
   const [form, setForm]         = useState<FormState>(INITIAL_FORM);
-  const [isLoading, setIsLoading] = useState(false);
-  const [isSuccess, setIsSuccess] = useState(false);
+  const [isLoading, setLoading] = useState(false);
+  const [isSuccess, setSuccess] = useState(false);
   const [error, setError]       = useState<string | null>(null);
 
   const handleChange = (
@@ -61,60 +56,70 @@ export default function MekanOnerModal({
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setIsLoading(true);
+    setLoading(true);
     setError(null);
 
     const { error: dbError } = await supabase.from("places").insert({
       name:     form.isim.trim(),
+      country:  form.ulke.trim(),
       city:     form.sehir.trim(),
-      country:  form.ulke,
       address:  form.adres.trim(),
-      category: CATEGORY_DB[form.kategori] ?? "restaurant",
+      category: KATEGORI_DB[form.kategori] ?? "restaurant",
       phone:    form.iletisim.trim() || null,
-      note:     form.notunuz.trim() || null,
+      note:     form.notunuz.trim()  || null,
+      // warning=true marks it as unverified / pending admin review
       warning:  true,
     });
 
-    setIsLoading(false);
+    setLoading(false);
 
     if (dbError) {
       setError("Mekan önerilirken bir hata oluştu. Lütfen tekrar deneyin.");
     } else {
-      setIsSuccess(true);
+      setSuccess(true);
     }
   };
 
   return (
+    /* Backdrop */
     <div
       className="fixed inset-0 z-50 bg-black/60 flex items-end sm:items-center justify-center p-0 sm:p-4"
       onClick={onClose}
+      role="dialog"
+      aria-modal="true"
+      aria-label="Mekan öner"
     >
+      {/* Sheet */}
       <div
         className="bg-white w-full sm:max-w-lg rounded-t-3xl sm:rounded-2xl overflow-hidden shadow-2xl max-h-[92vh] flex flex-col"
         onClick={(e) => e.stopPropagation()}
       >
-        {/* ── Header ──────────────────────────────────────── */}
+
+        {/* ── Header ──────────────────────────────────────────── */}
         <div className="flex items-center justify-between p-5 border-b border-gray-100">
           <div>
             <h2 className="text-lg font-extrabold text-gray-900">Mekan Öner</h2>
-            <p className="text-xs text-gray-500 mt-0.5">İnceleme sonrası rehbere eklenir</p>
+            <p className="text-xs text-gray-500 mt-0.5">
+              İnceleme sonrası rehbere eklenir
+            </p>
           </div>
           <button
             onClick={onClose}
-            className="w-9 h-9 rounded-full bg-gray-100 hover:bg-gray-200 flex items-center justify-center transition-colors"
+            className="w-10 h-10 min-h-[44px] min-w-[44px] rounded-full bg-gray-100 hover:bg-gray-200 flex items-center justify-center transition-colors"
             aria-label="Kapat"
           >
-            <X className="w-4 h-4 text-gray-600" />
+            <X className="w-4 h-4 text-gray-600" aria-hidden="true" />
           </button>
         </div>
 
-        {/* ── Content ─────────────────────────────────────── */}
+        {/* ── Content ─────────────────────────────────────────── */}
         <div className="overflow-y-auto flex-1 p-5">
+
           {isSuccess ? (
-            /* Success State */
+            /* ── Success state ───────────────────────────────── */
             <div className="text-center py-8">
               <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                <CheckCircle2 className="w-8 h-8 text-green-600" />
+                <CheckCircle2 className="w-8 h-8 text-green-600" aria-hidden="true" />
               </div>
               <h3 className="text-xl font-bold text-gray-900 mb-2">Teşekkürler!</h3>
               <p className="text-gray-500 text-sm mb-6 max-w-xs mx-auto">
@@ -122,43 +127,49 @@ export default function MekanOnerModal({
               </p>
               <button
                 onClick={onClose}
-                className="px-6 py-2.5 bg-green-600 text-white font-semibold rounded-xl text-sm hover:bg-green-700 transition-colors"
+                className="px-6 min-h-[44px] py-2 bg-green-600 text-white font-semibold rounded-xl text-sm hover:bg-green-700 transition-colors"
               >
                 Kapat
               </button>
             </div>
+
           ) : (
-            /* Form */
-            <form onSubmit={handleSubmit} className="space-y-4">
+            /* ── Form ────────────────────────────────────────── */
+            <form onSubmit={handleSubmit} className="space-y-4" noValidate>
+              <p className="text-sm text-gray-500">
+                Bildiğiniz helal bir mekanı topluluğa önerin.
+              </p>
 
               {/* Mekan Adı */}
               <div>
-                <label className="block text-sm font-semibold text-gray-700 mb-1.5">
-                  Mekan Adı <span className="text-red-500">*</span>
+                <label htmlFor="om-isim" className="block text-sm font-semibold text-gray-700 mb-1.5">
+                  Mekan Adı <span className="text-red-500" aria-hidden="true">*</span>
                 </label>
                 <input
+                  id="om-isim"
                   type="text"
                   name="isim"
                   value={form.isim}
                   onChange={handleChange}
                   required
                   placeholder="örn. Berliner Döner Kebap"
-                  className={inputClass}
+                  className={inputCls}
                 />
               </div>
 
               {/* Ülke */}
               <div>
-                <label className="block text-sm font-semibold text-gray-700 mb-1.5">
-                  Ülke <span className="text-red-500">*</span>
+                <label htmlFor="om-ulke" className="block text-sm font-semibold text-gray-700 mb-1.5">
+                  Ülke <span className="text-red-500" aria-hidden="true">*</span>
                 </label>
                 {countries.length > 1 ? (
                   <select
+                    id="om-ulke"
                     name="ulke"
                     value={form.ulke}
                     onChange={handleChange}
                     required
-                    className={inputClass}
+                    className={inputCls}
                   >
                     {countries.map((c) => (
                       <option key={c} value={c}>{c}</option>
@@ -166,62 +177,66 @@ export default function MekanOnerModal({
                   </select>
                 ) : (
                   <input
+                    id="om-ulke"
                     type="text"
                     name="ulke"
                     value={form.ulke}
                     onChange={handleChange}
                     required
                     placeholder="örn. Almanya"
-                    className={inputClass}
+                    className={inputCls}
                   />
                 )}
               </div>
 
               {/* Şehir */}
               <div>
-                <label className="block text-sm font-semibold text-gray-700 mb-1.5">
-                  Şehir <span className="text-red-500">*</span>
+                <label htmlFor="om-sehir" className="block text-sm font-semibold text-gray-700 mb-1.5">
+                  Şehir <span className="text-red-500" aria-hidden="true">*</span>
                 </label>
                 <input
+                  id="om-sehir"
                   type="text"
                   name="sehir"
                   value={form.sehir}
                   onChange={handleChange}
                   required
                   placeholder="örn. Berlin"
-                  className={inputClass}
+                  className={inputCls}
                 />
               </div>
 
               {/* Adres */}
               <div>
-                <label className="block text-sm font-semibold text-gray-700 mb-1.5">
-                  Adres <span className="text-red-500">*</span>
+                <label htmlFor="om-adres" className="block text-sm font-semibold text-gray-700 mb-1.5">
+                  Adres <span className="text-red-500" aria-hidden="true">*</span>
                 </label>
                 <input
+                  id="om-adres"
                   type="text"
                   name="adres"
                   value={form.adres}
                   onChange={handleChange}
                   required
                   placeholder="örn. Musterstraße 12, 10115 Berlin"
-                  className={inputClass}
+                  className={inputCls}
                 />
               </div>
 
               {/* Kategori */}
               <div>
-                <label className="block text-sm font-semibold text-gray-700 mb-1.5">
-                  Kategori <span className="text-red-500">*</span>
+                <label htmlFor="om-kategori" className="block text-sm font-semibold text-gray-700 mb-1.5">
+                  Kategori <span className="text-red-500" aria-hidden="true">*</span>
                 </label>
                 <select
+                  id="om-kategori"
                   name="kategori"
                   value={form.kategori}
                   onChange={handleChange}
                   required
-                  className={inputClass}
+                  className={inputCls}
                 >
-                  {KATEGORILER.map((kat) => (
+                  {KATEGORILER.filter((k) => k !== "Tümü").map((kat) => (
                     <option key={kat} value={kat}>{kat}</option>
                   ))}
                 </select>
@@ -229,27 +244,29 @@ export default function MekanOnerModal({
 
               {/* İletişim (optional) */}
               <div>
-                <label className="block text-sm font-semibold text-gray-700 mb-1.5">
+                <label htmlFor="om-iletisim" className="block text-sm font-semibold text-gray-700 mb-1.5">
                   İletişim{" "}
                   <span className="text-gray-400 font-normal">(isteğe bağlı)</span>
                 </label>
                 <input
+                  id="om-iletisim"
                   type="text"
                   name="iletisim"
                   value={form.iletisim}
                   onChange={handleChange}
                   placeholder="Telefon numarası"
-                  className={inputClass}
+                  className={inputCls}
                 />
               </div>
 
               {/* Notunuz (optional) */}
               <div>
-                <label className="block text-sm font-semibold text-gray-700 mb-1.5">
+                <label htmlFor="om-notunuz" className="block text-sm font-semibold text-gray-700 mb-1.5">
                   Notunuz{" "}
                   <span className="text-gray-400 font-normal">(isteğe bağlı)</span>
                 </label>
                 <textarea
+                  id="om-notunuz"
                   name="notunuz"
                   value={form.notunuz}
                   onChange={handleChange}
@@ -259,9 +276,12 @@ export default function MekanOnerModal({
                 />
               </div>
 
-              {/* Error message */}
+              {/* Error */}
               {error && (
-                <div className="bg-red-50 border border-red-200 text-red-700 text-sm rounded-xl px-4 py-3">
+                <div
+                  role="alert"
+                  className="bg-red-50 border border-red-200 text-red-700 text-sm rounded-xl px-4 py-3"
+                >
                   {error}
                 </div>
               )}
@@ -270,11 +290,11 @@ export default function MekanOnerModal({
               <button
                 type="submit"
                 disabled={isLoading}
-                className="w-full h-11 bg-green-600 hover:bg-green-700 disabled:bg-green-400 text-white font-bold rounded-xl text-sm transition-colors flex items-center justify-center gap-2"
+                className="w-full min-h-[44px] bg-green-600 hover:bg-green-700 disabled:bg-green-400 disabled:cursor-not-allowed text-white font-bold rounded-xl text-sm transition-colors flex items-center justify-center gap-2"
               >
                 {isLoading ? (
                   <>
-                    <Loader2 className="w-4 h-4 animate-spin" />
+                    <Loader2 className="w-4 h-4 animate-spin" aria-hidden="true" />
                     Gönderiliyor...
                   </>
                 ) : (

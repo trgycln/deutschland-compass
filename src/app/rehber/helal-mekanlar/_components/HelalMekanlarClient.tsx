@@ -1,54 +1,112 @@
 "use client";
-// Client Component — all filtering, search, country/city grouping, and UI state
+// Root client component — reads filter state from URL params, computes derived data, orchestrates the full page
 
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect, useCallback } from "react";
+import { useSearchParams, useRouter, usePathname } from "next/navigation";
 import type { HelalMekan } from "../page";
-import MekanModal from "./MekanModal";
+import FilterBar from "./FilterBar";
+import PlaceCard from "./PlaceCard";
+import PlaceDetailModal from "./PlaceDetailModal";
 import MekanOnerModal from "./MekanOnerModal";
-import { CheckCircle2, MapPin, Phone, Search, X, ExternalLink } from "lucide-react";
+import {
+  ALMANYA_QUICK_CITIES,
+  KATEGORI_SLUG,
+  SLUG_TO_KATEGORI,
+} from "./constants";
+import { MapPin } from "lucide-react";
 
-// ─── Constants ────────────────────────────────────────────────────────────────
+// ─── Helpers ──────────────────────────────────────────────────────────────────
 
-const ALMANYA_QUICK_CITIES = [
-  "Berlin", "Hamburg", "München", "Frankfurt",
-  "Köln", "Stuttgart", "Düsseldorf", "Bremen",
-];
+// Build a URL-updated search params string, removing keys whose value is empty/"all"/"Tümü"
+function buildParams(updates: Record<string, string>): string {
+  const params = new URLSearchParams(
+    typeof window !== "undefined" ? window.location.search : ""
+  );
+  Object.entries(updates).forEach(([key, value]) => {
+    if (!value || value === "all" || value === "Tümü") {
+      params.delete(key);
+    } else {
+      params.set(key, value);
+    }
+  });
+  return params.toString();
+}
 
-const KATEGORILER = ["Tümü", "Restoran", "Kasap", "Döner", "Café", "Bakkal", "Otel", "Diğer"] as const;
+// ─── Component ────────────────────────────────────────────────────────────────
 
-const KATEGORI_ICON: Record<string, string> = {
-  Restoran: "🍽️",
-  Kasap:    "🥩",
-  Döner:    "🌯",
-  Café:     "☕",
-  Bakkal:   "🛒",
-  Otel:     "🏨",
-  Diğer:    "📍",
-};
+export default function HelalMekanlarClient({
+  initialData,
+}: {
+  initialData: HelalMekan[];
+}) {
+  const searchParams = useSearchParams();
+  const router       = useRouter();
+  const pathname     = usePathname();
 
-const KATEGORI_RENK: Record<string, string> = {
-  Restoran: "bg-green-100 text-green-800 border border-green-200",
-  Kasap:    "bg-red-100 text-red-800 border border-red-200",
-  Döner:    "bg-orange-100 text-orange-800 border border-orange-200",
-  Café:     "bg-yellow-100 text-yellow-800 border border-yellow-200",
-  Bakkal:   "bg-blue-100 text-blue-800 border border-blue-200",
-  Otel:     "bg-purple-100 text-purple-800 border border-purple-200",
-  Diğer:    "bg-gray-100 text-gray-800 border border-gray-200",
-};
+  // ── URL-derived filter state ─────────────────────────────────────────────
+  const selectedCountry  = searchParams.get("country") ?? "all";
+  const selectedCity     = searchParams.get("city")    ?? "all";
+  const selectedCategory =
+    SLUG_TO_KATEGORI[searchParams.get("category") ?? ""] ?? "Tümü";
+  const searchQuery = searchParams.get("q") ?? "";
 
-// ─── Main Client Component ────────────────────────────────────────────────────
+  // ── Local state (not persisted in URL) ──────────────────────────────────
+  // Text input has its own state so it feels instant; synced to URL with debounce
+  const [searchInput, setSearchInput] = useState(searchQuery);
+  const [selectedMekan, setSelectedMekan] = useState<HelalMekan | null>(null);
+  const [showOnerModal, setShowOnerModal] = useState(false);
 
-export default function HelalMekanlarClient({ initialData }: { initialData: HelalMekan[] }) {
-  const [searchQuery, setSearchQuery]           = useState("");
-  const [selectedCountry, setSelectedCountry]   = useState("all");
-  const [selectedCity, setSelectedCity]         = useState("all");
-  const [selectedCategory, setSelectedCategory] = useState("Tümü");
-  const [selectedMekan, setSelectedMekan]       = useState<HelalMekan | null>(null);
-  const [showOnerModal, setShowOnerModal]       = useState(false);
+  // Keep searchInput in sync when the URL changes externally (e.g. browser back)
+  useEffect(() => {
+    setSearchInput(searchParams.get("q") ?? "");
+  }, [searchParams]);
 
-  // ── Derived data ───────────────────────────────────────────────────────────
+  // ── URL update helper ────────────────────────────────────────────────────
+  const setFilter = useCallback(
+    (updates: Record<string, string>) => {
+      const query = buildParams(updates);
+      router.replace(query ? `${pathname}?${query}` : pathname, { scroll: false });
+    },
+    [router, pathname]
+  );
 
-  // All unique countries, Almanya first
+  // Debounce search query to URL (400 ms)
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      const query = buildParams({ q: searchInput.trim() });
+      router.replace(query ? `${pathname}?${query}` : pathname, { scroll: false });
+    }, 400);
+    return () => clearTimeout(timer);
+    // router and pathname are stable refs; intentionally excluded to avoid re-running on every navigation
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [searchInput]);
+
+  // ── Filter change handlers ───────────────────────────────────────────────
+  const handleCountryChange = (country: string) => {
+    setFilter({ country, city: "" }); // reset city when country changes
+  };
+
+  const handleCityChange = (city: string) => {
+    setFilter({ city });
+  };
+
+  const handleCategoryChange = (category: string) => {
+    setFilter({ category: KATEGORI_SLUG[category] ?? "" });
+  };
+
+  const handleQuickCity = (city: string) => {
+    // Toggle: clicking the active city deselects it
+    const newCity = city === selectedCity ? "" : city;
+    setFilter({ country: "Almanya", city: newCity });
+  };
+
+  const resetFilters = () => {
+    setSearchInput("");
+    router.replace(pathname, { scroll: false });
+  };
+
+  // ── Derived data ─────────────────────────────────────────────────────────
+
   const countries = useMemo(() => {
     const unique = [...new Set(initialData.map((m) => m.ulke))];
     return unique.sort((a, b) =>
@@ -56,25 +114,22 @@ export default function HelalMekanlarClient({ initialData }: { initialData: Hela
     );
   }, [initialData]);
 
-  // Cities available for the selected country
   const cities = useMemo(() => {
-    const source = selectedCountry === "all"
-      ? initialData
-      : initialData.filter((m) => m.ulke === selectedCountry);
+    const source =
+      selectedCountry === "all"
+        ? initialData
+        : initialData.filter((m) => m.ulke === selectedCountry);
     return [...new Set(source.map((m) => m.sehir))].sort();
   }, [initialData, selectedCountry]);
 
   const filtered = useMemo(() => {
     let result = initialData;
-    if (selectedCountry !== "all") {
+    if (selectedCountry !== "all")
       result = result.filter((m) => m.ulke === selectedCountry);
-    }
-    if (selectedCity !== "all") {
+    if (selectedCity !== "all")
       result = result.filter((m) => m.sehir === selectedCity);
-    }
-    if (selectedCategory !== "Tümü") {
+    if (selectedCategory !== "Tümü")
       result = result.filter((m) => m.kategori === selectedCategory);
-    }
     if (searchQuery.trim()) {
       const q = searchQuery.toLowerCase();
       result = result.filter(
@@ -88,7 +143,7 @@ export default function HelalMekanlarClient({ initialData }: { initialData: Hela
     return result;
   }, [initialData, selectedCountry, selectedCity, selectedCategory, searchQuery]);
 
-  // Group by country → city, most populated countries/cities first
+  // Group country → cities, most populated first; Almanya always at top
   const grouped = useMemo(() => {
     const countryMap = new Map<string, Map<string, HelalMekan[]>>();
     filtered.forEach((m) => {
@@ -97,7 +152,6 @@ export default function HelalMekanlarClient({ initialData }: { initialData: Hela
       if (!cityMap.has(m.sehir)) cityMap.set(m.sehir, []);
       cityMap.get(m.sehir)!.push(m);
     });
-
     return Array.from(countryMap.entries())
       .map(([ulke, cityMap]) => ({
         ulke,
@@ -119,19 +173,7 @@ export default function HelalMekanlarClient({ initialData }: { initialData: Hela
     selectedCategory !== "Tümü" ||
     searchQuery.trim() !== "";
 
-  const resetFilters = () => {
-    setSearchQuery("");
-    setSelectedCountry("all");
-    setSelectedCity("all");
-    setSelectedCategory("Tümü");
-  };
-
-  const handleCountryChange = (country: string) => {
-    setSelectedCountry(country);
-    setSelectedCity("all"); // reset city when country changes
-  };
-
-  // ── Render ─────────────────────────────────────────────────────────────────
+  // ── Render ────────────────────────────────────────────────────────────────
 
   return (
     <div className="min-h-screen bg-gray-50 pb-28">
@@ -139,31 +181,31 @@ export default function HelalMekanlarClient({ initialData }: { initialData: Hela
       {/* ══════════════════════════════════════════
           HERO
       ══════════════════════════════════════════ */}
-      <section className="bg-gradient-to-br from-green-600 to-green-800 text-white pt-10 pb-8 px-4">
+      <section className="bg-gradient-to-br from-green-600 via-emerald-500 to-teal-500 text-white pt-10 pb-8 px-4">
         <div className="max-w-3xl mx-auto text-center">
-          <div className="inline-flex items-center gap-2 bg-white/15 rounded-full px-4 py-1.5 text-sm font-medium mb-4">
+          <div className="inline-flex items-center gap-2 bg-white/15 backdrop-blur-sm rounded-full px-4 py-1.5 text-sm font-medium mb-4">
             🕌 Topluluk Helal Rehberi
           </div>
           <h1 className="text-3xl sm:text-4xl font-extrabold leading-tight mb-3">
             Avrupa&apos;da Helal Mekanlar
           </h1>
-          <p className="text-green-100 text-base sm:text-lg max-w-xl mx-auto mb-6">
+          <p className="text-green-100 text-base sm:text-lg max-w-xl mx-auto mb-3">
             Bulunduğun şehirdeki helal restoranları, kasapları ve daha fazlasını keşfet
           </p>
+          <p className="text-white/70 text-sm mb-6">
+            <span className="font-bold text-white">{initialData.length}+</span> mekan kayıtlı
+          </p>
 
-          {/* German city quick-select chips — only shown when Almanya is active */}
+          {/* German city quick-select chips */}
           {(selectedCountry === "all" || selectedCountry === "Almanya") && (
             <div className="flex flex-wrap justify-center gap-2">
               {ALMANYA_QUICK_CITIES.map((city) => (
                 <button
                   key={city}
-                  onClick={() => {
-                    handleCountryChange("Almanya");
-                    setSelectedCity(city === selectedCity ? "all" : city);
-                  }}
-                  className={`px-4 py-1.5 rounded-full text-sm font-medium transition-all ${
+                  onClick={() => handleQuickCity(city)}
+                  className={`min-h-[44px] px-4 py-2 rounded-full text-sm font-medium transition-all active:scale-95 ${
                     selectedCity === city
-                      ? "bg-white text-green-700 shadow-md"
+                      ? "bg-white text-green-700 shadow-md font-bold"
                       : "bg-white/20 text-white hover:bg-white/30"
                   }`}
                 >
@@ -178,137 +220,41 @@ export default function HelalMekanlarClient({ initialData }: { initialData: Hela
       {/* ══════════════════════════════════════════
           STICKY FILTER BAR
       ══════════════════════════════════════════ */}
-      <div className="sticky top-0 z-40 bg-white/95 backdrop-blur-sm border-b border-gray-200 shadow-sm">
-        <div className="max-w-6xl mx-auto px-4 py-3 space-y-2">
-
-          {/* Row 1: Country + City + Search */}
-          <div className="flex gap-2">
-            {/* Country select — only rendered when there are multiple countries */}
-            {countries.length > 1 && (
-              <select
-                value={selectedCountry}
-                onChange={(e) => handleCountryChange(e.target.value)}
-                className="h-10 rounded-lg border border-gray-300 bg-white px-3 text-sm text-gray-700 focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent min-w-[130px]"
-              >
-                <option value="all">Tüm Ülkeler</option>
-                {countries.map((c) => (
-                  <option key={c} value={c}>{c}</option>
-                ))}
-              </select>
-            )}
-
-            <select
-              value={selectedCity}
-              onChange={(e) => setSelectedCity(e.target.value)}
-              className="h-10 rounded-lg border border-gray-300 bg-white px-3 text-sm text-gray-700 focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent min-w-[130px]"
-            >
-              <option value="all">Tüm Şehirler</option>
-              {cities.map((city) => (
-                <option key={city} value={city}>{city}</option>
-              ))}
-            </select>
-
-            <div className="relative flex-1">
-              <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400 pointer-events-none" />
-              <input
-                type="text"
-                placeholder="Mekan adı veya adres ara..."
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                className="w-full h-10 pl-9 pr-8 rounded-lg border border-gray-300 bg-white text-sm text-gray-700 focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent"
-              />
-              {searchQuery && (
-                <button
-                  onClick={() => setSearchQuery("")}
-                  className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600"
-                  aria-label="Aramayı temizle"
-                >
-                  <X className="w-4 h-4" />
-                </button>
-              )}
-            </div>
-
-            {isFiltered && (
-              <button
-                onClick={resetFilters}
-                className="h-10 px-3 rounded-lg border border-red-200 text-red-500 hover:bg-red-50 text-sm font-medium transition-colors flex items-center gap-1 shrink-0"
-              >
-                <X className="w-3.5 h-3.5" />
-                <span className="hidden sm:inline">Temizle</span>
-              </button>
-            )}
-          </div>
-
-          {/* Row 2: Category filter chips */}
-          <div className="flex gap-1.5 overflow-x-auto pb-0.5 [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
-            {KATEGORILER.map((kat) => (
-              <button
-                key={kat}
-                onClick={() => setSelectedCategory(kat)}
-                className={`flex items-center gap-1.5 px-3 py-1 rounded-full text-sm font-medium whitespace-nowrap transition-all shrink-0 border ${
-                  selectedCategory === kat
-                    ? "bg-green-600 text-white border-green-600 shadow-sm"
-                    : "bg-white text-gray-600 border-gray-200 hover:border-green-300 hover:bg-green-50"
-                }`}
-              >
-                {kat !== "Tümü" && <span>{KATEGORI_ICON[kat]}</span>}
-                {kat}
-              </button>
-            ))}
-          </div>
-
-          {/* Results count */}
-          <p className="text-xs text-gray-500">
-            <span className="font-semibold text-gray-800">{filtered.length}</span> mekan bulundu
-            {selectedCountry !== "all" && (
-              <span className="text-green-600"> — {selectedCountry}</span>
-            )}
-            {selectedCity !== "all" && (
-              <span className="text-green-600">, {selectedCity}</span>
-            )}
-          </p>
-        </div>
-      </div>
+      <FilterBar
+        countries={countries}
+        cities={cities}
+        selectedCountry={selectedCountry}
+        selectedCity={selectedCity}
+        selectedCategory={selectedCategory}
+        searchInput={searchInput}
+        filteredCount={filtered.length}
+        isFiltered={isFiltered}
+        onCountryChange={handleCountryChange}
+        onCityChange={handleCityChange}
+        onCategoryChange={handleCategoryChange}
+        onSearchChange={setSearchInput}
+        onReset={resetFilters}
+      />
 
       {/* ══════════════════════════════════════════
           MAIN CONTENT
       ══════════════════════════════════════════ */}
       <div className="max-w-6xl mx-auto px-4 mt-6">
-
         {filtered.length === 0 ? (
-          /* ── Empty State ─────────────────────────────── */
-          <div className="text-center py-20">
-            <div className="text-5xl mb-4">🔍</div>
-            <h3 className="text-lg font-bold text-gray-800 mb-2">Sonuç bulunamadı</h3>
-            <p className="text-gray-500 text-sm mb-6">
-              Bu kriterlere uyan helal mekan bulunamadı.
-            </p>
-            <div className="flex flex-col sm:flex-row gap-3 justify-center">
-              <button
-                onClick={resetFilters}
-                className="px-5 py-2 bg-gray-100 text-gray-700 rounded-xl font-medium hover:bg-gray-200 transition-colors"
-              >
-                Filtreleri Temizle
-              </button>
-              <button
-                onClick={() => setShowOnerModal(true)}
-                className="px-5 py-2 bg-green-600 text-white rounded-xl font-medium hover:bg-green-700 transition-colors"
-              >
-                Mekan Öner +
-              </button>
-            </div>
-          </div>
+          <EmptyState
+            onReset={resetFilters}
+            onSuggest={() => setShowOnerModal(true)}
+          />
         ) : (
-          /* ── Grouped list ────────────────────────────── */
           <div className="space-y-12">
             {grouped.map(({ ulke, cities: cityGroups, total }) => (
               <div key={ulke}>
-                {/* Country header — only shown when viewing all countries */}
+                {/* Country header — only shown when "all countries" is active */}
                 {showCountryHeader && (
                   <div className="flex items-center gap-3 mb-6">
                     <div className="flex items-center gap-2 bg-green-600 text-white rounded-xl px-4 py-2 shadow-sm">
                       <span className="font-bold text-sm">{ulke}</span>
-                      <span className="bg-white/25 text-white text-xs font-semibold px-2 py-0.5 rounded-full">
+                      <span className="bg-white/25 text-xs font-semibold px-2 py-0.5 rounded-full">
                         {total}
                       </span>
                     </div>
@@ -318,7 +264,7 @@ export default function HelalMekanlarClient({ initialData }: { initialData: Hela
 
                 <div className="space-y-8">
                   {cityGroups.map(({ sehir, mekanlar }) => (
-                    <div key={sehir}>
+                    <div key={sehir} id={`city-section-${sehir}`}>
                       {/* City header */}
                       <div className="flex items-center gap-3 mb-4">
                         <div className="flex items-center gap-2 bg-white border border-gray-200 rounded-full px-4 py-1.5 shadow-sm">
@@ -334,7 +280,7 @@ export default function HelalMekanlarClient({ initialData }: { initialData: Hela
                       {/* Cards grid */}
                       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                         {mekanlar.map((mekan) => (
-                          <MekanKarti
+                          <PlaceCard
                             key={mekan.id}
                             mekan={mekan}
                             onDetay={() => setSelectedMekan(mekan)}
@@ -354,7 +300,10 @@ export default function HelalMekanlarClient({ initialData }: { initialData: Hela
           MODALS
       ══════════════════════════════════════════ */}
       {selectedMekan && (
-        <MekanModal mekan={selectedMekan} onClose={() => setSelectedMekan(null)} />
+        <PlaceDetailModal
+          mekan={selectedMekan}
+          onClose={() => setSelectedMekan(null)}
+        />
       )}
       {showOnerModal && (
         <MekanOnerModal
@@ -364,14 +313,19 @@ export default function HelalMekanlarClient({ initialData }: { initialData: Hela
       )}
 
       {/* ══════════════════════════════════════════
-          FLOATING SUGGEST BUTTON
+          FLOATING "MEKAN ÖNER" BUTTON
       ══════════════════════════════════════════ */}
       <div className="fixed bottom-6 right-4 z-50">
+        {/* Pulse glow ring */}
+        <span
+          className="absolute inset-0 rounded-full bg-green-400 animate-ping opacity-30 pointer-events-none"
+          aria-hidden="true"
+        />
         <button
           onClick={() => setShowOnerModal(true)}
-          className="flex items-center gap-2 bg-green-600 hover:bg-green-700 text-white font-semibold px-5 py-3 rounded-full shadow-lg hover:shadow-xl transition-all active:scale-95"
+          className="relative flex items-center gap-2 bg-green-600 hover:bg-green-700 text-white font-semibold px-5 py-3 rounded-full shadow-xl hover:shadow-2xl transition-all active:scale-95 min-h-[44px]"
         >
-          <span className="text-lg leading-none">+</span>
+          <span className="text-lg leading-none" aria-hidden="true">+</span>
           <span className="text-sm">Mekan Öner</span>
         </button>
       </div>
@@ -379,88 +333,34 @@ export default function HelalMekanlarClient({ initialData }: { initialData: Hela
   );
 }
 
-// ─── Place Card ───────────────────────────────────────────────────────────────
+// ─── Empty State ──────────────────────────────────────────────────────────────
 
-function MekanKarti({
-  mekan,
-  onDetay,
+function EmptyState({
+  onReset,
+  onSuggest,
 }: {
-  mekan: HelalMekan;
-  onDetay: () => void;
+  onReset: () => void;
+  onSuggest: () => void;
 }) {
-  const badgeClass = KATEGORI_RENK[mekan.kategori] ?? KATEGORI_RENK["Diğer"];
-  const icon       = KATEGORI_ICON[mekan.kategori] ?? "📍";
-
   return (
-    <div className="bg-white rounded-2xl border border-gray-100 p-4 shadow-sm hover:shadow-md transition-shadow duration-200 flex flex-col">
-      {/* Header */}
-      <div className="flex items-start justify-between gap-2 mb-3">
-        <div className="flex-1 min-w-0">
-          <div className="flex items-center gap-2 mb-1 flex-wrap">
-            <span className="text-xl shrink-0">{icon}</span>
-            <h3 className="font-bold text-gray-900 text-base leading-tight">{mekan.isim}</h3>
-          </div>
-          <div className="flex items-center gap-1 text-xs text-gray-500 mt-0.5">
-            <MapPin className="w-3 h-3 shrink-0 text-green-500" />
-            <span className="font-medium">{mekan.sehir}</span>
-            {mekan.adres && (
-              <>
-                <span className="text-gray-300">·</span>
-                <span className="truncate">{mekan.adres}</span>
-              </>
-            )}
-          </div>
-        </div>
-
-        <div className="flex flex-col items-end gap-1.5 shrink-0">
-          <span className={`text-xs font-semibold px-2.5 py-0.5 rounded-full ${badgeClass}`}>
-            {mekan.kategori}
-          </span>
-          {mekan.onaylandi && (
-            <span className="flex items-center gap-1 text-xs text-green-700 font-semibold">
-              <CheckCircle2 className="w-3 h-3" />
-              Onaylı
-            </span>
-          )}
-        </div>
-      </div>
-
-      {/* Phone */}
-      {mekan.telefon && (
-        <a
-          href={`tel:${mekan.telefon}`}
-          className="flex items-center gap-1.5 text-xs text-gray-600 hover:text-green-700 mb-3 transition-colors w-fit"
-        >
-          <Phone className="w-3 h-3" />
-          {mekan.telefon}
-        </a>
-      )}
-
-      <div className="flex-1" />
-
-      {/* Action buttons */}
-      <div className="flex gap-2 mt-3">
-        {mekan.google_maps_url ? (
-          <a
-            href={mekan.google_maps_url}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="flex items-center gap-1.5 justify-center flex-1 h-9 rounded-xl bg-green-50 text-green-700 border border-green-200 text-xs font-semibold hover:bg-green-100 transition-colors"
-          >
-            <MapPin className="w-3.5 h-3.5" />
-            Yol Tarifi
-          </a>
-        ) : (
-          <span className="flex items-center justify-center flex-1 h-9 rounded-xl bg-gray-50 text-gray-400 border border-gray-100 text-xs font-medium cursor-default">
-            Harita yok
-          </span>
-        )}
+    <div className="text-center py-20">
+      <div className="text-5xl mb-4">🔍</div>
+      <h3 className="text-lg font-bold text-gray-800 mb-2">Sonuç bulunamadı</h3>
+      <p className="text-gray-500 text-sm mb-6">
+        Bu kriterlere uyan helal mekan bulunamadı.
+      </p>
+      <div className="flex flex-col sm:flex-row gap-3 justify-center">
         <button
-          onClick={onDetay}
-          className="flex items-center gap-1.5 justify-center flex-1 h-9 rounded-xl bg-gray-800 text-white text-xs font-semibold hover:bg-gray-700 transition-colors"
+          onClick={onReset}
+          className="min-h-[44px] px-6 py-2 bg-gray-100 text-gray-700 rounded-xl font-medium hover:bg-gray-200 transition-colors"
         >
-          <ExternalLink className="w-3.5 h-3.5" />
-          Detay
+          Filtreleri Temizle
+        </button>
+        <button
+          onClick={onSuggest}
+          className="min-h-[44px] px-6 py-2 bg-green-600 text-white rounded-xl font-medium hover:bg-green-700 transition-colors"
+        >
+          Mekan Öner +
         </button>
       </div>
     </div>
