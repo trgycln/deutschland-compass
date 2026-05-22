@@ -98,7 +98,7 @@ export default async function HelalMekanlarPage() {
     );
   }
 
-  const mekanlar: HelalMekan[] = ((data as DBPlace[]) ?? []).map((p) => ({
+  const mekanlar: HelalMekan[] = ((data as unknown as DBPlace[]) ?? []).map((p) => ({
     id:                p.id,
     isim:              p.name,
     kategori:          CATEGORY_MAP[p.category ?? ""] ?? "Diğer",
