@@ -5,16 +5,13 @@ import { X, MapPin, Phone, CheckCircle2 } from "lucide-react";
 import type { HelalMekan } from "../page";
 import { KATEGORI_ICON, KATEGORI_RENK } from "./constants";
 
-// ─── Map embed URL ────────────────────────────────────────────────────────────
+// ─── Map embed URL (no API key required) ─────────────────────────────────────
 
 function getEmbedUrl(mekan: HelalMekan): string {
-  const key = process.env.NEXT_PUBLIC_GOOGLE_MAPS_KEY;
-  if (!key) return "";
-  if (mekan.google_place_id) {
-    return `https://www.google.com/maps/embed/v1/place?key=${key}&place_id=${mekan.google_place_id}`;
-  }
-  const q = encodeURIComponent(`${mekan.isim} ${mekan.adres} ${mekan.sehir}`);
-  return `https://www.google.com/maps/embed/v1/place?key=${key}&q=${q}`;
+  const q = encodeURIComponent(
+    [mekan.isim, mekan.sehir, "Deutschland"].filter(Boolean).join(", ")
+  );
+  return `https://maps.google.com/maps?q=${q}&output=embed&hl=tr`;
 }
 
 // ─── Component ────────────────────────────────────────────────────────────────
@@ -26,7 +23,7 @@ export default function PlaceDetailModal({
   mekan: HelalMekan;
   onClose: () => void;
 }) {
-  const embedUrl   = getEmbedUrl(mekan);
+  const mapSrc     = getEmbedUrl(mekan);
   const badgeClass = KATEGORI_RENK[mekan.kategori] ?? KATEGORI_RENK["Diğer"];
   const icon       = KATEGORI_ICON[mekan.kategori] ?? "📍";
 
@@ -117,30 +114,20 @@ export default function PlaceDetailModal({
             )}
           </div>
 
-          {/* Google Maps embed */}
-          {embedUrl ? (
-            <div className="mx-4 mb-4 rounded-xl overflow-hidden border border-gray-200 h-56">
-              <iframe
-                src={embedUrl}
-                width="100%"
-                height="100%"
-                style={{ border: 0 }}
-                allowFullScreen
-                loading="lazy"
-                referrerPolicy="no-referrer-when-downgrade"
-                title={`${mekan.isim} haritası`}
-              />
-            </div>
-          ) : (
-            <div className="mx-4 mb-4 h-44 bg-gray-50 rounded-xl flex flex-col items-center justify-center border border-dashed border-gray-200 gap-2">
-              <MapPin className="w-8 h-8 text-gray-300" aria-hidden="true" />
-              <p className="text-xs text-gray-400">
-                {process.env.NEXT_PUBLIC_GOOGLE_MAPS_KEY
-                  ? "Harita koordinatı bulunamadı"
-                  : "Harita API anahtarı yapılandırılmamış"}
-              </p>
-            </div>
-          )}
+          {/* Google Maps embed — no API key required */}
+          <div className="mx-4 mb-4 rounded-xl overflow-hidden border border-gray-200">
+            <iframe
+              src={mapSrc}
+              width="100%"
+              height="250"
+              style={{ border: 0 }}
+              allowFullScreen
+              loading="lazy"
+              referrerPolicy="no-referrer-when-downgrade"
+              className="rounded-xl"
+              title={`${mekan.isim} haritası`}
+            />
+          </div>
         </div>
 
         {/* ── Footer actions ───────────────────────────────────── */}

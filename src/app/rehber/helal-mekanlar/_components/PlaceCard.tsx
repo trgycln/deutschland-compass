@@ -1,5 +1,5 @@
 "use client";
-// Individual halal place card with category badge, verified indicator, phone link, and action buttons
+// Individual halal place card — category badge, verified indicator, note preview, feature badges, action buttons
 
 import { CheckCircle2, MapPin, Phone, ExternalLink } from "lucide-react";
 import type { HelalMekan } from "../page";
@@ -10,9 +10,44 @@ interface PlaceCardProps {
   onDetay: () => void;
 }
 
+// Feature badges shown when the corresponding boolean field is true
+const FEATURE_BADGES: {
+  key: keyof HelalMekan;
+  label: string;
+  icon: string;
+  cls: string;
+}[] = [
+  {
+    key:   "mescid_var",
+    label: "Mescidli",
+    icon:  "🕌",
+    cls:   "bg-blue-50 text-blue-700 border border-blue-100",
+  },
+  {
+    key:   "helal_sertifikali",
+    label: "Sertifikalı",
+    icon:  "✅",
+    cls:   "bg-green-50 text-green-700 border border-green-100",
+  },
+  {
+    key:   "muslumana_ait",
+    label: "Müslümana Ait",
+    icon:  "👤",
+    cls:   "bg-purple-50 text-purple-700 border border-purple-100",
+  },
+  {
+    key:   "aile_dostu",
+    label: "Aile Dostu",
+    icon:  "👨‍👩‍👧",
+    cls:   "bg-orange-50 text-orange-700 border border-orange-100",
+  },
+];
+
 export default function PlaceCard({ mekan, onDetay }: PlaceCardProps) {
   const badgeClass = KATEGORI_RENK[mekan.kategori] ?? KATEGORI_RENK["Diğer"];
   const icon       = KATEGORI_ICON[mekan.kategori] ?? "📍";
+
+  const activeFeatures = FEATURE_BADGES.filter((f) => mekan[f.key] === true);
 
   return (
     <article className="bg-white rounded-2xl border border-gray-100 p-4 shadow-sm hover:shadow-lg transition-shadow duration-200 flex flex-col">
@@ -54,7 +89,29 @@ export default function PlaceCard({ mekan, onDetay }: PlaceCardProps) {
         </div>
       </div>
 
-      {/* ── Phone ──────────────────────────────────────────────── */}
+      {/* ── Note preview ──────────────────────────────────────────── */}
+      {mekan.note && (
+        <p className="text-xs text-gray-500 italic line-clamp-2 mb-2 leading-relaxed">
+          {mekan.note}
+        </p>
+      )}
+
+      {/* ── Feature badges ────────────────────────────────────────── */}
+      {activeFeatures.length > 0 && (
+        <div className="flex flex-wrap gap-1 mb-2">
+          {activeFeatures.map((f) => (
+            <span
+              key={f.key as string}
+              className={`inline-flex items-center gap-1 text-[11px] font-semibold px-2 py-0.5 rounded-full ${f.cls}`}
+            >
+              <span aria-hidden="true">{f.icon}</span>
+              {f.label}
+            </span>
+          ))}
+        </div>
+      )}
+
+      {/* ── Phone ─────────────────────────────────────────────────── */}
       {mekan.telefon && (
         <a
           href={`tel:${mekan.telefon}`}
@@ -67,7 +124,7 @@ export default function PlaceCard({ mekan, onDetay }: PlaceCardProps) {
 
       <div className="flex-1" />
 
-      {/* ── Action buttons ─────────────────────────────────────── */}
+      {/* ── Action buttons ────────────────────────────────────────── */}
       <div className="flex gap-2 mt-3">
         {mekan.google_maps_url ? (
           <a
@@ -80,9 +137,13 @@ export default function PlaceCard({ mekan, onDetay }: PlaceCardProps) {
             Yol Tarifi
           </a>
         ) : (
-          <span className="flex items-center justify-center flex-1 min-h-[44px] rounded-xl bg-gray-50 text-gray-400 border border-gray-100 text-xs font-medium cursor-default select-none">
-            Harita yok
-          </span>
+          <button
+            disabled
+            className="flex items-center gap-1.5 justify-center flex-1 min-h-[44px] rounded-xl bg-gray-100 text-gray-400 border border-gray-100 text-xs font-semibold opacity-50 cursor-not-allowed"
+          >
+            <MapPin className="w-3.5 h-3.5" aria-hidden="true" />
+            Harita Yok
+          </button>
         )}
 
         <button

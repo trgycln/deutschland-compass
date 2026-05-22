@@ -1,4 +1,4 @@
-// Server Component — fetches all places from Supabase and passes to client; wraps in Suspense for useSearchParams
+// Server Component — fetches Almanya places from Supabase and passes to client; Suspense wraps for useSearchParams
 import { Suspense } from "react";
 import { supabase } from "@/lib/supabase";
 import HelalMekanlarClient from "./_components/HelalMekanlarClient";
@@ -10,10 +10,16 @@ export type HelalMekan = {
   ulke: string;
   sehir: string;
   adres: string;
+  note: string | null;
   telefon: string | null;
   google_maps_url: string;
   google_place_id: string | null;
   onaylandi: boolean;
+  highlight: boolean;
+  mescid_var: boolean;
+  helal_sertifikali: boolean;
+  muslumana_ait: boolean;
+  aile_dostu: boolean;
   created_at: string;
 };
 
@@ -23,22 +29,29 @@ type DBPlace = {
   country: string;
   city: string;
   address?: string | null;
+  note?: string | null;
   phone?: string | null;
   map_link?: string | null;
   category?: string | null;
   warning?: boolean | null;
   highlight?: boolean | null;
+  mescid_var?: boolean | null;
+  helal_sertifikali?: boolean | null;
+  muslumana_ait?: boolean | null;
+  aile_dostu?: boolean | null;
   created_at?: string | null;
   [key: string]: unknown;
 };
 
+// DB category slug → Turkish display label (matching current DB values exactly)
 const CATEGORY_MAP: Record<string, string> = {
   restaurant: "Restoran",
-  cafe:       "Café",
-  fast_food:  "Döner",
-  bakery:     "Bakkal",
-  market:     "Bakkal",
+  cafe:       "Kafe",
+  fast_food:  "Fast Food",
+  bakery:     "Fırın",
+  market:     "Market",
   butcher:    "Kasap",
+  other:      "Diğer",
 };
 
 // ── Suspense fallback skeleton ─────────────────────────────────────────────────
@@ -62,7 +75,11 @@ function PageSkeleton() {
 export default async function HelalMekanlarPage() {
   const { data, error } = await supabase
     .from("places")
-    .select("id, name, country, city, address, phone, map_link, category, warning, highlight, created_at")
+    .select(
+      "id, name, country, city, address, note, phone, map_link, category, " +
+      "warning, highlight, mescid_var, helal_sertifikali, muslumana_ait, aile_dostu, created_at"
+    )
+    .eq("country", "Almanya")
     .order("city", { ascending: true });
 
   if (error) {
@@ -82,17 +99,23 @@ export default async function HelalMekanlarPage() {
   }
 
   const mekanlar: HelalMekan[] = ((data as DBPlace[]) ?? []).map((p) => ({
-    id:              p.id,
-    isim:            p.name,
-    kategori:        CATEGORY_MAP[p.category ?? ""] ?? "Diğer",
-    ulke:            p.country,
-    sehir:           p.city,
-    adres:           p.address ?? "",
-    telefon:         p.phone ?? null,
-    google_maps_url: p.map_link ?? "",
-    google_place_id: null,
-    onaylandi:       p.highlight === true || p.warning !== true,
-    created_at:      p.created_at ?? "",
+    id:                p.id,
+    isim:              p.name,
+    kategori:          CATEGORY_MAP[p.category ?? ""] ?? "Diğer",
+    ulke:              p.country,
+    sehir:             p.city,
+    adres:             p.address ?? "",
+    note:              p.note ?? null,
+    telefon:           p.phone ?? null,
+    google_maps_url:   p.map_link ?? "",
+    google_place_id:   null,
+    onaylandi:         p.highlight === true || p.warning !== true,
+    highlight:         p.highlight === true,
+    mescid_var:        p.mescid_var === true,
+    helal_sertifikali: p.helal_sertifikali === true,
+    muslumana_ait:     p.muslumana_ait === true,
+    aile_dostu:        p.aile_dostu === true,
+    created_at:        p.created_at ?? "",
   }));
 
   return (
