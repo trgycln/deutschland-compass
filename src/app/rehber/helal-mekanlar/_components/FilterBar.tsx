@@ -5,13 +5,16 @@ import { Search, X } from "lucide-react";
 import { KATEGORILER, KATEGORI_ICON, SPECIAL_FILTERS } from "./constants";
 
 interface FilterBarProps {
+  countries: string[];
   cities: string[];
+  selectedCountry: string;
   selectedCity: string;
   selectedCategory: string;
   searchInput: string;
   filteredCount: number;
   isFiltered: boolean;
   activeSpecials: Set<string>;
+  onCountryChange: (v: string) => void;
   onCityChange: (v: string) => void;
   onCategoryChange: (v: string) => void;
   onSearchChange: (v: string) => void;
@@ -28,13 +31,16 @@ const scrollRowCls =
   "[&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]";
 
 export default function FilterBar({
+  countries,
   cities,
+  selectedCountry,
   selectedCity,
   selectedCategory,
   searchInput,
   filteredCount,
   isFiltered,
   activeSpecials,
+  onCountryChange,
   onCityChange,
   onCategoryChange,
   onSearchChange,
@@ -45,8 +51,23 @@ export default function FilterBar({
     <div className="sticky top-0 z-40 bg-white/95 backdrop-blur-sm border-b border-gray-200 shadow-sm">
       <div className="max-w-6xl mx-auto px-4 py-3 space-y-2">
 
-        {/* ── Row 1: City select + text search + reset ─────────────── */}
+        {/* ── Row 1: Selects + text search + reset ─────────────── */}
         <div className="flex gap-2 items-center">
+          {countries.length > 1 && (
+            <select
+              value={selectedCountry}
+              onChange={(e) => onCountryChange(e.target.value)}
+              className={selectCls}
+              style={{ minWidth: 130 }}
+              aria-label="Ülke seçin"
+            >
+              <option value="all">Tüm Ülkeler</option>
+              {countries.map((c) => (
+                <option key={c} value={c}>{c}</option>
+              ))}
+            </select>
+          )}
+
           <select
             value={selectedCity}
             onChange={(e) => onCityChange(e.target.value)}
@@ -143,8 +164,11 @@ export default function FilterBar({
         <p className="text-xs text-gray-500 leading-none pt-0.5">
           <span className="font-semibold text-gray-800">{filteredCount}</span>{" "}
           mekan bulundu
+          {selectedCountry !== "all" && (
+            <span className="text-green-600"> — {selectedCountry}</span>
+          )}
           {selectedCity !== "all" && (
-            <span className="text-green-600"> — {selectedCity}</span>
+            <span className="text-green-600"> {selectedCountry !== "all" ? "," : "—"} {selectedCity}</span>
           )}
         </p>
       </div>

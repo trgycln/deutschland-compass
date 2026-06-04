@@ -79,7 +79,6 @@ export default async function HelalMekanlarPage() {
       "id, name, country, city, address, note, phone, map_link, category, " +
       "warning, highlight, mescid_var, helal_sertifikali, muslumana_ait, aile_dostu, created_at"
     )
-    .eq("country", "Almanya")
     .order("city", { ascending: true });
 
   if (error) {

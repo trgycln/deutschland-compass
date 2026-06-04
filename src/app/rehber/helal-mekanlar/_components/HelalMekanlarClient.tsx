@@ -40,6 +40,7 @@ export default function HelalMekanlarClient({
   const pathname     = usePathname();
 
   // ── URL-derived filter state ─────────────────────────────────────────────
+  const selectedCountry  = searchParams.get("country")  ?? "all";
   const selectedCity     = searchParams.get("city")     ?? "all";
   const selectedCategory =
     SLUG_TO_KATEGORI[searchParams.get("category") ?? ""] ?? "Tümü";
@@ -76,6 +77,7 @@ export default function HelalMekanlarClient({
   }, [searchInput]);
 
   // ── Filter change handlers ───────────────────────────────────────────────
+  const handleCountryChange  = (country: string)  => setFilter({ country, city: "all" });
   const handleCityChange     = (city: string)     => setFilter({ city });
   const handleCategoryChange = (category: string) =>
     setFilter({ category: KATEGORI_SLUG[category] ?? "" });
@@ -100,13 +102,23 @@ export default function HelalMekanlarClient({
 
   // ── Derived data ─────────────────────────────────────────────────────────
 
-  const cities = useMemo(
-    () => [...new Set(initialData.map((m) => m.sehir))].sort(),
+  const countries = useMemo(
+    () => [...new Set(initialData.map((m) => m.ulke))].sort(),
     [initialData]
   );
 
+  const cities = useMemo(() => {
+    const c = initialData
+      .filter((m) => selectedCountry === "all" || m.ulke === selectedCountry)
+      .map((m) => m.sehir);
+    return [...new Set(c)].sort();
+  }, [initialData, selectedCountry]);
+
   const filtered = useMemo(() => {
     let result = initialData;
+
+    if (selectedCountry !== "all")
+      result = result.filter((m) => m.ulke === selectedCountry);
 
     if (selectedCity !== "all")
       result = result.filter((m) => m.sehir === selectedCity);
@@ -132,7 +144,7 @@ export default function HelalMekanlarClient({
     if (activeSpecials.has("highlight"))         result = result.filter((m) => m.highlight);
 
     return result;
-  }, [initialData, selectedCity, selectedCategory, searchQuery, activeSpecials]);
+  }, [initialData, selectedCountry, selectedCity, selectedCategory, searchQuery, activeSpecials]);
 
   // Group by city, most populated first; "Bilinmiyor" / empty city always last
   const grouped = useMemo(() => {
@@ -155,6 +167,7 @@ export default function HelalMekanlarClient({
   }, [filtered]);
 
   const isFiltered =
+    selectedCountry !== "all" ||
     selectedCity !== "all" ||
     selectedCategory !== "Tümü" ||
     searchQuery.trim() !== "" ||
@@ -174,7 +187,9 @@ export default function HelalMekanlarClient({
             🕌 Topluluk Helal Rehberi
           </div>
           <h1 className="text-3xl sm:text-4xl font-extrabold leading-tight mb-3">
-            Almanya&apos;da Helal Mekanlar
+            {selectedCountry === "all" 
+              ? (countries.length > 1 ? "Avrupa'da Helal Mekanlar" : "Almanya'da Helal Mekanlar") 
+              : `${selectedCountry}'da Helal Mekanlar`}
           </h1>
           <p className="text-green-100 text-base sm:text-lg max-w-xl mx-auto mb-3">
             Bulunduğun şehirdeki helal restoranları, kasapları ve daha fazlasını keşfet
@@ -184,21 +199,23 @@ export default function HelalMekanlarClient({
           </p>
 
           {/* German city quick-select chips */}
-          <div className="flex flex-wrap justify-center gap-2">
-            {ALMANYA_QUICK_CITIES.map((city) => (
-              <button
-                key={city}
-                onClick={() => handleQuickCity(city)}
-                className={`min-h-[44px] px-4 py-2 rounded-full text-sm font-medium transition-all active:scale-95 ${
-                  selectedCity === city
-                    ? "bg-white text-green-700 shadow-md font-bold"
-                    : "bg-white/20 text-white hover:bg-white/30"
-                }`}
-              >
-                {city}
-              </button>
-            ))}
-          </div>
+          {(selectedCountry === "all" || selectedCountry === "Almanya") && (
+            <div className="flex flex-wrap justify-center gap-2">
+              {ALMANYA_QUICK_CITIES.map((city) => (
+                <button
+                  key={city}
+                  onClick={() => handleQuickCity(city)}
+                  className={`min-h-[44px] px-4 py-2 rounded-full text-sm font-medium transition-all active:scale-95 ${
+                    selectedCity === city
+                      ? "bg-white text-green-700 shadow-md font-bold"
+                      : "bg-white/20 text-white hover:bg-white/30"
+                  }`}
+                >
+                  {city}
+                </button>
+              ))}
+            </div>
+          )}
         </div>
       </section>
 
@@ -206,13 +223,16 @@ export default function HelalMekanlarClient({
           STICKY FILTER BAR
       ══════════════════════════════════════════ */}
       <FilterBar
+        countries={countries}
         cities={cities}
+        selectedCountry={selectedCountry}
         selectedCity={selectedCity}
         selectedCategory={selectedCategory}
         searchInput={searchInput}
         filteredCount={filtered.length}
         isFiltered={isFiltered}
         activeSpecials={activeSpecials}
+        onCountryChange={handleCountryChange}
         onCityChange={handleCityChange}
         onCategoryChange={handleCategoryChange}
         onSearchChange={setSearchInput}
@@ -269,7 +289,7 @@ export default function HelalMekanlarClient({
       )}
       {showOnerModal && (
         <MekanOnerModal
-          countries={["Almanya"]}
+          countries={countries}
           onClose={() => setShowOnerModal(false)}
         />
       )}
