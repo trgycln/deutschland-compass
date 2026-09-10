@@ -14,6 +14,7 @@ import { familyReunionData } from "@/data/family-reunion";
 import { ProfessionVideoPlayer } from "@/components/profession-video-player";
 import { FaqSection } from "@/components/faq-section";
 import { aileBirlesimiFaqs } from "@/data/aile-birlesimi-faqs";
+import { CommunityUpdatesSection } from "@/components/community-updates-section";
 
 export default function FamilyReunionPage() {
   return (
@@ -86,6 +87,8 @@ export default function FamilyReunionPage() {
       </div>
 
       <div className="container mx-auto px-4 -mt-10 relative z-20 space-y-12">
+        {/* Canlı Topluluk Güncellemeleri & Taze Tecrübeler */}
+        <CommunityUpdatesSection categorySlug="aile-birlesimi" fallbackGroup="aile-birlesim" />
         
         {/* KRİTİK UYARI */}
         <Alert className="bg-amber-50 dark:bg-amber-950/40 border-amber-200 dark:border-amber-800 shadow-lg animate-in fade-in slide-in-from-bottom-4">

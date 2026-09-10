@@ -13,6 +13,7 @@ import { ShareExperienceDialog } from '@/components/share-experience-dialog';
 import { UploadDocumentDialog } from '@/components/upload-document-dialog';
 import { DocumentSection } from '@/components/document-section';
 import { ProfessionVideoPlayer } from '@/components/profession-video-player';
+import { CommunityUpdatesSection } from '@/components/community-updates-section';
 
 export default function BusinessGuidePage() {
   const { title, description, videoUrl, sections, faq, detailedReport, jobcenterReport } = businessGuideData;
@@ -125,6 +126,9 @@ export default function BusinessGuidePage() {
       </div>
 
       <div className="container mx-auto px-4 py-12 max-w-4xl" id="content-start">
+        {/* Canlı Topluluk Güncellemeleri & Taze Tecrübeler */}
+        <CommunityUpdatesSection categorySlug="is-kurma" fallbackGroup="sirket-kurmak" />
+
         {/* Tab Navigation */}
         {hydrated ? (
         <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">

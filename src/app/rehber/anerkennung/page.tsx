@@ -7,6 +7,7 @@ import { Badge } from '@/components/ui/badge';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { CheckCircle2, AlertTriangle, FileText, Building2, GraduationCap, Briefcase, Info, HelpCircle, Lightbulb, PlayCircle, Euro, Languages, Scale } from 'lucide-react';
 import { DocumentSection } from '@/components/document-section';
+import { CommunityUpdatesSection } from '@/components/community-updates-section';
 
 export default function AnerkennungPage() {
 
@@ -92,6 +93,9 @@ export default function AnerkennungPage() {
             </a>
           </div>
         </div>
+
+        {/* Canlı Topluluk Güncellemeleri & Taze Tecrübeler */}
+        <CommunityUpdatesSection categorySlug="anerkennung" fallbackGroup="anerkennung" />
 
         {/* Documents Section */}
         <DocumentSection professionSlug="anerkennung" />

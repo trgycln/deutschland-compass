@@ -11,6 +11,7 @@ import { FaqSection } from '@/components/faq-section';
 import { ExperienceSection } from '@/components/experience-section';
 import { DocumentSection } from '@/components/document-section';
 import { UploadDocumentDialog } from '@/components/upload-document-dialog';
+import { CommunityUpdatesSection } from '@/components/community-updates-section';
 import { supabase } from '@/lib/supabase';
 
 // Static Data for German Teacher Page
@@ -241,6 +242,9 @@ export default function GermanTeacherPage() {
 
       {/* Main Content */}
       <div id="roadmap-section" className="container mx-auto px-4 py-8 max-w-5xl">
+        {/* Canlı Topluluk Güncellemeleri & Taze Tecrübeler */}
+        <CommunityUpdatesSection categorySlug="ogretmenlik" fallbackGroup="almanca-ogretmenligi" />
+
         <Tabs defaultValue="roadmap" className="space-y-8">
           <TabsList className="grid w-full grid-cols-5 lg:w-[600px]">
             <TabsTrigger value="roadmap">Yol Haritası</TabsTrigger>

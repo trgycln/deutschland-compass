@@ -7,7 +7,10 @@
     "build": "next build",
     "start": "next start",
     "lint": "eslint",
-    "seed:literary": "node scripts/seed-literary-works.js"
+    "seed:literary": "node scripts/seed-literary-works.js",
+    "telegram:login": "python scripts/telegram_login.py",
+    "telegram:qr-login": "python scripts/telegram_qr_login.py",
+    "telegram:sync": "python scripts/telegram_sync.py"
   },
   "dependencies": {
     "@radix-ui/react-accordion": "^1.2.12",

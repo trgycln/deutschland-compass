@@ -10,7 +10,8 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
-import { Loader2, CheckCircle, XCircle, Trash2, Mail, ExternalLink, Pencil, UploadCloud, Download, FileText, MessageCircle, PlusCircle } from 'lucide-react';
+import { Loader2, CheckCircle, XCircle, Trash2, Mail, ExternalLink, Pencil, UploadCloud, Download, FileText, MessageCircle, PlusCircle, Sparkles } from 'lucide-react';
+import Link from 'next/link';
 import { professionsList } from '@/data/professions-list';
 import { SiteStatsSummary } from '@/components/site-stats-summary';
 
@@ -927,6 +928,17 @@ export default function AdminPage() {
                 {experiences.filter(e => e.status === 'pending' && e.profession === 'Genel Katkı / Öneri').length}
               </Badge>
             )}
+          </Button>
+
+          <Button 
+            asChild
+            variant="default"
+            className="gap-2 ml-2 bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-600 hover:to-orange-600 text-white font-semibold shadow-md"
+          >
+            <Link href="/admin/guncellemeler">
+              <Sparkles className="w-4 h-4" />
+              Topluluk Güncellemeleri & Telegram Akışı
+            </Link>
           </Button>
         </div>
         

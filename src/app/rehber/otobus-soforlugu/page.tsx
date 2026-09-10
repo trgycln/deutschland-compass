@@ -30,6 +30,7 @@ interface Document {
 import { ShareExperienceDialog } from '@/components/share-experience-dialog';
 import { UploadDocumentDialog } from '@/components/upload-document-dialog';
 import { FaqSection } from '@/components/faq-section';
+import { CommunityUpdatesSection } from '@/components/community-updates-section';
 
 function getEmbedUrl(url: string) {
   if (!url) return '';
@@ -376,6 +377,9 @@ export default function BusDriverGuidePage() {
             </div>
           </div>
         )}
+
+        {/* Canlı Topluluk Güncellemeleri & Taze Tecrübeler */}
+        <CommunityUpdatesSection categorySlug="otobus-soforlugu" fallbackGroup="busfahrer" />
 
         <Tabs defaultValue="guide" className="space-y-8">
           <TabsList className="grid w-full grid-cols-2 md:grid-cols-4 lg:w-[600px] h-auto">

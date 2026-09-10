@@ -13,6 +13,7 @@ import { FaqSection } from '@/components/faq-section';
 import { ExperienceSection } from '@/components/experience-section';
 import { DocumentSection } from '@/components/document-section';
 import { UploadDocumentDialog } from '@/components/upload-document-dialog';
+import { CommunityUpdatesSection } from '@/components/community-updates-section';
 
 function getEmbedUrl(url: string) {
   if (!url) return '';
@@ -152,6 +153,9 @@ export default function LokfuhrerPage() {
 
       {/* Main Content */}
       <div id="roadmap-section" className="container mx-auto px-4 py-8 max-w-5xl">
+        {/* Canlı Topluluk Güncellemeleri & Taze Tecrübeler */}
+        <CommunityUpdatesSection categorySlug="lokfuhrer" fallbackGroup="lokfuhrer" />
+
         <Tabs defaultValue="roadmap" className="space-y-8">
           <TabsList className="grid w-full grid-cols-2 md:grid-cols-5 lg:w-[750px] h-auto">
             <TabsTrigger value="roadmap">Yol Haritası</TabsTrigger>

@@ -1,7 +1,7 @@
 'use client'
 
 import Link from 'next/link'
-import { Music, Settings, LogOut, Book } from 'lucide-react'
+import { Music, Settings, LogOut, Book, Sparkles } from 'lucide-react'
 import { useRouter } from 'next/navigation'
 
 export function AdminNav() {
@@ -36,6 +36,14 @@ export function AdminNav() {
             >
               <Book className="w-4 h-4" />
               Şiir Yönetimi
+            </Link>
+
+            <Link
+              href="/admin/guncellemeler"
+              className="flex items-center gap-2 hover:text-blue-400 transition text-amber-400"
+            >
+              <Sparkles className="w-4 h-4" />
+              Topluluk Güncellemeleri
             </Link>
 
             <Link
