@@ -94,28 +94,40 @@ export default function PlaceReviews({ placeId, placeName }: PlaceReviewsProps) 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     setError("");
-    if (rating === 0) { setError("Lutfen bir puan secin."); return; }
-    if (!comment.trim() && !name.trim()) { setError("En az bir yorum veya isim girin."); return; }
+    if (rating === 0) { setError("Lütfen bir puan seçin."); return; }
+    if (!comment.trim() && !name.trim()) { setError("Lütfen bir yorum veya isim girin."); return; }
 
     setSubmitting(true);
-    const { error: err } = await supabase.from("place_reviews").insert({
-      place_id:      placeId,
-      reviewer_name: name.trim() || "Anonim",
-      rating,
-      comment:       comment.trim() || null,
-      source:        "web",
-      verified:      false,
-    });
-    setSubmitting(false);
+    try {
+      const res = await fetch("/api/place-reviews", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          placeId,
+          reviewerName: name.trim() || "Anonim",
+          rating,
+          comment: comment.trim() || null,
+        }),
+      });
 
-    if (err) {
-      setError("Bir sorun olustu, tekrar deneyin.");
-    } else {
+      const data = await res.json();
+      if (!res.ok || data.error) {
+        throw new Error(data.error || "Yorum kaydedilemedi.");
+      }
+
+      if (data.review) {
+        setReviews((prev) => [data.review, ...prev]);
+      }
+
       setSubmitted(true);
       setShowForm(false);
       setRating(0);
       setComment("");
       setName("");
+    } catch (err: any) {
+      setError(err.message || "Bir sorun oluştu, lütfen tekrar deneyin.");
+    } finally {
+      setSubmitting(false);
     }
   }
 
@@ -191,7 +203,7 @@ export default function PlaceReviews({ placeId, placeName }: PlaceReviewsProps) 
               className="flex items-center gap-1.5 px-4 py-2 bg-emerald-600 text-white text-xs font-semibold rounded-lg hover:bg-emerald-700 disabled:opacity-60 transition-colors"
             >
               {submitting ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Send className="w-3.5 h-3.5" />}
-              Gonder
+              Yorum Gönder
             </button>
             <button
               type="button"
@@ -201,15 +213,14 @@ export default function PlaceReviews({ placeId, placeName }: PlaceReviewsProps) 
               Iptal
             </button>
           </div>
-          <p className="text-[11px] text-gray-400">Yorumunuz incelendikten sonra yayinlanacaktir.</p>
         </form>
       )}
 
       {/* Thank you message */}
       {submitted && (
-        <div className="flex items-center gap-2 bg-emerald-50 text-emerald-700 border border-emerald-200 rounded-xl p-3 mb-4">
-          <CheckCircle2 className="w-4 h-4 shrink-0" />
-          <p className="text-xs font-medium">Yorumunuz alindi! Inceleme sonrasi yayinlanacak.</p>
+        <div className="flex items-center gap-2 bg-emerald-50 text-emerald-800 border border-emerald-200 rounded-xl p-3 mb-4 animate-fadeIn">
+          <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0" />
+          <p className="text-xs font-semibold">Yorumunuz başarıyla yayınlandı! Değerlendirmeniz için teşekkür ederiz.</p>
         </div>
       )}
 

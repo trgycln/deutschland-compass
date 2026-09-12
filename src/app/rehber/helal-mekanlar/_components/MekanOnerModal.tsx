@@ -67,14 +67,13 @@ export default function MekanOnerModal({
       category: KATEGORI_DB[form.kategori] ?? "restaurant",
       phone:    form.iletisim.trim() || null,
       note:     form.notunuz.trim()  || null,
-      // warning=true marks it as unverified / pending admin review
-      warning:  true,
+      warning:  false, // Doğrudan yayınla
     });
 
     setLoading(false);
 
     if (dbError) {
-      setError("Mekan önerilirken bir hata oluştu. Lütfen tekrar deneyin.");
+      setError("Mekan eklenirken bir hata oluştu. Lütfen tekrar deneyin.");
     } else {
       setSuccess(true);
     }
@@ -98,9 +97,9 @@ export default function MekanOnerModal({
         {/* ── Header ──────────────────────────────────────────── */}
         <div className="flex items-center justify-between p-5 border-b border-gray-100">
           <div>
-            <h2 className="text-lg font-extrabold text-gray-900">Mekan Öner</h2>
+            <h2 className="text-lg font-extrabold text-gray-900">Mekan Ekle / Öner</h2>
             <p className="text-xs text-gray-500 mt-0.5">
-              İnceleme sonrası rehbere eklenir
+              Topluluk rehberine doğrudan eklenir
             </p>
           </div>
           <button
@@ -123,10 +122,13 @@ export default function MekanOnerModal({
               </div>
               <h3 className="text-xl font-bold text-gray-900 mb-2">Teşekkürler!</h3>
               <p className="text-gray-500 text-sm mb-6 max-w-xs mx-auto">
-                Mekan öneriniz alındı. İncelendikten sonra rehbere eklenecektir.
+                Mekan başarıyla eklendi ve rehberde doğrudan yayınlandı!
               </p>
               <button
-                onClick={onClose}
+                onClick={() => {
+                  onClose();
+                  window.location.reload();
+                }}
                 className="px-6 min-h-[44px] py-2 bg-green-600 text-white font-semibold rounded-xl text-sm hover:bg-green-700 transition-colors"
               >
                 Kapat

@@ -146,6 +146,40 @@ function BoundsFitter({ mekanlar, hasTarget }: { mekanlar: HelalMekan[]; hasTarg
   return null;
 }
 
+// Force Leaflet to recalculate container dimensions (fixes 0x0 or squished corners on mobile / tab changes)
+function MapResizer() {
+  const map = useMap();
+
+  useEffect(() => {
+    map.invalidateSize();
+    const t1 = setTimeout(() => map.invalidateSize(), 50);
+    const t2 = setTimeout(() => map.invalidateSize(), 250);
+    const t3 = setTimeout(() => map.invalidateSize(), 600);
+
+    const onResize = () => map.invalidateSize();
+    window.addEventListener("resize", onResize);
+
+    const container = map.getContainer();
+    let ro: ResizeObserver | null = null;
+    if (typeof ResizeObserver !== "undefined" && container) {
+      ro = new ResizeObserver(() => {
+        map.invalidateSize();
+      });
+      ro.observe(container);
+    }
+
+    return () => {
+      clearTimeout(t1);
+      clearTimeout(t2);
+      clearTimeout(t3);
+      window.removeEventListener("resize", onResize);
+      ro?.disconnect();
+    };
+  }, [map]);
+
+  return null;
+}
+
 export default function MapView({
   mekanlar,
   allMekanlar,
@@ -330,7 +364,7 @@ export default function MapView({
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               onFocus={() => setIsFocused(true)}
-              placeholder="Şehir, PLZ (Posta Kodu) veya mekan ara..."
+              placeholder="Şehir, PLZ veya mekan ara..."
               className="flex-1 min-w-0 text-xs sm:text-sm text-slate-800 placeholder:text-gray-400 focus:outline-none bg-transparent"
             />
 
@@ -506,9 +540,10 @@ export default function MapView({
           attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
         />
 
-        {/* Reposition zoom controls to bottom-right so search bar has full top space */}
-        <ZoomControl position="bottomright" />
+        {/* Reposition zoom controls to bottom-left so floating action button and search bar never collide */}
+        <ZoomControl position="bottomleft" />
 
+        <MapResizer />
         <BoundsFitter mekanlar={mekanlar} hasTarget={flyTarget !== null} />
         <MapFlyController flyTarget={flyTarget} onFlyDone={handleFlyDone} />
         <UserLocationHandler userLocation={userLocation} />

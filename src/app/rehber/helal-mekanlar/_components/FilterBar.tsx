@@ -1,9 +1,30 @@
 "use client";
 
 import { useRef, useEffect } from "react";
-import { Search, SlidersHorizontal, X, Navigation, ArrowUpDown } from "lucide-react";
+import { Search, SlidersHorizontal, X, Navigation, ArrowUpDown, Globe, ChevronDown, MapPin } from "lucide-react";
 import { KATEGORILER, KATEGORI_COLOR, SPECIAL_FILTERS, SORT_OPTIONS, type SortOption } from "./constants";
 import type { SpecialFilterKey } from "./constants";
+
+const COUNTRY_FLAGS: Record<string, string> = {
+  "Almanya": "🇩🇪",
+  "Hollanda": "🇳🇱",
+  "Belçika": "🇧🇪",
+  "Fransa": "🇫🇷",
+  "Bosna-Hersek": "🇧🇦",
+  "İsviçre": "🇨🇭",
+  "İtalya": "🇮🇹",
+  "Avusturya": "🇦🇹",
+  "Yunanistan": "🇬🇷",
+  "İspanya": "🇪🇸",
+  "Hırvatistan": "🇭🇷",
+  "Çekya": "🇨🇿",
+  "Arnavutluk": "🇦🇱",
+  "Polonya": "🇵🇱",
+  "Portekiz": "🇵🇹",
+  "Macaristan": "🇭🇺",
+  "Slovenya": "🇸🇮",
+  "Diğer": "🌍",
+};
 
 interface FilterBarProps {
   countries: string[];
@@ -47,22 +68,65 @@ export default function FilterBar({
 
   return (
     <div className="sticky top-0 z-40 bg-white border-b border-gray-100 shadow-sm">
-      {/* Row 1: Search + Location + Sort */}
+      {/* Row 1: Country + Search + City + Location + Sort */}
       <div className="max-w-7xl mx-auto px-3 py-2.5 flex items-center gap-2">
+        
+        {/* Country selector (Germany prioritized) */}
+        <div className="relative shrink-0">
+          <select
+            value={selectedCountry}
+            onChange={(e) => onCountryChange(e.target.value)}
+            className="appearance-none pl-7 sm:pl-8 pr-6 sm:pr-7 py-2 text-xs font-bold rounded-xl border border-emerald-300 bg-emerald-50/90 text-emerald-950 focus:outline-none focus:ring-2 focus:ring-emerald-400 cursor-pointer max-w-[125px] sm:max-w-[155px] truncate shadow-2xs hover:bg-emerald-100 transition-colors"
+            aria-label="Ülke seçin"
+          >
+            <option value="all">🌍 Tüm Ülkeler</option>
+            <option value="Almanya">🇩🇪 Almanya (Öncelikli)</option>
+            {countries
+              .filter((c) => c !== "Almanya")
+              .map((c) => (
+                <option key={c} value={c}>
+                  {COUNTRY_FLAGS[c] ?? "📍"} {c}
+                </option>
+              ))}
+          </select>
+          <Globe className="absolute left-2.5 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-emerald-700 pointer-events-none" />
+          <ChevronDown className="absolute right-1.5 top-1/2 -translate-y-1/2 w-3 h-3 text-emerald-700 pointer-events-none" />
+        </div>
+
+        {/* City dropdown (desktop/tablet) */}
+        {cities.length > 1 && (
+          <div className="relative shrink-0 hidden md:block">
+            <select
+              value={selectedCity}
+              onChange={(e) => onCityChange(e.target.value)}
+              className="appearance-none pl-7 pr-6 py-2 text-xs font-semibold rounded-xl border border-gray-200 bg-white text-gray-700 focus:outline-none focus:ring-2 focus:ring-emerald-400 cursor-pointer max-w-[130px] truncate"
+              aria-label="Şehir seçin"
+            >
+              <option value="all">Tüm Şehirler</option>
+              {cities.map((c) => (
+                <option key={c} value={c}>{c}</option>
+              ))}
+            </select>
+            <MapPin className="absolute left-2.5 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-gray-400 pointer-events-none" />
+            <ChevronDown className="absolute right-1.5 top-1/2 -translate-y-1/2 w-3 h-3 text-gray-400 pointer-events-none" />
+          </div>
+        )}
+
         {/* Search */}
         <div className="relative flex-1 min-w-0">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400 pointer-events-none" />
           <input
             type="search"
             value={searchInput}
             onChange={(e) => onSearchChange(e.target.value)}
             placeholder="Mekan veya sehir ara..."
-            className="w-full pl-9 pr-4 py-2 text-sm rounded-xl border border-gray-200 bg-gray-50 focus:outline-none focus:ring-2 focus:ring-emerald-400 focus:border-transparent"
+            className="w-full pl-9 pr-4 py-2 text-xs sm:text-sm rounded-xl border border-gray-200 bg-gray-50 focus:outline-none focus:ring-2 focus:ring-emerald-400 focus:border-transparent"
           />
           {searchInput && (
             <button
               onClick={() => onSearchChange("")}
-              className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600"
+              className="absolute right-2.5 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600"
+              title="Aramayı temizle"
             >
               <X className="w-3.5 h-3.5" />
             </button>
@@ -73,14 +137,14 @@ export default function FilterBar({
         <button
           onClick={onRequestLocation}
           title={hasUserLocation ? "Konum aktif" : "Konumumu kullan"}
-          className={`flex items-center gap-1.5 px-3 py-2 rounded-xl text-xs font-semibold border transition-all shrink-0 ${
+          className={`flex items-center gap-1.5 px-2.5 sm:px-3 py-2 rounded-xl text-xs font-semibold border transition-all shrink-0 ${
             hasUserLocation
               ? "bg-emerald-600 text-white border-emerald-600"
               : "bg-white text-emerald-700 border-emerald-300 hover:bg-emerald-50"
           }`}
         >
           <Navigation className="w-3.5 h-3.5" />
-          <span className="hidden sm:inline">{hasUserLocation ? "Konum Aktif" : "Yakinim"}</span>
+          <span className="hidden sm:inline">{hasUserLocation ? "Konum Aktif" : "Yakınım"}</span>
         </button>
 
         {/* Sort dropdown */}
@@ -88,7 +152,7 @@ export default function FilterBar({
           <select
             value={sortBy}
             onChange={(e) => onSortChange(e.target.value as SortOption)}
-            className="appearance-none pl-8 pr-3 py-2 text-xs font-semibold rounded-xl border border-gray-200 bg-white text-gray-700 focus:outline-none focus:ring-2 focus:ring-emerald-400 cursor-pointer"
+            className="appearance-none pl-7 pr-3 py-2 text-xs font-semibold rounded-xl border border-gray-200 bg-white text-gray-700 focus:outline-none focus:ring-2 focus:ring-emerald-400 cursor-pointer"
           >
             {SORT_OPTIONS.map((opt) => (
               <option key={opt.value} value={opt.value} disabled={opt.value === "distance" && !hasUserLocation}>
@@ -96,28 +160,14 @@ export default function FilterBar({
               </option>
             ))}
           </select>
-          <ArrowUpDown className="absolute left-2.5 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-gray-400 pointer-events-none" />
+          <ArrowUpDown className="absolute left-2 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-gray-400 pointer-events-none" />
         </div>
-
-        {/* City dropdown (when multiple cities) */}
-        {cities.length > 1 && (
-          <select
-            value={selectedCity}
-            onChange={(e) => onCityChange(e.target.value)}
-            className="hidden md:block appearance-none px-3 py-2 text-xs font-semibold rounded-xl border border-gray-200 bg-white text-gray-700 focus:outline-none focus:ring-2 focus:ring-emerald-400 cursor-pointer shrink-0 max-w-[140px]"
-          >
-            <option value="all">Tum Sehirler</option>
-            {cities.map((c) => (
-              <option key={c} value={c}>{c}</option>
-            ))}
-          </select>
-        )}
 
         {/* Reset */}
         {isFiltered && (
           <button
             onClick={onReset}
-            className="flex items-center gap-1 px-3 py-2 rounded-xl text-xs font-semibold bg-red-50 text-red-600 border border-red-200 hover:bg-red-100 transition-colors shrink-0"
+            className="flex items-center gap-1 px-2.5 sm:px-3 py-2 rounded-xl text-xs font-semibold bg-red-50 text-red-600 border border-red-200 hover:bg-red-100 transition-colors shrink-0"
           >
             <X className="w-3 h-3" />
             <span className="hidden sm:inline">Temizle</span>
@@ -176,10 +226,21 @@ export default function FilterBar({
 
       {/* Row 3: Result count */}
       {isFiltered && (
-        <div className="px-3 pb-2 flex items-center gap-2">
+        <div className="px-3 pb-2 flex items-center gap-2 flex-wrap">
           <span className="text-[11px] text-gray-500">
             <strong className="text-emerald-700 font-bold">{filteredCount}</strong> mekan bulundu
           </span>
+          {selectedCountry !== "all" && (
+            <span className="text-[11px] bg-emerald-100 text-emerald-800 px-2 py-0.5 rounded-full font-semibold inline-flex items-center gap-1">
+              <span>{COUNTRY_FLAGS[selectedCountry] ?? "🌍"}</span>
+              <span>{selectedCountry}</span>
+            </span>
+          )}
+          {selectedCity !== "all" && (
+            <span className="text-[11px] bg-slate-100 text-slate-800 px-2 py-0.5 rounded-full font-semibold">
+              📍 {selectedCity}
+            </span>
+          )}
           {activeSpecials.size > 0 && (
             <span className="text-[11px] bg-emerald-100 text-emerald-700 px-2 py-0.5 rounded-full font-medium">
               {activeSpecials.size} filtre aktif

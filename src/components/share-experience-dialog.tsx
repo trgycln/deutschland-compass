@@ -44,7 +44,7 @@ export function ShareExperienceDialog({ professionSlug, defaultProfessionName = 
             name: 'Anonim', // Her zaman anonim
             profession: formData.profession,
             content: formData.content,
-            status: 'pending' // Onay bekleyen durumunda
+            status: 'approved' // Direkt onaylı/yayınlanmış durumunda
           }
         ])
 
@@ -53,13 +53,14 @@ export function ShareExperienceDialog({ professionSlug, defaultProfessionName = 
         throw error
       }
 
-      console.log('✅ Tecrübe başarıyla gönderildi')
+      console.log('✅ Tecrübe başarıyla gönderildi ve yayınlandı')
       setSuccess(true)
       setTimeout(() => {
         setOpen(false)
         setSuccess(false)
         setFormData({ ...formData, content: "" })
-      }, 2000)
+        window.location.reload()
+      }, 1500)
     } catch (error) {
       console.error('💥 Gönderim hatası:', error)
       const errorMessage = error instanceof Error ? error.message : 'Bilinmeyen hata'
@@ -87,8 +88,8 @@ export function ShareExperienceDialog({ professionSlug, defaultProfessionName = 
         {success ? (
           <div className="flex flex-col items-center justify-center py-8 text-green-600">
             <CheckCircle2 className="w-12 h-12 mb-2" />
-            <p className="font-medium text-center">Teşekkürler! Tecrübeniz moderasyon onayına gönderildi.</p>
-            <p className="text-sm text-slate-500 mt-2 text-center">İçeriğiniz incelendikten sonra anonim olarak yayınlanacaktır.</p>
+            <p className="font-medium text-center">Teşekkürler! Tecrübeniz başarıyla yayınlandı.</p>
+            <p className="text-sm text-slate-500 mt-2 text-center">Paylaşımınız anonim olarak yayına alınmıştır.</p>
           </div>
         ) : (
           <>

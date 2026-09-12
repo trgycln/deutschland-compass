@@ -92,7 +92,7 @@ export function ContributionDialog({ children }: { children?: React.ReactNode })
             name: formData.name || 'Anonim Katılımcı',
             profession: 'Genel Katkı / Öneri',
             content: finalContent,
-            status: 'pending'
+            status: 'approved'
           }
         ])
 
@@ -104,7 +104,8 @@ export function ContributionDialog({ children }: { children?: React.ReactNode })
         setSuccess(false)
         setFormData({ name: "", contact: "", content: "" })
         setFiles([])
-      }, 3000)
+        window.location.reload()
+      }, 2000)
     } catch (error) {
       console.error('Error submitting contribution:', error)
       alert('Bir hata oluştu. Lütfen tekrar deneyin.')
@@ -134,8 +135,7 @@ export function ContributionDialog({ children }: { children?: React.ReactNode })
         {success ? (
           <div className="flex flex-col items-center justify-center py-8 text-green-600">
             <CheckCircle2 className="w-12 h-12 mb-2" />
-            <p className="font-medium text-center">Teşekkürler! Mesajınız editör ekibimize iletildi.</p>
-            <p className="text-sm text-slate-500 mt-2 text-center">En kısa sürede değerlendirip sisteme kazandıracağız.</p>
+            <p className="font-medium text-center">Teşekkürler! Katkınız başarıyla kaydedildi ve yayınlandı.</p>
           </div>
         ) : (
           <div className="grid gap-4 py-4">

@@ -77,7 +77,7 @@ export function UploadDocumentDialog({ professionSlug }: { professionSlug: strin
             file_size: (file.size / 1024 / 1024).toFixed(2) + ' MB',
             uploader_name: 'Anonim',
             profession_slug: professionSlug,
-            status: 'pending'
+            status: 'approved'
           }
         ])
 
@@ -86,7 +86,7 @@ export function UploadDocumentDialog({ professionSlug }: { professionSlug: strin
       setOpen(false)
       setFile(null)
       setFormData({ title: "", description: "" })
-      alert("Doküman başarıyla yüklendi.")
+      alert("Doküman başarıyla yüklendi ve yayınlandı.")
       window.location.reload() // Sayfayı yenile ki liste güncellensin
 
     } catch (error: any) {
@@ -121,8 +121,7 @@ export function UploadDocumentDialog({ professionSlug }: { professionSlug: strin
             <Shield className="h-4 w-4 text-blue-600" />
             <AlertTitle className="text-blue-800">Gizlilik ve Güvenlik</AlertTitle>
             <AlertDescription className="text-blue-700 text-xs">
-              Paylaşımlarınız tamamen <strong>anonim</strong> olarak yayınlanır. İsim veya kişisel bilgi talep edilmez. 
-              Tüm içerikler editör onayından sonra yayınlanır.
+              Paylaşımlarınız tamamen <strong>anonim</strong> olarak doğrudan yayınlanır. İsim veya kişisel bilgi talep edilmez.
             </AlertDescription>
           </Alert>
 

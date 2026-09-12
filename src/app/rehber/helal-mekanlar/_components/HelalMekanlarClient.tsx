@@ -61,6 +61,7 @@ export default function HelalMekanlarClient({ initialData }: { initialData: Hela
   const pathname     = usePathname();
 
   // URL-derived state
+  const selectedCountry  = searchParams.get("country")  ?? "all";
   const selectedCity     = searchParams.get("city")     ?? "all";
   const selectedCategory = SLUG_TO_KATEGORI[searchParams.get("category") ?? ""] ?? "Tumu";
   const searchQuery      = searchParams.get("q")        ?? "";
@@ -100,6 +101,7 @@ export default function HelalMekanlarClient({ initialData }: { initialData: Hela
     [router, pathname]
   );
 
+  const handleCountryChange  = (country: string)  => setFilter({ country: country === "all" ? "" : country, city: "" });
   const handleCityChange     = (city: string)     => setFilter({ city });
   const handleCategoryChange = (cat: string)      => setFilter({ category: KATEGORI_SLUG[cat] ?? "" });
   const handleQuickCity      = (city: string)      => setFilter({ city: city === selectedCity ? "" : city });
@@ -173,6 +175,9 @@ export default function HelalMekanlarClient({ initialData }: { initialData: Hela
   const filtered = useMemo(() => {
     let r = initialData;
 
+    if (selectedCountry !== "all") {
+      r = r.filter((m) => (m.ulke || "Almanya").toLowerCase() === selectedCountry.toLowerCase());
+    }
     if (selectedCity !== "all")   r = r.filter((m) => m.sehir === selectedCity);
     if (selectedCategory !== "Tumu") r = r.filter((m) => m.kategori === selectedCategory);
     if (searchQuery.trim()) {
@@ -180,7 +185,8 @@ export default function HelalMekanlarClient({ initialData }: { initialData: Hela
       r = r.filter((m) =>
         m.isim.toLowerCase().includes(q) ||
         m.adres.toLowerCase().includes(q) ||
-        m.sehir.toLowerCase().includes(q)
+        m.sehir.toLowerCase().includes(q) ||
+        (m.ulke && m.ulke.toLowerCase().includes(q))
       );
     }
     if (activeSpecials.has("telegram_yeni"))     r = r.filter((m) => newestPlaceIds.has(m.id));
@@ -213,7 +219,7 @@ export default function HelalMekanlarClient({ initialData }: { initialData: Hela
       });
     }
     return sorted;
-  }, [initialData, selectedCity, selectedCategory, searchQuery, activeSpecials, sortBy, distanceMap, newestPlaceIds]);
+  }, [initialData, selectedCountry, selectedCity, selectedCategory, searchQuery, activeSpecials, sortBy, distanceMap, newestPlaceIds]);
 
   // Featured places (highlight) for the strip
   const featuredPlaces = useMemo(
@@ -234,19 +240,34 @@ export default function HelalMekanlarClient({ initialData }: { initialData: Hela
       .sort((a, b) => b.mekanlar.length - a.mekanlar.length || compareStrings(a.sehir, b.sehir));
   }, [filtered, selectedCity]);
 
-  const isFiltered = selectedCity !== "all" || selectedCategory !== "Tumu" ||
-    searchQuery.trim() !== "" || activeSpecials.size > 0;
+  const isFiltered =
+    selectedCountry !== "all" ||
+    selectedCity !== "all" ||
+    selectedCategory !== "Tumu" ||
+    searchQuery.trim() !== "" ||
+    activeSpecials.size > 0;
 
   const countries = useMemo(() => {
-    const list = [...new Set(initialData.map((m) => m.ulke).filter(Boolean))];
-    if (list.length === 0) return ["Almanya", "Avusturya", "Isvicre"];
-    return list.sort(compareStrings);
+    const counts: Record<string, number> = {};
+    initialData.forEach((m) => {
+      const c = m.ulke?.trim() || "Almanya";
+      counts[c] = (counts[c] || 0) + 1;
+    });
+    const list = Object.keys(counts);
+    list.sort((a, b) => {
+      if (a === "Almanya") return -1;
+      if (b === "Almanya") return 1;
+      return compareStrings(a, b);
+    });
+    return list;
   }, [initialData]);
 
-  const cities = useMemo(
-    () => [...new Set(initialData.map((m) => m.sehir).filter(Boolean))].sort(compareStrings),
-    [initialData]
-  );
+  const cities = useMemo(() => {
+    const scoped = selectedCountry !== "all"
+      ? initialData.filter((m) => (m.ulke || "Almanya").toLowerCase() === selectedCountry.toLowerCase())
+      : initialData;
+    return [...new Set(scoped.map((m) => m.sehir).filter(Boolean))].sort(compareStrings);
+  }, [initialData, selectedCountry]);
 
   const selectedMekanDistance = selectedMekan ? (distanceMap[selectedMekan.id] ?? null) : null;
 
@@ -311,7 +332,7 @@ export default function HelalMekanlarClient({ initialData }: { initialData: Hela
 
         {/* City quick-select pills */}
         <div className="max-w-4xl mx-auto mt-6 flex flex-wrap justify-center gap-2 relative z-10">
-          {ALMANYA_QUICK_CITIES.map((city) => (
+          {(selectedCountry === "all" || selectedCountry === "Almanya" ? ALMANYA_QUICK_CITIES : cities.slice(0, 10)).map((city) => (
             <button
               key={city}
               onClick={() => handleQuickCity(city)}
@@ -331,7 +352,7 @@ export default function HelalMekanlarClient({ initialData }: { initialData: Hela
       <FilterBar
         countries={countries}
         cities={cities}
-        selectedCountry="all"
+        selectedCountry={selectedCountry}
         selectedCity={selectedCity}
         selectedCategory={selectedCategory}
         searchInput={searchInput}
@@ -340,7 +361,7 @@ export default function HelalMekanlarClient({ initialData }: { initialData: Hela
         activeSpecials={activeSpecials}
         sortBy={sortBy}
         hasUserLocation={!!userLocation}
-        onCountryChange={() => {}}
+        onCountryChange={handleCountryChange}
         onCityChange={handleCityChange}
         onCategoryChange={handleCategoryChange}
         onSearchChange={setSearchInput}
@@ -352,7 +373,7 @@ export default function HelalMekanlarClient({ initialData }: { initialData: Hela
 
       {/* ════════════ SHOWCASE STRIP (TELEGRAM NEW + FEATURED) ════════════ */}
       {!isFiltered && (
-        <div className="bg-white border-b border-gray-100 py-4">
+        <div className={`bg-white border-b border-gray-100 py-4 ${viewMode === "map" ? "hidden lg:block" : "block"}`}>
           <div className="max-w-7xl mx-auto px-4">
             <div className="flex items-center justify-between mb-3">
               <div className="flex items-center gap-1.5 p-1 bg-slate-100 rounded-xl">
@@ -465,39 +486,40 @@ export default function HelalMekanlarClient({ initialData }: { initialData: Hela
       )}
 
       {/* ════════════ MOBILE VIEW TOGGLE ════════════ */}
-      <div className="lg:hidden sticky top-[calc(var(--filter-bar-h,130px))] z-30 flex justify-center py-2 bg-slate-50 border-b border-gray-100">
-        <div className="flex bg-white border border-gray-200 rounded-xl p-1 shadow-sm gap-0.5">
+      <div className="lg:hidden flex justify-center py-2.5 px-3 bg-slate-50 border-b border-gray-200">
+        <div className="flex bg-slate-200/80 border border-gray-200/90 rounded-xl p-1 gap-1 w-full max-w-xs shadow-inner">
           <button
             onClick={() => setViewMode("list")}
-            className={`flex items-center gap-1.5 px-4 py-1.5 rounded-lg text-xs font-bold transition-all ${
+            className={`flex-1 flex items-center justify-center gap-1.5 py-1.5 rounded-lg text-xs font-bold transition-all ${
               viewMode === "list"
-                ? "bg-emerald-600 text-white shadow-sm"
-                : "text-gray-600 hover:text-emerald-700"
+                ? "bg-white text-emerald-800 shadow-sm"
+                : "text-gray-600 hover:text-slate-900"
             }`}
           >
-            <List className="w-3.5 h-3.5" /> Liste
+            <List className="w-3.5 h-3.5" /> Liste ({filtered.length})
           </button>
           <button
             onClick={() => setViewMode("map")}
-            className={`flex items-center gap-1.5 px-4 py-1.5 rounded-lg text-xs font-bold transition-all ${
+            className={`flex-1 flex items-center justify-center gap-1.5 py-1.5 rounded-lg text-xs font-bold transition-all ${
               viewMode === "map"
-                ? "bg-emerald-600 text-white shadow-sm"
-                : "text-gray-600 hover:text-emerald-700"
+                ? "bg-white text-emerald-800 shadow-sm"
+                : "text-gray-600 hover:text-slate-900"
             }`}
           >
-            <MapIcon className="w-3.5 h-3.5" /> Harita
+            <MapIcon className="w-3.5 h-3.5" /> Harita ({filtered.filter((m) => m.lat !== null).length})
           </button>
         </div>
       </div>
 
       {/* ════════════ MAIN SPLIT AREA ════════════ */}
-      <div className="max-w-7xl mx-auto px-4 py-6 pb-28">
-        <div className="flex gap-6">
+      <div className="max-w-7xl mx-auto px-3 sm:px-4 py-4 sm:py-6 pb-28">
+        <div className="flex flex-col lg:flex-row gap-6">
 
-          {/* ── LEFT: MAP (desktop sticky / mobile toggle) ── */}
-          <div className={`${viewMode === "map" ? "block" : "hidden"} lg:block lg:w-[45%] shrink-0`}>
-            <div className="sticky top-[var(--filter-bar-h,130px)] h-[calc(100vh-220px)] min-h-[400px]">
+          {/* ── LEFT: MAP (desktop sticky / mobile full-width) ── */}
+          <div className={`${viewMode === "map" ? "block w-full" : "hidden"} lg:block lg:w-[45%] shrink-0`}>
+            <div className="lg:sticky lg:top-24 h-[calc(100dvh-220px)] min-h-[480px] max-h-[750px] lg:h-[calc(100vh-140px)] w-full">
               <MapView
+                key={viewMode}
                 mekanlar={filtered}
                 allMekanlar={initialData}
                 userLocation={userLocation}
@@ -507,14 +529,14 @@ export default function HelalMekanlarClient({ initialData }: { initialData: Hela
                 onLocateUser={requestLocation}
                 locationLoading={locationLoading}
               />
-              <p className="text-[11px] text-gray-400 text-center mt-1">
+              <p className="text-[11px] text-gray-400 text-center mt-1.5">
                 {filtered.filter((m) => m.lat !== null).length} mekanda koordinat var
               </p>
             </div>
           </div>
 
           {/* ── RIGHT: LIST ── */}
-          <div className={`${viewMode === "list" ? "block" : "hidden"} lg:block flex-1 min-w-0`}>
+          <div className={`${viewMode === "list" ? "block w-full" : "hidden"} lg:block flex-1 min-w-0`}>
 
             {filtered.length === 0 ? (
               /* Empty state */
@@ -601,15 +623,36 @@ export default function HelalMekanlarClient({ initialData }: { initialData: Hela
         />
       )}
 
+      {/* ════════════ MOBILE FLOATING VIEW SWITCHER PILL ════════════ */}
+      <div className="lg:hidden fixed bottom-6 left-1/2 -translate-x-1/2 z-40 pointer-events-auto">
+        <button
+          onClick={() => setViewMode(viewMode === "list" ? "map" : "list")}
+          className="flex items-center gap-2 px-4 py-2.5 rounded-full bg-slate-900/95 hover:bg-slate-900 text-white shadow-2xl backdrop-blur-md border border-white/20 text-xs font-bold active:scale-95 transition-all"
+        >
+          {viewMode === "list" ? (
+            <>
+              <MapIcon className="w-4 h-4 text-emerald-400" />
+              <span>Harita ({filtered.filter((m) => m.lat !== null).length})</span>
+            </>
+          ) : (
+            <>
+              <List className="w-4 h-4 text-emerald-400" />
+              <span>Liste ({filtered.length})</span>
+            </>
+          )}
+        </button>
+      </div>
+
       {/* ════════════ FAB: Mekan Oner ════════════ */}
-      <div className="fixed bottom-6 right-4 z-50">
+      <div className="fixed bottom-6 right-3 sm:right-4 z-40">
         <span className="absolute inset-0 rounded-full bg-emerald-400 animate-ping opacity-30 pointer-events-none" />
         <button
           onClick={() => setShowOnerModal(true)}
-          className="relative flex items-center gap-2 bg-emerald-600 hover:bg-emerald-700 text-white font-bold px-5 py-3 rounded-full shadow-xl hover:shadow-2xl transition-all active:scale-95"
+          className="relative flex items-center gap-1.5 sm:gap-2 bg-emerald-600 hover:bg-emerald-700 text-white font-bold px-3.5 sm:px-5 py-2.5 sm:py-3 rounded-full shadow-xl hover:shadow-2xl transition-all active:scale-95"
         >
           <Plus className="w-4 h-4" />
-          <span className="text-sm">Mekan Oner</span>
+          <span className="text-xs sm:text-sm hidden xs:inline sm:inline">Mekan Öner</span>
+          <span className="text-xs xs:hidden sm:hidden">Öner</span>
         </button>
       </div>
     </div>
