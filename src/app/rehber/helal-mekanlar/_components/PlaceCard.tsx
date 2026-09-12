@@ -11,6 +11,7 @@ interface PlaceCardProps {
   distance?: number | null;
   onDetay: () => void;
   highlighted?: boolean;
+  isRecent?: boolean;
 }
 
 function StarRow({ avg, count }: { avg: number; count: number }) {
@@ -47,7 +48,7 @@ const FEATURE_BADGES = [
   { key: "aile_dostu"        as keyof HelalMekan, label: "Aile Dostu",   cls: "bg-orange-50 text-orange-700 border-orange-200"},
 ];
 
-export default function PlaceCard({ mekan, distance, onDetay, highlighted }: PlaceCardProps) {
+export default function PlaceCard({ mekan, distance, onDetay, highlighted, isRecent }: PlaceCardProps) {
   const colors = KATEGORI_COLOR[mekan.kategori] ?? KATEGORI_COLOR["Diger"];
   const activeFeatures = FEATURE_BADGES.filter((f) => mekan[f.key] === true);
   const hasRating = mekan.rating_count > 0;
@@ -57,6 +58,8 @@ export default function PlaceCard({ mekan, distance, onDetay, highlighted }: Pla
       className={`bg-white rounded-2xl overflow-hidden shadow-sm border transition-all duration-200 hover:shadow-md hover:-translate-y-0.5 flex flex-col ${
         highlighted
           ? "border-amber-300 ring-1 ring-amber-200"
+          : isRecent
+          ? "border-sky-200 ring-1 ring-sky-100"
           : "border-gray-100"
       }`}
     >
@@ -71,11 +74,16 @@ export default function PlaceCard({ mekan, distance, onDetay, highlighted }: Pla
         <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-black/30 pointer-events-none" />
 
         {/* Overlay badges */}
-        <div className="absolute top-2 left-2 flex gap-1.5">
+        <div className="absolute top-2 left-2 flex gap-1.5 flex-wrap">
           <span className={`inline-flex items-center gap-1 text-[11px] font-bold px-2 py-0.5 rounded-full border ${colors.bg} ${colors.text} ${colors.border}`}>
             {mekan.kategori}
           </span>
-          {highlighted && (
+          {isRecent && (
+            <span className="inline-flex items-center gap-1 text-[10px] font-bold px-2 py-0.5 rounded-full bg-gradient-to-r from-sky-500 to-indigo-600 text-white shadow-xs">
+              ✨ Yeni Keşif
+            </span>
+          )}
+          {highlighted && !isRecent && (
             <span className="inline-flex items-center gap-1 text-[11px] font-bold px-2 py-0.5 rounded-full bg-amber-400 text-white border border-amber-500">
               <Star className="w-2.5 h-2.5 fill-white" /> One Cikan
             </span>

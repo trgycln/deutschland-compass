@@ -70,6 +70,7 @@ export const KATEGORI_DB: Record<string, string> = {
 };
 
 export const SPECIAL_FILTERS = [
+  { key: "telegram_yeni",     label: "✨ Yeni Eklenenler", emoji: "sparkles" },
   { key: "mescid_var",        label: "Mescidli",      emoji: "mosque" },
   { key: "helal_sertifikali", label: "Sertifikali",   emoji: "check_mark_button" },
   { key: "muslumana_ait",     label: "Muslumana Ait", emoji: "person" },

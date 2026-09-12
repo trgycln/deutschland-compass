@@ -350,7 +350,7 @@ async def sync_helal_group(limit=50, force_min_id=None, external_client=None):
                 print(f"   ⚠️ Yorum ekleme hatası: {e}")
 
     # sync_state güncelle
-    state["mekanlar"] = max_id_seen
+    state["mekanlar"] = max(state.get("mekanlar", 0), max_id_seen)
     with open(STATE_FILE, 'w', encoding='utf-8') as f:
         json.dump(state, f, ensure_ascii=False, indent=2)
 

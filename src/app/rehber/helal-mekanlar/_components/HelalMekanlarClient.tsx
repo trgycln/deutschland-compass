@@ -4,12 +4,13 @@ import { useState, useMemo, useEffect, useCallback } from "react";
 import dynamic from "next/dynamic";
 import Image from "next/image";
 import { useSearchParams, useRouter, usePathname } from "next/navigation";
-import { MapPin, List, Map as MapIcon, Plus, Navigation, ChevronRight, Sparkles } from "lucide-react";
+import { MapPin, List, Map as MapIcon, Plus, Navigation, ChevronRight, Sparkles, MessageCircle } from "lucide-react";
 import type { HelalMekan } from "../page";
 import FilterBar from "./FilterBar";
 import PlaceCard from "./PlaceCard";
 import PlaceDetailModal from "./PlaceDetailModal";
 import MekanOnerModal from "./MekanOnerModal";
+import { getPlacePhoto } from "./placePhoto";
 import { ALMANYA_QUICK_CITIES, KATEGORI_SLUG, SLUG_TO_KATEGORI, type SortOption } from "./constants";
 
 // Dynamic import to avoid SSR issues with Leaflet
@@ -152,6 +153,22 @@ export default function HelalMekanlarClient({ initialData }: { initialData: Hela
     return result;
   }, [initialData, userLocation]);
 
+  // Newest places from Telegram / Community
+  const telegramNewPlaces = useMemo(
+    () =>
+      [...initialData]
+        .sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime())
+        .slice(0, 15),
+    [initialData]
+  );
+
+  const newestPlaceIds = useMemo(
+    () => new Set(telegramNewPlaces.map((m) => m.id)),
+    [telegramNewPlaces]
+  );
+
+  const [showcaseTab, setShowcaseTab] = useState<"telegram" | "featured">("telegram");
+
   // ── Filter + Sort ────────────────────────────────────────────────────────
   const filtered = useMemo(() => {
     let r = initialData;
@@ -166,6 +183,7 @@ export default function HelalMekanlarClient({ initialData }: { initialData: Hela
         m.sehir.toLowerCase().includes(q)
       );
     }
+    if (activeSpecials.has("telegram_yeni"))     r = r.filter((m) => newestPlaceIds.has(m.id));
     if (activeSpecials.has("mescid_var"))        r = r.filter((m) => m.mescid_var);
     if (activeSpecials.has("helal_sertifikali")) r = r.filter((m) => m.helal_sertifikali);
     if (activeSpecials.has("muslumana_ait"))     r = r.filter((m) => m.muslumana_ait);
@@ -195,7 +213,7 @@ export default function HelalMekanlarClient({ initialData }: { initialData: Hela
       });
     }
     return sorted;
-  }, [initialData, selectedCity, selectedCategory, searchQuery, activeSpecials, sortBy, distanceMap]);
+  }, [initialData, selectedCity, selectedCategory, searchQuery, activeSpecials, sortBy, distanceMap, newestPlaceIds]);
 
   // Featured places (highlight) for the strip
   const featuredPlaces = useMemo(
@@ -332,41 +350,116 @@ export default function HelalMekanlarClient({ initialData }: { initialData: Hela
         onReset={resetFilters}
       />
 
-      {/* ════════════ FEATURED STRIP ════════════ */}
-      {featuredPlaces.length > 0 && !isFiltered && (
+      {/* ════════════ SHOWCASE STRIP (TELEGRAM NEW + FEATURED) ════════════ */}
+      {!isFiltered && (
         <div className="bg-white border-b border-gray-100 py-4">
           <div className="max-w-7xl mx-auto px-4">
-            <div className="flex items-center gap-2 mb-3">
-              <Sparkles className="w-4 h-4 text-amber-500" />
-              <h2 className="text-sm font-bold text-slate-800">One Cikan Mekanlar</h2>
-              <ChevronRight className="w-4 h-4 text-gray-400" />
-            </div>
-            <div className="flex gap-3 overflow-x-auto pb-2" style={{ scrollbarWidth: "none" }}>
-              {featuredPlaces.map((m) => (
+            <div className="flex items-center justify-between mb-3">
+              <div className="flex items-center gap-1.5 p-1 bg-slate-100 rounded-xl">
                 <button
-                  key={m.id}
-                  onClick={() => setSelectedMekan(m)}
-                  className="shrink-0 w-48 bg-gradient-to-br from-amber-50 to-orange-50 border border-amber-200 rounded-xl p-3 text-left hover:shadow-md hover:border-amber-400 transition-all group"
+                  onClick={() => setShowcaseTab("telegram")}
+                  className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold transition-all ${
+                    showcaseTab === "telegram"
+                      ? "bg-white text-slate-900 shadow-xs"
+                      : "text-gray-500 hover:text-slate-800"
+                  }`}
                 >
-                  <div className="flex items-start gap-2 mb-1.5">
-                    <span className="text-lg">&#11088;</span>
-                    <div className="min-w-0">
-                      <p className="font-bold text-sm text-slate-900 leading-tight line-clamp-2 group-hover:text-amber-700 transition-colors">{m.isim}</p>
-                      <p className="text-[11px] text-gray-500 mt-0.5">{m.sehir} · {m.kategori}</p>
-                    </div>
-                  </div>
-                  {m.rating_count > 0 && (
-                    <div className="flex">
-                      {[1, 2, 3, 4, 5].map((s) => (
-                        <svg key={s} viewBox="0 0 24 24" className={`w-3 h-3 ${s <= Math.round(m.rating_avg) ? "fill-amber-400" : "fill-gray-200"}`}>
-                          <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z" />
-                        </svg>
-                      ))}
-                    </div>
-                  )}
+                  <MessageCircle className="w-3.5 h-3.5 text-sky-500" />
+                  <span>Telegram&apos;dan Yeni Eklenenler</span>
+                  <span className="text-[10px] px-1.5 py-0.2 rounded-full bg-sky-100 text-sky-700 font-extrabold">
+                    Yeni
+                  </span>
                 </button>
-              ))}
+                {featuredPlaces.length > 0 && (
+                  <button
+                    onClick={() => setShowcaseTab("featured")}
+                    className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold transition-all ${
+                      showcaseTab === "featured"
+                        ? "bg-white text-slate-900 shadow-xs"
+                        : "text-gray-500 hover:text-slate-800"
+                    }`}
+                  >
+                    <Sparkles className="w-3.5 h-3.5 text-amber-500" />
+                    <span>Öne Çıkanlar</span>
+                  </button>
+                )}
+              </div>
+
+              {showcaseTab === "telegram" && (
+                <button
+                  onClick={() => toggleSpecial("telegram_yeni")}
+                  className="hidden sm:flex items-center gap-1 text-xs font-semibold text-emerald-700 hover:text-emerald-800"
+                >
+                  <span>Tümünü Filtrele</span>
+                  <ChevronRight className="w-3.5 h-3.5" />
+                </button>
+              )}
             </div>
+
+            {/* Content for Active Tab */}
+            {showcaseTab === "telegram" ? (
+              <div className="flex gap-3.5 overflow-x-auto pb-2 no-scrollbar" style={{ scrollbarWidth: "none" }}>
+                {telegramNewPlaces.map((m) => (
+                  <button
+                    key={m.id}
+                    onClick={() => setSelectedMekan(m)}
+                    className="shrink-0 w-64 bg-white border border-gray-200/90 hover:border-sky-300 rounded-2xl overflow-hidden text-left hover:shadow-md transition-all group flex flex-col"
+                  >
+                    <div className="relative h-28 w-full bg-slate-100 overflow-hidden">
+                      <img
+                        src={getPlacePhoto(m)}
+                        alt={m.isim}
+                        className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
+                      />
+                      <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent" />
+                      <div className="absolute top-2 left-2">
+                        <span className="inline-flex items-center gap-1 text-[10px] font-bold px-2 py-0.5 rounded-full bg-sky-600/95 text-white shadow-xs">
+                          <MessageCircle className="w-2.5 h-2.5" /> Telegram Keşfi
+                        </span>
+                      </div>
+                      <div className="absolute bottom-1.5 left-2 right-2 text-white">
+                        <p className="text-[11px] font-medium text-sky-200">{m.sehir} · {m.kategori}</p>
+                      </div>
+                    </div>
+                    <div className="p-3 flex-1 flex flex-col justify-between">
+                      <div>
+                        <p className="font-bold text-xs sm:text-sm text-slate-900 leading-tight line-clamp-1 group-hover:text-sky-700 transition-colors">
+                          {m.isim}
+                        </p>
+                        {m.food && (
+                          <p className="text-[11px] font-semibold text-amber-800 truncate mt-1">
+                            🍽️ {m.food}
+                          </p>
+                        )}
+                        {m.note && (
+                          <p className="text-[10px] text-gray-600 italic line-clamp-2 mt-1.5 bg-slate-50 p-1.5 rounded border border-gray-100">
+                            &ldquo;{m.note}&rdquo;
+                          </p>
+                        )}
+                      </div>
+                    </div>
+                  </button>
+                ))}
+              </div>
+            ) : (
+              <div className="flex gap-3 overflow-x-auto pb-2 no-scrollbar" style={{ scrollbarWidth: "none" }}>
+                {featuredPlaces.map((m) => (
+                  <button
+                    key={m.id}
+                    onClick={() => setSelectedMekan(m)}
+                    className="shrink-0 w-48 bg-gradient-to-br from-amber-50 to-orange-50 border border-amber-200 rounded-xl p-3 text-left hover:shadow-md hover:border-amber-400 transition-all group"
+                  >
+                    <div className="flex items-start gap-2 mb-1.5">
+                      <span className="text-lg">&#11088;</span>
+                      <div className="min-w-0">
+                        <p className="font-bold text-sm text-slate-900 leading-tight line-clamp-2 group-hover:text-amber-700 transition-colors">{m.isim}</p>
+                        <p className="text-[11px] text-gray-500 mt-0.5">{m.sehir} · {m.kategori}</p>
+                      </div>
+                    </div>
+                  </button>
+                ))}
+              </div>
+            )}
           </div>
         </div>
       )}
@@ -467,6 +560,7 @@ export default function HelalMekanlarClient({ initialData }: { initialData: Hela
                           distance={distanceMap[m.id]}
                           onDetay={() => setSelectedMekan(m)}
                           highlighted={m.highlight}
+                          isRecent={newestPlaceIds.has(m.id)}
                         />
                       ))}
                     </div>
@@ -483,6 +577,7 @@ export default function HelalMekanlarClient({ initialData }: { initialData: Hela
                     distance={distanceMap[m.id]}
                     onDetay={() => setSelectedMekan(m)}
                     highlighted={m.highlight}
+                    isRecent={newestPlaceIds.has(m.id)}
                   />
                 ))}
               </div>
