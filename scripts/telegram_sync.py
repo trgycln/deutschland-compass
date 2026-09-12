@@ -257,6 +257,16 @@ async def sync_telegram():
 
         print(f"📡 Grup İnceleniyor: {d.name} --> [{cat_title}]")
 
+        # Özel Kategori: Helal Mekanlar ve Restoranlar
+        if cat_slug == 'helal-mekanlar':
+            try:
+                from sync_helal_places import sync_helal_group
+                await sync_helal_group(limit=50, external_client=client)
+            except Exception as he:
+                print(f"   ⚠️ Helal mekanlar senkronizasyon hatası: {he}")
+            await asyncio.sleep(2)
+            continue
+
         last_id = state.get(group_key, 0)
         messages_collected = []
         max_id_seen = last_id

@@ -11,7 +11,8 @@
     "telegram:login": "python scripts/telegram_login.py",
     "telegram:qr-login": "python scripts/telegram_qr_login.py",
     "telegram:check-groups": "python scripts/check_my_groups.py",
-    "telegram:sync": "python scripts/telegram_sync.py"
+    "telegram:sync": "python scripts/telegram_sync.py",
+    "telegram:sync-helal": "python scripts/sync_helal_places.py"
   },
   "dependencies": {
     "@radix-ui/react-accordion": "^1.2.12",

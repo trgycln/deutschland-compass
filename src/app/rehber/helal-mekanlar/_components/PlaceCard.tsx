@@ -4,6 +4,7 @@ import { useState } from "react";
 import { Star, MapPin, Phone, ExternalLink, Navigation, Utensils, Coffee, ShoppingCart, Scissors } from "lucide-react";
 import type { HelalMekan } from "../page";
 import { KATEGORI_COLOR } from "./constants";
+import { getPlacePhoto } from "./placePhoto";
 
 interface PlaceCardProps {
   mekan: HelalMekan;
@@ -59,27 +60,15 @@ export default function PlaceCard({ mekan, distance, onDetay, highlighted }: Pla
           : "border-gray-100"
       }`}
     >
-      {/* Top photo / gradient banner */}
-      <div className="relative h-28 flex-shrink-0 overflow-hidden">
-        {mekan.foto_url ? (
-          <img
-            src={mekan.foto_url}
-            alt={mekan.isim}
-            className="w-full h-full object-cover"
-          />
-        ) : (
-          <div
-            className={`w-full h-full flex items-center justify-center ${
-              highlighted
-                ? "bg-gradient-to-br from-amber-400 to-orange-400"
-                : "bg-gradient-to-br from-emerald-400 to-teal-500"
-            }`}
-          >
-            <span className="text-white/80">
-              <CategoryIcon kategori={mekan.kategori} />
-            </span>
-          </div>
-        )}
+      {/* Top photo banner */}
+      <div className="relative h-36 flex-shrink-0 overflow-hidden bg-slate-900 group">
+        <img
+          src={getPlacePhoto(mekan)}
+          alt={mekan.isim}
+          className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
+          loading="lazy"
+        />
+        <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-black/30 pointer-events-none" />
 
         {/* Overlay badges */}
         <div className="absolute top-2 left-2 flex gap-1.5">
@@ -120,19 +109,27 @@ export default function PlaceCard({ mekan, distance, onDetay, highlighted }: Pla
           </span>
         </div>
 
+        {/* Food specialty if available */}
+        {mekan.food && (
+          <div className="flex items-center gap-1.5 text-xs font-semibold text-amber-800 bg-amber-50 border border-amber-200/70 rounded-lg px-2 py-1 mb-2 line-clamp-1">
+            <Utensils className="w-3 h-3 text-amber-600 shrink-0" />
+            <span className="truncate">{mekan.food}</span>
+          </div>
+        )}
+
         {/* Stars */}
         {hasRating ? (
           <div className="mb-2">
             <StarRow avg={mekan.rating_avg} count={mekan.rating_count} />
           </div>
         ) : (
-          <p className="text-[11px] text-gray-400 mb-2">Henuz degerlendirme yok</p>
+          <p className="text-[11px] text-gray-400 mb-2">Henüz değerlendirme yok</p>
         )}
 
         {/* Note preview */}
         {mekan.note && (
-          <p className="text-xs text-gray-500 italic line-clamp-2 mb-2 leading-relaxed">
-            {mekan.note}
+          <p className="text-xs text-emerald-900 bg-emerald-50/70 border border-emerald-100 rounded-lg p-2 italic line-clamp-2 mb-2 leading-relaxed font-medium">
+            &ldquo;{mekan.note}&rdquo;
           </p>
         )}
 
@@ -162,27 +159,20 @@ export default function PlaceCard({ mekan, distance, onDetay, highlighted }: Pla
 
         {/* Action buttons */}
         <div className="flex gap-2 mt-3">
-          {mekan.google_maps_url ? (
-            <a
-              href={mekan.google_maps_url}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="flex items-center gap-1.5 justify-center flex-1 min-h-[40px] rounded-xl bg-emerald-50 text-emerald-700 border border-emerald-200 text-xs font-semibold hover:bg-emerald-100 transition-colors"
-            >
-              <MapPin className="w-3.5 h-3.5" />
-              Yol Tarifi
-            </a>
-          ) : (
-            <span className="flex items-center justify-center flex-1 min-h-[40px] rounded-xl bg-gray-50 text-gray-300 text-xs border border-gray-100">
-              Harita Yok
-            </span>
-          )}
+          <a
+            href={mekan.google_maps_url || `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(`${mekan.isim} ${mekan.sehir}`)}`}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="flex items-center gap-1.5 justify-center flex-1 min-h-[40px] rounded-xl bg-emerald-50 text-emerald-700 border border-emerald-200 text-xs font-semibold hover:bg-emerald-100 transition-colors"
+          >
+            <Navigation className="w-3.5 h-3.5" />
+            Yol Tarifi
+          </a>
           <button
             onClick={onDetay}
-            className="flex items-center gap-1.5 justify-center flex-1 min-h-[40px] rounded-xl bg-slate-800 text-white text-xs font-semibold hover:bg-slate-700 active:scale-95 transition-all"
+            className="flex items-center justify-center flex-1 min-h-[40px] rounded-xl bg-slate-900 text-white text-xs font-semibold hover:bg-slate-800 transition-colors shadow-sm"
           >
-            <ExternalLink className="w-3.5 h-3.5" />
-            Detay
+            Detaylar
           </button>
         </div>
       </div>

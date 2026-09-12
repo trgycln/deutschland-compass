@@ -406,10 +406,13 @@ export default function HelalMekanlarClient({ initialData }: { initialData: Hela
             <div className="sticky top-[var(--filter-bar-h,130px)] h-[calc(100vh-220px)] min-h-[400px]">
               <MapView
                 mekanlar={filtered}
+                allMekanlar={initialData}
                 userLocation={userLocation}
                 onSelectMekan={setSelectedMekan}
                 selectedMekanId={selectedMekan?.id}
                 distances={distanceMap}
+                onLocateUser={requestLocation}
+                locationLoading={locationLoading}
               />
               <p className="text-[11px] text-gray-400 text-center mt-1">
                 {filtered.filter((m) => m.lat !== null).length} mekanda koordinat var

@@ -13,6 +13,7 @@ export type HelalMekan = {
   ulke: string;
   sehir: string;
   adres: string;
+  food: string | null;
   note: string | null;
   telefon: string | null;
   google_maps_url: string;
@@ -28,6 +29,8 @@ export type HelalMekan = {
   rating_count: number;
   foto_url: string | null;
   website_url: string | null;
+  price: string | null;
+  working_hours: string | null;
   created_at: string;
 };
 
@@ -37,6 +40,7 @@ type DBPlace = {
   country: string;
   city: string;
   address?: string | null;
+  food?: string | null;
   note?: string | null;
   phone?: string | null;
   map_link?: string | null;
@@ -54,6 +58,8 @@ type DBPlace = {
   rating_count?: number | null;
   foto_url?: string | null;
   website_url?: string | null;
+  price?: string | null;
+  working_hours?: string | null;
   [key: string]: unknown;
 };
 
@@ -88,9 +94,9 @@ export default async function HelalMekanlarPage() {
   const { data, error } = await supabase
     .from("places")
     .select(
-      "id, name, country, city, address, note, phone, map_link, category, " +
+      "id, name, country, city, address, food, note, phone, map_link, category, " +
       "warning, highlight, mescid_var, helal_sertifikali, muslumana_ait, aile_dostu, created_at, " +
-      "lat, lng, rating_avg, rating_count, foto_url, website_url"
+      "lat, lng, rating_avg, rating_count, foto_url, website_url, price, working_hours"
     )
     .order("city", { ascending: true });
 
@@ -118,6 +124,7 @@ export default async function HelalMekanlarPage() {
       ulke:              p.country,
       sehir:             p.city,
       adres:             p.address ?? "",
+      food:              p.food ?? null,
       note:              p.note ?? null,
       telefon:           p.phone ?? null,
       google_maps_url:   p.map_link ?? "",
@@ -133,6 +140,8 @@ export default async function HelalMekanlarPage() {
       rating_count:      p.rating_count ?? 0,
       foto_url:          p.foto_url ?? null,
       website_url:       p.website_url ?? null,
+      price:             p.price ?? null,
+      working_hours:     p.working_hours ?? null,
       created_at:        p.created_at ?? "",
     };
   });
