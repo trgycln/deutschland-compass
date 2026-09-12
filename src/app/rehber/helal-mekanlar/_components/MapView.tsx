@@ -52,6 +52,17 @@ function createPin(color: string, isHighlight: boolean): L.DivIcon {
   });
 }
 
+// Component that flies to user location when granted
+function UserLocationHandler({ userLocation }: { userLocation: { lat: number; lng: number } | null }) {
+  const map = useMap();
+  useEffect(() => {
+    if (userLocation) {
+      map.flyTo([userLocation.lat, userLocation.lng], 13, { duration: 1.5 });
+    }
+  }, [userLocation, map]);
+  return null;
+}
+
 // Component that fits bounds when filtered places change
 function BoundsFitter({ mekanlar }: { mekanlar: HelalMekan[] }) {
   const map = useMap();
@@ -92,6 +103,7 @@ export default function MapView({ mekanlar, userLocation, onSelectMekan, selecte
         />
 
         <BoundsFitter mekanlar={mekanlar} />
+        <UserLocationHandler userLocation={userLocation} />
 
         {/* User location */}
         {userLocation && (

@@ -116,15 +116,27 @@ export default function HelalMekanlarClient({ initialData }: { initialData: Hela
 
   // ── Geolocation ─────────────────────────────────────────────────────────
   const requestLocation = () => {
-    if (!navigator.geolocation) return;
+    if (typeof window === "undefined" || !navigator.geolocation) {
+      alert("Tarayıcınız konum servisini desteklemiyor.");
+      return;
+    }
     setLocationLoading(true);
     navigator.geolocation.getCurrentPosition(
       (pos) => {
         setUserLocation({ lat: pos.coords.latitude, lng: pos.coords.longitude });
         setLocationLoading(false);
       },
-      () => setLocationLoading(false),
-      { timeout: 10000 }
+      (err) => {
+        setLocationLoading(false);
+        if (err.code === 1) { // PERMISSION_DENIED
+          alert("Konum izni reddedildi. Yakınınızdaki mekanları görmek için lütfen tarayıcınızın adres çubuğundaki kilit/izin simgesinden konum iznini etkinleştirin.");
+        } else if (err.code === 3) { // TIMEOUT
+          alert("Konum alma zaman aşımına uğradı. Lütfen tekrar deneyin.");
+        } else {
+          alert("Konumunuz tespit edilemedi. Lütfen cihazınızın konum servislerinin açık olduğunu kontrol edin.");
+        }
+      },
+      { timeout: 12000, enableHighAccuracy: false, maximumAge: 60000 }
     );
   };
 
