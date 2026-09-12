@@ -1,8 +1,9 @@
 "use client";
-// Sticky filter bar — city select, text search, category chips, special boolean-field toggles, results count
 
-import { Search, X } from "lucide-react";
-import { KATEGORILER, KATEGORI_ICON, SPECIAL_FILTERS } from "./constants";
+import { useRef, useEffect } from "react";
+import { Search, SlidersHorizontal, X, Navigation, ArrowUpDown } from "lucide-react";
+import { KATEGORILER, KATEGORI_COLOR, SPECIAL_FILTERS, SORT_OPTIONS, type SortOption } from "./constants";
+import type { SpecialFilterKey } from "./constants";
 
 interface FilterBarProps {
   countries: string[];
@@ -14,164 +15,178 @@ interface FilterBarProps {
   filteredCount: number;
   isFiltered: boolean;
   activeSpecials: Set<string>;
-  onCountryChange: (v: string) => void;
-  onCityChange: (v: string) => void;
-  onCategoryChange: (v: string) => void;
+  sortBy: SortOption;
+  hasUserLocation: boolean;
+  onCountryChange: (c: string) => void;
+  onCityChange: (c: string) => void;
+  onCategoryChange: (c: string) => void;
   onSearchChange: (v: string) => void;
-  onToggleSpecial: (key: string) => void;
+  onToggleSpecial: (k: string) => void;
+  onSortChange: (s: SortOption) => void;
+  onRequestLocation: () => void;
   onReset: () => void;
 }
 
-const selectCls =
-  "h-11 rounded-xl border border-gray-300 bg-white px-3 text-sm text-gray-700 " +
-  "focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent flex-shrink-0";
-
-const scrollRowCls =
-  "flex gap-1.5 overflow-x-auto pb-0.5 " +
-  "[&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]";
-
 export default function FilterBar({
-  countries,
-  cities,
-  selectedCountry,
-  selectedCity,
-  selectedCategory,
-  searchInput,
-  filteredCount,
-  isFiltered,
-  activeSpecials,
-  onCountryChange,
-  onCityChange,
-  onCategoryChange,
-  onSearchChange,
-  onToggleSpecial,
-  onReset,
+  countries, cities,
+  selectedCountry, selectedCity, selectedCategory,
+  searchInput, filteredCount, isFiltered,
+  activeSpecials, sortBy, hasUserLocation,
+  onCountryChange, onCityChange, onCategoryChange,
+  onSearchChange, onToggleSpecial, onSortChange,
+  onRequestLocation, onReset,
 }: FilterBarProps) {
+  const catScrollRef = useRef<HTMLDivElement>(null);
+
+  // Scroll active category chip into view
+  useEffect(() => {
+    if (!catScrollRef.current) return;
+    const active = catScrollRef.current.querySelector('[data-active="true"]') as HTMLElement | null;
+    active?.scrollIntoView({ block: "nearest", inline: "center", behavior: "smooth" });
+  }, [selectedCategory]);
+
   return (
-    <div className="sticky top-0 z-40 bg-white/95 backdrop-blur-sm border-b border-gray-200 shadow-sm">
-      <div className="max-w-6xl mx-auto px-4 py-3 space-y-2">
-
-        {/* ── Row 1: Selects + text search + reset ─────────────── */}
-        <div className="flex gap-2 items-center">
-          {countries.length > 1 && (
-            <select
-              value={selectedCountry}
-              onChange={(e) => onCountryChange(e.target.value)}
-              className={selectCls}
-              style={{ minWidth: 130 }}
-              aria-label="Ülke seçin"
+    <div className="sticky top-0 z-40 bg-white border-b border-gray-100 shadow-sm">
+      {/* Row 1: Search + Location + Sort */}
+      <div className="max-w-7xl mx-auto px-3 py-2.5 flex items-center gap-2">
+        {/* Search */}
+        <div className="relative flex-1 min-w-0">
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
+          <input
+            type="search"
+            value={searchInput}
+            onChange={(e) => onSearchChange(e.target.value)}
+            placeholder="Mekan veya sehir ara..."
+            className="w-full pl-9 pr-4 py-2 text-sm rounded-xl border border-gray-200 bg-gray-50 focus:outline-none focus:ring-2 focus:ring-emerald-400 focus:border-transparent"
+          />
+          {searchInput && (
+            <button
+              onClick={() => onSearchChange("")}
+              className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600"
             >
-              <option value="all">Tüm Ülkeler</option>
-              {countries.map((c) => (
-                <option key={c} value={c}>{c}</option>
-              ))}
-            </select>
+              <X className="w-3.5 h-3.5" />
+            </button>
           )}
+        </div>
 
+        {/* Location button */}
+        <button
+          onClick={onRequestLocation}
+          title={hasUserLocation ? "Konum aktif" : "Konumumu kullan"}
+          className={`flex items-center gap-1.5 px-3 py-2 rounded-xl text-xs font-semibold border transition-all shrink-0 ${
+            hasUserLocation
+              ? "bg-emerald-600 text-white border-emerald-600"
+              : "bg-white text-emerald-700 border-emerald-300 hover:bg-emerald-50"
+          }`}
+        >
+          <Navigation className="w-3.5 h-3.5" />
+          <span className="hidden sm:inline">{hasUserLocation ? "Konum Aktif" : "Yakinim"}</span>
+        </button>
+
+        {/* Sort dropdown */}
+        <div className="relative shrink-0">
+          <select
+            value={sortBy}
+            onChange={(e) => onSortChange(e.target.value as SortOption)}
+            className="appearance-none pl-8 pr-3 py-2 text-xs font-semibold rounded-xl border border-gray-200 bg-white text-gray-700 focus:outline-none focus:ring-2 focus:ring-emerald-400 cursor-pointer"
+          >
+            {SORT_OPTIONS.map((opt) => (
+              <option key={opt.value} value={opt.value} disabled={opt.value === "distance" && !hasUserLocation}>
+                {opt.label}
+              </option>
+            ))}
+          </select>
+          <ArrowUpDown className="absolute left-2.5 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-gray-400 pointer-events-none" />
+        </div>
+
+        {/* City dropdown (when multiple cities) */}
+        {cities.length > 1 && (
           <select
             value={selectedCity}
             onChange={(e) => onCityChange(e.target.value)}
-            className={selectCls}
-            style={{ minWidth: 130 }}
-            aria-label="Şehir seçin"
+            className="hidden md:block appearance-none px-3 py-2 text-xs font-semibold rounded-xl border border-gray-200 bg-white text-gray-700 focus:outline-none focus:ring-2 focus:ring-emerald-400 cursor-pointer shrink-0 max-w-[140px]"
           >
-            <option value="all">Tüm Şehirler</option>
-            {cities.map((city) => (
-              <option key={city} value={city}>{city}</option>
+            <option value="all">Tum Sehirler</option>
+            {cities.map((c) => (
+              <option key={c} value={c}>{c}</option>
             ))}
           </select>
+        )}
 
-          <div className="relative flex-1 min-w-0">
-            <Search
-              className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400 pointer-events-none"
-              aria-hidden="true"
-            />
-            <input
-              type="text"
-              placeholder="Mekan adı veya adres ara..."
-              value={searchInput}
-              onChange={(e) => onSearchChange(e.target.value)}
-              className="w-full h-11 pl-9 pr-9 rounded-xl border border-gray-300 bg-white text-sm text-gray-700 focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent"
-              aria-label="Mekan ara"
-            />
-            {searchInput && (
-              <button
-                onClick={() => onSearchChange("")}
-                className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 flex items-center justify-center w-6 h-full"
-                aria-label="Aramayı temizle"
-              >
-                <X className="w-4 h-4" />
-              </button>
-            )}
-          </div>
+        {/* Reset */}
+        {isFiltered && (
+          <button
+            onClick={onReset}
+            className="flex items-center gap-1 px-3 py-2 rounded-xl text-xs font-semibold bg-red-50 text-red-600 border border-red-200 hover:bg-red-100 transition-colors shrink-0"
+          >
+            <X className="w-3 h-3" />
+            <span className="hidden sm:inline">Temizle</span>
+          </button>
+        )}
+      </div>
 
-          {isFiltered && (
-            <button
-              onClick={onReset}
-              className="h-11 px-3 rounded-xl border border-red-200 text-red-500 hover:bg-red-50 text-sm font-medium transition-colors flex items-center gap-1.5 shrink-0 min-h-[44px]"
-              aria-label="Tüm filtreleri temizle"
-            >
-              <X className="w-3.5 h-3.5" aria-hidden="true" />
-              <span className="hidden sm:inline">Temizle</span>
-            </button>
-          )}
-        </div>
-
-        {/* ── Row 2: Category chips ─────────────────────────────────── */}
-        <div className={scrollRowCls} role="group" aria-label="Kategori filtresi">
-          {KATEGORILER.map((kat) => (
+      {/* Row 2: Category chips */}
+      <div
+        ref={catScrollRef}
+        className="flex gap-2 px-3 pb-2 overflow-x-auto scrollbar-hide"
+        style={{ scrollbarWidth: "none" }}
+      >
+        {KATEGORILER.map((kat) => {
+          const isActive = selectedCategory === kat;
+          const colors = kat !== "Tumu" ? KATEGORI_COLOR[kat] : null;
+          return (
             <button
               key={kat}
+              data-active={isActive}
               onClick={() => onCategoryChange(kat)}
-              aria-pressed={selectedCategory === kat}
-              className={`flex items-center gap-1.5 px-3 py-1 rounded-full text-sm font-medium whitespace-nowrap transition-all shrink-0 border min-h-[36px] ${
-                selectedCategory === kat
-                  ? "bg-green-600 text-white border-green-600 shadow-sm"
-                  : "bg-white text-gray-600 border-gray-200 hover:border-green-300 hover:bg-green-50"
+              className={`shrink-0 px-3.5 py-1.5 rounded-full text-xs font-semibold border transition-all whitespace-nowrap ${
+                isActive
+                  ? colors
+                    ? `${colors.bg} ${colors.text} ${colors.border} shadow-sm`
+                    : "bg-slate-800 text-white border-slate-800 shadow-sm"
+                  : "bg-gray-50 text-gray-600 border-gray-200 hover:bg-gray-100"
               }`}
             >
-              {kat !== "Tümü" && (
-                <span aria-hidden="true">{KATEGORI_ICON[kat]}</span>
-              )}
               {kat}
             </button>
-          ))}
-        </div>
+          );
+        })}
 
-        {/* ── Row 3: Special boolean-field toggles ──────────────────── */}
-        <div className={scrollRowCls} role="group" aria-label="Özellik filtreleri">
-          {SPECIAL_FILTERS.map(({ key, label, icon }) => {
-            const isActive = activeSpecials.has(key);
-            return (
-              <button
-                key={key}
-                onClick={() => onToggleSpecial(key)}
-                aria-pressed={isActive}
-                className={`flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold whitespace-nowrap transition-all shrink-0 border min-h-[36px] ${
-                  isActive
-                    ? "bg-emerald-600 text-white border-emerald-600 shadow-sm"
-                    : "bg-white text-gray-500 border-gray-200 hover:border-emerald-300 hover:bg-emerald-50"
-                }`}
-              >
-                <span aria-hidden="true">{icon}</span>
-                {label}
-              </button>
-            );
-          })}
-        </div>
+        {/* Divider */}
+        <div className="w-px bg-gray-200 mx-1 shrink-0" />
 
-        {/* ── Results count ─────────────────────────────────────────── */}
-        <p className="text-xs text-gray-500 leading-none pt-0.5">
-          <span className="font-semibold text-gray-800">{filteredCount}</span>{" "}
-          mekan bulundu
-          {selectedCountry !== "all" && (
-            <span className="text-green-600"> — {selectedCountry}</span>
-          )}
-          {selectedCity !== "all" && (
-            <span className="text-green-600"> {selectedCountry !== "all" ? "," : "—"} {selectedCity}</span>
-          )}
-        </p>
+        {/* Special filter toggles */}
+        {SPECIAL_FILTERS.map((f) => {
+          const isActive = activeSpecials.has(f.key);
+          return (
+            <button
+              key={f.key}
+              onClick={() => onToggleSpecial(f.key)}
+              className={`shrink-0 flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-semibold border transition-all whitespace-nowrap ${
+                isActive
+                  ? "bg-emerald-600 text-white border-emerald-600 shadow-sm"
+                  : "bg-gray-50 text-gray-600 border-gray-200 hover:bg-emerald-50 hover:text-emerald-700 hover:border-emerald-300"
+              }`}
+            >
+              {f.label}
+            </button>
+          );
+        })}
       </div>
+
+      {/* Row 3: Result count */}
+      {isFiltered && (
+        <div className="px-3 pb-2 flex items-center gap-2">
+          <span className="text-[11px] text-gray-500">
+            <strong className="text-emerald-700 font-bold">{filteredCount}</strong> mekan bulundu
+          </span>
+          {activeSpecials.size > 0 && (
+            <span className="text-[11px] bg-emerald-100 text-emerald-700 px-2 py-0.5 rounded-full font-medium">
+              {activeSpecials.size} filtre aktif
+            </span>
+          )}
+        </div>
+      )}
     </div>
   );
 }

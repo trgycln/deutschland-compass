@@ -33,12 +33,22 @@ import {
   AccordionItem,
   AccordionTrigger,
 } from "@/components/ui/accordion";
+import { useCommunityUpdates, PageCommunityUpdatesBanner, PageCommunityUpdatesContent } from '@/components/page-community-updates';
 
 export default function VergiBeyaniPage() {
   const [experiences, setExperiences] = useState<any[]>([]);
   const [supabaseReady, setSupabaseReady] = useState(false);
+  const [activeTab, setActiveTab] = useState('guide');
+  const { updates } = useCommunityUpdates('vergi-beyani');
 
   useEffect(() => {
+    if (typeof window !== 'undefined') {
+      const urlParams = new URLSearchParams(window.location.search);
+      const tabParam = urlParams.get('tab');
+      if (tabParam && ['guide', 'updates', 'experiences', 'documents'].includes(tabParam)) {
+        setActiveTab(tabParam);
+      }
+    }
     console.log('🔍 Vergi Beyani: Supabase bağlantı kontrol...');
     console.log('URL:', process.env.NEXT_PUBLIC_SUPABASE_URL ? '✓ Var' : '✗ Eksik');
     console.log('Key:', process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY ? '✓ Var' : '✗ Eksik');
@@ -115,15 +125,90 @@ export default function VergiBeyaniPage() {
         </div>
       </div>
 
+      {/* Telegram Linkleri */}
+      <div className="bg-slate-100 dark:bg-slate-900/60 py-6 border-b border-slate-200 dark:border-slate-800">
+        <div className="container mx-auto px-4">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 max-w-4xl mx-auto">
+            <a 
+              href="https://t.me/+MZVY4tuyUY5jOGIy" 
+              target="_blank" 
+              rel="noopener noreferrer"
+              className="block group relative overflow-hidden rounded-xl bg-gradient-to-br from-blue-500 to-blue-600 p-5 shadow-md hover:shadow-xl transition-all duration-300 hover:scale-[1.01]"
+            >
+              <div className="absolute inset-0 bg-gradient-to-br from-white/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+              <div className="relative flex items-center gap-4">
+                <div className="p-3 bg-white/25 backdrop-blur-sm rounded-xl shrink-0">
+                  <svg className="w-6 h-6 text-white" fill="currentColor" viewBox="0 0 24 24">
+                    <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm4.64 6.8c-.15 1.58-.8 5.42-1.13 7.19-.14.75-.42 1-.68 1.03-.58.05-1.02-.38-1.58-.75-.88-.58-1.38-.94-2.23-1.5-.99-.65-.35-1.01.22-1.59.15-.15 2.71-2.48 2.76-2.69a.2.2 0 00-.05-.18c-.06-.05-.14-.03-.21-.02-.09.02-1.49.95-4.22 2.79-.4.27-.76.41-1.08.4-.36-.01-1.04-.2-1.55-.37-.63-.2-1.12-.31-1.08-.66.02-.18.27-.36.74-.55 2.92-1.27 4.86-2.11 5.83-2.51 2.78-1.16 3.35-1.36 3.73-1.36.08 0 .27.02.39.12.1.08.13.19.14.27-.01.06.01.24 0 .38z"/>
+                  </svg>
+                </div>
+                <div className="flex-1 min-w-0">
+                  <div className="font-bold text-white text-lg mb-0.5">Steuererklärung</div>
+                  <div className="text-xs text-blue-100">Telegram Grubu</div>
+                </div>
+                <ArrowRight className="w-5 h-5 text-white/90 transform group-hover:translate-x-1 transition-transform shrink-0" />
+              </div>
+            </a>
+
+            <a 
+              href="https://t.me/+yI1or4k3nMswN2Ni" 
+              target="_blank" 
+              rel="noopener noreferrer"
+              className="block group relative overflow-hidden rounded-xl bg-gradient-to-br from-emerald-600 to-teal-700 p-5 shadow-md hover:shadow-xl transition-all duration-300 hover:scale-[1.01]"
+            >
+              <div className="absolute inset-0 bg-gradient-to-br from-white/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+              <div className="relative flex items-center gap-4">
+                <div className="p-3 bg-white/25 backdrop-blur-sm rounded-xl shrink-0">
+                  <svg className="w-6 h-6 text-white" fill="currentColor" viewBox="0 0 24 24">
+                    <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm4.64 6.8c-.15 1.58-.8 5.42-1.13 7.19-.14.75-.42 1-.68 1.03-.58.05-1.02-.38-1.58-.75-.88-.58-1.38-.94-2.23-1.5-.99-.65-.35-1.01.22-1.59.15-.15 2.71-2.48 2.76-2.69a.2.2 0 00-.05-.18c-.06-.05-.14-.03-.21-.02-.09.02-1.49.95-4.22 2.79-.4.27-.76.41-1.08.4-.36-.01-1.04-.2-1.55-.37-.63-.2-1.12-.31-1.08-.66.02-.18.27-.36.74-.55 2.92-1.27 4.86-2.11 5.83-2.51 2.78-1.16 3.35-1.36 3.73-1.36.08 0 .27.02.39.12.1.08.13.19.14.27-.01.06.01.24 0 .38z"/>
+                  </svg>
+                </div>
+                <div className="flex-1 min-w-0">
+                  <div className="font-bold text-white text-lg mb-0.5">Deutschland Compass</div>
+                  <div className="text-xs text-emerald-100">Telegram Kanalımız</div>
+                </div>
+                <ArrowRight className="w-5 h-5 text-white/90 transform group-hover:translate-x-1 transition-transform shrink-0" />
+              </div>
+            </a>
+          </div>
+        </div>
+      </div>
+
       <div className="container mx-auto px-4 py-12">
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
           {/* Sol Ana İçerik */}
           <div className="lg:col-span-2">
-            <Tabs defaultValue="guide" className="space-y-8">
-              <TabsList className="grid w-full grid-cols-3 p-1 bg-slate-100 dark:bg-slate-800 rounded-xl">
+            {/* Canlı Topluluk Sentez Bilgi Rozeti & Duyuru */}
+            <PageCommunityUpdatesBanner 
+              categorySlug="vergi-beyani"
+              groupName="STEUERERKLÄRUNG GRUBU" 
+              updatesCount={updates.length} 
+              onExploreClick={() => setActiveTab('updates')} 
+            />
+
+            <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-8">
+              <TabsList className="grid w-full grid-cols-2 sm:grid-cols-4 p-1 bg-slate-100 dark:bg-slate-800 rounded-xl">
                 <TabsTrigger value="guide" className="rounded-lg data-[state=active]:bg-white dark:data-[state=active]:bg-slate-950 data-[state=active]:shadow-sm">
                   Rehber
                 </TabsTrigger>
+
+                {/* Vurgulu & Dikkat Çekici Güncel Gelişmeler Sekmesi */}
+                <TabsTrigger 
+                  value="updates" 
+                  className="relative rounded-lg font-bold flex items-center justify-center gap-1.5 transition-all data-[state=active]:bg-gradient-to-r data-[state=active]:from-amber-500 data-[state=active]:to-amber-600 data-[state=active]:text-white data-[state=active]:shadow-md data-[state=inactive]:text-amber-700 dark:data-[state=inactive]:text-amber-300 data-[state=inactive]:bg-amber-50/60 dark:data-[state=inactive]:bg-amber-950/30"
+                >
+                  <span className="relative flex h-2.5 w-2.5">
+                    <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-amber-400 opacity-75"></span>
+                    <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-amber-500 data-[state=active]:bg-white"></span>
+                  </span>
+                  <span>⚡ Güncel Gelişmeler</span>
+                  {updates.length > 0 && (
+                    <span className="ml-1 px-1.5 py-0.5 text-[10px] font-black rounded-full bg-amber-200 text-amber-950 dark:bg-amber-900 dark:text-amber-100 data-[state=active]:bg-white data-[state=active]:text-amber-700 shadow-2xs">
+                      {updates.length}
+                    </span>
+                  )}
+                </TabsTrigger>
+
                 <TabsTrigger value="experiences" className="rounded-lg data-[state=active]:bg-white dark:data-[state=active]:bg-slate-950 data-[state=active]:shadow-sm">
                   Tecrübeler
                 </TabsTrigger>
@@ -131,6 +216,15 @@ export default function VergiBeyaniPage() {
                   Dokümanlar
                 </TabsTrigger>
               </TabsList>
+
+              {/* Updates Tab */}
+              <TabsContent value="updates">
+                <PageCommunityUpdatesContent 
+                  updates={updates} 
+                  title="Vergi Beyanı (Steuererklärung)" 
+                  groupName="STEUERERKLÄRUNG GRUBU" 
+                />
+              </TabsContent>
 
               <TabsContent value="guide" className="space-y-12 mt-6">
                 {/* 1. Nedir ve Kimler Yapmalı */}

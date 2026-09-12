@@ -7,11 +7,12 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { BookOpen, Zap, GraduationCap, FileText, Briefcase, Factory, Globe, Building2, Quote, Calendar, User, AlertTriangle, HelpCircle, Wrench, ShieldCheck } from 'lucide-react';
+import { BookOpen, Zap, GraduationCap, FileText, Briefcase, Factory, Globe, Building2, Quote, Calendar, User, AlertTriangle, HelpCircle, Wrench, ShieldCheck, ArrowRight } from 'lucide-react';
 import { ShareExperienceDialog } from '@/components/share-experience-dialog';
 import { UploadDocumentDialog } from '@/components/upload-document-dialog';
 import { FaqSection } from '@/components/faq-section';
 import { DocumentSection } from '@/components/document-section';
+import { useCommunityUpdates, PageCommunityUpdatesBanner, PageCommunityUpdatesContent } from '@/components/page-community-updates';
 
 function getEmbedUrl(url: string) {
   if (!url) return '';
@@ -29,8 +30,18 @@ export default function ElectricianGuidePage() {
   const [videoUrl, setVideoUrl] = useState(defaultVideoUrl);
   const [pageTitle, setPageTitle] = useState(title);
   const [pageDescription, setPageDescription] = useState(description);
+  const [activeTab, setActiveTab] = useState('guide');
+  const { updates } = useCommunityUpdates('elektrikci');
 
   useEffect(() => {
+    if (typeof window !== 'undefined') {
+      const urlParams = new URLSearchParams(window.location.search);
+      const tabParam = urlParams.get('tab');
+      if (tabParam && ['guide', 'updates', 'faq', 'experiences', 'documents'].includes(tabParam)) {
+        setActiveTab(tabParam);
+      }
+    }
+
     async function fetchPageData() {
       // Fetch experiences
       const { data: expData } = await supabase
@@ -131,7 +142,7 @@ export default function ElectricianGuidePage() {
           <div className="flex flex-col md:flex-row gap-8 items-center md:items-start text-center md:text-left">
             <div className="flex-1 space-y-4 w-full">
               <div className="flex items-center justify-center md:justify-start gap-2">
-                <Badge variant="outline" className="text-blue-600 border-blue-200 bg-blue-50">Sanayi & İnşaat</Badge>
+                <Badge variant="outline" className="text-blue-600 border-blue-200 bg-blue-50">Teknik & Zanaat</Badge>
                 <Badge variant="outline" className="text-slate-600">Meslek Rehberi</Badge>
               </div>
               <h1 className="text-4xl font-bold tracking-tight text-slate-900 dark:text-slate-50">
@@ -187,50 +198,53 @@ export default function ElectricianGuidePage() {
         </div>
       </div>
 
-        {/* Telegram Links Section */}
-        <div className="container mx-auto px-4 py-8">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 max-w-4xl mx-auto">
-            <a href="https://t.me/+ur-Lcuta12I2MDMy" target="_blank" rel="noopener noreferrer" className="block group relative overflow-hidden rounded-xl bg-gradient-to-br from-blue-500 to-blue-600 p-6 shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-[1.02]">
-              <div className="absolute inset-0 bg-gradient-to-br from-white/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
-              <div className="relative flex items-center gap-4">
-                <div className="p-3 bg-white/25 backdrop-blur-sm rounded-xl shrink-0">
-                  <svg className="w-6 h-6 text-white" fill="currentColor" viewBox="0 0 24 24">
-                    <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm4.64 6.8c-.15 1.58-.8 5.42-1.13 7.19-.14.75-.42 1-.68 1.03-.58.05-1.02-.38-1.58-.75-.88-.58-1.38-.94-2.23-1.5-.99-.65-.35-1.01.22-1.59.15-.15 2.71-2.48 2.76-2.69a.2.2 0 00-.05-.18c-.06-.05-.14-.03-.21-.02-.09.02-1.49.95-4.22 2.79-.4.27-.76.41-1.08.4-.36-.01-1.04-.2-1.55-.37-.63-.2-1.12-.31-1.08-.66.02-.18.27-.36.74-.55 2.92-1.27 4.86-2.11 5.83-2.51 2.78-1.16 3.35-1.36 3.73-1.36.08 0 .27.02.39.12.1.08.13.19.14.27-.01.06.01.24 0 .38z"/>
-                  </svg>
-                </div>
-                <div className="flex-1 min-w-0">
-                  <div className="font-bold text-white text-lg mb-1">Elektrik Ausbildung</div>
-                  <div className="text-sm text-blue-100">Telegram Grubu</div>
-                </div>
-                <svg className="w-5 h-5 text-white/90 transform group-hover:translate-x-1 transition-transform shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+      {/* Telegram Links Section */}
+      <div className="container mx-auto px-4 py-8">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 max-w-4xl mx-auto">
+          <a href="https://t.me/+ur-Lcuta12I2MDMy" target="_blank" rel="noopener noreferrer" className="block group relative overflow-hidden rounded-xl bg-gradient-to-br from-blue-600 to-indigo-700 p-5 shadow-md hover:shadow-xl transition-all duration-300 hover:scale-[1.01]">
+            <div className="absolute inset-0 bg-gradient-to-br from-white/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+            <div className="relative flex items-center gap-4">
+              <div className="p-3 bg-white/25 backdrop-blur-sm rounded-xl shrink-0">
+                <svg className="w-6 h-6 text-white" fill="currentColor" viewBox="0 0 24 24">
+                  <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm4.64 6.8c-.15 1.58-.8 5.42-1.13 7.19-.14.75-.42 1-.68 1.03-.58.05-1.02-.38-1.58-.75-.88-.58-1.38-.94-2.23-1.5-.99-.65-.35-1.01.22-1.59.15-.15 2.71-2.48 2.76-2.69a.2.2 0 00-.05-.18c-.06-.05-.14-.03-.21-.02-.09.02-1.49.95-4.22 2.79-.4.27-.76.41-1.08.4-.36-.01-1.04-.2-1.55-.37-.63-.2-1.12-.31-1.08-.66.02-.18.27-.36.74-.55 2.92-1.27 4.86-2.11 5.83-2.51 2.78-1.16 3.35-1.36 3.73-1.36.08 0 .27.02.39.12.1.08.13.19.14.27-.01.06.01.24 0 .38z"/>
                 </svg>
               </div>
-            </a>
+              <div className="flex-1 min-w-0">
+                <div className="font-bold text-white text-lg mb-0.5">Elektrik Ausbildung</div>
+                <div className="text-xs text-blue-100">Telegram Grubu</div>
+              </div>
+              <ArrowRight className="w-5 h-5 text-white/90 transform group-hover:translate-x-1 transition-transform shrink-0" />
+            </div>
+          </a>
 
-            <a href="https://t.me/+yI1or4k3nMswN2Ni" target="_blank" rel="noopener noreferrer" className="block group relative overflow-hidden rounded-xl bg-gradient-to-br from-amber-500 to-amber-600 p-6 shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-[1.02]">
-              <div className="absolute inset-0 bg-gradient-to-br from-white/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
-              <div className="relative flex items-center gap-4">
-                <div className="p-3 bg-white/25 backdrop-blur-sm rounded-xl shrink-0">
-                  <svg className="w-6 h-6 text-white" fill="currentColor" viewBox="0 0 24 24">
-                    <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm4.64 6.8c-.15 1.58-.8 5.42-1.13 7.19-.14.75-.42 1-.68 1.03-.58.05-1.02-.38-1.58-.75-.88-.58-1.38-.94-2.23-1.5-.99-.65-.35-1.01.22-1.59.15-.15 2.71-2.48 2.76-2.69a.2.2 0 00-.05-.18c-.06-.05-.14-.03-.21-.02-.09.02-1.49.95-4.22 2.79-.4.27-.76.41-1.08.4-.36-.01-1.04-.2-1.55-.37-.63-.2-1.12-.31-1.08-.66.02-.18.27-.36.74-.55 2.92-1.27 4.86-2.11 5.83-2.51 2.78-1.16 3.35-1.36 3.73-1.36.08 0 .27.02.39.12.1.08.13.19.14.27-.01.06.01.24 0 .38z"/>
-                  </svg>
-                </div>
-                <div className="flex-1 min-w-0">
-                  <div className="font-bold text-white text-lg mb-1">Deutschland Compass</div>
-                  <div className="text-sm text-amber-100">Telegram Kanalımız</div>
-                </div>
-                <svg className="w-5 h-5 text-white/90 transform group-hover:translate-x-1 transition-transform shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+          <a href="https://t.me/+yI1or4k3nMswN2Ni" target="_blank" rel="noopener noreferrer" className="block group relative overflow-hidden rounded-xl bg-gradient-to-br from-amber-500 to-amber-600 p-5 shadow-md hover:shadow-xl transition-all duration-300 hover:scale-[1.01]">
+            <div className="absolute inset-0 bg-gradient-to-br from-white/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+            <div className="relative flex items-center gap-4">
+              <div className="p-3 bg-white/25 backdrop-blur-sm rounded-xl shrink-0">
+                <svg className="w-6 h-6 text-white" fill="currentColor" viewBox="0 0 24 24">
+                  <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm4.64 6.8c-.15 1.58-.8 5.42-1.13 7.19-.14.75-.42 1-.68 1.03-.58.05-1.02-.38-1.58-.75-.88-.58-1.38-.94-2.23-1.5-.99-.65-.35-1.01.22-1.59.15-.15 2.71-2.48 2.76-2.69a.2.2 0 00-.05-.18c-.06-.05-.14-.03-.21-.02-.09.02-1.49.95-4.22 2.79-.4.27-.76.41-1.08.4-.36-.01-1.04-.2-1.55-.37-.63-.2-1.12-.31-1.08-.66.02-.18.27-.36.74-.55 2.92-1.27 4.86-2.11 5.83-2.51 2.78-1.16 3.35-1.36 3.73-1.36.08 0 .27.02.39.12.1.08.13.19.14.27-.01.06.01.24 0 .38z"/>
                 </svg>
               </div>
-            </a>
-          </div>
+              <div className="flex-1 min-w-0">
+                <div className="font-bold text-white text-lg mb-0.5">Deutschland Compass</div>
+                <div className="text-xs text-amber-100">Telegram Kanalımız</div>
+              </div>
+              <ArrowRight className="w-5 h-5 text-white/90 transform group-hover:translate-x-1 transition-transform shrink-0" />
+            </div>
+          </a>
         </div>
+      </div>
 
       {/* Main Content */}
       <div id="content-section" className="container mx-auto px-4 py-8 max-w-5xl">
-        
+        {/* Canlı Topluluk Güncellemeleri & Taze Tecrübeler Banner */}
+        <PageCommunityUpdatesBanner 
+          categorySlug="elektrikci"
+          groupName="ELEKTRİK AUSBİLDUNG GRUBU"
+          updatesCount={updates.length}
+          onExploreClick={() => setActiveTab('updates')}
+        />
+
         {/* Info Alert / Analogy */}
         {analogy && (
           <div className="mb-8 bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-xl p-6 flex gap-4">
@@ -244,13 +258,41 @@ export default function ElectricianGuidePage() {
           </div>
         )}
 
-        <Tabs defaultValue="guide" className="space-y-8">
-          <TabsList className="grid w-full grid-cols-2 md:grid-cols-4 lg:w-[600px] h-auto">
-            <TabsTrigger value="guide">Rehber</TabsTrigger>
-            <TabsTrigger value="faq">SSS</TabsTrigger>
-            <TabsTrigger value="experiences">Tecrübeler</TabsTrigger>
-            <TabsTrigger value="documents">Dokümanlar</TabsTrigger>
+        <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-8">
+          <TabsList className="grid w-full grid-cols-2 md:grid-cols-5 lg:w-[720px] h-auto p-1 bg-slate-100 dark:bg-slate-800 rounded-xl gap-1">
+            <TabsTrigger value="guide" className="rounded-lg py-2.5">Rehber</TabsTrigger>
+
+            {/* Vurgulu & Dikkat Çekici Güncel Gelişmeler Sekmesi */}
+            <TabsTrigger 
+              value="updates" 
+              className="relative rounded-lg font-bold flex items-center justify-center gap-1.5 py-2.5 transition-all data-[state=active]:bg-gradient-to-r data-[state=active]:from-amber-500 data-[state=active]:to-amber-600 data-[state=active]:text-white data-[state=active]:shadow-md data-[state=inactive]:text-amber-700 dark:data-[state=inactive]:text-amber-300 data-[state=inactive]:bg-amber-50/70 dark:data-[state=inactive]:bg-amber-950/30"
+            >
+              <span className="relative flex h-2 w-2">
+                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-amber-400 opacity-75"></span>
+                <span className="relative inline-flex rounded-full h-2 w-2 bg-amber-500 data-[state=active]:bg-white"></span>
+              </span>
+              <span>⚡ Güncel Gelişmeler</span>
+              {updates.length > 0 && (
+                <span className="ml-1 text-[11px] px-1.5 py-0.2 rounded-full font-extrabold bg-amber-200 text-amber-900 dark:bg-amber-900 dark:text-amber-100">
+                  {updates.length}
+                </span>
+              )}
+            </TabsTrigger>
+
+            <TabsTrigger value="faq" className="rounded-lg py-2.5">SSS</TabsTrigger>
+            <TabsTrigger value="experiences" className="rounded-lg py-2.5">Tecrübeler</TabsTrigger>
+            <TabsTrigger value="documents" className="rounded-lg py-2.5">Dokümanlar</TabsTrigger>
           </TabsList>
+
+          {/* Güncel Gelişmeler Tab (Topluluk & Telegram Canlı Sentezi) */}
+          <TabsContent value="updates" className="space-y-6">
+            <PageCommunityUpdatesContent
+              categorySlug="elektrikci"
+              groupName="ELEKTRİK AUSBİLDUNG GRUBU"
+              updates={updates}
+              onSwitchTab={(tab: string) => setActiveTab(tab)}
+            />
+          </TabsContent>
 
           {/* Guide Tab */}
           <TabsContent value="guide" className="space-y-12">
@@ -324,7 +366,7 @@ export default function ElectricianGuidePage() {
                                 {exp.name || 'Anonim Çalışan'}
                               </h3>
                               <div className="flex items-center gap-2 text-sm text-slate-500">
-                                <Calendar className="h-3 w-3" />
+                                <Calendar className="h-3.5 w-3.5" />
                                 <span>{new Date(exp.created_at).toLocaleDateString('tr-TR')}</span>
                               </div>
                             </div>

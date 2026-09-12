@@ -13,6 +13,7 @@ import { ShareExperienceDialog } from '@/components/share-experience-dialog';
 import { FaqSection } from '@/components/faq-section';
 import { ExperienceSection } from '@/components/experience-section';
 import { DocumentSection } from '@/components/document-section';
+import { useCommunityUpdates, PageCommunityUpdatesBanner, PageCommunityUpdatesContent } from '@/components/page-community-updates';
 
 function getEmbedUrl(url: string) {
   if (!url) return '';
@@ -27,6 +28,18 @@ function getEmbedUrl(url: string) {
 export default function SpecialEducationTeacherPage() {
   const { title, description, videoUrl: defaultVideoUrl, stats, roadmap, pedagogy, faq } = specialEducationTeacherData;
   const [videoUrl, setVideoUrl] = useState(defaultVideoUrl);
+  const [activeTab, setActiveTab] = useState('guide');
+  const { updates } = useCommunityUpdates('ozel-egitim-ogretmenligi');
+
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      const urlParams = new URLSearchParams(window.location.search);
+      const tabParam = urlParams.get('tab');
+      if (tabParam && ['guide', 'updates', 'faq', 'experiences', 'documents'].includes(tabParam)) {
+        setActiveTab(tabParam);
+      }
+    }
+  }, []);
 
   useEffect(() => {
     async function fetchProfessionData() {
@@ -194,16 +207,48 @@ export default function SpecialEducationTeacherPage() {
           </div>
         )}
 
-        <Tabs defaultValue="guide" className="space-y-8">
-          <TabsList className="grid w-full grid-cols-2 md:grid-cols-4 lg:w-[600px] h-auto bg-slate-100 dark:bg-slate-800 p-1 rounded-xl">
-            <TabsTrigger value="guide" className="rounded-lg">Rehber</TabsTrigger>
-            <TabsTrigger value="faq" className="rounded-lg">SSS</TabsTrigger>
-            <TabsTrigger value="experiences" className="rounded-lg">Tecrübeler</TabsTrigger>
-            <TabsTrigger value="documents" className="rounded-lg">Dokümanlar</TabsTrigger>
-          </TabsList>
+        <div className="space-y-6">
+          <PageCommunityUpdatesBanner 
+            updates={updates} 
+            onViewAll={() => setActiveTab('updates')} 
+          />
 
-          {/* Guide Tab */}
-          <TabsContent value="guide" className="space-y-12">
+          <Tabs value={activeTab} onValueChange={(tab: string) => setActiveTab(tab)} className="space-y-8">
+            <TabsList className="grid w-full grid-cols-2 md:grid-cols-5 lg:w-[720px] h-auto bg-slate-100 dark:bg-slate-800 p-1 rounded-xl">
+              <TabsTrigger value="guide" className="rounded-lg">Rehber</TabsTrigger>
+              <TabsTrigger 
+                value="updates" 
+                className="rounded-lg relative data-[state=active]:bg-amber-500 data-[state=active]:text-white font-medium transition-all"
+              >
+                <span className="flex items-center gap-1.5">
+                  <span className="relative flex h-2 w-2">
+                    <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-amber-400 opacity-75"></span>
+                    <span className="relative inline-flex rounded-full h-2 w-2 bg-amber-500"></span>
+                  </span>
+                  ⚡ Güncel
+                </span>
+                {updates.length > 0 && (
+                  <Badge variant="secondary" className="ml-1.5 px-1.5 py-0 text-[10px] bg-amber-100 dark:bg-amber-900/60 text-amber-800 dark:text-amber-200">
+                    {updates.length}
+                  </Badge>
+                )}
+              </TabsTrigger>
+              <TabsTrigger value="faq" className="rounded-lg">SSS</TabsTrigger>
+              <TabsTrigger value="experiences" className="rounded-lg">Tecrübeler</TabsTrigger>
+              <TabsTrigger value="documents" className="rounded-lg">Dokümanlar</TabsTrigger>
+            </TabsList>
+
+            <TabsContent value="updates" className="space-y-6">
+              <PageCommunityUpdatesContent
+                categorySlug="ozel-egitim-ogretmenligi"
+                updates={updates}
+                groupName="Özel Eğitim Öğretmenleri Grubu"
+                telegramUrl="https://t.me/+lcO1TpuAJUUzOTcy"
+              />
+            </TabsContent>
+
+            {/* Guide Tab */}
+            <TabsContent value="guide" className="space-y-12">
             {roadmap.map((step, index) => (
               <section key={index} className="relative pl-8 border-l-2 border-slate-200 dark:border-slate-800 pb-12 last:pb-0">
                 <div className="absolute -left-[9px] top-0 w-4 h-4 rounded-full bg-blue-600 ring-4 ring-white dark:ring-slate-950" />
@@ -272,6 +317,7 @@ export default function SpecialEducationTeacherPage() {
             <DocumentSection professionSlug="ozel-egitim-ogretmenligi" />
           </TabsContent>
         </Tabs>
+        </div>
       </div>
     </div>
   );

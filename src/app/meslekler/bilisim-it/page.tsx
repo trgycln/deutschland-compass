@@ -14,6 +14,7 @@ import { ExperienceSection } from '@/components/experience-section';
 import { DocumentSection } from '@/components/document-section';
 import { UploadDocumentDialog } from '@/components/upload-document-dialog';
 import { supabase } from '@/lib/supabase';
+import { useCommunityUpdates, PageCommunityUpdatesBanner, PageCommunityUpdatesContent } from '@/components/page-community-updates';
 
 function getEmbedUrl(url: string) {
   if (!url) return '';
@@ -39,8 +40,18 @@ export default function ITPage() {
   const [videoUrl, setVideoUrl] = useState(itData.videoUrl);
   const [pageTitle, setPageTitle] = useState(itData.title);
   const [pageDescription, setPageDescription] = useState(itData.description);
+  const [activeTab, setActiveTab] = useState('roadmap');
+  const { updates } = useCommunityUpdates('bilisim-it');
 
   useEffect(() => {
+    if (typeof window !== 'undefined') {
+      const urlParams = new URLSearchParams(window.location.search);
+      const tabParam = urlParams.get('tab');
+      if (tabParam && ['roadmap', 'updates', 'specializations', 'pedagogy', 'faq', 'experiences', 'documents'].includes(tabParam)) {
+        setActiveTab(tabParam);
+      }
+    }
+
     async function fetchPageData() {
       const { data } = await supabase
         .from('professions')
@@ -164,27 +175,63 @@ export default function ITPage() {
 
       {/* Main Content */}
       <div className="container mx-auto px-4 py-12 max-w-5xl" id="roadmap-section">
-        <Tabs defaultValue="roadmap" className="space-y-8">
-          <TabsList className="grid w-full grid-cols-2 md:grid-cols-6 h-auto p-1 bg-slate-100 dark:bg-slate-800 rounded-xl">
-            <TabsTrigger value="roadmap" className="py-3 rounded-lg data-[state=active]:bg-white data-[state=active]:shadow-sm">
+        {/* Canlı Topluluk Güncellemeleri & Taze Tecrübeler Banner */}
+        <PageCommunityUpdatesBanner 
+          categorySlug="bilisim-it"
+          groupName="I.T BİLİŞİM GRUBU"
+          updatesCount={updates.length}
+          onExploreClick={() => setActiveTab('updates')}
+        />
+
+        <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-8">
+          <TabsList className="grid w-full grid-cols-2 md:grid-cols-7 h-auto p-1 bg-slate-100 dark:bg-slate-800 rounded-xl gap-1">
+            <TabsTrigger value="roadmap" className="py-2.5 rounded-lg data-[state=active]:bg-white data-[state=active]:shadow-sm">
               Yol Haritası
             </TabsTrigger>
-            <TabsTrigger value="specializations" className="py-3 rounded-lg data-[state=active]:bg-white data-[state=active]:shadow-sm">
+
+            {/* Vurgulu & Dikkat Çekici Güncel Gelişmeler Sekmesi */}
+            <TabsTrigger 
+              value="updates" 
+              className="relative rounded-lg font-bold flex items-center justify-center gap-1.5 py-2.5 transition-all data-[state=active]:bg-gradient-to-r data-[state=active]:from-amber-500 data-[state=active]:to-amber-600 data-[state=active]:text-white data-[state=active]:shadow-md data-[state=inactive]:text-amber-700 dark:data-[state=inactive]:text-amber-300 data-[state=inactive]:bg-amber-50/70 dark:data-[state=inactive]:bg-amber-950/30"
+            >
+              <span className="relative flex h-2 w-2">
+                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-amber-400 opacity-75"></span>
+                <span className="relative inline-flex rounded-full h-2 w-2 bg-amber-500 data-[state=active]:bg-white"></span>
+              </span>
+              <span>⚡ Güncel</span>
+              {updates.length > 0 && (
+                <span className="ml-0.5 text-[11px] px-1.5 py-0.2 rounded-full font-extrabold bg-amber-200 text-amber-900 dark:bg-amber-900 dark:text-amber-100">
+                  {updates.length}
+                </span>
+              )}
+            </TabsTrigger>
+
+            <TabsTrigger value="specializations" className="py-2.5 rounded-lg data-[state=active]:bg-white data-[state=active]:shadow-sm">
               Uzmanlıklar
             </TabsTrigger>
-            <TabsTrigger value="pedagogy" className="py-3 rounded-lg data-[state=active]:bg-white data-[state=active]:shadow-sm">
-              Sektör Kültürü
+            <TabsTrigger value="pedagogy" className="py-2.5 rounded-lg data-[state=active]:bg-white data-[state=active]:shadow-sm">
+              Kültür
             </TabsTrigger>
-            <TabsTrigger value="faq" className="py-3 rounded-lg data-[state=active]:bg-white data-[state=active]:shadow-sm">
-              Sıkça Sorulanlar
+            <TabsTrigger value="faq" className="py-2.5 rounded-lg data-[state=active]:bg-white data-[state=active]:shadow-sm">
+              SSS
             </TabsTrigger>
-            <TabsTrigger value="experiences" className="py-3 rounded-lg data-[state=active]:bg-white data-[state=active]:shadow-sm">
+            <TabsTrigger value="experiences" className="py-2.5 rounded-lg data-[state=active]:bg-white data-[state=active]:shadow-sm">
               Tecrübeler
             </TabsTrigger>
-            <TabsTrigger value="documents" className="py-3 rounded-lg data-[state=active]:bg-white data-[state=active]:shadow-sm">
+            <TabsTrigger value="documents" className="py-2.5 rounded-lg data-[state=active]:bg-white data-[state=active]:shadow-sm">
               Dökümanlar
             </TabsTrigger>
           </TabsList>
+
+          {/* Güncel Gelişmeler Tab (Topluluk & Telegram Canlı Sentezi) */}
+          <TabsContent value="updates" className="space-y-6">
+            <PageCommunityUpdatesContent
+              categorySlug="bilisim-it"
+              groupName="I.T BİLİŞİM GRUBU"
+              updates={updates}
+              onSwitchTab={(tab: string) => setActiveTab(tab)}
+            />
+          </TabsContent>
 
           <TabsContent value="roadmap" className="space-y-6">
             <div className="grid gap-6">

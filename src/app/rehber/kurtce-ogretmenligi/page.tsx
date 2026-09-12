@@ -37,9 +37,22 @@ import {
 import { ExperienceSection } from '@/components/experience-section';
 import { DocumentSection } from '@/components/document-section';
 import { ProfessionVideoPlayer } from '@/components/profession-video-player';
+import { useCommunityUpdates, PageCommunityUpdatesBanner, PageCommunityUpdatesContent } from '@/components/page-community-updates';
 
 export default function KurtceOgretmenligiPage() {
   const [experiences, setExperiences] = useState<any[]>([]);
+  const [activeTab, setActiveTab] = useState('rehber');
+  const { updates } = useCommunityUpdates('kurtce-ogretmenligi');
+
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      const urlParams = new URLSearchParams(window.location.search);
+      const tabParam = urlParams.get('tab');
+      if (tabParam && ['rehber', 'updates', 'denklik', 'sss', 'dokumanlar'].includes(tabParam)) {
+        setActiveTab(tabParam);
+      }
+    }
+  }, []);
 
   useEffect(() => {
     async function fetchExperiences() {
@@ -190,15 +203,47 @@ export default function KurtceOgretmenligiPage() {
             </div>
 
             {/* Tabs Content */}
-            <Tabs defaultValue="rehber" className="w-full">
-              <TabsList className="grid w-full grid-cols-4 mb-8">
-                <TabsTrigger value="rehber">Rehber</TabsTrigger>
-                <TabsTrigger value="denklik">Denklik</TabsTrigger>
-                <TabsTrigger value="sss">S.S.S.</TabsTrigger>
-                <TabsTrigger value="dokumanlar">Dökümanlar</TabsTrigger>
-              </TabsList>
+            <div className="space-y-6">
+              <PageCommunityUpdatesBanner 
+                updates={updates} 
+                onViewAll={() => setActiveTab('updates')} 
+              />
 
-              <TabsContent value="rehber" className="space-y-6">
+              <Tabs value={activeTab} onValueChange={(tab: string) => setActiveTab(tab)} className="w-full">
+                <TabsList className="grid w-full grid-cols-5 mb-8">
+                  <TabsTrigger value="rehber">Rehber</TabsTrigger>
+                  <TabsTrigger 
+                    value="updates" 
+                    className="relative data-[state=active]:bg-amber-500 data-[state=active]:text-white font-medium transition-all"
+                  >
+                    <span className="flex items-center gap-1.5">
+                      <span className="relative flex h-2 w-2">
+                        <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-amber-400 opacity-75"></span>
+                        <span className="relative inline-flex rounded-full h-2 w-2 bg-amber-500"></span>
+                      </span>
+                      ⚡ Güncel
+                    </span>
+                    {updates.length > 0 && (
+                      <Badge variant="secondary" className="ml-1.5 px-1.5 py-0 text-[10px] bg-amber-100 dark:bg-amber-900/60 text-amber-800 dark:text-amber-200">
+                        {updates.length}
+                      </Badge>
+                    )}
+                  </TabsTrigger>
+                  <TabsTrigger value="denklik">Denklik</TabsTrigger>
+                  <TabsTrigger value="sss">S.S.S.</TabsTrigger>
+                  <TabsTrigger value="dokumanlar">Dökümanlar</TabsTrigger>
+                </TabsList>
+
+                <TabsContent value="updates" className="space-y-6">
+                  <PageCommunityUpdatesContent
+                    categorySlug="kurtce-ogretmenligi"
+                    updates={updates}
+                    groupName="Kürtçe Öğretmenleri Grubu"
+                    telegramUrl="https://t.me/+hg0yDzSjUnRmNWYy"
+                  />
+                </TabsContent>
+
+                <TabsContent value="rehber" className="space-y-6">
                 <Card>
                   <CardHeader>
                     <CardTitle className="flex items-center gap-2">
@@ -345,6 +390,7 @@ export default function KurtceOgretmenligiPage() {
                 <DocumentSection professionSlug="kurtce-ogretmenligi" />
               </TabsContent>
             </Tabs>
+            </div>
 
             {/* Experiences Section */}
             <div className="mt-12">

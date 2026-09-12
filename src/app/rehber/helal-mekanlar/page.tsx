@@ -1,4 +1,6 @@
-// Server Component — fetches Almanya places from Supabase and passes to client; Suspense wraps for useSearchParams
+"use server";
+// Server Component — fetches halal places and passes to client
+
 import { Suspense } from "react";
 import { supabase } from "@/lib/supabase";
 import HelalMekanlarClient from "./_components/HelalMekanlarClient";
@@ -7,19 +9,25 @@ export type HelalMekan = {
   id: string;
   isim: string;
   kategori: string;
+  kategori_slug: string;
   ulke: string;
   sehir: string;
   adres: string;
   note: string | null;
   telefon: string | null;
   google_maps_url: string;
-  google_place_id: string | null;
   onaylandi: boolean;
   highlight: boolean;
   mescid_var: boolean;
   helal_sertifikali: boolean;
   muslumana_ait: boolean;
   aile_dostu: boolean;
+  lat: number | null;
+  lng: number | null;
+  rating_avg: number;
+  rating_count: number;
+  foto_url: string | null;
+  website_url: string | null;
   created_at: string;
 };
 
@@ -40,44 +48,49 @@ type DBPlace = {
   muslumana_ait?: boolean | null;
   aile_dostu?: boolean | null;
   created_at?: string | null;
+  lat?: number | null;
+  lng?: number | null;
+  rating_avg?: number | null;
+  rating_count?: number | null;
+  foto_url?: string | null;
+  website_url?: string | null;
   [key: string]: unknown;
 };
 
-// DB category slug → Turkish display label (matching current DB values exactly)
-const CATEGORY_MAP: Record<string, string> = {
-  restaurant: "Restoran",
-  cafe:       "Kafe",
-  fast_food:  "Fast Food",
-  bakery:     "Fırın",
-  market:     "Market",
-  butcher:    "Kasap",
-  other:      "Diğer",
+const CATEGORY_MAP: Record<string, { label: string; slug: string }> = {
+  restaurant: { label: "Restoran",  slug: "restaurant" },
+  cafe:       { label: "Kafe",      slug: "cafe"       },
+  fast_food:  { label: "Fast Food", slug: "fast_food"  },
+  bakery:     { label: "Firin",     slug: "bakery"     },
+  market:     { label: "Market",    slug: "market"     },
+  butcher:    { label: "Kasap",     slug: "butcher"    },
+  other:      { label: "Diger",     slug: "other"      },
 };
-
-// ── Suspense fallback skeleton ─────────────────────────────────────────────────
 
 function PageSkeleton() {
   return (
-    <div className="min-h-screen bg-gray-50">
-      <div className="h-52 bg-green-600 animate-pulse" />
-      <div className="h-24 bg-white border-b animate-pulse" />
-      <div className="max-w-6xl mx-auto px-4 mt-6 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-        {Array.from({ length: 9 }).map((_, i) => (
-          <div key={i} className="h-52 bg-white rounded-2xl border border-gray-100 animate-pulse" />
-        ))}
+    <div className="min-h-screen bg-slate-50">
+      <div className="h-56 bg-emerald-700 animate-pulse" />
+      <div className="h-14 bg-white border-b animate-pulse" />
+      <div className="max-w-7xl mx-auto px-4 mt-6 grid grid-cols-1 lg:grid-cols-2 gap-6 pb-20">
+        <div className="h-[500px] bg-white rounded-2xl animate-pulse hidden lg:block" />
+        <div className="space-y-4">
+          {Array.from({ length: 4 }).map((_, i) => (
+            <div key={i} className="h-40 bg-white rounded-2xl animate-pulse" />
+          ))}
+        </div>
       </div>
     </div>
   );
 }
-
-// ── Page ──────────────────────────────────────────────────────────────────────
 
 export default async function HelalMekanlarPage() {
   const { data, error } = await supabase
     .from("places")
     .select(
       "id, name, country, city, address, note, phone, map_link, category, " +
-      "warning, highlight, mescid_var, helal_sertifikali, muslumana_ait, aile_dostu, created_at"
+      "warning, highlight, mescid_var, helal_sertifikali, muslumana_ait, aile_dostu, created_at, " +
+      "lat, lng, rating_avg, rating_count, foto_url, website_url"
     )
     .order("city", { ascending: true });
 
@@ -85,37 +98,44 @@ export default async function HelalMekanlarPage() {
     return (
       <div className="min-h-screen flex items-center justify-center p-8">
         <div className="text-center max-w-sm">
-          <div className="w-16 h-16 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-4">
-            <span className="text-2xl">⚠️</span>
-          </div>
-          <h2 className="text-lg font-bold text-gray-900 mb-2">Veriler yüklenemedi</h2>
+          <div className="text-5xl mb-4">&#9888;&#65039;</div>
+          <h2 className="text-lg font-bold text-gray-900 mb-2">Veriler yuklenemedi</h2>
           <p className="text-gray-500 text-sm">
-            Mekanlar yüklenirken bir sorun oluştu. Sayfayı yenileyerek tekrar deneyin.
+            Mekanlar yuklenirken bir sorun olustu. Sayfayi yenileyerek tekrar deneyin.
           </p>
         </div>
       </div>
     );
   }
 
-  const mekanlar: HelalMekan[] = ((data as unknown as DBPlace[]) ?? []).map((p) => ({
-    id:                p.id,
-    isim:              p.name,
-    kategori:          CATEGORY_MAP[p.category ?? ""] ?? "Diğer",
-    ulke:              p.country,
-    sehir:             p.city,
-    adres:             p.address ?? "",
-    note:              p.note ?? null,
-    telefon:           p.phone ?? null,
-    google_maps_url:   p.map_link ?? "",
-    google_place_id:   null,
-    onaylandi:         p.highlight === true || p.warning !== true,
-    highlight:         p.highlight === true,
-    mescid_var:        p.mescid_var === true,
-    helal_sertifikali: p.helal_sertifikali === true,
-    muslumana_ait:     p.muslumana_ait === true,
-    aile_dostu:        p.aile_dostu === true,
-    created_at:        p.created_at ?? "",
-  }));
+  const mekanlar: HelalMekan[] = ((data as unknown as DBPlace[]) ?? []).map((p) => {
+    const cat = CATEGORY_MAP[p.category ?? ""] ?? { label: "Diger", slug: "other" };
+    return {
+      id:                p.id,
+      isim:              p.name,
+      kategori:          cat.label,
+      kategori_slug:     cat.slug,
+      ulke:              p.country,
+      sehir:             p.city,
+      adres:             p.address ?? "",
+      note:              p.note ?? null,
+      telefon:           p.phone ?? null,
+      google_maps_url:   p.map_link ?? "",
+      onaylandi:         p.highlight === true || p.warning !== true,
+      highlight:         p.highlight === true,
+      mescid_var:        p.mescid_var === true,
+      helal_sertifikali: p.helal_sertifikali === true,
+      muslumana_ait:     p.muslumana_ait === true,
+      aile_dostu:        p.aile_dostu === true,
+      lat:               p.lat ?? null,
+      lng:               p.lng ?? null,
+      rating_avg:        p.rating_avg ?? 0,
+      rating_count:      p.rating_count ?? 0,
+      foto_url:          p.foto_url ?? null,
+      website_url:       p.website_url ?? null,
+      created_at:        p.created_at ?? "",
+    };
+  });
 
   return (
     <Suspense fallback={<PageSkeleton />}>

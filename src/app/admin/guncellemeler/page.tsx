@@ -35,6 +35,7 @@ export default function UpdatesAdminPage() {
   const [formSourceGroup, setFormSourceGroup] = useState('BUSFAHRER GRUBU');
   const [formType, setFormType] = useState<'tip' | 'official_rule' | 'experience' | 'warning'>('tip');
   const [formBadge, setFormBadge] = useState('Mart 2025');
+  const [formTargetTab, setFormTargetTab] = useState<'updates' | 'experiences' | 'guide'>('updates');
 
   async function fetchUpdates() {
     try {
@@ -116,6 +117,7 @@ export default function UpdatesAdminPage() {
       source_group: formSourceGroup,
       update_type: formType,
       badge_text: formBadge,
+      target_tab: formTargetTab,
       importance: 'highlight',
       is_approved: true,
       created_at: new Date().toISOString(),
@@ -261,6 +263,20 @@ export default function UpdatesAdminPage() {
                       placeholder="Örn: Mart 2025, Yeni Kural"
                     />
                   </div>
+                  <div>
+                    <label className="block text-xs font-medium text-slate-700 dark:text-slate-300 mb-1">
+                      Hedef Sekme
+                    </label>
+                    <select
+                      value={formTargetTab}
+                      onChange={e => setFormTargetTab(e.target.value as any)}
+                      className="w-full h-9 rounded-md border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-950 px-3 text-xs"
+                    >
+                      <option value="updates">Güncel Gelişmeler</option>
+                      <option value="guide">Kılavuz Notu (Guide)</option>
+                      <option value="experiences">Tecrübeler</option>
+                    </select>
+                  </div>
                 </div>
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -348,6 +364,9 @@ export default function UpdatesAdminPage() {
                   </Badge>
                   <Badge className="text-xs bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300">
                     {item.badge_text}
+                  </Badge>
+                  <Badge variant="outline" className="text-[10px] bg-purple-50 text-purple-700 border-purple-200">
+                    Sekme: {item.target_tab || 'updates'}
                   </Badge>
                   <span className="text-xs text-slate-400">
                     {new Date(item.created_at).toLocaleDateString('tr-TR')}

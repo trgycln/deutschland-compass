@@ -13,6 +13,7 @@ import { ExperienceSection } from '@/components/experience-section';
 import { DocumentSection } from '@/components/document-section';
 import { UploadDocumentDialog } from '@/components/upload-document-dialog';
 import { supabase } from '@/lib/supabase';
+import { useCommunityUpdates, PageCommunityUpdatesBanner, PageCommunityUpdatesContent } from '@/components/page-community-updates';
 
 function getEmbedUrl(url: string) {
   if (!url) return '';
@@ -28,6 +29,18 @@ export default function PhysicalEducationTeacherPage() {
   const [videoUrl, setVideoUrl] = useState(physicalEducationTeacherData.videoUrl);
   const [pageTitle, setPageTitle] = useState(physicalEducationTeacherData.title);
   const [pageDescription, setPageDescription] = useState(physicalEducationTeacherData.description);
+  const [activeTab, setActiveTab] = useState('roadmap');
+  const { updates } = useCommunityUpdates('beden-egitimi-ogretmenligi');
+
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      const urlParams = new URLSearchParams(window.location.search);
+      const tabParam = urlParams.get('tab');
+      if (tabParam && ['roadmap', 'updates', 'pedagogy', 'faq', 'experiences', 'documents'].includes(tabParam)) {
+        setActiveTab(tabParam);
+      }
+    }
+  }, []);
 
   useEffect(() => {
     async function fetchPageData() {
@@ -152,14 +165,50 @@ export default function PhysicalEducationTeacherPage() {
 
       {/* Main Content */}
       <div id="roadmap-section" className="container mx-auto px-4 py-8 max-w-5xl">
-        <Tabs defaultValue="roadmap" className="space-y-8">
-          <TabsList className="grid w-full grid-cols-5 lg:w-[600px]">
-            <TabsTrigger value="roadmap">Yol Haritası</TabsTrigger>
-            <TabsTrigger value="pedagogy">Pedagoji</TabsTrigger>
-            <TabsTrigger value="faq">SSS</TabsTrigger>
-            <TabsTrigger value="experiences">Tecrübeler</TabsTrigger>
-            <TabsTrigger value="documents">Dokümanlar</TabsTrigger>
+        <PageCommunityUpdatesBanner 
+          categorySlug="beden-egitimi-ogretmenligi"
+          groupName="BEDEN EĞİTİMİ ÖĞRETMENLERİ" 
+          updatesCount={updates.length} 
+          onExploreClick={() => setActiveTab('updates')} 
+        />
+
+        <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-8">
+          <TabsList className="grid w-full grid-cols-2 md:grid-cols-6 lg:w-[860px] h-auto p-1 bg-slate-100 dark:bg-slate-800/80 border border-slate-200 dark:border-slate-700 rounded-xl">
+            <TabsTrigger value="roadmap" className="py-2.5 rounded-lg">Yol Haritası</TabsTrigger>
+            
+            {/* Vurgulu & Dikkat Çekici Güncel Gelişmeler Sekmesi */}
+            <TabsTrigger 
+              value="updates" 
+              className="relative py-2.5 rounded-lg font-bold flex items-center justify-center gap-1.5 transition-all data-[state=active]:bg-gradient-to-r data-[state=active]:from-amber-500 data-[state=active]:to-amber-600 data-[state=active]:text-white data-[state=active]:shadow-md data-[state=inactive]:text-amber-700 dark:data-[state=inactive]:text-amber-300 data-[state=inactive]:bg-amber-50/60 dark:data-[state=inactive]:bg-amber-950/30"
+            >
+              <span className="relative flex h-2.5 w-2.5">
+                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-amber-400 opacity-75"></span>
+                <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-amber-500 data-[state=active]:bg-white"></span>
+              </span>
+              <span>⚡ Güncel Gelişmeler</span>
+              {updates.length > 0 && (
+                <span className="ml-1 px-1.5 py-0.5 text-[10px] font-black rounded-full bg-amber-200 text-amber-950 dark:bg-amber-900 dark:text-amber-100 data-[state=active]:bg-white data-[state=active]:text-amber-700 shadow-2xs">
+                  {updates.length}
+                </span>
+              )}
+            </TabsTrigger>
+
+            <TabsTrigger value="pedagogy" className="py-2.5 rounded-lg">Pedagoji</TabsTrigger>
+            <TabsTrigger value="faq" className="py-2.5 rounded-lg">SSS</TabsTrigger>
+            <TabsTrigger value="experiences" className="py-2.5 rounded-lg">Tecrübeler</TabsTrigger>
+            <TabsTrigger value="documents" className="py-2.5 rounded-lg">Dokümanlar</TabsTrigger>
           </TabsList>
+
+          {/* Updates Tab */}
+          <TabsContent value="updates">
+            <PageCommunityUpdatesContent 
+              categorySlug="beden-egitimi-ogretmenligi"
+              updates={updates} 
+              title="Beden Eğitimi Öğretmenliği" 
+              groupName="BEDEN EĞİTİMİ ÖĞRETMENLERİ"
+              telegramUrl="https://t.me/+8D4PF0l5w8Y3NmMy" 
+            />
+          </TabsContent>
 
           {/* Roadmap Tab */}
           <TabsContent value="roadmap" className="space-y-8">

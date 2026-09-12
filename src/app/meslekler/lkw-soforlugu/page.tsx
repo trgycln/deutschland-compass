@@ -1,6 +1,7 @@
-import React from 'react';
+'use client';
+
+import React, { useState, useEffect } from 'react';
 import { ProfessionVideoPlayer } from '@/components/profession-video-player';
-import { Metadata } from 'next';
 import { lkwDriverData } from '@/data/lkw-driver-data';
 import { ArrowLeft, BookOpen, Briefcase, GraduationCap, HelpCircle, FileText, Share2, Upload } from 'lucide-react';
 import Link from 'next/link';
@@ -12,13 +13,21 @@ import { ScrollArea } from '@/components/ui/scroll-area';
 import { ShareExperienceDialog } from '@/components/share-experience-dialog';
 import { UploadDocumentDialog } from '@/components/upload-document-dialog';
 import { DocumentSection } from '@/components/document-section';
-
-export const metadata: Metadata = {
-  title: 'LKW Fahrer (Tır Şoförlüğü) | Almanya Kariyer Rehberi',
-  description: 'Almanya\'da tır şoförü olmak, ehliyet sınıfları, Kod 95, vize süreçleri ve çalışma şartları hakkında detaylı rehber.',
-};
+import { useCommunityUpdates, PageCommunityUpdatesBanner, PageCommunityUpdatesContent } from '@/components/page-community-updates';
 
 export default function LkwDriverPage() {
+  const [activeTab, setActiveTab] = useState('roadmap');
+  const { updates } = useCommunityUpdates('lkw-soforlugu');
+
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      const urlParams = new URLSearchParams(window.location.search);
+      const tabParam = urlParams.get('tab');
+      if (tabParam && ['roadmap', 'updates', 'pedagogy', 'faq', 'experiences', 'documents'].includes(tabParam)) {
+        setActiveTab(tabParam);
+      }
+    }
+  }, []);
   return (
     <div className="min-h-screen bg-slate-50 pb-12">
       {/* Hero Section */}
@@ -140,29 +149,64 @@ export default function LkwDriverPage() {
 
       {/* Main Content */}
       <div className="container mx-auto px-4 py-8">
-        <Tabs defaultValue="roadmap" className="space-y-8">
-          <TabsList className="w-full justify-start h-auto p-2 bg-white rounded-xl shadow-sm border border-slate-200 overflow-x-auto flex-nowrap">
-            <TabsTrigger value="roadmap" className="flex gap-2 data-[state=active]:bg-slate-100 data-[state=active]:text-slate-900">
+        {/* Canlı Topluluk Sentez Bilgi Rozeti & Duyuru */}
+        <PageCommunityUpdatesBanner 
+          categorySlug="lkw-soforlugu"
+          groupName="LKW FÜHRER GRUBU" 
+          updatesCount={updates.length} 
+          onExploreClick={() => setActiveTab('updates')} 
+        />
+
+        <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-8">
+          <TabsList className="w-full justify-start h-auto p-1.5 bg-white dark:bg-slate-800 rounded-xl shadow-sm border border-slate-200 dark:border-slate-700 overflow-x-auto flex-nowrap gap-1">
+            <TabsTrigger value="roadmap" className="flex gap-2 py-2 px-3">
               <GraduationCap className="w-4 h-4" />
               Yol Haritası
             </TabsTrigger>
-            <TabsTrigger value="pedagogy" className="flex gap-2 data-[state=active]:bg-slate-100 data-[state=active]:text-slate-900">
+
+            {/* Vurgulu & Dikkat Çekici Güncel Gelişmeler Sekmesi */}
+            <TabsTrigger 
+              value="updates" 
+              className="relative py-2 px-3 font-bold flex items-center gap-1.5 transition-all data-[state=active]:bg-gradient-to-r data-[state=active]:from-amber-500 data-[state=active]:to-amber-600 data-[state=active]:text-white data-[state=active]:shadow-md data-[state=inactive]:text-amber-700 dark:data-[state=inactive]:text-amber-300 data-[state=inactive]:bg-amber-50/60 dark:data-[state=inactive]:bg-amber-950/30"
+            >
+              <span className="relative flex h-2.5 w-2.5">
+                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-amber-400 opacity-75"></span>
+                <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-amber-500 data-[state=active]:bg-white"></span>
+              </span>
+              <span>⚡ Güncel Gelişmeler</span>
+              {updates.length > 0 && (
+                <span className="ml-1 px-1.5 py-0.5 text-[10px] font-black rounded-full bg-amber-200 text-amber-950 dark:bg-amber-900 dark:text-amber-100 data-[state=active]:bg-white data-[state=active]:text-amber-700 shadow-2xs">
+                  {updates.length}
+                </span>
+              )}
+            </TabsTrigger>
+
+            <TabsTrigger value="pedagogy" className="flex gap-2 py-2 px-3">
               <BookOpen className="w-4 h-4" />
               Pedagojik Yaklaşım
             </TabsTrigger>
-            <TabsTrigger value="faq" className="flex gap-2 data-[state=active]:bg-slate-100 data-[state=active]:text-slate-900">
+            <TabsTrigger value="faq" className="flex gap-2 py-2 px-3">
               <HelpCircle className="w-4 h-4" />
               SSS
             </TabsTrigger>
-            <TabsTrigger value="experiences" className="flex gap-2 data-[state=active]:bg-slate-100 data-[state=active]:text-slate-900">
+            <TabsTrigger value="experiences" className="flex gap-2 py-2 px-3">
               <Briefcase className="w-4 h-4" />
               Deneyimler
             </TabsTrigger>
-            <TabsTrigger value="documents" className="flex gap-2 data-[state=active]:bg-slate-100 data-[state=active]:text-slate-900">
+            <TabsTrigger value="documents" className="flex gap-2 py-2 px-3">
               <FileText className="w-4 h-4" />
               Dokümanlar
             </TabsTrigger>
           </TabsList>
+
+          {/* Updates Tab */}
+          <TabsContent value="updates">
+            <PageCommunityUpdatesContent 
+              updates={updates} 
+              title="LKW / Tır Şoförlüğü" 
+              groupName="LKW FÜHRER GRUBU" 
+            />
+          </TabsContent>
 
           {/* Roadmap Tab */}
           <TabsContent value="roadmap" className="space-y-6">

@@ -42,9 +42,22 @@ import {
   AccordionItem,
   AccordionTrigger,
 } from "@/components/ui/accordion";
+import { useCommunityUpdates, PageCommunityUpdatesBanner, PageCommunityUpdatesContent } from '@/components/page-community-updates';
 
 export default function SeelsorgePage() {
   const [experiences, setExperiences] = useState<any[]>([]);
+  const [activeTab, setActiveTab] = useState('guide');
+  const { updates } = useCommunityUpdates('seelsorge');
+
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      const urlParams = new URLSearchParams(window.location.search);
+      const tabParam = urlParams.get('tab');
+      if (tabParam && ['guide', 'updates', 'experiences', 'documents'].includes(tabParam)) {
+        setActiveTab(tabParam);
+      }
+    }
+  }, []);
 
   useEffect(() => {
     async function fetchExperiences() {
@@ -137,13 +150,44 @@ export default function SeelsorgePage() {
       <div className="container mx-auto px-4 py-12">
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
           {/* Sol Ana İçerik */}
-          <div className="lg:col-span-2">
-            <Tabs defaultValue="guide" className="space-y-8">
-              <TabsList className="grid w-full grid-cols-3 p-1 bg-slate-100 dark:bg-slate-800 rounded-xl">
+          <div className="lg:col-span-2 space-y-6">
+            <PageCommunityUpdatesBanner 
+              updates={updates} 
+              onViewAll={() => setActiveTab('updates')} 
+            />
+
+            <Tabs value={activeTab} onValueChange={(tab: string) => setActiveTab(tab)} className="space-y-8">
+              <TabsList className="grid w-full grid-cols-4 p-1 bg-slate-100 dark:bg-slate-800 rounded-xl">
                 <TabsTrigger value="guide" className="rounded-lg data-[state=active]:bg-white dark:data-[state=active]:bg-slate-950 data-[state=active]:shadow-sm">Rehber</TabsTrigger>
+                <TabsTrigger 
+                  value="updates" 
+                  className="rounded-lg relative data-[state=active]:bg-amber-500 data-[state=active]:text-white font-medium transition-all"
+                >
+                  <span className="flex items-center gap-1.5">
+                    <span className="relative flex h-2 w-2">
+                      <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-amber-400 opacity-75"></span>
+                      <span className="relative inline-flex rounded-full h-2 w-2 bg-amber-500"></span>
+                    </span>
+                    ⚡ Güncel
+                  </span>
+                  {updates.length > 0 && (
+                    <Badge variant="secondary" className="ml-1 px-1.5 py-0 text-[10px] bg-amber-100 dark:bg-amber-900/60 text-amber-800 dark:text-amber-200">
+                      {updates.length}
+                    </Badge>
+                  )}
+                </TabsTrigger>
                 <TabsTrigger value="experiences" className="rounded-lg data-[state=active]:bg-white dark:data-[state=active]:bg-slate-950 data-[state=active]:shadow-sm">Tecrübeler</TabsTrigger>
                 <TabsTrigger value="documents" className="rounded-lg data-[state=active]:bg-white dark:data-[state=active]:bg-slate-950 data-[state=active]:shadow-sm">Dokümanlar</TabsTrigger>
               </TabsList>
+
+              <TabsContent value="updates" className="space-y-6">
+                <PageCommunityUpdatesContent
+                  categorySlug="seelsorge"
+                  updates={updates}
+                  groupName="Seelsorge Grubu"
+                  telegramUrl="https://t.me/+5w4FoegfD2ZlOWUy"
+                />
+              </TabsContent>
 
               <TabsContent value="guide" className="space-y-12 mt-6">
             

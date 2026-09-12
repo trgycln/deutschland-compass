@@ -1,4 +1,4 @@
-﻿'use client';
+'use client';
 
 import React, { useEffect, useState } from 'react';
 import { computerScienceTeacherData } from '@/data/computer-science-teacher-data';
@@ -13,6 +13,7 @@ import { ExperienceSection } from '@/components/experience-section';
 import { DocumentSection } from '@/components/document-section';
 import { UploadDocumentDialog } from '@/components/upload-document-dialog';
 import { supabase } from '@/lib/supabase';
+import { useCommunityUpdates, PageCommunityUpdatesBanner, PageCommunityUpdatesContent } from '@/components/page-community-updates';
 
 function getEmbedUrl(url: string) {
   if (!url) return '';
@@ -45,6 +46,18 @@ export default function ComputerScienceTeacherPage() {
   const [videoUrl, setVideoUrl] = useState(computerScienceTeacherData.videoUrl);
   const [pageTitle, setPageTitle] = useState(computerScienceTeacherData.title);
   const [pageDescription, setPageDescription] = useState(computerScienceTeacherData.description);
+  const [activeTab, setActiveTab] = useState('guide');
+  const { updates } = useCommunityUpdates('bilgisayar-ogretmenligi');
+
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      const urlParams = new URLSearchParams(window.location.search);
+      const tabParam = urlParams.get('tab');
+      if (tabParam && ['guide', 'updates', 'experiences', 'faq', 'documents'].includes(tabParam)) {
+        setActiveTab(tabParam);
+      }
+    }
+  }, []);
 
   useEffect(() => {
     async function fetchPageData() {
@@ -173,13 +186,49 @@ export default function ComputerScienceTeacherPage() {
 
       {/* Main Content Tabs */}
       <div className="container mx-auto px-4 py-12 max-w-5xl">
-        <Tabs defaultValue="guide" className="space-y-8">
-          <TabsList className="grid w-full grid-cols-2 md:grid-cols-4 lg:w-[600px] h-auto">
-            <TabsTrigger value="guide">Rehber</TabsTrigger>
-            <TabsTrigger value="experiences">Deneyimler</TabsTrigger>
-            <TabsTrigger value="faq">SSS</TabsTrigger>
-            <TabsTrigger value="documents">Dokümanlar</TabsTrigger>
+        <PageCommunityUpdatesBanner 
+          categorySlug="bilgisayar-ogretmenligi"
+          groupName="BİLGİSAYAR ÖĞRETMENLERİ GRUBU" 
+          updatesCount={updates.length} 
+          onExploreClick={() => setActiveTab('updates')} 
+        />
+
+        <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-8 mt-6">
+          <TabsList className="grid w-full grid-cols-2 md:grid-cols-5 lg:w-[750px] h-auto p-1 bg-slate-100 dark:bg-slate-800/80 border border-slate-200 dark:border-slate-700 rounded-xl">
+            <TabsTrigger value="guide" className="py-2.5 rounded-lg">Rehber</TabsTrigger>
+            
+            {/* Vurgulu & Dikkat Çekici Güncel Gelişmeler Sekmesi */}
+            <TabsTrigger 
+              value="updates" 
+              className="relative py-2.5 rounded-lg font-bold flex items-center justify-center gap-1.5 transition-all data-[state=active]:bg-gradient-to-r data-[state=active]:from-amber-500 data-[state=active]:to-amber-600 data-[state=active]:text-white data-[state=active]:shadow-md data-[state=inactive]:text-amber-700 dark:data-[state=inactive]:text-amber-300 data-[state=inactive]:bg-amber-50/60 dark:data-[state=inactive]:bg-amber-950/30"
+            >
+              <span className="relative flex h-2.5 w-2.5">
+                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-amber-400 opacity-75"></span>
+                <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-amber-500 data-[state=active]:bg-white"></span>
+              </span>
+              <span>⚡ Güncel Gelişmeler</span>
+              {updates.length > 0 && (
+                <span className="ml-1 px-1.5 py-0.5 text-[10px] font-black rounded-full bg-amber-200 text-amber-950 dark:bg-amber-900 dark:text-amber-100 data-[state=active]:bg-white data-[state=active]:text-amber-700 shadow-2xs">
+                  {updates.length}
+                </span>
+              )}
+            </TabsTrigger>
+
+            <TabsTrigger value="experiences" className="py-2.5 rounded-lg">Deneyimler</TabsTrigger>
+            <TabsTrigger value="faq" className="py-2.5 rounded-lg">SSS</TabsTrigger>
+            <TabsTrigger value="documents" className="py-2.5 rounded-lg">Dokümanlar</TabsTrigger>
           </TabsList>
+
+          {/* Updates Tab */}
+          <TabsContent value="updates">
+            <PageCommunityUpdatesContent 
+              categorySlug="bilgisayar-ogretmenligi"
+              updates={updates} 
+              title="Bilgisayar Öğretmenliği" 
+              groupName="BİLGİSAYAR ÖĞRETMENLERİ GRUBU"
+              telegramUrl="https://t.me/+v5HREXgpz7c2ZTYy" 
+            />
+          </TabsContent>
 
           <TabsContent value="guide" className="space-y-8" id="guide-section">
             <div className="grid gap-8">

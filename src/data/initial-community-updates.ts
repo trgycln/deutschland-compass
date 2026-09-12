@@ -11,6 +11,7 @@ export interface CommunityUpdate {
   update_type: UpdateType;
   badge_text: string;
   importance: ImportanceType;
+  target_tab?: 'updates' | 'experiences' | 'guide' | 'faq';
   is_approved: boolean;
   likes_count?: number;
   created_at: string;

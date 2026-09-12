@@ -236,7 +236,7 @@ export default function MekanOnerModal({
                   required
                   className={inputCls}
                 >
-                  {KATEGORILER.filter((k) => k !== "Tümü").map((kat) => (
+                  {KATEGORILER.filter((k) => k !== "Tumu").map((kat) => (
                     <option key={kat} value={kat}>{kat}</option>
                   ))}
                 </select>

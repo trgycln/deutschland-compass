@@ -11,6 +11,7 @@ import { BookOpen, Truck, Package, Languages, Building2, Quote, Calendar, User, 
 import { ShareExperienceDialog } from '@/components/share-experience-dialog';
 import { UploadDocumentDialog } from '@/components/upload-document-dialog';
 import { FaqSection } from '@/components/faq-section';
+import { useCommunityUpdates, PageCommunityUpdatesBanner, PageCommunityUpdatesContent } from '@/components/page-community-updates';
 
 interface Experience {
   id: number;
@@ -37,6 +38,18 @@ export default function LogisticsGuidePage() {
   const [videoUrl, setVideoUrl] = useState(defaultVideoUrl);
   const [pageTitle, setPageTitle] = useState(title);
   const [pageDescription, setPageDescription] = useState(description);
+  const [activeTab, setActiveTab] = useState('guide');
+  const { updates } = useCommunityUpdates('kargo-posta-dagitim');
+
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      const urlParams = new URLSearchParams(window.location.search);
+      const tabParam = urlParams.get('tab');
+      if (tabParam && ['guide', 'updates', 'faq', 'experiences', 'documents'].includes(tabParam)) {
+        setActiveTab(tabParam);
+      }
+    }
+  }, []);
 
   useEffect(() => {
     async function fetchPageData() {
@@ -253,13 +266,49 @@ export default function LogisticsGuidePage() {
           </div>
         )}
 
-        <Tabs defaultValue="guide" className="space-y-8">
-          <TabsList className="grid w-full grid-cols-2 md:grid-cols-4 lg:w-[600px] h-auto">
-            <TabsTrigger value="guide">Rehber</TabsTrigger>
-            <TabsTrigger value="faq">SSS</TabsTrigger>
-            <TabsTrigger value="experiences">Tecrübeler</TabsTrigger>
-            <TabsTrigger value="documents">Dokümanlar</TabsTrigger>
+        {/* Canlı Topluluk Güncellemeleri & Taze Tecrübeler Banner */}
+        <PageCommunityUpdatesBanner 
+          categorySlug="kargo-posta-dagitim"
+          groupName="DEUTSCHE POST/AMAZON/HERMES/UBER DAĞITIM"
+          updatesCount={updates.length}
+          onExploreClick={() => setActiveTab('updates')}
+        />
+
+        <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-8">
+          <TabsList className="grid w-full grid-cols-2 md:grid-cols-5 lg:w-[720px] h-auto p-1 bg-slate-100 dark:bg-slate-800 rounded-xl gap-1">
+            <TabsTrigger value="guide" className="rounded-lg py-2.5">Rehber</TabsTrigger>
+
+            {/* Vurgulu & Dikkat Çekici Güncel Gelişmeler Sekmesi */}
+            <TabsTrigger 
+              value="updates" 
+              className="relative rounded-lg font-bold flex items-center justify-center gap-1.5 py-2.5 transition-all data-[state=active]:bg-gradient-to-r data-[state=active]:from-amber-500 data-[state=active]:to-amber-600 data-[state=active]:text-white data-[state=active]:shadow-md data-[state=inactive]:text-amber-700 dark:data-[state=inactive]:text-amber-300 data-[state=inactive]:bg-amber-50/70 dark:data-[state=inactive]:bg-amber-950/30"
+            >
+              <span className="relative flex h-2 w-2">
+                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-amber-400 opacity-75"></span>
+                <span className="relative inline-flex rounded-full h-2 w-2 bg-amber-500 data-[state=active]:bg-white"></span>
+              </span>
+              <span>⚡ Güncel Gelişmeler</span>
+              {updates.length > 0 && (
+                <span className="ml-1 text-[11px] px-1.5 py-0.2 rounded-full font-extrabold bg-amber-200 text-amber-900 dark:bg-amber-900 dark:text-amber-100">
+                  {updates.length}
+                </span>
+              )}
+            </TabsTrigger>
+
+            <TabsTrigger value="faq" className="rounded-lg py-2.5">SSS</TabsTrigger>
+            <TabsTrigger value="experiences" className="rounded-lg py-2.5">Tecrübeler</TabsTrigger>
+            <TabsTrigger value="documents" className="rounded-lg py-2.5">Dokümanlar</TabsTrigger>
           </TabsList>
+
+          {/* Güncel Gelişmeler Tab (Topluluk & Telegram Canlı Sentezi) */}
+          <TabsContent value="updates" className="space-y-6">
+            <PageCommunityUpdatesContent
+              categorySlug="kargo-posta-dagitim"
+              groupName="DEUTSCHE POST/AMAZON/HERMES/UBER DAĞITIM"
+              updates={updates}
+              onSwitchTab={(tab: string) => setActiveTab(tab)}
+            />
+          </TabsContent>
 
           {/* Guide Tab */}
           <TabsContent value="guide" className="space-y-12">

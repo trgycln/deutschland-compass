@@ -27,7 +27,8 @@ import {
   Snowflake,
   Home,
   CheckCircle2,
-  HelpCircle
+  HelpCircle,
+  ArrowRight
 } from "lucide-react";
 import Link from "next/link";
 import { ShareExperienceDialog } from '@/components/share-experience-dialog';
@@ -39,11 +40,22 @@ import {
   AccordionItem,
   AccordionTrigger,
 } from "@/components/ui/accordion";
+import { useCommunityUpdates, PageCommunityUpdatesBanner, PageCommunityUpdatesContent } from '@/components/page-community-updates';
 
 export default function SihhiTesisatPage() {
   const [experiences, setExperiences] = useState<any[]>([]);
+  const [activeTab, setActiveTab] = useState('guide');
+  const { updates } = useCommunityUpdates('sihhi-tesisat');
 
   useEffect(() => {
+    if (typeof window !== 'undefined') {
+      const urlParams = new URLSearchParams(window.location.search);
+      const tabParam = urlParams.get('tab');
+      if (tabParam && ['guide', 'updates', 'faq', 'experiences', 'tips'].includes(tabParam)) {
+        setActiveTab(tabParam);
+      }
+    }
+
     async function fetchExperiences() {
       const { data } = await supabase
         .from('experiences')
@@ -93,7 +105,7 @@ export default function SihhiTesisatPage() {
         {/* Telegram Links Section */}
         <div className="container mx-auto px-4 py-8">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4 max-w-4xl mx-auto">
-            <a href="https://t.me/+Aw76s1FN-gJkYWZi" target="_blank" rel="noopener noreferrer" className="block group relative overflow-hidden rounded-xl bg-gradient-to-br from-blue-500 to-blue-600 p-6 shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-[1.02]">
+            <a href="https://t.me/+Aw76s1FN-gJkYWZi" target="_blank" rel="noopener noreferrer" className="block group relative overflow-hidden rounded-xl bg-gradient-to-br from-cyan-600 to-blue-700 p-5 shadow-md hover:shadow-xl transition-all duration-300 hover:scale-[1.01]">
               <div className="absolute inset-0 bg-gradient-to-br from-white/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
               <div className="relative flex items-center gap-4">
                 <div className="p-3 bg-white/25 backdrop-blur-sm rounded-xl shrink-0">
@@ -102,16 +114,14 @@ export default function SihhiTesisatPage() {
                   </svg>
                 </div>
                 <div className="flex-1 min-w-0">
-                  <div className="font-bold text-white text-lg mb-1">Sihhi Tesisat - SHK</div>
-                  <div className="text-sm text-blue-100">Telegram Grubu</div>
+                  <div className="font-bold text-white text-lg mb-0.5">Sıhhi Tesisat & SHK</div>
+                  <div className="text-xs text-cyan-100">Telegram Grubu</div>
                 </div>
-                <svg className="w-5 h-5 text-white/90 transform group-hover:translate-x-1 transition-transform shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-                </svg>
+                <ArrowRight className="w-5 h-5 text-white/90 transform group-hover:translate-x-1 transition-transform shrink-0" />
               </div>
             </a>
 
-            <a href="https://t.me/+yI1or4k3nMswN2Ni" target="_blank" rel="noopener noreferrer" className="block group relative overflow-hidden rounded-xl bg-gradient-to-br from-amber-500 to-amber-600 p-6 shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-[1.02]">
+            <a href="https://t.me/+yI1or4k3nMswN2Ni" target="_blank" rel="noopener noreferrer" className="block group relative overflow-hidden rounded-xl bg-gradient-to-br from-amber-500 to-amber-600 p-5 shadow-md hover:shadow-xl transition-all duration-300 hover:scale-[1.01]">
               <div className="absolute inset-0 bg-gradient-to-br from-white/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
               <div className="relative flex items-center gap-4">
                 <div className="p-3 bg-white/25 backdrop-blur-sm rounded-xl shrink-0">
@@ -120,12 +130,10 @@ export default function SihhiTesisatPage() {
                   </svg>
                 </div>
                 <div className="flex-1 min-w-0">
-                  <div className="font-bold text-white text-lg mb-1">Deutschland Compass</div>
-                  <div className="text-sm text-amber-100">Telegram Kanalımız</div>
+                  <div className="font-bold text-white text-lg mb-0.5">Deutschland Compass</div>
+                  <div className="text-xs text-amber-100">Telegram Kanalımız</div>
                 </div>
-                <svg className="w-5 h-5 text-white/90 transform group-hover:translate-x-1 transition-transform shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-                </svg>
+                <ArrowRight className="w-5 h-5 text-white/90 transform group-hover:translate-x-1 transition-transform shrink-0" />
               </div>
             </a>
           </div>
@@ -135,13 +143,49 @@ export default function SihhiTesisatPage() {
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
           {/* Sol Ana İçerik */}
           <div className="lg:col-span-2">
-            <Tabs defaultValue="guide" className="space-y-8">
-              <TabsList className="grid w-full grid-cols-4 p-1 bg-slate-100 dark:bg-slate-800 rounded-xl">
-                <TabsTrigger value="guide" className="rounded-lg data-[state=active]:bg-white dark:data-[state=active]:bg-slate-950 data-[state=active]:shadow-sm">Rehber</TabsTrigger>
-                <TabsTrigger value="faq" className="rounded-lg data-[state=active]:bg-white dark:data-[state=active]:bg-slate-950 data-[state=active]:shadow-sm">SSS</TabsTrigger>
-                <TabsTrigger value="experiences" className="rounded-lg data-[state=active]:bg-white dark:data-[state=active]:bg-slate-950 data-[state=active]:shadow-sm">Tecrübeler</TabsTrigger>
-                <TabsTrigger value="tips" className="rounded-lg data-[state=active]:bg-white dark:data-[state=active]:bg-slate-950 data-[state=active]:shadow-sm">Teknik İpuçları</TabsTrigger>
+            {/* Canlı Topluluk Güncellemeleri & Taze Tecrübeler Banner */}
+            <PageCommunityUpdatesBanner 
+              categorySlug="sihhi-tesisat"
+              groupName="SIHHİ TESİSAT-KLİMA-GAS TEKNİSYENLER GRUBU"
+              updatesCount={updates.length}
+              onExploreClick={() => setActiveTab('updates')}
+            />
+
+            <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-8">
+              <TabsList className="grid w-full grid-cols-2 md:grid-cols-5 p-1 bg-slate-100 dark:bg-slate-800 rounded-xl gap-1">
+                <TabsTrigger value="guide" className="rounded-lg py-2.5 data-[state=active]:bg-white dark:data-[state=active]:bg-slate-950 data-[state=active]:shadow-sm">Rehber</TabsTrigger>
+
+                {/* Vurgulu & Dikkat Çekici Güncel Gelişmeler Sekmesi */}
+                <TabsTrigger 
+                  value="updates" 
+                  className="relative rounded-lg font-bold flex items-center justify-center gap-1.5 py-2.5 transition-all data-[state=active]:bg-gradient-to-r data-[state=active]:from-amber-500 data-[state=active]:to-amber-600 data-[state=active]:text-white data-[state=active]:shadow-md data-[state=inactive]:text-amber-700 dark:data-[state=inactive]:text-amber-300 data-[state=inactive]:bg-amber-50/70 dark:data-[state=inactive]:bg-amber-950/30"
+                >
+                  <span className="relative flex h-2 w-2">
+                    <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-amber-400 opacity-75"></span>
+                    <span className="relative inline-flex rounded-full h-2 w-2 bg-amber-500 data-[state=active]:bg-white"></span>
+                  </span>
+                  <span>⚡ Güncel Gelişmeler</span>
+                  {updates.length > 0 && (
+                    <span className="ml-1 text-[11px] px-1.5 py-0.2 rounded-full font-extrabold bg-amber-200 text-amber-900 dark:bg-amber-900 dark:text-amber-100">
+                      {updates.length}
+                    </span>
+                  )}
+                </TabsTrigger>
+
+                <TabsTrigger value="faq" className="rounded-lg py-2.5 data-[state=active]:bg-white dark:data-[state=active]:bg-slate-950 data-[state=active]:shadow-sm">SSS</TabsTrigger>
+                <TabsTrigger value="experiences" className="rounded-lg py-2.5 data-[state=active]:bg-white dark:data-[state=active]:bg-slate-950 data-[state=active]:shadow-sm">Tecrübeler</TabsTrigger>
+                <TabsTrigger value="tips" className="rounded-lg py-2.5 data-[state=active]:bg-white dark:data-[state=active]:bg-slate-950 data-[state=active]:shadow-sm">Teknik İpuçları</TabsTrigger>
               </TabsList>
+
+              {/* Güncel Gelişmeler Tab (Topluluk & Telegram Canlı Sentezi) */}
+              <TabsContent value="updates" className="space-y-6">
+                <PageCommunityUpdatesContent
+                  categorySlug="sihhi-tesisat"
+                  groupName="SIHHİ TESİSAT-KLİMA-GAS TEKNİSYENLER GRUBU"
+                  updates={updates}
+                  onSwitchTab={(tab: string) => setActiveTab(tab)}
+                />
+              </TabsContent>
 
               <TabsContent value="guide" className="space-y-12 mt-6">
             

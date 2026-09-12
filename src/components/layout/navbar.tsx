@@ -1,11 +1,11 @@
-"use client";
+﻿"use client";
 
 import { useState, useSyncExternalStore } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { Button } from '@/components/ui/button';
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from '@/components/ui/sheet';
-import { Menu, Utensils, Sparkles } from 'lucide-react';
+import { Menu, Utensils, Sparkles, BookOpen, PenTool, MessageSquare, Briefcase } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 
 export function Navbar() {
@@ -18,14 +18,15 @@ export function Navbar() {
 
   if (!isHydrated) {
     return (
-      <header suppressHydrationWarning className="sticky top-0 z-50 w-full border-b bg-white/95 backdrop-blur supports-[backdrop-filter]:bg-white/60 dark:bg-slate-950/95 dark:supports-[backdrop-filter]:bg-slate-950/60">
+      <header suppressHydrationWarning className="sticky top-0 z-50 w-full border-b bg-white/95 backdrop-blur supports-[backdrop-filter]:bg-white/60 dark:bg-slate-950/95 dark:supports-[backdrop-filter]:bg-slate-950/60 flex flex-col">
         <div suppressHydrationWarning className="container mx-auto flex h-16 items-center justify-between px-4" />
       </header>
     );
   }
 
   return (
-    <header suppressHydrationWarning className="sticky top-0 z-50 w-full border-b bg-white/95 backdrop-blur supports-[backdrop-filter]:bg-white/60 dark:bg-slate-950/95 dark:supports-[backdrop-filter]:bg-slate-950/60">
+    <header suppressHydrationWarning className="sticky top-0 z-50 w-full border-b bg-white/95 backdrop-blur supports-[backdrop-filter]:bg-white/60 dark:bg-slate-950/95 dark:supports-[backdrop-filter]:bg-slate-950/60 flex flex-col">
+      {/* Main Top Bar */}
       <div suppressHydrationWarning className="container mx-auto flex h-16 items-center justify-between px-4">
         <Link href="/" className="flex items-center gap-2 font-bold text-xl text-slate-900 dark:text-white">
           <div className="relative w-10 h-10 rounded-full overflow-hidden border border-slate-200 dark:border-slate-700 bg-white flex items-center justify-center shadow-sm">
@@ -37,145 +38,169 @@ export function Navbar() {
               className="object-cover scale-110"
             />
           </div>
-          <span className="font-bold text-xl text-slate-900 dark:text-white">Deutschland Compass</span>
+          <span className="font-bold text-xl text-slate-900 dark:text-white hidden sm:inline-block">Deutschland Compass</span>
+          <span className="font-bold text-xl text-slate-900 dark:text-white sm:hidden">D. Compass</span>
         </Link>
         
-        {/* Desktop Navigation */}
-        <nav className="hidden xl:flex items-center gap-6 text-sm font-medium text-slate-600 dark:text-slate-300">
-          <Link href="/meslekler" className="hover:text-primary transition-colors">Meslekler</Link>
-          <Link href="/rehber" className="hover:text-primary transition-colors">Rehberler</Link>
-          <Link href="/rehber/sirket-kurma" className="hover:text-primary transition-colors">Şirket Kurma</Link>
-          
-          {/* Helal Mekanlar Linki */}
-          <Link 
-            href="/rehber/helal-mekanlar" 
-            className="hover:text-amber-600 text-amber-700 dark:text-amber-400 transition-colors flex items-center gap-1.5 font-semibold bg-amber-50 dark:bg-amber-900/20 px-2 py-1 rounded-md"
-          >
-            <Utensils className="w-3.5 h-3.5" />
-            Helal Mekanlar
-          </Link>
-
-          <Link 
-            href="/rehber/yapay-zeka-kariyerleri" 
-            className="hover:text-fuchsia-700 text-fuchsia-800 dark:text-fuchsia-300 transition-colors flex items-center gap-1.5 font-semibold bg-fuchsia-50 dark:bg-fuchsia-900/20 px-2 py-1 rounded-md"
-          >
-            <Sparkles className="w-3.5 h-3.5" />
-            AI Kariyerleri
-            <Badge className="ml-1 text-[10px] px-1.5 py-0 bg-fuchsia-600 text-white border-none">Yeni</Badge>
-          </Link>
-
-          <Link href="/gurbet-kalemleri" className="hover:text-primary transition-colors">Gurbet Kalemleri</Link>
-
-          <Link href="/telegram-gruplari" className="hover:text-primary transition-colors">Telegram</Link>
-          <Link href="/blog" className="hover:text-primary transition-colors">Blog</Link>
-          <Link href="/hakkimizda" className="hover:text-primary transition-colors">Hakkımızda</Link>
-        </nav>
-
-        {/* Tablet/Medium Navigation */}
-        <nav className="hidden md:flex xl:hidden items-center gap-4 text-sm font-medium text-slate-600 dark:text-slate-300">
-           <Link href="/meslekler" className="hover:text-primary">Meslekler</Link>
-           <Link href="/rehber/helal-mekanlar" className="text-amber-600 font-semibold flex gap-1 items-center"><Utensils className="w-3 h-3"/> Mekanlar</Link>
-           <Link href="/rehber/yapay-zeka-kariyerleri" className="text-fuchsia-700 dark:text-fuchsia-300 font-semibold flex gap-1 items-center bg-fuchsia-50 dark:bg-fuchsia-900/20 px-2 py-1 rounded-md relative">
-             <Sparkles className="w-3 h-3"/> AI Kariyerleri
-             <Badge className="ml-1 text-[9px] px-1 py-0 bg-fuchsia-600 text-white border-none">Yeni</Badge>
-           </Link>
-        </nav>
-
+        {/* Actions / Right side */}
         <div className="flex items-center gap-4">
-          {/* Mobile Menu */}
+          {/* Featured Highlights (Desktop) */}
+          <div className="hidden lg:flex items-center gap-3 mr-2">
+            <Link 
+              href="/rehber/helal-mekanlar" 
+              className="hover:text-amber-600 text-amber-700 dark:text-amber-400 transition-colors flex items-center gap-1.5 font-semibold bg-amber-50 dark:bg-amber-900/20 px-3 py-1.5 rounded-full border border-amber-100 dark:border-amber-800"
+            >
+              <Utensils className="w-4 h-4" />
+              Helal Mekanlar
+            </Link>
+            <Link 
+              href="/rehber/yapay-zeka-kariyerleri" 
+              className="hover:text-fuchsia-700 text-fuchsia-800 dark:text-fuchsia-300 transition-colors flex items-center gap-1.5 font-semibold bg-fuchsia-50 dark:bg-fuchsia-900/20 px-3 py-1.5 rounded-full border border-fuchsia-100 dark:border-fuchsia-800"
+            >
+              <Sparkles className="w-4 h-4" />
+              AI Kariyerleri
+              <Badge className="ml-1 text-[10px] px-1.5 py-0 bg-fuchsia-600 text-white border-none">Yeni</Badge>
+            </Link>
+          </div>
+
+          {/* Mobile Menu Toggle */}
           <Sheet open={isOpen} onOpenChange={setIsOpen}>
             <SheetTrigger asChild>
-              <Button variant="ghost" size="icon" className="md:hidden">
+              <Button variant="ghost" size="icon" className="lg:hidden">
                 <Menu className="h-6 w-6" />
                 <span className="sr-only">Menüyü aç</span>
               </Button>
             </SheetTrigger>
-            <SheetContent side="right" className="w-full sm:w-[400px] flex flex-col">
-              <SheetHeader className="flex flex-col items-center gap-4 mt-8">
-                <div className="relative w-16 h-16 rounded-full overflow-hidden border-2 border-slate-100 dark:border-slate-800 bg-white flex items-center justify-center shadow-md">
-                  <Image 
-                    src="/dc_logo.png" 
-                    alt="Deutschland Compass Logo" 
-                    width={64} 
-                    height={64} 
-                    className="object-cover scale-110"
-                  />
-                </div>
-                <SheetTitle className="text-2xl font-bold text-center">Deutschland Compass</SheetTitle>
-              </SheetHeader>
-              
-              <div className="flex flex-col gap-4 mt-8 items-center flex-1 overflow-y-auto">
-                <Link 
-                  href="/meslekler" 
-                  className="text-lg font-medium text-slate-600 hover:text-primary dark:text-slate-300 transition-colors"
-                  onClick={() => setIsOpen(false)}
-                >
-                  Meslekler
-                </Link>
-
-                <Link 
-                  href="/rehber" 
-                  className="text-lg font-medium text-slate-600 hover:text-primary dark:text-slate-300 transition-colors"
-                  onClick={() => setIsOpen(false)}
-                >
-                  Rehberler
-                </Link>
-
-                <Link 
-                  href="/rehber/sirket-kurma" 
-                  className="text-lg font-medium text-slate-600 hover:text-primary dark:text-slate-300 transition-colors"
-                  onClick={() => setIsOpen(false)}
-                >
-                  Şirket Kurma
-                </Link>
-
-                <Link 
-                  href="/rehber/helal-mekanlar" 
-                  className="text-lg font-bold text-amber-700 dark:text-amber-400 bg-amber-50 dark:bg-amber-900/20 px-6 py-2 rounded-full transition-colors flex items-center gap-2"
-                  onClick={() => setIsOpen(false)}
-                >
-                  <Utensils className="w-4 h-4" />
-                  Helal Mekanlar
-                </Link>
-
-                <Link 
-                  href="/rehber/yapay-zeka-kariyerleri" 
-                  className="text-lg font-bold text-fuchsia-800 dark:text-fuchsia-200 bg-fuchsia-50 dark:bg-fuchsia-900/20 px-6 py-2 rounded-full transition-colors flex items-center gap-2"
-                  onClick={() => setIsOpen(false)}
-                >
-                  <Sparkles className="w-4 h-4" />
-                  AI Kariyerleri
-                  <Badge className="ml-1 text-[10px] px-1.5 py-0 bg-fuchsia-600 text-white border-none">Yeni</Badge>
-                </Link>
-
-                <Link 
-                  href="/telegram-gruplari" 
-                  className="text-lg font-medium text-slate-600 hover:text-primary dark:text-slate-300 transition-colors"
-                  onClick={() => setIsOpen(false)}
-                >
-                  Telegram Grupları
-                </Link>
-                <Link 
-                  href="/blog" 
-                  className="text-lg font-medium text-slate-600 hover:text-primary dark:text-slate-300 transition-colors"
-                  onClick={() => setIsOpen(false)}
-                >
-                  Blog
-                </Link>
-                <Link 
-                  href="/hakkimizda" 
-                  className="text-lg font-medium text-slate-600 hover:text-primary dark:text-slate-300 transition-colors"
-                  onClick={() => setIsOpen(false)}
-                >
-                  Hakkımızda
-                </Link>
+            <SheetContent side="right" className="w-full sm:w-[400px] flex flex-col p-0">
+              <div className="p-6 pb-4 border-b border-slate-100 dark:border-slate-800">
+                <SheetHeader className="flex flex-col items-center gap-4 mt-4">
+                  <div className="relative w-16 h-16 rounded-full overflow-hidden border-2 border-slate-100 dark:border-slate-800 bg-white flex items-center justify-center shadow-md">
+                    <Image 
+                      src="/dc_logo.png" 
+                      alt="Deutschland Compass Logo" 
+                      width={64} 
+                      height={64} 
+                      className="object-cover scale-110"
+                    />
+                  </div>
+                  <SheetTitle className="text-2xl font-bold text-center">Deutschland Compass</SheetTitle>
+                </SheetHeader>
               </div>
               
-              <div className="py-6 text-center text-sm text-slate-400">
-                &copy; 2025 Deutschland Compass
+              <div className="flex-1 overflow-y-auto p-6 flex flex-col gap-8">
+                {/* Ana Menü */}
+                <div className="space-y-4">
+                  <h4 className="text-xs font-semibold text-slate-400 uppercase tracking-wider">Kesfet</h4>
+                  <div className="grid grid-cols-2 gap-3">
+                    <Link 
+                      href="/meslekler" 
+                      className="flex flex-col items-center justify-center gap-2 p-4 rounded-xl bg-slate-50 hover:bg-slate-100 dark:bg-slate-900 dark:hover:bg-slate-800 text-slate-700 dark:text-slate-200 transition-colors"
+                      onClick={() => setIsOpen(false)}
+                    >
+                      <Briefcase className="w-6 h-6 text-primary" />
+                      <span className="text-sm font-medium">Meslekler</span>
+                    </Link>
+                    <Link 
+                      href="/rehber" 
+                      className="flex flex-col items-center justify-center gap-2 p-4 rounded-xl bg-slate-50 hover:bg-slate-100 dark:bg-slate-900 dark:hover:bg-slate-800 text-slate-700 dark:text-slate-200 transition-colors"
+                      onClick={() => setIsOpen(false)}
+                    >
+                      <BookOpen className="w-6 h-6 text-primary" />
+                      <span className="text-sm font-medium">Rehberler</span>
+                    </Link>
+                  </div>
+                </div>
+
+                {/* Öne Çikanlar */}
+                <div className="space-y-4">
+                  <h4 className="text-xs font-semibold text-slate-400 uppercase tracking-wider">Öne Çikanlar</h4>
+                  <div className="space-y-2">
+                    <Link 
+                      href="/rehber/helal-mekanlar" 
+                      className="flex items-center gap-3 p-3 rounded-lg bg-amber-50 hover:bg-amber-100 dark:bg-amber-950/30 dark:hover:bg-amber-900/40 text-amber-900 dark:text-amber-200 transition-colors font-semibold"
+                      onClick={() => setIsOpen(false)}
+                    >
+                      <div className="bg-amber-200/50 dark:bg-amber-800/50 p-2 rounded-md">
+                        <Utensils className="w-5 h-5 text-amber-700 dark:text-amber-400" />
+                      </div>
+                      Helal Mekanlar
+                    </Link>
+                    <Link 
+                      href="/rehber/yapay-zeka-kariyerleri" 
+                      className="flex items-center gap-3 p-3 rounded-lg bg-fuchsia-50 hover:bg-fuchsia-100 dark:bg-fuchsia-950/30 dark:hover:bg-fuchsia-900/40 text-fuchsia-900 dark:text-fuchsia-200 transition-colors font-semibold"
+                      onClick={() => setIsOpen(false)}
+                    >
+                      <div className="bg-fuchsia-200/50 dark:bg-fuchsia-800/50 p-2 rounded-md">
+                        <Sparkles className="w-5 h-5 text-fuchsia-700 dark:text-fuchsia-400" />
+                      </div>
+                      AI Kariyerleri
+                      <Badge className="ml-auto bg-fuchsia-600 text-white hover:bg-fuchsia-700">Yeni</Badge>
+                    </Link>
+                  </div>
+                </div>
+
+                {/* Topluluk */}
+                <div className="space-y-4">
+                  <h4 className="text-xs font-semibold text-slate-400 uppercase tracking-wider">Topluluk</h4>
+                  <div className="space-y-1">
+                    <Link 
+                      href="/gurbet-kalemleri" 
+                      className="flex items-center gap-3 p-3 rounded-lg hover:bg-slate-50 dark:hover:bg-slate-900 text-slate-700 dark:text-slate-200 transition-colors"
+                      onClick={() => setIsOpen(false)}
+                    >
+                      <PenTool className="w-5 h-5 text-slate-400" />
+                      Gurbet Kalemleri
+                    </Link>
+                    <Link 
+                      href="/telegram-gruplari" 
+                      className="flex items-center gap-3 p-3 rounded-lg hover:bg-slate-50 dark:hover:bg-slate-900 text-slate-700 dark:text-slate-200 transition-colors"
+                      onClick={() => setIsOpen(false)}
+                    >
+                      <MessageSquare className="w-5 h-5 text-slate-400" />
+                      Telegram Gruplari
+                    </Link>
+                    <Link 
+                      href="/blog" 
+                      className="flex items-center gap-3 p-3 rounded-lg hover:bg-slate-50 dark:hover:bg-slate-900 text-slate-700 dark:text-slate-200 transition-colors"
+                      onClick={() => setIsOpen(false)}
+                    >
+                      <BookOpen className="w-5 h-5 text-slate-400" />
+                      Blog
+                    </Link>
+                  </div>
+                </div>
+              </div>
+              
+              <div className="p-6 border-t border-slate-100 dark:border-slate-800 text-center text-sm text-slate-400 bg-slate-50 dark:bg-slate-950/50">
+                &copy; {new Date().getFullYear()} Deutschland Compass
               </div>
             </SheetContent>
           </Sheet>
+        </div>
+      </div>
+
+      {/* Sub Navigation Bar (Desktop Only) */}
+      <div className="hidden lg:flex border-t border-slate-100 dark:border-slate-800 bg-white/50 dark:bg-slate-950/50">
+        <div className="container mx-auto px-4">
+          <nav className="flex items-center h-12 gap-8 text-sm font-medium text-slate-600 dark:text-slate-300">
+            <Link href="/meslekler" className="hover:text-primary transition-colors flex items-center gap-2">
+              <Briefcase className="w-4 h-4" />
+              Meslekler
+            </Link>
+            <Link href="/rehber" className="hover:text-primary transition-colors flex items-center gap-2">
+              <BookOpen className="w-4 h-4" />
+              Rehberler
+            </Link>
+            <Link href="/gurbet-kalemleri" className="hover:text-primary transition-colors flex items-center gap-2">
+              <PenTool className="w-4 h-4" />
+              Gurbet Kalemleri
+            </Link>
+            <div className="w-px h-4 bg-slate-200 dark:bg-slate-700 mx-2"></div>
+            <Link href="/rehber/sirket-kurma" className="hover:text-primary transition-colors">Sirket Kurma</Link>
+            <Link href="/telegram-gruplari" className="hover:text-primary transition-colors">Telegram Gruplari</Link>
+            <Link href="/blog" className="hover:text-primary transition-colors">Blog</Link>
+            <Link href="/hakkimizda" className="hover:text-primary transition-colors">Hakkimizda</Link>
+          </nav>
         </div>
       </div>
     </header>

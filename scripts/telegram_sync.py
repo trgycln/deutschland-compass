@@ -1,13 +1,16 @@
 #!/usr/bin/env python3
 """
-Deutschlandcompass - Telegram Veri Çekme ve Yapay Zeka Özetleme Pipeline'ı
+Deutschlandcompass - Telegram Canlı Veri Çekme ve Wikipedia Usulü Sentezleme Motoru
 
 Bu script:
-1. Telegram hesabınıza 'telegram_session' üzerinden güvenle bağlanır (SADECE OKUMA).
-2. Belirtilen gruplardaki (veya pilot gruptaki) son paylaşılan mesajları çeker.
-3. Çöp/spam/selamlaşma mesajlarını eler, kişisel bilgileri (isim, telefon vb.) anonimleştirir.
-4. Anlamlı tecrübeleri Google Gemini AI ile özetleyip başlık, etiket ve kategoriye böler.
-5. Sonuçları Supabase 'community_updates' tablosuna otomatik olarak kaydeder.
+1. Telegram oturumunuzu açar ve üye olduğunuz tüm grupları otomatik olarak tespit eder.
+2. Tespit edilen grupları sitemizdeki ilgili meslek/rehber sayfalarıyla eşleştirir.
+3. Son paylaşılan mesajları çeker, spam/selamlaşma mesajlarını filtreler, kişisel verileri anonimleştirir.
+4. "Wikipedia Bütünlüğü" Mantığı ile:
+   - Sayfada zaten mevcut olan konuları (başlıkları) çeker.
+   - Yeni mesajlar mevcut bir konuya ekleme yapıyorsa YENİ KART AÇMAZ; mevcut konuyu zenginleştirerek günceller (UPDATE).
+   - Yalnızca tamamen yeni ve önemli bir konu ise yeni ansiklopedi başlığı oluşturur (CREATE).
+5. Güncellenen veya yeni oluşturulan bilgileri Supabase 'community_updates' tablosuna işler.
 """
 
 import os
@@ -29,7 +32,6 @@ if sys.platform == 'win32':
 
 # Telethon
 from telethon import TelegramClient
-from telethon.tl.types import Channel, Chat
 
 # Supabase
 from supabase import create_client, Client
@@ -41,86 +43,23 @@ try:
 except ImportError:
     HAS_GEMINI = False
 
+# Scripts yolunu ekle
+sys.path.append(str(Path(__file__).resolve().parent))
+from telegram_catalog import find_category_for_dialog, GROUP_CATALOG
+
 # 1. Ortam Değişkenlerini Yükle
 ROOT_DIR = Path(__file__).resolve().parent.parent
 env_path = ROOT_DIR / '.env.local'
 load_dotenv(dotenv_path=env_path)
 
-API_ID = os.getenv('TELEGRAM_API_ID')
-API_HASH = os.getenv('TELEGRAM_API_HASH')
+API_ID = os.getenv('TELEGRAM_API_ID', '24803923')
+API_HASH = os.getenv('TELEGRAM_API_HASH', '2ff1b47427181c0022d48074d0d0eb3f')
 SUPABASE_URL = os.getenv('NEXT_PUBLIC_SUPABASE_URL')
 SUPABASE_KEY = os.getenv('SUPABASE_SERVICE_ROLE_KEY') or os.getenv('NEXT_PUBLIC_SUPABASE_ANON_KEY')
 GEMINI_KEY = os.getenv('GEMINI_API_KEY')
 
 SESSION_FILE = Path(__file__).resolve().parent / 'telegram_session'
 STATE_FILE = Path(__file__).resolve().parent / 'sync_state.json'
-
-# Temel Eşleştirme Sözlüğü (Telegram Grup ID -> Site Kategori Slug & Adı)
-TARGET_GROUPS = [
-    {
-        "id": "busfahrer",
-        "telegram_id": -1001388213286,
-        "name": "BUSFAHRER/IN GRUBU",
-        "category_slug": "otobus-soforlugu",
-        "category_title": "Otobüs Şoförlüğü"
-    },
-    {
-        "id": "lokfuhrer",
-        "telegram_id": -1001485828423,
-        "name": "LOKFÜHRER/IN (MAKİNİSTLİK) GRUBU",
-        "category_slug": "lokfuhrer",
-        "category_title": "Makinistlik (Lokführer)"
-    },
-    {
-        "id": "anerkennung",
-        "telegram_id": -1001538926921,
-        "name": "ANERKENNUNG GRUBU",
-        "category_slug": "anerkennung",
-        "category_title": "Diploma Denkliği"
-    },
-    {
-        "id": "aile-birlesim",
-        "telegram_id": -1001564474138,
-        "name": "AİLE BİRLEŞİMİ GRUBU",
-        "category_slug": "aile-birlesimi",
-        "category_title": "Aile Birleşimi"
-    },
-    {
-        "id": "almanca-ogretmenligi",
-        "telegram_id": -1001460212579,
-        "name": "ALMANCA ÖĞRETMENİ OLMAK İSTİYORUM",
-        "category_slug": "ogretmenlik",
-        "category_title": "Öğretmenlik / Almanca"
-    },
-    {
-        "id": "sirket-kurmak",
-        "telegram_id": -1001604986055,
-        "name": "Avrupa’da Şirket Kurmak İstiyorum",
-        "category_slug": "is-kurma",
-        "category_title": "Şirket Kurma / Girişimcilik"
-    },
-    {
-        "id": "abitur",
-        "telegram_id": -1001786912356,
-        "name": "ABITUR GRUBU",
-        "category_slug": "egitim-abitur",
-        "category_title": "Abitur ve Üniversite"
-    },
-    {
-        "id": "brans-tamamlama",
-        "telegram_id": -1001315797908,
-        "name": "IKINCI BRANŞ / BRANŞ TAMAMLAMA",
-        "category_slug": "brans-tamamlama",
-        "category_title": "Branş Tamamlama"
-    },
-    {
-        "id": "ehrenamtlich",
-        "telegram_id": -1001439302331,
-        "name": "EHRENAMTLICH ÇALIŞMA GRUBU",
-        "category_slug": "gonulluluk",
-        "category_title": "Gönüllülük (Ehrenamt)"
-    }
-]
 
 def load_state():
     if STATE_FILE.exists():
@@ -139,21 +78,18 @@ def clean_and_anonymize(text: str) -> str:
     """Kişisel verileri (telefon, e-posta, telegram kullanıcı adları) anonimleştirir"""
     if not text:
         return ""
-    # Telefon numaraları
     text = re.sub(r'(\+?\d{1,3}[-.\s]?)?\(?\d{3}\)?[-.\s]?\d{3}[-.\s]?\d{4}', '[Telefon]', text)
-    # E-postalar
     text = re.sub(r'[\w\.-]+@[\w\.-]+\.\w+', '[E-posta]', text)
-    # @kullaniciadi
     text = re.sub(r'@\w+', '[Kullanıcı]', text)
     return text.strip()
 
 def is_meaningful_message(text: str) -> bool:
     """Kısa, anlamsız selamlaşma ve spam mesajları eler"""
-    if not text or len(text) < 40:
+    if not text or len(text) < 35:
         return False
     
     lower = text.lower().strip()
-    greetings = ['günaydın', 'iyi akşamlar', 'merhaba arkadaşlar', 'hayırlı cumalar', 'selamlar', 'teşekkürler']
+    greetings = ['günaydın', 'gunaydin', 'iyi akşamlar', 'iyi aksamlar', 'merhaba arkadaşlar', 'hayırlı cumalar', 'selamlar', 'teşekkürler', 'sagolun', 'sağolun']
     if lower in greetings:
         return False
     
@@ -163,116 +99,170 @@ def is_meaningful_message(text: str) -> bool:
         
     return True
 
-async def summarize_with_gemini(category_title: str, messages: list) -> list:
-    """Gemini API kullanarak mesaj grubundan anlamlı özetler ve ipuçları çıkarır"""
+async def synthesize_with_gemini(category_title: str, existing_items: list, new_messages: list) -> list:
+    """
+    Gemini API kullanarak yeni mesajları mevcut rehber başlıklarıyla karşılaştırır.
+    Mevcut bir konu varsa onu zenginleştirip günceller (UPDATE),
+    Tamamen yeni bir konu ise yeni başlık açar (CREATE).
+    """
     if not GEMINI_KEY or not HAS_GEMINI:
         print("   ℹ️  Gemini API Key bulunamadı; basit kural tabanlı özetleme yapılıyor.")
-        # Basit fallback
-        combined_snippet = "\n• ".join([m[:150] for m in messages[:3]])
+        combined_snippet = "\n• ".join([m[:150] for m in new_messages[:3]])
         return [{
+            "action": "CREATE",
             "title": f"{category_title} Alanında Yeni Topluluk Tecrübeleri",
             "content": f"Grupta paylaşılan son deneyimler:\n• {combined_snippet}",
             "update_type": "tip",
             "badge_text": datetime.now().strftime("%B %Y"),
-            "importance": "normal"
+            "importance": "normal",
+            "target_tab": "updates"
         }]
 
     genai.configure(api_key=GEMINI_KEY)
+    
+    # Model seçimi: gemini-3.6-flash
     model = genai.GenerativeModel("models/gemini-3.6-flash")
 
+    existing_context = ""
+    if existing_items:
+        existing_context = "SAYFADA HALİHAZIRDA MEVCUT OLAN KONULAR/BAŞLIKLAR:\n"
+        for it in existing_items:
+            existing_context += f"- [ID: {it['id']}] Başlık: {it.get('title')}\n  Mevcut İçerik: {it.get('content')}\n  Sekme: {it.get('target_tab', 'updates')}\n\n"
+    else:
+        existing_context = "SAYFADA HENÜZ HİÇBİR KONU/BAŞLIK YOK. (Tüm geçerli bilgiler yeni başlık olarak eklenecek).\n"
+
     prompt = f"""
-Aşağıda Almanya'ya yerleşmiş/yaşayan Türklerin '{category_title}' isimli Telegram grubundaki gerçek yazışmaları yer almaktadır.
+Sen Deutschlandcompass için çalışan Baş Ansiklopedi Editörüsün.
+Görevin: Almanya'daki '{category_title}' alanına dair Telegram topluluğunda konuşulan yeni mesajları incelemek ve sayfadaki Wikipedia/Ansiklopedi düzenini koruyarak bilgiyi sentezlemektir.
 
-Bu yazışmaları dikkatle tara ve topluluk için faydalı olabilecek:
-1. Yeni mevzuat veya resmi kural değişikliklerini,
-2. İşe/eğitime/denkliğe dair pratik ipuçlarını ve püf noktalarını,
-3. Paylaşılan önemli tecrübeleri ve tavsiyeleri
+ÖNEMLİ KURAL: Sayfayı bir sosyal medya veya mesaj akışına ÇEVİRME! Alt alta onlarca benzer kart birikmesini engelle.
 
-özetle. Selamlaşmaları, kişisel sohbetleri, gereksiz geyikleri ve reklamları tamamen ele.
+{existing_context}
 
-Çıktıyı SADECE geçerli bir JSON array olarak ver. Başka hiçbir markdown veya metin yazma.
-Her obje şu yapıda olmalı:
+YENİ GELEN TELEGRAM MESAJLARI:
+{"---".join(new_messages[:30])}
+
+TALİMATLAR:
+1. GÜNCELLEME VE BİRLEŞTİRME (ÖNCELİKLİ):
+   - Eğer yeni mesajlar, yukarıdaki MEVCUT konulardan birine bir detay, tecrübe, kural değişikliği veya pratik bir püf noktası ekliyorsa:
+     * "action": "UPDATE"
+     * "target_id": İlgili mevcut konunun ID numarası (integer)
+     * "title": Başlığı gerekiyorsa hafifçe güncelle veya koru
+     * "content": Eski içerikteki bilgiyi de koruyarak, yeni tecrübeyi tek ve akıcı bir Türkçe ansiklopedik paragrafta birleştir.
+     * "badge_text": "Güncellendi: {datetime.now().strftime('%B %Y')}"
+     * "target_tab": "updates" | "guide" | "experiences"
+
+2. YENİ KONU OLUŞTURMA (Yalnızca gerçekten mevcut konularda yer almayan yeni bir konuysa):
+   - Eğer mesajlar mevcut hiçbir başlığa uymayan, ama bu meslek/rehber için çok önemli bir konuyu (örn. yeni bir sınav, yeni bir bürokratik aşama, yeni bir vize kuralı vb.) ele alıyorsa:
+     * "action": "CREATE"
+     * "title": Kısa, net ansiklopedi başlığı
+     * "content": 2-4 cümlelik derli toplu, tarafsız ve açıklayıcı bilgi
+     * "badge_text": "Yeni Bilgi" veya "{datetime.now().strftime('%B %Y')}"
+     * "target_tab": "updates" | "guide" | "experiences"
+     * "update_type": "official_rule" | "tip" | "experience" | "warning"
+
+3. ELEME / ÇÖP:
+   - Selamlaşma, özel sohbet, spam, satılık ilanları veya kayda değer bir bilgi taşımayan mesajları tamamen yok say.
+   - Eğer incelenecek kayda değer hiçbir yeni bilgi yoksa boş bir JSON array döndür: []
+
+Çıktıyı SADECE geçerli bir JSON array olarak ver. Markdown ```json kod bloğu dışında hiçbir açıklama yazma.
+Örnek Format:
 [
   {{
-    "title": "Kısa ve net Türkçe başlık",
-    "content": "2-4 cümlelik net, açıklayıcı ve uygulanabilir tavsiye veya bilgi özeti",
-    "update_type": "official_rule" | "tip" | "experience" | "warning",
-    "badge_text": "Örn: Mart 2025 veya Yeni Kural veya Pratik İpucu",
-    "importance": "highlight" veya "normal"
+    "action": "UPDATE",
+    "target_id": 14,
+    "title": "Ehliyet, İHK ve Takograf Kartı Başvuru Adımları",
+    "content": "Eski bilgilerin ve yeni paylaşılan pratik püf noktalarının birleştirilmiş akıcı metni...",
+    "badge_text": "Güncellendi: {datetime.now().strftime('%B %Y')}",
+    "target_tab": "updates",
+    "importance": "normal"
   }}
 ]
-
-İncelenecek Mesajlar:
-{"---".join(messages[:25])}
 """
-    try:
-        response = model.generate_content(prompt)
-        raw_text = response.text.strip()
-        # Markdown kod bloklarını temizle
-        if raw_text.startswith("```json"):
-            raw_text = raw_text[7:]
-        elif raw_text.startswith("```"):
-            raw_text = raw_text[3:]
-        if raw_text.endswith("```"):
-            raw_text = raw_text[:-3]
-        
-        parsed = json.loads(raw_text.strip())
-        if isinstance(parsed, list):
-            return parsed
-    except Exception as e:
-        print(f"   ⚠️  Gemini işleme hatası: {e}")
+    # Maksimum 3 deneme ve 429 kota beklemesi
+    for attempt in range(3):
+        try:
+            response = model.generate_content(prompt)
+            raw_text = response.text.strip()
+            if raw_text.startswith("```json"):
+                raw_text = raw_text[7:]
+            elif raw_text.startswith("```"):
+                raw_text = raw_text[3:]
+            if raw_text.endswith("```"):
+                raw_text = raw_text[:-3]
+            
+            parsed = json.loads(raw_text.strip())
+            if isinstance(parsed, list):
+                return parsed
+            break
+        except Exception as e:
+            err_msg = str(e)
+            if "429" in err_msg:
+                wait_sec = 25 * (attempt + 1)
+                print(f"   ⏳ Gemini istek limiti (429). {wait_sec} saniye beklenip tekrar deneniyor...")
+                await asyncio.sleep(wait_sec)
+            else:
+                print(f"   ⚠️  Gemini sentezleme hatası: {e}")
+                break
     
     return []
 
 async def sync_telegram():
     if not SESSION_FILE.with_suffix('.session').exists():
-        print("[HATA] Telegram oturumu bulunamadi!")
-        print("Lutfen once 'npm run telegram:qr-login' komutunu calistirarak giris yapin.")
+        print("❌ [HATA] Telegram oturumu bulunamadı!")
+        print("Lütfen önce 'npm run telegram:qr-login' komutu ile giriş yapın.")
         return
 
-    print(">>> Deutschlandcompass Telegram Senkronizasyonu Basliyor...")
+    print("=" * 65)
+    print("🚀 Deutschlandcompass Telegram Wikipedia Sentezleme Motoru Başlatılıyor...")
+    print("=" * 65)
+
     supabase: Client = create_client(SUPABASE_URL, SUPABASE_KEY)
     state = load_state()
 
     client = TelegramClient(str(SESSION_FILE), int(API_ID), API_HASH)
-    await client.start()
-    print("[Tamam] Telegram istemcisi baglandi (Read-Only Mod).\n")
+    await client.connect()
 
-    # Kullanicinin katildigi diyaloglari al
+    if not await client.is_user_authorized():
+        print("❌ Telegram oturumu yetkili değil.")
+        return
+
+    me = await client.get_me()
+    print(f"✅ Bağlanılan Hesap: {me.first_name} {me.last_name or ''} (@{me.username or 'kullanıcı adı yok'})")
+    print("🔍 Hesabınızın üye olduğu gruplar taranıyor...\n")
+
     dialogs = await client.get_dialogs()
-    dialog_dict = {d.name.lower().strip(): d for d in dialogs}
-
-    for target in TARGET_GROUPS:
-        group_id = target["id"]
-        group_name = target["name"]
-        cat_slug = target["category_slug"]
-        cat_title = target["category_title"]
-
-        print(f"[*] Grup Taraniyor: {cat_title} ({group_id})...")
-
-        # Grubu diyaloglar arasinda bul
-        found_entity = None
-        target_tid = target.get("telegram_id")
-        for d in dialogs:
-            if target_tid and d.id == target_tid:
-                found_entity = d
-                break
-            d_name = d.name.lower().strip()
-            if group_name.lower() in d_name or target["id"] in d_name:
-                found_entity = d
-                break
-
-        if not found_entity:
-            print(f"   [Atlandi] Bu grup hesabinizda bulunamadi. Atlanıyor.")
+    
+    # Eşleşen grupları dinamik tespit et
+    matched_targets = []
+    for d in dialogs:
+        if not (d.is_group or d.is_channel):
             continue
+        
+        cat = find_category_for_dialog(d.name)
+        if cat:
+            matched_targets.append({
+                "dialog": d,
+                "category": cat
+            })
 
-        last_id = state.get(group_id, 0)
+    print(f"📌 Tespit Edilen & Eşleşen Grup Sayısı: {len(matched_targets)} adet\n")
+
+    for item in matched_targets:
+        d = item["dialog"]
+        cat = item["category"]
+        group_key = cat["id"]
+        cat_slug = cat["category_slug"]
+        cat_title = cat["category_title"]
+
+        print(f"📡 Grup İnceleniyor: {d.name} --> [{cat_title}]")
+
+        last_id = state.get(group_key, 0)
         messages_collected = []
         max_id_seen = last_id
 
-        # Mesajlari oku
         try:
-            async for message in client.iter_messages(found_entity, limit=40, min_id=last_id):
+            async for message in client.iter_messages(d, limit=50, min_id=last_id):
                 if message.id > max_id_seen:
                     max_id_seen = message.id
                 
@@ -280,45 +270,83 @@ async def sync_telegram():
                     cleaned = clean_and_anonymize(message.text)
                     messages_collected.append(cleaned)
         except Exception as e:
-            print(f"   [Hata] Mesaj okuma hatasi: {e}")
+            print(f"   ⚠️  Mesaj okuma hatası: {e}")
             continue
 
-        print(f"   -> {len(messages_collected)} adet anlamli mesaj/tecrube yakalandi.")
+        print(f"   📥 {len(messages_collected)} adet anlamlı mesaj/tecrübe süzüldü.")
 
         if messages_collected:
-            print(f"   -> Ozetleniyor...")
-            summaries = await summarize_with_gemini(cat_title, messages_collected)
-            print(f"   -> {len(summaries)} adet yeni bilgi karti olusturuldu.")
+            # 1. Supabase'den bu kategoriye ait mevcut başlıkları çek
+            try:
+                res_existing = supabase.table('community_updates') \
+                    .select('id, title, content, target_tab, badge_text') \
+                    .eq('category_slug', cat_slug) \
+                    .execute()
+                existing_items = res_existing.data or []
+            except Exception as db_err:
+                print(f"   ⚠️  Mevcut verileri çekme hatası: {db_err}")
+                existing_items = []
 
-            # Supabase'e ekle
-            for item in summaries:
-                try:
-                    title_text = item.get("title", f"{cat_title} Guncellemesi")
-                    res = supabase.table('community_updates').insert({
-                        "category_slug": cat_slug,
-                        "title": title_text,
-                        "content": item.get("content", ""),
-                        "source_group": group_name,
-                        "source_url": f"https://t.me/+{target.get('invite_hash', '')}",
-                        "update_type": item.get("update_type", "tip"),
-                        "badge_text": item.get("badge_text", "Yeni Bilgi"),
-                        "importance": item.get("importance", "normal"),
-                        "is_approved": True
-                    }).execute()
-                    safe_title = title_text.encode('ascii', errors='replace').decode('ascii')
-                    print(f"      + Eklendi: {safe_title}")
-                except Exception as ins_err:
-                    print(f"      [Uyari] Veritabanina yazma hatasi: {ins_err}")
+            print(f"   📚 Sayfadaki mevcut konu sayısı: {len(existing_items)} (Birleştirme için yapay zekaya iletiliyor...)")
+            
+            # 2. Gemini ile akıllı sentezleme ve birleştirme
+            synthesis_results = await synthesize_with_gemini(cat_title, existing_items, messages_collected)
+            print(f"   ✨ Yapay zeka sonucu: {len(synthesis_results)} işlem önerildi.")
 
-        # Durumu guncelle
-        state[group_id] = max_id_seen
+            # 3. Sonuçları işle (UPDATE veya CREATE)
+            for res_item in synthesis_results:
+                action = res_item.get("action", "CREATE").upper()
+                title = res_item.get("title", f"{cat_title} Bilgisi")
+                content = res_item.get("content", "")
+                target_tab = res_item.get("target_tab", "updates")
+                badge_text = res_item.get("badge_text", "Güncel")
+                importance = res_item.get("importance", "normal")
+                update_type = res_item.get("update_type", "tip")
+
+                if action == "UPDATE" and res_item.get("target_id"):
+                    target_id = res_item["target_id"]
+                    try:
+                        supabase.table('community_updates').update({
+                            "title": title,
+                            "content": content,
+                            "badge_text": badge_text,
+                            "target_tab": target_tab,
+                            "importance": importance,
+                            "updated_at": datetime.now().isoformat()
+                        }).eq('id', target_id).execute()
+                        print(f"      🔄 [GÜNCELLENDİ & BİRLEŞTİRİLDİ] ID {target_id}: {title}")
+                    except Exception as upd_err:
+                        print(f"      ⚠️  Güncelleme hatası (ID {target_id}): {upd_err}")
+
+                elif action == "CREATE" and content:
+                    try:
+                        supabase.table('community_updates').insert({
+                            "category_slug": cat_slug,
+                            "title": title,
+                            "content": content,
+                            "source_group": d.name,
+                            "source_url": cat.get("url", ""),
+                            "update_type": update_type,
+                            "badge_text": badge_text,
+                            "importance": importance,
+                            "target_tab": target_tab,
+                            "is_approved": True
+                        }).execute()
+                        print(f"      ✨ [YENİ KONU EKLENDİ]: {title}")
+                    except Exception as ins_err:
+                        print(f"      ⚠️  Yeni kayıt ekleme hatası: {ins_err}")
+
+        # Durumu güncelle
+        state[group_key] = max_id_seen
         save_state(state)
 
-        # Telegram hiz sinirina uymak icin bekleme
-        time.sleep(2)
+        # Telegram hız sınırına uymak için kısa bekleme
+        await asyncio.sleep(2)
 
     await client.disconnect()
-    print("\n>>> Senkronizasyon basariyla tamamlandi!")
+    print("\n" + "=" * 65)
+    print("🎉 Tüm Grupların Wikipedia Sentezleme Senkronizasyonu Tamamlandı!")
+    print("=" * 65)
 
 if __name__ == '__main__':
     asyncio.run(sync_telegram())

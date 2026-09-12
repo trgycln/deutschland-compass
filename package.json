@@ -10,6 +10,7 @@
     "seed:literary": "node scripts/seed-literary-works.js",
     "telegram:login": "python scripts/telegram_login.py",
     "telegram:qr-login": "python scripts/telegram_qr_login.py",
+    "telegram:check-groups": "python scripts/check_my_groups.py",
     "telegram:sync": "python scripts/telegram_sync.py"
   },
   "dependencies": {

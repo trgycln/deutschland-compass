@@ -27,9 +27,6 @@ const KATEGORI_RENK: Record<string, string> = {
 function getMapEmbedUrl(mekan: HelalMekan): string {
   const key = process.env.NEXT_PUBLIC_GOOGLE_MAPS_KEY;
   if (!key) return "";
-  if (mekan.google_place_id) {
-    return `https://www.google.com/maps/embed/v1/place?key=${key}&place_id=${mekan.google_place_id}`;
-  }
   return `https://www.google.com/maps/embed/v1/place?key=${key}&q=${encodeURIComponent(
     `${mekan.isim} ${mekan.adres} ${mekan.sehir}`
   )}`;

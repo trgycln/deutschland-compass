@@ -12,6 +12,7 @@ import { ShareExperienceDialog } from '@/components/share-experience-dialog';
 import { UploadDocumentDialog } from '@/components/upload-document-dialog';
 import { FaqSection } from '@/components/faq-section';
 import { DocumentSection } from '@/components/document-section';
+import { useCommunityUpdates, PageCommunityUpdatesBanner, PageCommunityUpdatesContent } from '@/components/page-community-updates';
 
 function getEmbedUrl(url: string) {
   if (!url) return '';
@@ -29,6 +30,18 @@ export default function GisGuidePage() {
   const [videoUrl, setVideoUrl] = useState(defaultVideoUrl);
   const [pageTitle, setPageTitle] = useState(title);
   const [pageDescription, setPageDescription] = useState(description);
+  const [activeTab, setActiveTab] = useState('guide');
+  const { updates } = useCommunityUpdates('cografi-bilgi-sistemleri');
+
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      const urlParams = new URLSearchParams(window.location.search);
+      const tabParam = urlParams.get('tab');
+      if (tabParam && ['guide', 'updates', 'faq', 'experiences', 'documents'].includes(tabParam)) {
+        setActiveTab(tabParam);
+      }
+    }
+  }, []);
 
   useEffect(() => {
     async function fetchPageData() {
@@ -244,16 +257,49 @@ export default function GisGuidePage() {
           </div>
         )}
 
-        <Tabs defaultValue="guide" className="space-y-8">
-          <TabsList className="grid w-full grid-cols-2 md:grid-cols-4 lg:w-[600px] h-auto">
-            <TabsTrigger value="guide">Rehber</TabsTrigger>
-            <TabsTrigger value="faq">SSS</TabsTrigger>
-            <TabsTrigger value="experiences">Tecrübeler</TabsTrigger>
-            <TabsTrigger value="documents">Dokümanlar</TabsTrigger>
-          </TabsList>
+        <div className="space-y-6">
+          <PageCommunityUpdatesBanner 
+            updates={updates} 
+            onViewAll={() => setActiveTab('updates')} 
+          />
 
-          {/* Guide Tab */}
-          <TabsContent value="guide" className="space-y-12">
+          <Tabs value={activeTab} onValueChange={(tab: string) => setActiveTab(tab)} className="space-y-8">
+            <TabsList className="grid w-full grid-cols-2 md:grid-cols-5 lg:w-[720px] h-auto">
+              <TabsTrigger value="guide">Rehber</TabsTrigger>
+              <TabsTrigger 
+                value="updates" 
+                className="relative data-[state=active]:bg-amber-500 data-[state=active]:text-white font-medium transition-all"
+              >
+                <span className="flex items-center gap-1.5">
+                  <span className="relative flex h-2 w-2">
+                    <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-amber-400 opacity-75"></span>
+                    <span className="relative inline-flex rounded-full h-2 w-2 bg-amber-500"></span>
+                  </span>
+                  ⚡ Güncel
+                </span>
+                {updates.length > 0 && (
+                  <Badge variant="secondary" className="ml-1.5 px-1.5 py-0 text-[10px] bg-amber-100 dark:bg-amber-900/60 text-amber-800 dark:text-amber-200">
+                    {updates.length}
+                  </Badge>
+                )}
+              </TabsTrigger>
+              <TabsTrigger value="faq">SSS</TabsTrigger>
+              <TabsTrigger value="experiences">Tecrübeler</TabsTrigger>
+              <TabsTrigger value="documents">Dokümanlar</TabsTrigger>
+            </TabsList>
+
+            {/* Updates Tab */}
+            <TabsContent value="updates" className="space-y-6">
+              <PageCommunityUpdatesContent
+                categorySlug="cografi-bilgi-sistemleri"
+                updates={updates}
+                groupName="Coğrafi Bilgi Sistemleri (GIS) Grubu"
+                telegramUrl="https://t.me/+tTSAdmOAXZ9kMDc6"
+              />
+            </TabsContent>
+
+            {/* Guide Tab */}
+            <TabsContent value="guide" className="space-y-12">
             {sections.map((section) => (
               <section key={section.id} className="scroll-mt-20" id={section.id}>
                 <div className="flex items-center gap-3 mb-6">
@@ -366,6 +412,7 @@ export default function GisGuidePage() {
             <DocumentSection professionSlug="cografi-bilgi-sistemleri" />
           </TabsContent>
         </Tabs>
+        </div>
       </div>
     </div>
   );

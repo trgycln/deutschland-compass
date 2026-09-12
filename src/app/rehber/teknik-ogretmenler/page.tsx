@@ -38,9 +38,22 @@ import {
   AccordionItem,
   AccordionTrigger,
 } from "@/components/ui/accordion";
+import { useCommunityUpdates, PageCommunityUpdatesBanner, PageCommunityUpdatesContent } from '@/components/page-community-updates';
 
 export default function TeknikOgretmenlerPage() {
   const [experiences, setExperiences] = useState<any[]>([]);
+  const [activeTab, setActiveTab] = useState('guide');
+  const { updates } = useCommunityUpdates('teknik-ogretmenler');
+
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      const urlParams = new URLSearchParams(window.location.search);
+      const tabParam = urlParams.get('tab');
+      if (tabParam && ['guide', 'updates', 'faq', 'experiences', 'documents'].includes(tabParam)) {
+        setActiveTab(tabParam);
+      }
+    }
+  }, []);
 
   useEffect(() => {
     async function fetchExperiences() {
@@ -400,11 +413,33 @@ export default function TeknikOgretmenlerPage() {
       </div>
 
       <div className="container mx-auto px-4 -mt-8">
-        <Tabs defaultValue="guide" className="space-y-8">
+        <PageCommunityUpdatesBanner 
+          updates={updates} 
+          onViewAll={() => setActiveTab('updates')} 
+        />
+
+        <Tabs value={activeTab} onValueChange={(tab: string) => setActiveTab(tab)} className="space-y-8 mt-6">
           <TabsList className="w-full justify-start h-auto p-1 bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800 shadow-sm overflow-x-auto">
             <TabsTrigger value="guide" className="px-6 py-3 rounded-lg data-[state=active]:bg-blue-50 dark:data-[state=active]:bg-blue-900/20 data-[state=active]:text-blue-600 dark:data-[state=active]:text-blue-400">
               <BookOpen className="w-4 h-4 mr-2" />
               Rehber
+            </TabsTrigger>
+            <TabsTrigger 
+              value="updates" 
+              className="px-6 py-3 rounded-lg relative data-[state=active]:bg-amber-500 data-[state=active]:text-white font-medium transition-all"
+            >
+              <span className="flex items-center gap-1.5">
+                <span className="relative flex h-2 w-2">
+                  <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-amber-400 opacity-75"></span>
+                  <span className="relative inline-flex rounded-full h-2 w-2 bg-amber-500"></span>
+                </span>
+                ⚡ Güncel Gelişmeler
+              </span>
+              {updates.length > 0 && (
+                <Badge variant="secondary" className="ml-2 px-1.5 py-0 text-[10px] bg-amber-100 dark:bg-amber-900/60 text-amber-800 dark:text-amber-200">
+                  {updates.length}
+                </Badge>
+              )}
             </TabsTrigger>
             <TabsTrigger value="faq" className="px-6 py-3 rounded-lg data-[state=active]:bg-green-50 dark:data-[state=active]:bg-green-900/20 data-[state=active]:text-green-600 dark:data-[state=active]:text-green-400">
               <HelpCircle className="w-4 h-4 mr-2" />
@@ -422,6 +457,15 @@ export default function TeknikOgretmenlerPage() {
               Dokümanlar
             </TabsTrigger>
           </TabsList>
+
+          <TabsContent value="updates" className="space-y-6">
+            <PageCommunityUpdatesContent
+              categorySlug="teknik-ogretmenler"
+              updates={updates}
+              groupName="Teknik Öğretmenler Grubu"
+              telegramUrl="https://t.me/+4dmqd8H7kUg3YjQy"
+            />
+          </TabsContent>
 
           <TabsContent value="guide" className="space-y-8">
             {/* Analogy Card */}

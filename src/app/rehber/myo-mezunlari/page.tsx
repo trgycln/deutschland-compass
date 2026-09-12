@@ -39,9 +39,22 @@ import {
   AccordionItem,
   AccordionTrigger,
 } from "@/components/ui/accordion";
+import { useCommunityUpdates, PageCommunityUpdatesBanner, PageCommunityUpdatesContent } from '@/components/page-community-updates';
 
 export default function MyoMezunlariPage() {
   const [experiences, setExperiences] = useState<any[]>([]);
+  const [activeTab, setActiveTab] = useState('guide');
+  const { updates } = useCommunityUpdates('myo-mezunlari');
+
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      const urlParams = new URLSearchParams(window.location.search);
+      const tabParam = urlParams.get('tab');
+      if (tabParam && ['guide', 'updates', 'technical', 'faq', 'experiences'].includes(tabParam)) {
+        setActiveTab(tabParam);
+      }
+    }
+  }, []);
 
   useEffect(() => {
     async function fetchExperiences() {
@@ -491,13 +504,35 @@ export default function MyoMezunlariPage() {
         </div>
       </div>
 
-      <div className="max-w-7xl mx-auto px-6 lg:px-8 -mt-12 relative z-10">
-        <Tabs defaultValue="guide" className="space-y-8">
-          <TabsList className="grid w-full grid-cols-1 md:grid-cols-4 h-auto p-2 bg-white dark:bg-slate-900 rounded-xl shadow-lg border border-slate-200 dark:border-slate-800">
+      <div className="max-w-7xl mx-auto px-6 lg:px-8 -mt-12 relative z-10 space-y-6">
+        <PageCommunityUpdatesBanner 
+          updates={updates} 
+          onViewAll={() => setActiveTab('updates')} 
+        />
+
+        <Tabs value={activeTab} onValueChange={(tab: string) => setActiveTab(tab)} className="space-y-8">
+          <TabsList className="grid w-full grid-cols-1 md:grid-cols-5 h-auto p-2 bg-white dark:bg-slate-900 rounded-xl shadow-lg border border-slate-200 dark:border-slate-800">
             <TabsTrigger value="guide" className="py-4 data-[state=active]:bg-blue-50 dark:data-[state=active]:bg-blue-900/20 data-[state=active]:text-blue-600 dark:data-[state=active]:text-blue-400">
               <div className="flex flex-col items-center gap-2">
                 <BookOpen className="h-5 w-5" />
                 <span>Rehber</span>
+              </div>
+            </TabsTrigger>
+            <TabsTrigger 
+              value="updates" 
+              className="py-4 relative data-[state=active]:bg-amber-500 data-[state=active]:text-white font-medium transition-all"
+            >
+              <div className="flex flex-col items-center gap-2">
+                <span className="flex items-center gap-1.5">
+                  <span className="relative flex h-2.5 w-2.5">
+                    <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-amber-400 opacity-75"></span>
+                    <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-amber-500"></span>
+                  </span>
+                  ⚡ Güncel
+                </span>
+                <span className="text-xs">
+                  Gelişmeler {updates.length > 0 && `(${updates.length})`}
+                </span>
               </div>
             </TabsTrigger>
             <TabsTrigger value="technical" className="py-4 data-[state=active]:bg-purple-50 dark:data-[state=active]:bg-purple-900/20 data-[state=active]:text-purple-600 dark:data-[state=active]:text-purple-400">
@@ -519,6 +554,15 @@ export default function MyoMezunlariPage() {
               </div>
             </TabsTrigger>
           </TabsList>
+
+          <TabsContent value="updates" className="space-y-6">
+            <PageCommunityUpdatesContent
+              categorySlug="myo-mezunlari"
+              updates={updates}
+              groupName="MYO Mezunları Grubu"
+              telegramUrl="https://t.me/+1zOqxOI_8SowZTZi"
+            />
+          </TabsContent>
 
           {/* Guide Tab */}
           <TabsContent value="guide" className="space-y-8">

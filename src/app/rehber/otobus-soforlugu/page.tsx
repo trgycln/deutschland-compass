@@ -7,7 +7,7 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { BookOpen, Bus, ShieldCheck, Euro, GraduationCap, Award, Quote, Calendar, User, AlertTriangle, Building2, FileText, Download, Loader2 } from 'lucide-react';
+import { BookOpen, Bus, ShieldCheck, Euro, GraduationCap, Award, Quote, Calendar, User, AlertTriangle, Building2, FileText, Download, Loader2, Sparkles, ArrowRight, CheckCircle2, Zap, Clock } from 'lucide-react';
 
 interface Experience {
   id: number;
@@ -30,7 +30,7 @@ interface Document {
 import { ShareExperienceDialog } from '@/components/share-experience-dialog';
 import { UploadDocumentDialog } from '@/components/upload-document-dialog';
 import { FaqSection } from '@/components/faq-section';
-import { CommunityUpdatesSection } from '@/components/community-updates-section';
+import { CommunityUpdate, initialCommunityUpdates } from '@/data/initial-community-updates';
 
 function getEmbedUrl(url: string) {
   if (!url) return '';
@@ -45,14 +45,25 @@ function getEmbedUrl(url: string) {
 export default function BusDriverGuidePage() {
   const { title, description, sections, faq, stats, videoUrl: defaultVideoUrl, analogy } = busDriverData;
   const [experiences, setExperiences] = useState<Experience[]>([]);
+  const [communityUpdates, setCommunityUpdates] = useState<CommunityUpdate[]>([]);
   const [documents, setDocuments] = useState<Document[]>([]);
   const [loadingDocuments, setLoadingDocuments] = useState(true);
   const [videoUrl, setVideoUrl] = useState(defaultVideoUrl);
   const [pageTitle, setPageTitle] = useState(title);
   const [pageDescription, setPageDescription] = useState(description);
   const [hashProcessed, setHashProcessed] = useState(false);
+  const [activeTab, setActiveTab] = useState('guide');
 
   useEffect(() => {
+    // Check URL tab parameter
+    if (typeof window !== 'undefined') {
+      const urlParams = new URLSearchParams(window.location.search);
+      const tabParam = urlParams.get('tab');
+      if (tabParam && ['guide', 'updates', 'faq', 'experiences', 'documents'].includes(tabParam)) {
+        setActiveTab(tabParam);
+      }
+    }
+
     async function fetchPageData() {
       // Check if URL has specific experience hash
       const targetExperienceId = typeof window !== 'undefined' && window.location.hash.startsWith('#experience-')
@@ -91,6 +102,21 @@ export default function BusDriverGuidePage() {
       
       setExperiences(filtered);
       console.log('Filtered experiences:', filtered);
+
+      // Fetch community updates
+      const { data: updatesData, error: updatesError } = await supabase
+        .from('community_updates')
+        .select('*')
+        .eq('category_slug', 'otobus-soforlugu')
+        .eq('is_approved', true)
+        .order('created_at', { ascending: false });
+        
+      if (!updatesError && updatesData && updatesData.length > 0) {
+        setCommunityUpdates(updatesData as CommunityUpdate[]);
+      } else {
+        // Fallback
+        setCommunityUpdates(initialCommunityUpdates.filter(u => u.category_slug === 'otobus-soforlugu' && u.is_approved));
+      }
 
       // Fetch documents
       const { data: docData } = await supabase
@@ -378,19 +404,82 @@ export default function BusDriverGuidePage() {
           </div>
         )}
 
-        {/* Canlı Topluluk Güncellemeleri & Taze Tecrübeler */}
-        <CommunityUpdatesSection categorySlug="otobus-soforlugu" fallbackGroup="busfahrer" />
+        {/* Canlı Topluluk Sentez Bilgi Rozeti & Duyuru */}
+        {communityUpdates.length > 0 && (
+          <div className="mb-6 p-4 rounded-xl bg-gradient-to-r from-amber-500/15 via-amber-500/5 to-transparent border border-amber-300/60 dark:border-amber-700/60 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 shadow-xs transition-all">
+            <div className="flex items-center gap-3">
+              <span className="flex h-3 w-3 relative shrink-0">
+                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-amber-400 opacity-75"></span>
+                <span className="relative inline-flex rounded-full h-3 w-3 bg-amber-500"></span>
+              </span>
+              <div className="text-xs sm:text-sm text-slate-800 dark:text-slate-200">
+                <strong className="text-amber-800 dark:text-amber-300 font-bold">⚡ Güncel Gelişmeler:</strong> Bu rehber, Busfahrer grubunda paylaşılan en son tecrübe ve resmi kural değişiklikleriyle güncellenmiştir.
+              </div>
+            </div>
+            <button
+              onClick={() => setActiveTab('updates')}
+              className="text-xs font-bold text-amber-900 dark:text-amber-200 bg-amber-200/80 hover:bg-amber-300 dark:bg-amber-900/60 dark:hover:bg-amber-800 px-3 py-1.5 rounded-lg transition-all flex items-center gap-1.5 shrink-0 border border-amber-300 dark:border-amber-700 hover:shadow-xs cursor-pointer"
+            >
+              <span>Gelişmeleri İncele</span>
+              <ArrowRight className="w-3.5 h-3.5" />
+            </button>
+          </div>
+        )}
 
-        <Tabs defaultValue="guide" className="space-y-8">
-          <TabsList className="grid w-full grid-cols-2 md:grid-cols-4 lg:w-[600px] h-auto">
-            <TabsTrigger value="guide">Rehber</TabsTrigger>
-            <TabsTrigger value="faq">SSS</TabsTrigger>
-            <TabsTrigger value="experiences">Tecrübeler</TabsTrigger>
-            <TabsTrigger value="documents">Dokümanlar</TabsTrigger>
+        <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-8">
+          <TabsList className="grid w-full grid-cols-2 md:grid-cols-5 lg:w-[780px] h-auto p-1 bg-slate-100 dark:bg-slate-800/80 border border-slate-200 dark:border-slate-700 rounded-xl">
+            <TabsTrigger value="guide" className="py-2.5 rounded-lg">Rehber</TabsTrigger>
+            
+            {/* Vurgulu & Dikkat Çekici Güncel Gelişmeler Sekmesi */}
+            <TabsTrigger 
+              value="updates" 
+              className="relative py-2.5 rounded-lg font-bold flex items-center justify-center gap-1.5 transition-all data-[state=active]:bg-gradient-to-r data-[state=active]:from-amber-500 data-[state=active]:to-amber-600 data-[state=active]:text-white data-[state=active]:shadow-md data-[state=inactive]:text-amber-700 dark:data-[state=inactive]:text-amber-300 data-[state=inactive]:bg-amber-50/60 dark:data-[state=inactive]:bg-amber-950/30"
+            >
+              <span className="relative flex h-2.5 w-2.5">
+                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-amber-400 opacity-75"></span>
+                <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-amber-500 data-[state=active]:bg-white"></span>
+              </span>
+              <span>⚡ Güncel Gelişmeler</span>
+              {communityUpdates.filter(u => u.target_tab === 'updates' || !u.target_tab).length > 0 && (
+                <span className="ml-1 px-1.5 py-0.5 text-[10px] font-black rounded-full bg-amber-200 text-amber-950 dark:bg-amber-900 dark:text-amber-100 data-[state=active]:bg-white data-[state=active]:text-amber-700 shadow-2xs">
+                  {communityUpdates.filter(u => u.target_tab === 'updates' || !u.target_tab).length}
+                </span>
+              )}
+            </TabsTrigger>
+
+            <TabsTrigger value="faq" className="py-2.5 rounded-lg">SSS</TabsTrigger>
+            <TabsTrigger value="experiences" className="py-2.5 rounded-lg">Tecrübeler</TabsTrigger>
+            <TabsTrigger value="documents" className="py-2.5 rounded-lg">Dokümanlar</TabsTrigger>
           </TabsList>
 
           {/* Guide Tab */}
           <TabsContent value="guide" className="space-y-12">
+            {/* Guide Updates (Wikipedia style alert boxes) */}
+            {communityUpdates.filter(u => u.target_tab === 'guide').length > 0 && (
+              <div className="mb-8 space-y-4">
+                <h3 className="text-xl font-bold text-slate-900 dark:text-white flex items-center gap-2">
+                  <AlertTriangle className="w-5 h-5 text-amber-500" />
+                  Kılavuz Güncellemeleri
+                </h3>
+                {communityUpdates.filter(u => u.target_tab === 'guide').map(update => (
+                  <div key={update.id} className="bg-amber-50 dark:bg-amber-900/20 border-l-4 border-amber-500 p-4 rounded-r-lg">
+                    <div className="flex justify-between items-start mb-2">
+                      <h4 className="font-bold text-amber-900 dark:text-amber-100">{update.title}</h4>
+                      <Badge variant="outline" className="bg-amber-100 text-amber-800 border-amber-200 text-xs">
+                        {update.badge_text || 'Ek Bilgi'}
+                      </Badge>
+                    </div>
+                    <p className="text-amber-800 dark:text-amber-200 text-sm">{update.content}</p>
+                    <div className="mt-2 text-xs text-amber-600/70 dark:text-amber-400/70 flex items-center gap-2">
+                      <Calendar className="w-3 h-3" />
+                      {new Date(update.created_at).toLocaleDateString('tr-TR')}
+                      <span>•</span>
+                      <span>Kaynak: {update.source_group}</span>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
             {sections.map((section) => (
               <section key={section.id} className="scroll-mt-20" id={section.id}>
                 <div className="flex items-center gap-3 mb-6">
@@ -422,6 +511,75 @@ export default function BusDriverGuidePage() {
             ))}
           </TabsContent>
 
+          {/* Updates Tab */}
+          <TabsContent value="updates" className="space-y-6">
+            <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 bg-gradient-to-br from-amber-50 to-orange-50/50 dark:from-amber-950/30 dark:to-slate-900 p-6 rounded-2xl border border-amber-200 dark:border-amber-800/60 shadow-xs">
+              <div>
+                <div className="inline-flex items-center gap-2 text-xs font-bold text-amber-800 dark:text-amber-300 uppercase tracking-wider mb-1">
+                  <Sparkles className="w-3.5 h-3.5 text-amber-500" />
+                  <span>Güncel Bilgiler & Değişiklikler</span>
+                </div>
+                <h3 className="text-xl font-extrabold text-slate-900 dark:text-white">
+                  Otobüs Şoförlüğü Son Gelişmeleri
+                </h3>
+                <p className="text-slate-600 dark:text-slate-300 text-sm mt-1.5 max-w-2xl leading-relaxed">
+                  Busfahrer Telegram grubu ve resmi kurumlardan derlenen güncel notlar, değişen mevzuatlar ve tecrübeler.
+                </p>
+              </div>
+
+              <div className="flex items-center gap-2 shrink-0">
+                <Badge className="bg-amber-100 text-amber-900 dark:bg-amber-900/60 dark:text-amber-200 border-amber-300 dark:border-amber-700 px-3 py-1 text-xs">
+                  ✓ Güncel Bilgi
+                </Badge>
+              </div>
+            </div>
+            
+            <div className="grid gap-5">
+              {communityUpdates.filter(u => u.target_tab === 'updates' || !u.target_tab).length > 0 ? (
+                communityUpdates.filter(u => u.target_tab === 'updates' || !u.target_tab).map(update => (
+                  <Card key={update.id} className="border border-slate-200 dark:border-slate-800 border-l-4 border-l-amber-500 hover:shadow-md transition-all bg-white dark:bg-slate-900">
+                    <CardHeader className="pb-3 flex flex-row items-start justify-between space-y-0 gap-4">
+                      <div>
+                        <CardTitle className="text-lg md:text-xl font-bold text-slate-900 dark:text-white leading-snug">
+                          {update.title}
+                        </CardTitle>
+                        <div className="text-xs text-slate-500 dark:text-slate-400 mt-2 flex items-center gap-3 flex-wrap">
+                          <span className="flex items-center gap-1.5 font-medium text-amber-700 dark:text-amber-400">
+                            <Clock className="w-3.5 h-3.5" />
+                            {update.badge_text || 'Güncel Sentez'}
+                          </span>
+                          <span>•</span>
+                          <span className="flex items-center gap-1">
+                            <Calendar className="w-3.5 h-3.5" />
+                            {new Date(update.created_at).toLocaleDateString('tr-TR')}
+                          </span>
+                          <span>•</span>
+                          <span>Kaynak: {update.source_group}</span>
+                        </div>
+                      </div>
+                      
+                      <div className="flex items-center gap-1.5 text-xs text-emerald-600 dark:text-emerald-400 font-semibold bg-emerald-50 dark:bg-emerald-950/50 border border-emerald-200 dark:border-emerald-800 px-2.5 py-1 rounded-md shrink-0">
+                        <CheckCircle2 className="w-3.5 h-3.5" />
+                        <span>Sentezlendi</span>
+                      </div>
+                    </CardHeader>
+                    <CardContent className="pt-1">
+                      <div className="text-slate-700 dark:text-slate-200 text-sm md:text-base leading-relaxed bg-slate-50/60 dark:bg-slate-800/40 p-4 rounded-xl border border-slate-100 dark:border-slate-800">
+                        {update.content}
+                      </div>
+                    </CardContent>
+                  </Card>
+                ))
+              ) : (
+                <Card className="bg-slate-50 dark:bg-slate-900 border-dashed border-2 border-slate-200 dark:border-slate-800">
+                  <CardContent className="flex flex-col items-center justify-center py-12 text-center">
+                    <p className="text-slate-600 dark:text-slate-400">Şu an için listelenecek güncel bir gelişme bulunmamaktadır.</p>
+                  </CardContent>
+                </Card>
+              )}
+            </div>
+          </TabsContent>
+
           {/* FAQ Tab */}
           <TabsContent value="faq">
             <FaqSection 
@@ -446,6 +604,48 @@ export default function BusDriverGuidePage() {
                 />
               </div>
               
+              {/* Telegram'dan Gelen Tecrübeler */}
+              {communityUpdates.filter(u => u.target_tab === 'experiences').length > 0 && (
+                <div className="mb-8">
+                  <h4 className="text-md font-semibold text-slate-800 dark:text-slate-200 mb-4 flex items-center gap-2">
+                    <Sparkles className="w-4 h-4 text-amber-500" />
+                    Topluluktan Aktarılanlar (Telegram)
+                  </h4>
+                  <div className="grid gap-4">
+                    {communityUpdates.filter(u => u.target_tab === 'experiences').map((exp) => (
+                      <Card key={`tg-${exp.id}`} className="overflow-hidden border-l-4 border-l-amber-500 bg-amber-50/30 dark:bg-amber-900/10">
+                        <CardContent className="p-5">
+                          <div className="flex items-start justify-between mb-3">
+                            <div className="flex items-center gap-3">
+                              <div className="h-8 w-8 rounded-full bg-amber-100 dark:bg-amber-900/30 flex items-center justify-center">
+                                <User className="h-4 w-4 text-amber-600 dark:text-amber-400" />
+                              </div>
+                              <div>
+                                <h3 className="font-semibold text-sm text-slate-900 dark:text-white">
+                                  {exp.title}
+                                </h3>
+                                <div className="flex items-center gap-2 text-xs text-slate-500">
+                                  <Calendar className="h-3 w-3" />
+                                  <span>{new Date(exp.created_at).toLocaleDateString('tr-TR')}</span>
+                                  <span>•</span>
+                                  <span>{exp.source_group}</span>
+                                </div>
+                              </div>
+                            </div>
+                            <Badge variant="outline" className="text-[10px] bg-amber-100 text-amber-800 border-amber-200">
+                              {exp.badge_text || 'Tecrübe'}
+                            </Badge>
+                          </div>
+                          <p className="text-slate-700 dark:text-slate-300 text-sm whitespace-pre-wrap leading-relaxed pl-11">
+                            {exp.content}
+                          </p>
+                        </CardContent>
+                      </Card>
+                    ))}
+                  </div>
+                </div>
+              )}
+
               {experiences.length > 0 ? (
                 <div className="grid gap-6">
                   {experiences.map((exp) => (

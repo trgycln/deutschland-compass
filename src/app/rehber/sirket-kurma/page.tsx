@@ -8,21 +8,29 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { BookOpen, Building2, TrendingUp, Users, Briefcase, Lightbulb, Quote, Calendar, User, Sparkles, Shield, MapPin, BarChart3, Globe, FileText, Scale, ClipboardCheck } from 'lucide-react';
+import { BookOpen, Building2, TrendingUp, Users, Briefcase, Lightbulb, Quote, Calendar, User, Sparkles, Shield, MapPin, BarChart3, Globe, FileText, Scale, ClipboardCheck, ArrowRight } from 'lucide-react';
 import { ShareExperienceDialog } from '@/components/share-experience-dialog';
 import { UploadDocumentDialog } from '@/components/upload-document-dialog';
 import { DocumentSection } from '@/components/document-section';
 import { ProfessionVideoPlayer } from '@/components/profession-video-player';
-import { CommunityUpdatesSection } from '@/components/community-updates-section';
+import { useCommunityUpdates, PageCommunityUpdatesBanner, PageCommunityUpdatesContent } from '@/components/page-community-updates';
 
 export default function BusinessGuidePage() {
   const { title, description, videoUrl, sections, faq, detailedReport, jobcenterReport } = businessGuideData;
   const [experiences, setExperiences] = useState<any[]>([]);
-  const [activeTab, setActiveTab] = useState('detailed');
+  const [activeTab, setActiveTab] = useState('main');
   const [hydrated, setHydrated] = useState(false);
+  const { updates } = useCommunityUpdates('sirket-kurma');
 
   useEffect(() => {
     setHydrated(true);
+    if (typeof window !== 'undefined') {
+      const urlParams = new URLSearchParams(window.location.search);
+      const tabParam = urlParams.get('tab');
+      if (tabParam && ['main', 'updates', 'detailed', 'jobcenter', 'faq', 'sharing', 'experiences'].includes(tabParam)) {
+        setActiveTab(tabParam);
+      }
+    }
   }, []);
 
   useEffect(() => {
@@ -104,8 +112,13 @@ export default function BusinessGuidePage() {
 
       {/* Telegram Links Section */}
       <div className="container mx-auto px-4 py-8">
-        <div className="max-w-3xl mx-auto">
-          <a href="https://t.me/+yI1or4k3nMswN2Ni" target="_blank" rel="noopener noreferrer" className="block group relative overflow-hidden rounded-xl bg-gradient-to-br from-amber-500 to-amber-600 p-6 shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-[1.02]">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 max-w-4xl mx-auto">
+          <a 
+            href="https://t.me/+1qkJMUNkrBFiYWJi" 
+            target="_blank" 
+            rel="noopener noreferrer" 
+            className="block group relative overflow-hidden rounded-xl bg-gradient-to-br from-blue-600 to-indigo-700 p-5 shadow-md hover:shadow-xl transition-all duration-300 hover:scale-[1.01]"
+          >
             <div className="absolute inset-0 bg-gradient-to-br from-white/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
             <div className="relative flex items-center gap-4">
               <div className="p-3 bg-white/25 backdrop-blur-sm rounded-xl shrink-0">
@@ -114,20 +127,44 @@ export default function BusinessGuidePage() {
                 </svg>
               </div>
               <div className="flex-1 min-w-0">
-                <div className="font-bold text-white text-lg mb-1">Deutschland Compass</div>
-                <div className="text-sm text-amber-100">Telegram Kanalımız</div>
+                <div className="font-bold text-white text-lg mb-0.5">Avrupa'da Şirket Kurmak</div>
+                <div className="text-xs text-blue-100">Telegram Grubu</div>
               </div>
-              <svg className="w-5 h-5 text-white/90 transform group-hover:translate-x-1 transition-transform shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-              </svg>
+              <ArrowRight className="w-5 h-5 text-white/90 transform group-hover:translate-x-1 transition-transform shrink-0" />
+            </div>
+          </a>
+
+          <a 
+            href="https://t.me/+yI1or4k3nMswN2Ni" 
+            target="_blank" 
+            rel="noopener noreferrer" 
+            className="block group relative overflow-hidden rounded-xl bg-gradient-to-br from-amber-500 to-amber-600 p-5 shadow-md hover:shadow-xl transition-all duration-300 hover:scale-[1.01]"
+          >
+            <div className="absolute inset-0 bg-gradient-to-br from-white/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+            <div className="relative flex items-center gap-4">
+              <div className="p-3 bg-white/25 backdrop-blur-sm rounded-xl shrink-0">
+                <svg className="w-6 h-6 text-white" fill="currentColor" viewBox="0 0 24 24">
+                  <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm4.64 6.8c-.15 1.58-.8 5.42-1.13 7.19-.14.75-.42 1-.68 1.03-.58.05-1.02-.38-1.58-.75-.88-.58-1.38-.94-2.23-1.5-.99-.65-.35-1.01.22-1.59.15-.15 2.71-2.48 2.76-2.69a.2.2 0 00-.05-.18c-.06-.05-.14-.03-.21-.02-.09.02-1.49.95-4.22 2.79-.4.27-.76.41-1.08.4-.36-.01-1.04-.2-1.55-.37-.63-.2-1.12-.31-1.08-.66.02-.18.27-.36.74-.55 2.92-1.27 4.86-2.11 5.83-2.51 2.78-1.16 3.35-1.36 3.73-1.36.08 0 .27.02.39.12.1.08.13.19.14.27-.01.06.01.24 0 .38z"/>
+                </svg>
+              </div>
+              <div className="flex-1 min-w-0">
+                <div className="font-bold text-white text-lg mb-0.5">Deutschland Compass</div>
+                <div className="text-xs text-amber-100">Telegram Kanalımız</div>
+              </div>
+              <ArrowRight className="w-5 h-5 text-white/90 transform group-hover:translate-x-1 transition-transform shrink-0" />
             </div>
           </a>
         </div>
       </div>
 
-      <div className="container mx-auto px-4 py-12 max-w-4xl" id="content-start">
-        {/* Canlı Topluluk Güncellemeleri & Taze Tecrübeler */}
-        <CommunityUpdatesSection categorySlug="is-kurma" fallbackGroup="sirket-kurmak" />
+      <div className="container mx-auto px-4 py-8 max-w-5xl" id="content-start">
+        {/* Canlı Topluluk Güncellemeleri & Taze Tecrübeler Banner */}
+        <PageCommunityUpdatesBanner 
+          categorySlug="sirket-kurma"
+          groupName="Avrupa'da Şirket Kurmak İstiyorum"
+          updatesCount={updates.length}
+          onExploreClick={() => setActiveTab('updates')}
+        />
 
         {/* Tab Navigation */}
         {hydrated ? (
@@ -137,6 +174,24 @@ export default function BusinessGuidePage() {
               <BookOpen className="w-5 h-5" />
               <span>Rehber</span>
             </TabsTrigger>
+
+            {/* Vurgulu & Dikkat Çekici Güncel Gelişmeler Sekmesi */}
+            <TabsTrigger 
+              value="updates" 
+              className="relative rounded-lg font-bold flex items-center justify-center gap-1.5 h-12 px-4 transition-all data-[state=active]:bg-gradient-to-r data-[state=active]:from-amber-500 data-[state=active]:to-amber-600 data-[state=active]:text-white data-[state=active]:shadow-lg data-[state=inactive]:text-amber-700 dark:data-[state=inactive]:text-amber-300 data-[state=inactive]:bg-amber-50/80 dark:data-[state=inactive]:bg-amber-950/40 border border-amber-200/80 dark:border-amber-800/60"
+            >
+              <span className="relative flex h-2.5 w-2.5">
+                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-amber-400 opacity-75"></span>
+                <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-amber-500 data-[state=active]:bg-white"></span>
+              </span>
+              <span>⚡ Güncel Gelişmeler</span>
+              {updates.length > 0 && (
+                <span className="ml-1 text-xs px-2 py-0.5 rounded-full font-extrabold bg-amber-200 text-amber-900 dark:bg-amber-900 dark:text-amber-100 shadow-sm">
+                  {updates.length}
+                </span>
+              )}
+            </TabsTrigger>
+
             <TabsTrigger value="detailed" className="gap-2 rounded-lg h-12 md:h-12 px-3 min-w-[110px] flex-shrink-0 transition-all duration-200 data-[state=active]:bg-gradient-to-r data-[state=active]:from-purple-500 data-[state=active]:to-purple-600 data-[state=active]:text-white data-[state=active]:shadow-lg hover:bg-purple-50 dark:hover:bg-purple-900/20 text-sm md:text-[15px] font-semibold">
               <Scale className="w-5 h-5" />
               <span>Mevzuat</span>
@@ -158,6 +213,16 @@ export default function BusinessGuidePage() {
               <span>Tecrübeler</span>
             </TabsTrigger>
           </TabsList>
+
+          {/* Güncel Gelişmeler Tab (Topluluk & Telegram Canlı Sentezi) */}
+          <TabsContent value="updates" className="space-y-6">
+            <PageCommunityUpdatesContent
+              categorySlug="sirket-kurma"
+              groupName="Avrupa'da Şirket Kurmak İstiyorum"
+              updates={updates}
+              onSwitchTab={(tab: string) => setActiveTab(tab)}
+            />
+          </TabsContent>
 
           {/* Main Content Tab */}
           <TabsContent value="main" className="space-y-12">
@@ -685,7 +750,7 @@ export default function BusinessGuidePage() {
           <TabsContent value="sharing" className="space-y-8">
             <div className="text-center mb-4">
               <h2 className="text-4xl font-bold text-slate-900 dark:text-white mb-3">
-                📂 Dokümanlar
+                📁 Dökümanlar
               </h2>
               <p className="text-lg text-slate-600 dark:text-slate-400">Yüklenen belgeleri toplu halde inceleyin</p>
             </div>

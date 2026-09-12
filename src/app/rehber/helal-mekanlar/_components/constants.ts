@@ -1,71 +1,89 @@
-// Shared display constants, category mappings, URL slug helpers, and special filter definitions
+// Shared constants, category mappings, URL slug helpers, and special filter definitions
 
 export const ALMANYA_QUICK_CITIES = [
-  "Berlin", "Hamburg", "München", "Frankfurt",
-  "Köln", "Stuttgart", "Düsseldorf", "Bremen",
+  "Berlin", "Hamburg", "Munchen", "Frankfurt",
+  "Koln", "Stuttgart", "Dusseldorf", "Bremen",
+  "Leipzig", "Dortmund", "Hannover", "Nurnberg",
 ] as const;
 
-// Categories match DB `category` values exactly (via KATEGORI_SLUG below)
 export const KATEGORILER = [
-  "Tümü", "Restoran", "Kafe", "Fırın", "Fast Food", "Market", "Kasap", "Diğer",
+  "Tumu", "Restoran", "Kafe", "Firin", "Fast Food", "Market", "Kasap", "Diger",
 ] as const;
 
 export type Kategori = (typeof KATEGORILER)[number];
 
 export const KATEGORI_ICON: Record<string, string> = {
-  Restoran:   "🍽️",
-  Kafe:       "☕",
-  Fırın:      "🥖",
-  "Fast Food": "🌯",
-  Market:     "🛒",
-  Kasap:      "🔪",
-  Diğer:      "📍",
+  Restoran:   "fork_knife",
+  Kafe:       "coffee",
+  Firin:      "bread",
+  "Fast Food": "burger",
+  Market:     "cart",
+  Kasap:      "knife",
+  Diger:      "pin",
 };
 
-export const KATEGORI_RENK: Record<string, string> = {
-  Restoran:   "bg-green-100 text-green-800 border border-green-200",
-  Kafe:       "bg-yellow-100 text-yellow-800 border border-yellow-200",
-  Fırın:      "bg-amber-100 text-amber-800 border border-amber-200",
-  "Fast Food": "bg-orange-100 text-orange-800 border border-orange-200",
-  Market:     "bg-blue-100 text-blue-800 border border-blue-200",
-  Kasap:      "bg-red-100 text-red-800 border border-red-200",
-  Diğer:      "bg-gray-100 text-gray-800 border border-gray-200",
+export const KATEGORI_EMOJI: Record<string, string> = {
+  Restoran:   "food_and_drink",
+  Kafe:       "hot_beverage",
+  Firin:      "bread",
+  "Fast Food": "hamburger",
+  Market:     "shopping_cart",
+  Kasap:      "cut_of_meat",
+  Diger:      "pushpin",
 };
 
-// Turkish display label → URL-safe English slug
+export const KATEGORI_COLOR: Record<string, { bg: string; text: string; border: string; pin: string }> = {
+  Restoran:   { bg: "bg-emerald-100", text: "text-emerald-800", border: "border-emerald-200", pin: "#059669" },
+  Kafe:       { bg: "bg-amber-100",   text: "text-amber-800",   border: "border-amber-200",   pin: "#d97706" },
+  Firin:      { bg: "bg-orange-100",  text: "text-orange-800",  border: "border-orange-200",  pin: "#ea580c" },
+  "Fast Food": { bg: "bg-red-100",    text: "text-red-800",     border: "border-red-200",     pin: "#dc2626" },
+  Market:     { bg: "bg-blue-100",    text: "text-blue-800",    border: "border-blue-200",    pin: "#2563eb" },
+  Kasap:      { bg: "bg-rose-100",    text: "text-rose-800",    border: "border-rose-200",    pin: "#e11d48" },
+  Diger:      { bg: "bg-slate-100",   text: "text-slate-700",   border: "border-slate-200",   pin: "#64748b" },
+};
+
+// Turkish display label -> URL-safe English slug
 export const KATEGORI_SLUG: Record<string, string> = {
   Restoran:   "restaurant",
   Kafe:       "cafe",
-  Fırın:      "bakery",
+  Firin:      "bakery",
   "Fast Food": "fast_food",
   Market:     "market",
   Kasap:      "butcher",
-  Diğer:      "other",
+  Diger:      "other",
 };
 
-// URL slug → Turkish display label  (reverse of KATEGORI_SLUG)
+// URL slug -> Turkish display label (reverse of KATEGORI_SLUG)
 export const SLUG_TO_KATEGORI: Record<string, string> = Object.fromEntries(
   Object.entries(KATEGORI_SLUG).map(([label, slug]) => [slug, label])
 );
 
-// Turkish label → DB category slug used in `places` table insert
+// Turkish label -> DB category slug
 export const KATEGORI_DB: Record<string, string> = {
   Restoran:   "restaurant",
   Kafe:       "cafe",
-  Fırın:      "bakery",
+  Firin:      "bakery",
   "Fast Food": "fast_food",
   Market:     "market",
   Kasap:      "butcher",
-  Diğer:      "other",
+  Diger:      "other",
 };
 
-// Special boolean-field filters shown as toggles below the category chips
 export const SPECIAL_FILTERS = [
-  { key: "mescid_var",        label: "Mescidli",      icon: "🕌" },
-  { key: "helal_sertifikali", label: "Sertifikalı",   icon: "✅" },
-  { key: "muslumana_ait",     label: "Müslümana Ait", icon: "👤" },
-  { key: "aile_dostu",        label: "Aile Dostu",    icon: "👨‍👩‍👧" },
-  { key: "highlight",         label: "Öne Çıkan",     icon: "⭐" },
+  { key: "mescid_var",        label: "Mescidli",      emoji: "mosque" },
+  { key: "helal_sertifikali", label: "Sertifikali",   emoji: "check_mark_button" },
+  { key: "muslumana_ait",     label: "Muslumana Ait", emoji: "person" },
+  { key: "aile_dostu",        label: "Aile Dostu",    emoji: "family" },
+  { key: "highlight",         label: "One Cikan",     emoji: "star" },
 ] as const;
 
 export type SpecialFilterKey = (typeof SPECIAL_FILTERS)[number]["key"];
+
+export const SORT_OPTIONS = [
+  { value: "default",  label: "Varsayilan" },
+  { value: "distance", label: "Yakinimdaki" },
+  { value: "rating",   label: "En Yuksek Puanli" },
+  { value: "newest",   label: "En Yeni" },
+] as const;
+
+export type SortOption = (typeof SORT_OPTIONS)[number]["value"];

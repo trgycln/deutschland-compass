@@ -1,28 +1,53 @@
 'use client';
 
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { sapData } from '@/data/sap-data';
 import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
-import { BookOpen, PlayCircle, GraduationCap, School, Briefcase, Users, HeartHandshake, Lightbulb, ArrowLeft, CheckCircle2, AlertCircle, ExternalLink, Database, Server, Layers } from 'lucide-react';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { BookOpen, PlayCircle, GraduationCap, Users, HeartHandshake, ArrowLeft, CheckCircle2, Database, FileText } from 'lucide-react';
 import Link from 'next/link';
 import { ShareExperienceDialog } from '@/components/share-experience-dialog';
+import { FaqSection } from '@/components/faq-section';
+import { ExperienceSection } from '@/components/experience-section';
 import { DocumentSection } from '@/components/document-section';
 import { UploadDocumentDialog } from '@/components/upload-document-dialog';
+import { useCommunityUpdates, PageCommunityUpdatesBanner, PageCommunityUpdatesContent } from '@/components/page-community-updates';
+
+function getEmbedUrl(url: string) {
+  if (!url) return '';
+  if (url.includes('youtube.com/embed/')) return url;
+  const match = url.match(/(?:youtu\.be\/|youtube\.com\/(?:embed\/|v\/|watch\?v=|watch\?.+&v=))([^&?]+)/);
+  if (match && match[1]) {
+    return `https://www.youtube.com/embed/${match[1]}`;
+  }
+  return url;
+}
 
 export default function SapPage() {
   const { title, description, videoUrl, stats, roadmap, pedagogy, faq } = sapData;
+  const [activeTab, setActiveTab] = useState('roadmap');
+  const { updates } = useCommunityUpdates('sap-uzmanligi');
+
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      const urlParams = new URLSearchParams(window.location.search);
+      const tabParam = urlParams.get('tab');
+      if (tabParam && ['roadmap', 'updates', 'pedagogy', 'faq', 'experiences', 'documents'].includes(tabParam)) {
+        setActiveTab(tabParam);
+      }
+    }
+  }, []);
 
   return (
-    <div className="min-h-screen bg-slate-50 dark:bg-slate-950 pb-20">
+    <div className="min-h-screen bg-slate-50 dark:bg-slate-950">
       {/* Hero Section */}
       <div className="bg-slate-900 text-white border-b border-slate-800 relative overflow-hidden">
         <div className="absolute inset-0 bg-grid-white/[0.05] bg-[size:20px_20px]" />
         <div className="absolute inset-0 bg-gradient-to-t from-slate-900 to-transparent" />
         
-        <div className="container mx-auto px-4 py-16 relative z-10">
+        <div className="container mx-auto px-4 py-12 max-w-5xl relative z-10">
           <Link 
             href="/meslekler/bilisim-it" 
             className="inline-flex items-center text-slate-400 hover:text-white mb-8 transition-colors"
@@ -31,132 +56,199 @@ export default function SapPage() {
             Bilişim (IT) Sayfasına Dön
           </Link>
 
-          <div className="max-w-4xl">
-            <div className="flex items-center gap-3 mb-6">
-              <Badge variant="secondary" className="bg-blue-600/20 text-blue-300 hover:bg-blue-600/30 border-blue-500/50">
-                SAP & ERP
-              </Badge>
-              <Badge variant="outline" className="text-slate-400 border-slate-700">
-                Kariyer Rehberi
-              </Badge>
-            </div>
-            
-            <h1 className="text-4xl md:text-5xl font-bold mb-6 leading-tight">
-              {title}
-            </h1>
-            
-            <p className="text-xl text-slate-300 mb-8 leading-relaxed max-w-2xl">
-              {description}
-            </p>
+          <div className="flex flex-col md:flex-row gap-8 items-center md:items-start text-center md:text-left">
+            <div className="flex-1 space-y-4 w-full">
+              <div className="flex items-center justify-center md:justify-start gap-2">
+                <Badge variant="secondary" className="bg-blue-600/20 text-blue-300 hover:bg-blue-600/30 border-blue-500/50">
+                  SAP & ERP
+                </Badge>
+                <Badge variant="outline" className="text-slate-400 border-slate-700">
+                  Kariyer Rehberi
+                </Badge>
+              </div>
+              
+              <h1 className="text-4xl md:text-5xl font-bold mb-6 leading-tight">
+                {title}
+              </h1>
+              
+              <p className="text-xl text-slate-300 mb-8 leading-relaxed">
+                {description}
+              </p>
 
-            {/* Stats Grid */}
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-              {stats.map((stat, index) => (
-                <div key={index} className="bg-slate-800/50 backdrop-blur border border-slate-700 rounded-xl p-4">
-                  <div className="text-sm text-slate-400 mb-1">{stat.label}</div>
-                  <div className="font-semibold text-lg flex items-center gap-2">
-                    <span className={`w-2 h-2 rounded-full ${stat.color}`} />
-                    {stat.value}
+              <div className="flex flex-wrap justify-center md:justify-start gap-4 pt-4">
+                {stats.map((stat, index) => (
+                  <div key={index} className="bg-slate-800/50 backdrop-blur border border-slate-700 rounded-xl px-4 py-2">
+                    <div className="text-sm text-slate-400 mb-1">{stat.label}</div>
+                    <div className="font-semibold text-lg flex items-center gap-2">
+                      <span className={`w-2 h-2 rounded-full ${stat.color}`} />
+                      {stat.value}
+                    </div>
                   </div>
-                </div>
-              ))}
+                ))}
+              </div>
+
+              {/* Telegram Linkleri */}
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-3 pt-6">
+                <a 
+                  href="https://t.me/+_5ox6dqGidcwOGMy" 
+                  target="_blank" 
+                  rel="noopener noreferrer"
+                  className="group relative overflow-hidden rounded-xl bg-gradient-to-br from-blue-500 to-blue-600 p-4 shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-[1.02]"
+                >
+                  <div className="absolute inset-0 bg-white/10 transform -skew-y-3 group-hover:skew-y-0 transition-transform duration-500"></div>
+                  <div className="relative z-10 flex items-center gap-3">
+                    <div className="w-10 h-10 rounded-full bg-white/20 backdrop-blur flex items-center justify-center flex-shrink-0">
+                      <svg className="w-5 h-5 text-white" fill="currentColor" viewBox="0 0 24 24">
+                        <path d="M12 0C5.373 0 0 5.373 0 12s5.373 12 12 12 12-5.373 12-12S18.627 0 12 0zm5.894 8.221l-1.97 9.28c-.145.658-.537.818-1.084.508l-3-2.21-1.446 1.394c-.14.18-.357.295-.6.295-.002 0-.003 0-.005 0l.213-3.054 5.56-5.022c.24-.213-.054-.334-.373-.121l-6.869 4.326-2.96-.924c-.64-.203-.658-.64.135-.954l11.566-4.458c.538-.196 1.006.128.832.941z"/>
+                      </svg>
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <div className="text-white font-semibold text-sm">IT Bilişim Grubu</div>
+                      <div className="text-blue-100 text-xs">Telegram Grubu</div>
+                    </div>
+                  </div>
+                </a>
+                
+                <a 
+                  href="https://t.me/+yI1or4k3nMswN2Ni" 
+                  target="_blank" 
+                  rel="noopener noreferrer"
+                  className="group relative overflow-hidden rounded-xl bg-gradient-to-br from-amber-500 to-amber-600 p-4 shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-[1.02]"
+                >
+                  <div className="absolute inset-0 bg-white/10 transform -skew-y-3 group-hover:skew-y-0 transition-transform duration-500"></div>
+                  <div className="relative z-10 flex items-center gap-3">
+                    <div className="w-10 h-10 rounded-full bg-white/20 backdrop-blur flex items-center justify-center flex-shrink-0">
+                      <svg className="w-5 h-5 text-white" fill="currentColor" viewBox="0 0 24 24">
+                        <path d="M12 0C5.373 0 0 5.373 0 12s5.373 12 12 12 12-5.373 12-12S18.627 0 12 0zm5.894 8.221l-1.97 9.28c-.145.658-.537.818-1.084.508l-3-2.21-1.446 1.394c-.14.18-.357.295-.6.295-.002 0-.003 0-.005 0l.213-3.054 5.56-5.022c.24-.213-.054-.334-.373-.121l-6.869 4.326-2.96-.924c-.64-.203-.658-.64.135-.954l11.566-4.458c.538-.196 1.006.128.832.941z"/>
+                      </svg>
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <div className="text-white font-semibold text-sm">Deutschland Compass</div>
+                      <div className="text-amber-100 text-xs">Telegram Kanalımız</div>
+                    </div>
+                  </div>
+                </a>
+              </div>
+
+              <div className="flex justify-center md:justify-start gap-3 pt-4">
+                <Button 
+                  className="gap-2"
+                  onClick={() => document.getElementById('roadmap-section')?.scrollIntoView({ behavior: 'smooth' })}
+                >
+                  <BookOpen className="w-4 h-4" />
+                  Rehbere Başla
+                </Button>
+                <ShareExperienceDialog professionSlug="sap-uzmanligi" defaultProfessionName="SAP Uzmanlığı" />
+              </div>
             </div>
 
-            {/* Telegram Links */}
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-3 pt-6">
-              <a
-                href="https://t.me/+_5ox6dqGidcwOGMy"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="group relative overflow-hidden rounded-xl bg-gradient-to-br from-blue-500 to-blue-600 p-4 shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-[1.02]"
-              >
-                <div className="absolute inset-0 bg-gradient-to-br from-white/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
-                <div className="relative flex items-center gap-3">
-                  <div className="p-2 bg-white/20 backdrop-blur-sm rounded-lg">
-                    <svg className="w-5 h-5 text-white" fill="currentColor" viewBox="0 0 24 24">
-                      <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm4.64 6.8c-.15 1.58-.8 5.42-1.13 7.19-.14.75-.42 1-.68 1.03-.58.05-1.02-.38-1.58-.75-.88-.58-1.38-.94-2.23-1.5-.99-.65-.35-1.01.22-1.59.15-.15 2.71-2.48 2.76-2.69a.2.2 0 00-.05-.18c-.06-.05-.14-.03-.21-.02-.09.02-1.49.95-4.22 2.79-.4.27-.76.41-1.08.4-.36-.01-1.04-.2-1.55-.37-.63-.2-1.12-.31-1.08-.66.02-.18.27-.36.74-.55 2.92-1.27 4.86-2.11 5.83-2.51 2.78-1.16 3.35-1.36 3.73-1.36.08 0 .27.02.39.12.1.08.13.19.14.27-.01.06.01.24 0 .38z"/>
-                    </svg>
-                  </div>
-                  <div className="flex-1">
-                    <div className="font-semibold text-white text-sm">IT Bilişim Grubu</div>
-                    <div className="text-xs text-blue-100 opacity-90">Telegram'da bize katıl</div>
-                  </div>
-                  <svg className="w-5 h-5 text-white/80 transform group-hover:translate-x-1 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-                  </svg>
+            {/* Video Section */}
+            <div className="w-full md:w-1/3 aspect-video bg-slate-800 rounded-xl overflow-hidden shadow-lg border border-slate-700">
+              {videoUrl && (videoUrl.includes('youtube') || videoUrl.includes('youtu.be')) ? (
+                <iframe 
+                  src={getEmbedUrl(videoUrl)} 
+                  title="Meslek Tanıtımı"
+                  className="w-full h-full"
+                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
+                  allowFullScreen
+                />
+              ) : (
+                <div className="w-full h-full flex flex-col items-center justify-center text-slate-500 gap-2">
+                  <PlayCircle className="w-12 h-12 opacity-50" />
+                  <span className="text-sm font-medium">Tanıtım videosu yakında eklenecek</span>
                 </div>
-              </a>
-              <a
-                href="https://t.me/+yI1or4k3nMswN2Ni"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="group relative overflow-hidden rounded-xl bg-gradient-to-br from-amber-500 to-amber-600 p-4 shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-[1.02]"
-              >
-                <div className="absolute inset-0 bg-gradient-to-br from-white/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
-                <div className="relative flex items-center gap-3">
-                  <div className="p-2 bg-white/20 backdrop-blur-sm rounded-lg">
-                    <svg className="w-5 h-5 text-white" fill="currentColor" viewBox="0 0 24 24">
-                      <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm4.64 6.8c-.15 1.58-.8 5.42-1.13 7.19-.14.75-.42 1-.68 1.03-.58.05-1.02-.38-1.58-.75-.88-.58-1.38-.94-2.23-1.5-.99-.65-.35-1.01.22-1.59.15-.15 2.71-2.48 2.76-2.69a.2.2 0 00-.05-.18c-.06-.05-.14-.03-.21-.02-.09.02-1.49.95-4.22 2.79-.4.27-.76.41-1.08.4-.36-.01-1.04-.2-1.55-.37-.63-.2-1.12-.31-1.08-.66.02-.18.27-.36.74-.55 2.92-1.27 4.86-2.11 5.83-2.51 2.78-1.16 3.35-1.36 3.73-1.36.08 0 .27.02.39.12.1.08.13.19.14.27-.01.06.01.24 0 .38z"/>
-                    </svg>
-                  </div>
-                  <div className="flex-1">
-                    <div className="font-semibold text-white text-sm">Deutschland Compass</div>
-                    <div className="text-xs text-amber-100 opacity-90">Kanalımıza katıl</div>
-                  </div>
-                  <svg className="w-5 h-5 text-white/80 transform group-hover:translate-x-1 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-                  </svg>
-                </div>
-              </a>
+              )}
             </div>
           </div>
         </div>
       </div>
 
-      <div className="container mx-auto px-4 py-12">
-        <div className="grid lg:grid-cols-3 gap-8">
-          {/* Main Content */}
-          <div className="lg:col-span-2 space-y-12">
-            
-            {/* Roadmap Section */}
-            <section>
-              <div className="flex items-center gap-3 mb-8">
-                <div className="p-3 bg-blue-100 dark:bg-blue-900/30 rounded-xl text-blue-600 dark:text-blue-400">
-                  <Layers className="w-6 h-6" />
-                </div>
-                <h2 className="text-2xl font-bold text-slate-900 dark:text-white">
-                  Kariyer Yol Haritası
-                </h2>
-              </div>
+      {/* Main Content */}
+      <div id="roadmap-section" className="container mx-auto px-4 py-8 max-w-5xl">
+        <PageCommunityUpdatesBanner 
+          categorySlug="sap-uzmanligi"
+          groupName="IT Bilişim Grubu" 
+          updatesCount={updates.length} 
+          onExploreClick={() => setActiveTab('updates')} 
+        />
 
-              <div className="space-y-8">
-                {roadmap.map((step, index) => (
-                  <div key={index} className="relative pl-8 md:pl-0">
-                    {/* Timeline Line */}
-                    <div className="absolute left-0 top-0 bottom-0 w-px bg-slate-200 dark:bg-slate-800 md:hidden" />
-                    
-                    <Card className="relative border-slate-200 dark:border-slate-800 overflow-hidden">
-                      <div className="absolute top-0 left-0 w-1 h-full bg-blue-500" />
+        <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-8">
+          <TabsList className="grid w-full grid-cols-2 md:grid-cols-6 lg:w-[860px] h-auto p-1 bg-slate-100 dark:bg-slate-800/80 border border-slate-200 dark:border-slate-700 rounded-xl">
+            <TabsTrigger value="roadmap" className="py-2.5 rounded-lg">Yol Haritası</TabsTrigger>
+            
+            {/* Vurgulu & Dikkat Çekici Güncel Gelişmeler Sekmesi */}
+            <TabsTrigger 
+              value="updates" 
+              className="relative py-2.5 rounded-lg font-bold flex items-center justify-center gap-1.5 transition-all data-[state=active]:bg-gradient-to-r data-[state=active]:from-amber-500 data-[state=active]:to-amber-600 data-[state=active]:text-white data-[state=active]:shadow-md data-[state=inactive]:text-amber-700 dark:data-[state=inactive]:text-amber-300 data-[state=inactive]:bg-amber-50/60 dark:data-[state=inactive]:bg-amber-950/30"
+            >
+              <span className="relative flex h-2.5 w-2.5">
+                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-amber-400 opacity-75"></span>
+                <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-amber-500 data-[state=active]:bg-white"></span>
+              </span>
+              <span>⚡ Güncel Gelişmeler</span>
+              {updates.length > 0 && (
+                <span className="ml-1 px-1.5 py-0.5 text-[10px] font-black rounded-full bg-amber-200 text-amber-950 dark:bg-amber-900 dark:text-amber-100 data-[state=active]:bg-white data-[state=active]:text-amber-700 shadow-2xs">
+                  {updates.length}
+                </span>
+              )}
+            </TabsTrigger>
+
+            <TabsTrigger value="pedagogy" className="py-2.5 rounded-lg">Uygulama</TabsTrigger>
+            <TabsTrigger value="faq" className="py-2.5 rounded-lg">SSS</TabsTrigger>
+            <TabsTrigger value="experiences" className="py-2.5 rounded-lg">Tecrübeler</TabsTrigger>
+            <TabsTrigger value="documents" className="py-2.5 rounded-lg">Dokümanlar</TabsTrigger>
+          </TabsList>
+
+          {/* Updates Tab */}
+          <TabsContent value="updates">
+            <PageCommunityUpdatesContent 
+              categorySlug="sap-uzmanligi"
+              updates={updates} 
+              title="SAP Danışmanlığı & Uzmanlığı" 
+              groupName="IT Bilişim Grubu"
+              telegramUrl="https://t.me/+_5ox6dqGidcwOGMy" 
+            />
+          </TabsContent>
+
+          {/* Roadmap Tab */}
+          <TabsContent value="roadmap" className="space-y-8">
+            <div className="grid gap-8">
+              {roadmap.map((step, index) => (
+                <div key={index} className="relative pl-8 md:pl-0">
+                  {/* Timeline Line (Desktop) */}
+                  <div className="hidden md:block absolute left-[27px] top-14 bottom-0 w-0.5 bg-slate-200 dark:bg-slate-800 last:hidden" />
+                  
+                  <div className="flex gap-6">
+                    {/* Step Number */}
+                    <div className="hidden md:flex flex-col items-center">
+                      <div className="w-14 h-14 rounded-full bg-white border-2 border-blue-600 text-blue-600 flex items-center justify-center font-bold text-xl shadow-sm z-10">
+                        {step.step}
+                      </div>
+                    </div>
+
+                    {/* Content Card */}
+                    <Card className="flex-1 border-slate-200 dark:border-slate-800">
                       <CardHeader>
-                        <div className="flex items-center gap-4 mb-2">
-                          <div className="flex items-center justify-center w-8 h-8 rounded-full bg-blue-100 dark:bg-blue-900/50 text-blue-600 dark:text-blue-400 font-bold text-sm border-4 border-white dark:border-slate-950 shadow-sm z-10">
-                            {step.step}
-                          </div>
-                          <CardTitle className="text-xl">{step.title}</CardTitle>
+                        <div className="flex items-center gap-3 mb-2 md:hidden">
+                           <span className="w-8 h-8 rounded-full bg-blue-100 text-blue-600 flex items-center justify-center font-bold text-sm">
+                             {step.step}
+                           </span>
+                           <CardTitle>{step.title}</CardTitle>
                         </div>
-                        <p className="text-slate-600 dark:text-slate-400 pl-12">
+                        <CardTitle className="hidden md:block">{step.title}</CardTitle>
+                        <CardDescription className="text-base">
                           {step.description}
-                        </p>
+                        </CardDescription>
                       </CardHeader>
-                      <CardContent className="pl-12">
-                        <div className="grid gap-4">
+                      <CardContent>
+                        <div className="grid gap-4 md:grid-cols-2">
                           {step.details.map((detail, idx) => (
-                            <div key={idx} className="bg-slate-50 dark:bg-slate-900/50 rounded-lg p-4 border border-slate-100 dark:border-slate-800">
-                              <h4 className="font-semibold text-slate-900 dark:text-white mb-2 flex items-center gap-2">
-                                <CheckCircle2 className="w-4 h-4 text-green-500" />
+                            <div key={idx} className="bg-slate-50 dark:bg-slate-900 p-4 rounded-lg border border-slate-100 dark:border-slate-800">
+                              <h4 className="font-semibold text-slate-900 dark:text-white mb-1 flex items-center gap-2">
+                                <CheckCircle2 className="w-4 h-4 text-emerald-500 flex-shrink-0" />
                                 {detail.title}
                               </h4>
-                              <p className="text-slate-600 dark:text-slate-400 text-sm leading-relaxed">
+                              <p className="text-sm text-slate-600 dark:text-slate-400">
                                 {detail.content}
                               </p>
                             </div>
@@ -165,12 +257,14 @@ export default function SapPage() {
                       </CardContent>
                     </Card>
                   </div>
-                ))}
-              </div>
-            </section>
+                </div>
+              ))}
+            </div>
+          </TabsContent>
 
-            {/* Pedagogy/Analogy Section */}
-            <section>
+          {/* Pedagogy Tab */}
+          <TabsContent value="pedagogy">
+            <div className="max-w-4xl mx-auto">
               <Card className="bg-gradient-to-br from-blue-50 to-cyan-50 dark:from-blue-950/30 dark:to-cyan-950/30 border-blue-100 dark:border-blue-900">
                 <CardHeader>
                   <div className="flex items-center gap-3 mb-2">
@@ -211,63 +305,35 @@ export default function SapPage() {
                   </div>
                 </CardContent>
               </Card>
-            </section>
+            </div>
+          </TabsContent>
 
-            {/* FAQ Section */}
-            <section>
-              <div className="flex items-center gap-3 mb-6">
-                <div className="p-3 bg-orange-100 dark:bg-orange-900/30 rounded-xl text-orange-600 dark:text-orange-400">
-                  <Lightbulb className="w-6 h-6" />
+          {/* FAQ Tab */}
+          <TabsContent value="faq">
+            <FaqSection professionSlug="sap-uzmanligi" initialFaqs={faq} />
+          </TabsContent>
+
+          {/* Experiences Tab */}
+          <TabsContent value="experiences">
+            <div className="space-y-8">
+              <ExperienceSection professionSlug="sap-uzmanligi" />
+            </div>
+          </TabsContent>
+
+          {/* Documents Tab */}
+          <TabsContent value="documents">
+            <div className="space-y-6">
+              <div className="flex justify-between items-center">
+                <div>
+                  <h3 className="text-lg font-semibold">Dokümanlar</h3>
+                  <p className="text-sm text-slate-500">Bu meslek için paylaşılan örnek belgeler ve formlar.</p>
                 </div>
-                <h2 className="text-2xl font-bold text-slate-900 dark:text-white">
-                  Sıkça Sorulan Sorular
-                </h2>
-              </div>
-              
-              <Accordion type="single" collapsible className="w-full space-y-4">
-                {faq.map((item, index) => (
-                  <AccordionItem key={index} value={`item-${index}`} className="border border-slate-200 dark:border-slate-800 rounded-lg bg-white dark:bg-slate-900 px-4">
-                    <AccordionTrigger className="text-left hover:no-underline py-4 font-medium text-slate-900 dark:text-slate-100">
-                      {item.question}
-                    </AccordionTrigger>
-                    <AccordionContent className="text-slate-600 dark:text-slate-400 pb-4 leading-relaxed whitespace-pre-line">
-                      {item.answer}
-                    </AccordionContent>
-                  </AccordionItem>
-                ))}
-              </Accordion>
-            </section>
-
-            {/* Documents Section */}
-            <section className="mt-12">
-              <div className="flex items-center justify-between mb-6">
-                <h2 className="text-3xl font-bold text-slate-900 dark:text-white">Örnek Dokümanlar</h2>
                 <UploadDocumentDialog professionSlug="sap-uzmanligi" />
               </div>
               <DocumentSection professionSlug="sap-uzmanligi" />
-            </section>
-
-          </div>
-
-          {/* Sidebar */}
-          <div className="space-y-6">
-            {/* Share Experience Card */}
-            <Card className="bg-gradient-to-br from-blue-600 to-cyan-700 text-white border-none shadow-lg sticky top-24">
-              <CardHeader>
-                <CardTitle className="flex items-center gap-2 text-xl">
-                  <HeartHandshake className="w-6 h-6 text-blue-200" />
-                  Tecrübeni Paylaş
-                </CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-4">
-                <p className="text-blue-100">
-                  SAP alanındaki tecrübeleriniz, yeni başlayanlar için çok değerli. Hikayenizi paylaşarak topluluğa katkıda bulunun.
-                </p>
-                <ShareExperienceDialog professionSlug="sap-uzmanligi" defaultProfessionName="SAP Uzmanlığı" />
-              </CardContent>
-            </Card>
-          </div>
-        </div>
+            </div>
+          </TabsContent>
+        </Tabs>
       </div>
     </div>
   );
