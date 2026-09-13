@@ -13,6 +13,7 @@ import {
 } from "react-leaflet";
 import L from "leaflet";
 import "leaflet/dist/leaflet.css";
+import Supercluster from "supercluster";
 import {
   Search,
   MapPin,
@@ -56,22 +57,29 @@ const QUICK_CITIES = [
   { name: "Hamburg", lat: 53.5511, lng: 9.9937 },
 ];
 
-// Create a colored teardrop div icon
-function createPin(color: string, isHighlight: boolean, isSelected: boolean): L.DivIcon {
-  const size = isSelected ? 42 : (isHighlight ? 36 : 28);
+// ── Cache for DivIcons to avoid re-creating DOM strings on every render ──
+const pinIconCache = new Map<string, L.DivIcon>();
+const clusterIconCache = new Map<number, L.DivIcon>();
+
+function getPinIcon(color: string, isHighlight: boolean, isSelected: boolean): L.DivIcon {
+  const cacheKey = `${color}_${isHighlight ? 1 : 0}_${isSelected ? 1 : 0}`;
+  const cached = pinIconCache.get(cacheKey);
+  if (cached) return cached;
+
+  const size = isSelected ? 40 : (isHighlight ? 34 : 26);
   const inner = isSelected ? 12 : (isHighlight ? 10 : 8);
-  return L.divIcon({
-    className: "",
+
+  const icon = L.divIcon({
+    className: "pin-icon-wrap",
     html: `<div style="
       width:${size}px; height:${size}px;
       background:${color};
-      border: 3px solid white;
+      border: 2.5px solid #ffffff;
       border-radius: 50% 50% 50% 0;
       transform: rotate(-45deg);
-      box-shadow: 0 3px 12px rgba(0,0,0,0.35);
+      box-shadow: 0 2px 8px rgba(0,0,0,0.32);
       display:flex; align-items:center; justify-content:center;
-      transition: all 0.2s ease;
-      ${isSelected ? "outline:4px solid #3b82f6; outline-offset:2px; z-index:999;" : (isHighlight ? "outline:3px solid #f59e0b; outline-offset:1px;" : "")}
+      ${isSelected ? "outline:3.5px solid #2563eb; outline-offset:2px; z-index:999;" : (isHighlight ? "outline:2.5px solid #f59e0b; outline-offset:1px;" : "")}
     ">
       <div style="
         width:${inner}px; height:${inner}px;
@@ -83,6 +91,57 @@ function createPin(color: string, isHighlight: boolean, isSelected: boolean): L.
     iconAnchor: [size / 2, size],
     popupAnchor: [0, -size - 4],
   });
+
+  pinIconCache.set(cacheKey, icon);
+  return icon;
+}
+
+function getClusterIcon(count: number): L.DivIcon {
+  const cached = clusterIconCache.get(count);
+  if (cached) return cached;
+
+  let size = 34;
+  let bgGradient = "linear-gradient(135deg, #059669 0%, #047857 100%)";
+  let fontSize = 12;
+
+  if (count >= 100) {
+    size = 46;
+    bgGradient = "linear-gradient(135deg, #047857 0%, #064e3b 100%)";
+    fontSize = 13;
+  } else if (count >= 30) {
+    size = 40;
+    bgGradient = "linear-gradient(135deg, #059669 0%, #047857 100%)";
+    fontSize = 12;
+  } else if (count >= 10) {
+    size = 36;
+    bgGradient = "linear-gradient(135deg, #10b981 0%, #059669 100%)";
+    fontSize = 12;
+  }
+
+  const icon = L.divIcon({
+    className: "cluster-icon-wrap",
+    html: `<div style="
+      width:${size}px; height:${size}px;
+      display:flex; align-items:center; justify-content:center;
+      border-radius:50%;
+      background:${bgGradient};
+      color:#ffffff;
+      font-weight:700;
+      font-size:${fontSize}px;
+      font-family:system-ui, -apple-system, sans-serif;
+      box-shadow:0 3px 10px rgba(4, 120, 87, 0.4);
+      border:2.5px solid #ffffff;
+      cursor:pointer;
+      user-select:none;
+    ">
+      ${count}
+    </div>`,
+    iconSize: [size, size],
+    iconAnchor: [size / 2, size / 2],
+  });
+
+  clusterIconCache.set(count, icon);
+  return icon;
 }
 
 // Map fly controller
@@ -98,12 +157,12 @@ function MapFlyController({
   useEffect(() => {
     if (flyTarget) {
       map.flyTo([flyTarget.lat, flyTarget.lng], flyTarget.zoom, {
-        duration: 1.3,
+        duration: 1.0,
         easeLinearity: 0.25,
       });
       const timer = setTimeout(() => {
         onFlyDone();
-      }, 1400);
+      }, 1050);
       return () => clearTimeout(timer);
     }
   }, [flyTarget, map, onFlyDone]);
@@ -116,7 +175,7 @@ function UserLocationHandler({ userLocation }: { userLocation: { lat: number; ln
   const map = useMap();
   useEffect(() => {
     if (userLocation) {
-      map.flyTo([userLocation.lat, userLocation.lng], 13, { duration: 1.5 });
+      map.flyTo([userLocation.lat, userLocation.lng], 13, { duration: 1.2 });
     }
   }, [userLocation, map]);
   return null;
@@ -125,10 +184,10 @@ function UserLocationHandler({ userLocation }: { userLocation: { lat: number; ln
 // Bounds fitter when places change
 function BoundsFitter({ mekanlar, hasTarget }: { mekanlar: HelalMekan[]; hasTarget: boolean }) {
   const map = useMap();
-  const withCoords = mekanlar.filter((m) => m.lat !== null && m.lng !== null);
+  const withCoords = useMemo(() => mekanlar.filter((m) => m.lat !== null && m.lng !== null), [mekanlar]);
 
   useEffect(() => {
-    if (hasTarget) return; // don't override manual fly
+    if (hasTarget) return;
 
     if (withCoords.length === 0) {
       map.setView(GERMANY_CENTER, DEFAULT_ZOOM);
@@ -139,22 +198,21 @@ function BoundsFitter({ mekanlar, hasTarget }: { mekanlar: HelalMekan[]; hasTarg
       return;
     }
     const bounds = L.latLngBounds(withCoords.map((m) => [m.lat!, m.lng!] as [number, number]));
-    map.fitBounds(bounds, { padding: [40, 40], maxZoom: 14 });
+    map.fitBounds(bounds, { padding: [35, 35], maxZoom: 14 });
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [mekanlar]);
 
   return null;
 }
 
-// Force Leaflet to recalculate container dimensions (fixes 0x0 or squished corners on mobile / tab changes)
+// Force Leaflet to recalculate container dimensions when switching views or resizing
 function MapResizer() {
   const map = useMap();
 
   useEffect(() => {
     map.invalidateSize();
-    const t1 = setTimeout(() => map.invalidateSize(), 50);
-    const t2 = setTimeout(() => map.invalidateSize(), 250);
-    const t3 = setTimeout(() => map.invalidateSize(), 600);
+    const t1 = setTimeout(() => map.invalidateSize(), 60);
+    const t2 = setTimeout(() => map.invalidateSize(), 300);
 
     const onResize = () => map.invalidateSize();
     window.addEventListener("resize", onResize);
@@ -171,13 +229,118 @@ function MapResizer() {
     return () => {
       clearTimeout(t1);
       clearTimeout(t2);
-      clearTimeout(t3);
       window.removeEventListener("resize", onResize);
       ro?.disconnect();
     };
   }, [map]);
 
   return null;
+}
+
+// ── Clustered Markers Layer using Supercluster ──
+interface PointProps {
+  cluster: false;
+  mekan: HelalMekan;
+}
+
+interface ClusterProps {
+  cluster: true;
+  cluster_id: number;
+  point_count: number;
+}
+
+type ClusterItem = ReturnType<Supercluster<PointProps, ClusterProps>["getClusters"]>[number];
+
+function ClusteredMarkers({
+  clusterIndex,
+  onSelectMekan,
+  selectedMekanId,
+  onMarkerClick,
+}: {
+  clusterIndex: Supercluster<PointProps, ClusterProps>;
+  onSelectMekan: (m: HelalMekan) => void;
+  selectedMekanId?: string | null;
+  onMarkerClick: (m: HelalMekan) => void;
+}) {
+  const map = useMap();
+  const [clusters, setClusters] = useState<ClusterItem[]>([]);
+
+  const updateClusters = useCallback(() => {
+    const bounds = map.getBounds();
+    const zoom = Math.round(map.getZoom());
+    const bbox: [number, number, number, number] = [
+      bounds.getWest(),
+      bounds.getSouth(),
+      bounds.getEast(),
+      bounds.getNorth(),
+    ];
+    const items = clusterIndex.getClusters(bbox, zoom);
+    setClusters(items);
+  }, [clusterIndex, map]);
+
+  useEffect(() => {
+    updateClusters();
+    map.on("moveend", updateClusters);
+    map.on("zoomend", updateClusters);
+
+    return () => {
+      map.off("moveend", updateClusters);
+      map.off("zoomend", updateClusters);
+    };
+  }, [map, updateClusters]);
+
+  const handleClusterClick = useCallback(
+    (clusterId: number, lat: number, lng: number) => {
+      const expansionZoom = Math.min(clusterIndex.getClusterExpansionZoom(clusterId), 17);
+      map.flyTo([lat, lng], expansionZoom, { duration: 0.6 });
+    },
+    [clusterIndex, map]
+  );
+
+  return (
+    <>
+      {clusters.map((item) => {
+        const [lng, lat] = item.geometry.coordinates;
+
+        // Cluster bubble
+        if (item.properties.cluster) {
+          const { cluster_id, point_count } = item.properties;
+          const clusterIcon = getClusterIcon(point_count);
+
+          return (
+            <Marker
+              key={`cluster-${cluster_id}`}
+              position={[lat, lng]}
+              icon={clusterIcon}
+              eventHandlers={{
+                click: () => handleClusterClick(cluster_id, lat, lng),
+              }}
+            />
+          );
+        }
+
+        // Single Venue Pin
+        const mekan = item.properties.mekan;
+        const colors = KATEGORI_COLOR[mekan.kategori] ?? KATEGORI_COLOR["Diger"];
+        const isSelected = selectedMekanId === mekan.id;
+        const pinIcon = getPinIcon(colors.pin, mekan.highlight, isSelected);
+
+        return (
+          <Marker
+            key={mekan.id}
+            position={[lat, lng]}
+            icon={pinIcon}
+            eventHandlers={{
+              click: () => {
+                onMarkerClick(mekan);
+                onSelectMekan(mekan);
+              },
+            }}
+          />
+        );
+      })}
+    </>
+  );
 }
 
 export default function MapView({
@@ -200,8 +363,43 @@ export default function MapView({
   const [flyTarget, setFlyTarget] = useState<{ lat: number; lng: number; zoom: number; placeId?: string } | null>(null);
   const [feedbackMsg, setFeedbackMsg] = useState<string | null>(null);
 
-  const markerRefs = useRef<Record<string, L.Marker>>({});
+  // Single active popup state (replaces 730 separate popups)
+  const [activePopupMekan, setActivePopupMekan] = useState<HelalMekan | null>(null);
+
   const searchContainerRef = useRef<HTMLDivElement>(null);
+
+  // Sync active popup if selectedMekanId changes from outside
+  useEffect(() => {
+    if (selectedMekanId) {
+      const found = sourcePlaces.find((m) => m.id === selectedMekanId);
+      if (found && found.lat !== null && found.lng !== null) {
+        setActivePopupMekan(found);
+      }
+    }
+  }, [selectedMekanId, sourcePlaces]);
+
+  // Initialize Supercluster index whenever mekanlar changes
+  const clusterIndex = useMemo(() => {
+    const sc = new Supercluster<PointProps, ClusterProps>({
+      radius: 55,
+      maxZoom: 16,
+    });
+
+    const points = withCoords.map((m) => ({
+      type: "Feature" as const,
+      properties: {
+        cluster: false as const,
+        mekan: m,
+      },
+      geometry: {
+        type: "Point" as const,
+        coordinates: [m.lng!, m.lat!] as [number, number],
+      },
+    }));
+
+    sc.load(points);
+    return sc;
+  }, [withCoords]);
 
   // Close suggestions when clicking outside
   useEffect(() => {
@@ -317,39 +515,37 @@ export default function MapView({
     const q = searchQuery.trim();
     if (!q) return;
 
-    // Check first matching city
     if (suggestions.cities.length > 0) {
       const firstCity = suggestions.cities[0];
       goToCity(firstCity.name, firstCity.lat, firstCity.lng);
       return;
     }
 
-    // Check first matching venue
     if (suggestions.places.length > 0) {
       goToPlace(suggestions.places[0]);
       return;
     }
 
-    // Otherwise geocode
     executeGeocode(q);
   };
 
-  // Open marker popup after fly animation
+  // Open single active popup after fly animation completes
   const handleFlyDone = useCallback(() => {
-    if (flyTarget?.placeId && markerRefs.current[flyTarget.placeId]) {
-      markerRefs.current[flyTarget.placeId].openPopup();
+    if (flyTarget?.placeId) {
+      const p = sourcePlaces.find((m) => m.id === flyTarget.placeId);
+      if (p) setActivePopupMekan(p);
     }
-  }, [flyTarget]);
+  }, [flyTarget, sourcePlaces]);
 
   return (
-    <div className="relative w-full h-full rounded-2xl overflow-hidden border border-gray-200/80 shadow-md">
+    <div className="relative w-full h-full rounded-2xl overflow-hidden border border-gray-200 shadow-md bg-slate-100">
       
-      {/* ════════════ FLOATING SEARCH BAR ON TOP OF MAP ════════════ */}
+      {/* ════════════ FLOATING SEARCH BAR ON TOP OF MAP (Optimized GPU layout) ════════════ */}
       <div
         ref={searchContainerRef}
         className="absolute top-3 left-3 right-3 z-[1000] pointer-events-auto max-w-md mx-auto"
       >
-        <div className="bg-white/95 backdrop-blur-md rounded-2xl shadow-xl border border-gray-200/90 overflow-hidden transition-all duration-200">
+        <div className="bg-white/95 rounded-2xl shadow-lg border border-gray-200 overflow-hidden transition-all duration-150">
           
           {/* Main Input Row */}
           <form onSubmit={handleSearchSubmit} className="flex items-center gap-2 px-3.5 py-2.5">
@@ -412,7 +608,7 @@ export default function MapView({
 
           {/* Feedback Toast / Status Bar */}
           {feedbackMsg && (
-            <div className="bg-emerald-50 text-emerald-800 text-xs px-3.5 py-1.5 border-t border-emerald-100 font-medium flex items-center justify-between animate-fadeIn">
+            <div className="bg-emerald-50 text-emerald-800 text-xs px-3.5 py-1.5 border-t border-emerald-100 font-medium flex items-center justify-between">
               <span>{feedbackMsg}</span>
               <button onClick={() => setFeedbackMsg(null)} className="text-emerald-500 hover:text-emerald-800">
                 <X className="w-3 h-3" />
@@ -422,7 +618,7 @@ export default function MapView({
 
           {/* Quick-Access City Chips (Visible when focused and query is short) */}
           {isFocused && searchQuery.length < 2 && (
-            <div className="border-t border-gray-100 bg-slate-50/80 px-3 py-2">
+            <div className="border-t border-gray-100 bg-slate-50 px-3 py-2">
               <p className="text-[10px] font-bold uppercase tracking-wider text-gray-400 mb-1.5 flex items-center gap-1">
                 <MapPin className="w-3 h-3 text-emerald-600" /> Popüler Şehirler:
               </p>
@@ -534,13 +730,14 @@ export default function MapView({
         style={{ width: "100%", height: "100%" }}
         zoomControl={false}
         attributionControl={false}
+        preferCanvas={true}
       >
         <TileLayer
           url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
           attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
         />
 
-        {/* Reposition zoom controls to bottom-left so floating action button and search bar never collide */}
+        {/* Reposition zoom controls to bottom-left so floating search bar never collides */}
         <ZoomControl position="bottomleft" />
 
         <MapResizer />
@@ -552,12 +749,12 @@ export default function MapView({
         {userLocation && (
           <CircleMarker
             center={[userLocation.lat, userLocation.lng]}
-            radius={10}
+            radius={9}
             pathOptions={{
               color: "#2563eb",
               fillColor: "#3b82f6",
               fillOpacity: 0.9,
-              weight: 3,
+              weight: 2.5,
             }}
           >
             <Popup>
@@ -566,88 +763,89 @@ export default function MapView({
           </CircleMarker>
         )}
 
-        {/* Place markers */}
-        {withCoords.map((mekan) => {
-          const colors = KATEGORI_COLOR[mekan.kategori] ?? KATEGORI_COLOR["Diger"];
-          const isSelected = selectedMekanId === mekan.id;
-          const icon = createPin(colors.pin, mekan.highlight, isSelected);
-          const dist = distances[mekan.id];
+        {/* Clustered Places Layer */}
+        <ClusteredMarkers
+          clusterIndex={clusterIndex}
+          onSelectMekan={onSelectMekan}
+          selectedMekanId={selectedMekanId}
+          onMarkerClick={(m) => setActivePopupMekan(m)}
+        />
 
-          return (
-            <Marker
-              key={mekan.id}
-              position={[mekan.lat!, mekan.lng!]}
-              icon={icon}
-              ref={(r) => {
-                if (r) markerRefs.current[mekan.id] = r;
-              }}
-            >
-              <Popup minWidth={220}>
-                <div className="p-1">
-                  <div className="flex items-start gap-2 mb-1.5">
-                    <div>
-                      <p className="font-bold text-sm text-slate-900 leading-tight">{mekan.isim}</p>
-                      <p className="text-xs text-gray-500">{mekan.sehir} {mekan.adres ? `· ${mekan.adres}` : ""}</p>
-                    </div>
-                  </div>
-
-                  {/* Stars */}
-                  {mekan.rating_count > 0 && (
-                    <div className="flex items-center gap-1 mb-1.5">
-                      {[1, 2, 3, 4, 5].map((s) => (
-                        <svg key={s} viewBox="0 0 24 24" className={`w-3 h-3 ${s <= Math.round(mekan.rating_avg) ? "fill-amber-400" : "fill-gray-200"}`}>
-                          <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z" />
-                        </svg>
-                      ))}
-                      <span className="text-[10px] text-gray-500">({mekan.rating_count})</span>
-                    </div>
-                  )}
-
-                  {dist != null && (
-                    <p className="text-[11px] text-emerald-700 font-semibold mb-1.5">
-                      {dist < 1 ? `${Math.round(dist * 1000)} m uzakta` : `${dist.toFixed(1)} km uzakta`}
-                    </p>
-                  )}
-
-                  {/* Food specialty */}
-                  {mekan.food && (
-                    <p className="text-[11px] font-semibold text-amber-800 bg-amber-50 border border-amber-200/60 rounded px-1.5 py-0.5 mb-1 truncate">
-                      🍽️ {mekan.food}
-                    </p>
-                  )}
-
-                  {/* Note preview */}
-                  {mekan.note && (
-                    <p className="text-[10px] text-emerald-950 font-medium italic line-clamp-2 mb-1.5 bg-emerald-50/70 p-1.5 rounded border border-emerald-100">
-                      &ldquo;{mekan.note}&rdquo;
-                    </p>
-                  )}
-
-                  <div className="flex gap-1.5 mt-2">
-                    <a
-                      href={mekan.google_maps_url || `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(`${mekan.isim} ${mekan.sehir}`)}`}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="flex-1 text-center text-[11px] font-semibold py-1.5 rounded-lg bg-emerald-50 text-emerald-700 border border-emerald-200 hover:bg-emerald-100"
-                    >
-                      Yol Tarifi
-                    </a>
-                    <button
-                      onClick={() => onSelectMekan(mekan)}
-                      className="flex-1 text-center text-[11px] font-semibold py-1.5 rounded-lg bg-slate-900 text-white hover:bg-slate-800"
-                    >
-                      Detay
-                    </button>
-                  </div>
+        {/* Single Dynamic Popup (Only renders when a place is active) */}
+        {activePopupMekan && activePopupMekan.lat !== null && activePopupMekan.lng !== null && (
+          <Popup
+            key={activePopupMekan.id}
+            position={[activePopupMekan.lat, activePopupMekan.lng]}
+            eventHandlers={{
+              remove: () => setActivePopupMekan(null),
+            }}
+          >
+            <div className="p-1 min-w-[210px] max-w-[270px]">
+              <div className="flex items-start gap-2 mb-1.5">
+                <div>
+                  <p className="font-bold text-sm text-slate-900 leading-tight">{activePopupMekan.isim}</p>
+                  <p className="text-xs text-gray-500">{activePopupMekan.sehir} {activePopupMekan.adres ? `· ${activePopupMekan.adres}` : ""}</p>
                 </div>
-              </Popup>
-            </Marker>
-          );
-        })}
+              </div>
+
+              {/* Stars */}
+              {activePopupMekan.rating_count > 0 && (
+                <div className="flex items-center gap-1 mb-1.5">
+                  {[1, 2, 3, 4, 5].map((s) => (
+                    <svg key={s} viewBox="0 0 24 24" className={`w-3 h-3 ${s <= Math.round(activePopupMekan.rating_avg) ? "fill-amber-400" : "fill-gray-200"}`}>
+                      <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z" />
+                    </svg>
+                  ))}
+                  <span className="text-[10px] text-gray-500">({activePopupMekan.rating_count})</span>
+                </div>
+              )}
+
+              {distances[activePopupMekan.id] != null && (
+                <p className="text-[11px] text-emerald-700 font-semibold mb-1.5">
+                  {distances[activePopupMekan.id] < 1
+                    ? `${Math.round(distances[activePopupMekan.id] * 1000)} m uzakta`
+                    : `${distances[activePopupMekan.id].toFixed(1)} km uzakta`}
+                </p>
+              )}
+
+              {/* Food specialty */}
+              {activePopupMekan.food && (
+                <p className="text-[11px] font-semibold text-amber-800 bg-amber-50 border border-amber-200/60 rounded px-1.5 py-0.5 mb-1 truncate">
+                  🍽️ {activePopupMekan.food}
+                </p>
+              )}
+
+              {/* Note preview */}
+              {activePopupMekan.note && (
+                <p className="text-[10px] text-emerald-950 font-medium italic line-clamp-2 mb-1.5 bg-emerald-50/70 p-1.5 rounded border border-emerald-100">
+                  &ldquo;{activePopupMekan.note}&rdquo;
+                </p>
+              )}
+
+              <div className="flex gap-1.5 mt-2">
+                <a
+                  href={activePopupMekan.google_maps_url || `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(`${activePopupMekan.isim} ${activePopupMekan.sehir}`)}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="flex-1 text-center text-[11px] font-semibold py-1.5 rounded-lg bg-emerald-50 text-emerald-700 border border-emerald-200 hover:bg-emerald-100"
+                >
+                  Yol Tarifi
+                </a>
+                <button
+                  type="button"
+                  onClick={() => onSelectMekan(activePopupMekan)}
+                  className="flex-1 text-center text-[11px] font-semibold py-1.5 rounded-lg bg-slate-900 text-white hover:bg-slate-800"
+                >
+                  Detay
+                </button>
+              </div>
+            </div>
+          </Popup>
+        )}
       </MapContainer>
 
       {withCoords.length === 0 && (
-        <div className="absolute inset-0 flex items-center justify-center bg-white/80 backdrop-blur-sm rounded-xl z-[1000] pointer-events-none">
+        <div className="absolute inset-0 flex items-center justify-center bg-white/90 rounded-xl z-[1000] pointer-events-none">
           <div className="text-center">
             <p className="text-4xl mb-2">&#128506;</p>
             <p className="text-sm font-semibold text-gray-600">Bu filtredeki mekanların</p>
@@ -658,3 +856,4 @@ export default function MapView({
     </div>
   );
 }
+

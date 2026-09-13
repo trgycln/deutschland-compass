@@ -75,9 +75,15 @@ export default function HelalMekanlarClient({ initialData }: { initialData: Hela
   const [viewMode,       setViewMode]       = useState<"list" | "map">("list"); // mobile
   const [selectedMekan, setSelectedMekan]   = useState<HelalMekan | null>(null);
   const [showOnerModal, setShowOnerModal]   = useState(false);
+  const [visibleLimit,  setVisibleLimit]    = useState(30);
 
   // Sync searchInput when URL changes
   useEffect(() => { setSearchInput(searchParams.get("q") ?? ""); }, [searchParams]);
+
+  // Reset list pagination when filters change
+  useEffect(() => {
+    setVisibleLimit(30);
+  }, [selectedCountry, selectedCity, selectedCategory, searchQuery, activeSpecials, sortBy]);
 
   // Debounce search to URL
   useEffect(() => {
@@ -239,6 +245,28 @@ export default function HelalMekanlarClient({ initialData }: { initialData: Hela
       .map(([sehir, mekanlar]) => ({ sehir, mekanlar }))
       .sort((a, b) => b.mekanlar.length - a.mekanlar.length || compareStrings(a.sehir, b.sehir));
   }, [filtered, selectedCity]);
+
+  // Progressive display slices for high performance (avoids rendering 730 cards at once)
+  const displayedGrouped = useMemo(() => {
+    if (!grouped) return null;
+    let remaining = visibleLimit;
+    const result: Array<{ sehir: string; mekanlar: HelalMekan[] }> = [];
+    for (const group of grouped) {
+      if (remaining <= 0) break;
+      const slice = group.mekanlar.slice(0, remaining);
+      if (slice.length > 0) {
+        result.push({ sehir: group.sehir, mekanlar: slice });
+        remaining -= slice.length;
+      }
+    }
+    return result;
+  }, [grouped, visibleLimit]);
+
+  const displayedFlat = useMemo(() => {
+    return filtered.slice(0, visibleLimit);
+  }, [filtered, visibleLimit]);
+
+  const hasMore = filtered.length > visibleLimit;
 
   const isFiltered =
     selectedCountry !== "all" ||
@@ -519,7 +547,6 @@ export default function HelalMekanlarClient({ initialData }: { initialData: Hela
           <div className={`${viewMode === "map" ? "block w-full" : "hidden"} lg:block lg:w-[45%] shrink-0`}>
             <div className="lg:sticky lg:top-24 h-[calc(100dvh-220px)] min-h-[480px] max-h-[750px] lg:h-[calc(100vh-140px)] w-full">
               <MapView
-                key={viewMode}
                 mekanlar={filtered}
                 allMekanlar={initialData}
                 userLocation={userLocation}
@@ -559,10 +586,10 @@ export default function HelalMekanlarClient({ initialData }: { initialData: Hela
                   </button>
                 </div>
               </div>
-            ) : grouped ? (
-              /* Grouped by city */
+            ) : displayedGrouped ? (
+              /* Grouped by city (progressively loaded) */
               <div className="space-y-8">
-                {grouped.map(({ sehir, mekanlar }) => (
+                {displayedGrouped.map(({ sehir, mekanlar }) => (
                   <div key={sehir}>
                     <div className="flex items-center gap-3 mb-4">
                       <div className="flex items-center gap-2 bg-white border border-gray-200 rounded-full px-3 py-1.5 shadow-sm">
@@ -588,20 +615,68 @@ export default function HelalMekanlarClient({ initialData }: { initialData: Hela
                     </div>
                   </div>
                 ))}
+
+                {/* Load More Button */}
+                {hasMore && (
+                  <div className="pt-4 pb-2 text-center flex flex-col items-center gap-2">
+                    <button
+                      type="button"
+                      onClick={() => setVisibleLimit((prev) => prev + 30)}
+                      className="px-6 py-3 bg-white hover:bg-slate-50 text-slate-800 font-bold rounded-2xl border border-gray-200 shadow-sm hover:shadow transition-all inline-flex items-center gap-2 text-sm active:scale-95"
+                    >
+                      <span>Daha Fazla Mekan Göster (+30)</span>
+                      <span className="text-xs text-emerald-700 font-bold bg-emerald-50 border border-emerald-200 px-2 py-0.5 rounded-full">
+                        {filtered.length - visibleLimit} mekan daha var
+                      </span>
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => setVisibleLimit(filtered.length)}
+                      className="text-xs text-gray-500 hover:text-emerald-700 font-medium underline transition-colors"
+                    >
+                      Tümünü Göster ({filtered.length} mekan)
+                    </button>
+                  </div>
+                )}
               </div>
             ) : (
               /* Flat list (single city selected) */
-              <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-4">
-                {filtered.map((m) => (
-                  <PlaceCard
-                    key={m.id}
-                    mekan={m}
-                    distance={distanceMap[m.id]}
-                    onDetay={() => setSelectedMekan(m)}
-                    highlighted={m.highlight}
-                    isRecent={newestPlaceIds.has(m.id)}
-                  />
-                ))}
+              <div>
+                <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-4">
+                  {displayedFlat.map((m) => (
+                    <PlaceCard
+                      key={m.id}
+                      mekan={m}
+                      distance={distanceMap[m.id]}
+                      onDetay={() => setSelectedMekan(m)}
+                      highlighted={m.highlight}
+                      isRecent={newestPlaceIds.has(m.id)}
+                    />
+                  ))}
+                </div>
+
+                {/* Load More Button */}
+                {hasMore && (
+                  <div className="pt-6 pb-2 text-center flex flex-col items-center gap-2">
+                    <button
+                      type="button"
+                      onClick={() => setVisibleLimit((prev) => prev + 30)}
+                      className="px-6 py-3 bg-white hover:bg-slate-50 text-slate-800 font-bold rounded-2xl border border-gray-200 shadow-sm hover:shadow transition-all inline-flex items-center gap-2 text-sm active:scale-95"
+                    >
+                      <span>Daha Fazla Mekan Göster (+30)</span>
+                      <span className="text-xs text-emerald-700 font-bold bg-emerald-50 border border-emerald-200 px-2 py-0.5 rounded-full">
+                        {filtered.length - visibleLimit} mekan daha var
+                      </span>
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => setVisibleLimit(filtered.length)}
+                      className="text-xs text-gray-500 hover:text-emerald-700 font-medium underline transition-colors"
+                    >
+                      Tümünü Göster ({filtered.length} mekan)
+                    </button>
+                  </div>
+                )}
               </div>
             )}
           </div>
