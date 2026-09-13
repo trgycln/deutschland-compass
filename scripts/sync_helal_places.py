@@ -306,6 +306,16 @@ async def sync_helal_group(limit=50, force_min_id=None, external_client=None):
         if not name or len(name) < 2:
             continue
 
+        # "Konum:" olarak adlandırılmasını engelle
+        if name.lower().startswith("konum") or name.lower() in ["konum", "konum:"]:
+            clean_name = re.sub(r'^konum[:\s\-\*]*', '', name, flags=re.I).strip()
+            if clean_name and len(clean_name) > 2:
+                name = clean_name
+            elif comment:
+                m_bold = re.search(r'[\*\"“\']([^\*\"”\']+)[\*\"”\']', comment)
+                if m_bold and len(m_bold.group(1).strip()) > 2:
+                    name = m_bold.group(1).strip()
+
         print(f"\n🍽️ İşleniyor: {name} ({city})")
 
         # 1. Supabase'de mekan var mı kontrol et

@@ -111,6 +111,38 @@ export default function HelalMekanlarClient({ initialData }: { initialData: Hela
     window.scrollTo({ top: 0, behavior: "smooth" });
   };
 
+  // Handle mobile body scroll locking and keyboard navigation for map mode
+  useEffect(() => {
+    if (viewMode === "map") {
+      const isMobile = typeof window !== "undefined" && window.innerWidth < 1024;
+      if (isMobile) {
+        document.body.style.overflow = "hidden";
+        const t = setTimeout(() => {
+          window.dispatchEvent(new Event("resize"));
+        }, 100);
+        return () => {
+          document.body.style.overflow = "";
+          clearTimeout(t);
+        };
+      }
+    } else {
+      document.body.style.overflow = "";
+    }
+    return () => {
+      document.body.style.overflow = "";
+    };
+  }, [viewMode]);
+
+  useEffect(() => {
+    const onKeyDown = (e: KeyboardEvent) => {
+      if (e.key === "Escape" && viewMode === "map") {
+        setViewMode("list");
+      }
+    };
+    window.addEventListener("keydown", onKeyDown);
+    return () => window.removeEventListener("keydown", onKeyDown);
+  }, [viewMode]);
+
   // Sync searchInput when URL changes
   useEffect(() => { setSearchInput(searchParams.get("q") ?? ""); }, [searchParams]);
 
@@ -343,7 +375,7 @@ export default function HelalMekanlarClient({ initialData }: { initialData: Hela
     <div className="min-h-screen bg-slate-50">
 
       {/* ════════════ HERO ════════════ */}
-      <section className={`relative text-white pt-12 pb-8 px-4 overflow-hidden min-h-[340px] flex-col justify-center ${viewMode === "map" ? "hidden lg:flex" : "flex"}`}>
+      <section className="relative text-white pt-12 pb-8 px-4 overflow-hidden min-h-[340px] flex flex-col justify-center">
         {/* Photographic Background */}
         <div className="absolute inset-0 z-0 pointer-events-none">
           <Image
@@ -419,7 +451,7 @@ export default function HelalMekanlarClient({ initialData }: { initialData: Hela
       </section>
 
       {/* ════════════ TELEGRAM KANALI & HELAL MEKANLAR GRUBU ════════════ */}
-      <div className={`bg-slate-100 dark:bg-slate-900/60 py-4 border-b border-slate-200 dark:border-slate-800 ${viewMode === "map" ? "hidden lg:block" : "block"}`}>
+      <div className="bg-slate-100 dark:bg-slate-900/60 py-4 border-b border-slate-200 dark:border-slate-800">
         <div className="max-w-7xl mx-auto px-4">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-3 sm:gap-4 max-w-4xl mx-auto">
             {/* Kart 1: Helal Mekanlar / Yemek Telegram Grubu */}
@@ -477,7 +509,7 @@ export default function HelalMekanlarClient({ initialData }: { initialData: Hela
       </div>
 
       {/* ════════════ FILTER BAR ════════════ */}
-      <div className={viewMode === "map" ? "hidden lg:block" : "block"}>
+      <div>
         <FilterBar
           countries={countries}
           cities={cities}
@@ -503,7 +535,7 @@ export default function HelalMekanlarClient({ initialData }: { initialData: Hela
 
       {/* ════════════ SHOWCASE STRIP (TELEGRAM NEW + FEATURED) ════════════ */}
       {!isFiltered && (
-        <div className={`bg-white border-b border-gray-100 py-4 ${viewMode === "map" ? "hidden lg:block" : "block"}`}>
+        <div className="bg-white border-b border-gray-100 py-4">
           <div className="max-w-7xl mx-auto px-4">
             <div className="flex items-center justify-between gap-2.5 mb-3">
               <div className="flex items-center gap-1.5 p-1 bg-slate-100/90 rounded-xl w-full sm:w-auto">
@@ -663,6 +695,7 @@ export default function HelalMekanlarClient({ initialData }: { initialData: Hela
       <div className="lg:hidden sticky top-0 z-40 flex justify-center py-2 px-3 bg-white/95 backdrop-blur-sm border-b border-gray-200 shadow-2xs">
         <div className="flex bg-slate-200/80 border border-gray-200/90 rounded-xl p-1 gap-1 w-full max-w-xs shadow-inner">
           <button
+            type="button"
             onClick={() => setViewMode("list")}
             className={`flex-1 flex items-center justify-center gap-1.5 py-1.5 rounded-lg text-xs font-bold transition-all ${
               viewMode === "list"
@@ -673,9 +706,10 @@ export default function HelalMekanlarClient({ initialData }: { initialData: Hela
             <List className="w-3.5 h-3.5" /> Liste ({filtered.length})
           </button>
           <button
+            type="button"
             onClick={() => {
               setViewMode("map");
-              window.scrollTo({ top: 0, behavior: "instant" });
+              window.dispatchEvent(new Event("resize"));
             }}
             className={`flex-1 flex items-center justify-center gap-1.5 py-1.5 rounded-lg text-xs font-bold transition-all ${
               viewMode === "map"
@@ -689,12 +723,47 @@ export default function HelalMekanlarClient({ initialData }: { initialData: Hela
       </div>
 
       {/* ════════════ MAIN SPLIT AREA ════════════ */}
-      <div className={`max-w-7xl mx-auto ${viewMode === "map" ? "p-0 lg:px-4 lg:py-6" : "px-3 sm:px-4 py-4 sm:py-6"} pb-28`}>
+      <div className="max-w-7xl mx-auto px-3 sm:px-4 py-4 sm:py-6 pb-28">
         <div className="flex flex-col lg:flex-row gap-6">
 
-          {/* ── LEFT: MAP (desktop sticky / mobile full-width) ── */}
-          <div className={`${viewMode === "map" ? "block w-full" : "hidden"} lg:block lg:w-[45%] shrink-0`}>
-            <div className={`lg:sticky lg:top-24 ${viewMode === "map" ? "h-[calc(100dvh-54px)]" : "h-[calc(100dvh-220px)] min-h-[480px] max-h-[750px]"} lg:h-[calc(100vh-140px)] w-full`}>
+          {/* ── LEFT: MAP (desktop sticky / mobile full-screen overlay) ── */}
+          <div
+            className={
+              viewMode === "map"
+                ? "fixed inset-0 z-[55] bg-white flex flex-col h-[100dvh] w-full overflow-hidden lg:static lg:z-auto lg:h-auto lg:flex-none lg:w-[45%] lg:block"
+                : "hidden lg:block lg:w-[45%] shrink-0"
+            }
+          >
+            {/* Mobile Map Top Bar */}
+            {viewMode === "map" && (
+              <div className="lg:hidden shrink-0 flex items-center justify-between px-3 py-2 bg-white/95 backdrop-blur-md border-b border-gray-200 shadow-2xs z-20">
+                <button
+                  type="button"
+                  onClick={() => setViewMode("list")}
+                  className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-800 font-bold text-xs transition-all active:scale-95"
+                >
+                  <List className="w-3.5 h-3.5 text-emerald-600" />
+                  <span>Liste ({filtered.length})</span>
+                </button>
+
+                <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-emerald-50 text-emerald-800 text-[11px] font-bold border border-emerald-200/80">
+                  <MapIcon className="w-3 h-3 text-emerald-600" />
+                  <span>{filtered.filter((m) => m.lat !== null).length} Mekan</span>
+                </span>
+
+                <button
+                  type="button"
+                  onClick={() => setShowOnerModal(true)}
+                  className="flex items-center gap-1 px-2.5 py-1.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs transition-all active:scale-95 shadow-xs"
+                >
+                  <Plus className="w-3.5 h-3.5" />
+                  <span>Öner</span>
+                </button>
+              </div>
+            )}
+
+            {/* Map Viewport */}
+            <div className="flex-1 w-full relative overflow-hidden lg:sticky lg:top-24 lg:h-[calc(100vh-140px)]">
               <MapView
                 mekanlar={filtered}
                 allMekanlar={initialData}
@@ -709,10 +778,25 @@ export default function HelalMekanlarClient({ initialData }: { initialData: Hela
                 {filtered.filter((m) => m.lat !== null).length} mekanda koordinat var
               </p>
             </div>
+
+            {/* Mobile Floating Return to List Button */}
+            {viewMode === "map" && (
+              <div className="lg:hidden absolute bottom-5 left-1/2 -translate-x-1/2 z-[1001] pointer-events-auto">
+                <button
+                  type="button"
+                  id="mobile-btn-return-list"
+                  onClick={() => setViewMode("list")}
+                  className="flex items-center gap-2 px-5 py-2.5 rounded-full bg-slate-900/95 hover:bg-slate-900 text-white shadow-2xl border border-white/20 text-xs font-bold active:scale-95 transition-all whitespace-nowrap cursor-pointer"
+                >
+                  <List className="w-4 h-4 text-emerald-400" />
+                  <span>Listeye Dön ({filtered.length})</span>
+                </button>
+              </div>
+            )}
           </div>
 
           {/* ── RIGHT: LIST ── */}
-          <div className={`${viewMode === "list" ? "block w-full" : "hidden"} lg:block flex-1 min-w-0`}>
+          <div className="block w-full lg:block flex-1 min-w-0">
 
             {filtered.length === 0 ? (
               /* Empty state */
@@ -886,25 +970,21 @@ export default function HelalMekanlarClient({ initialData }: { initialData: Hela
         />
       )}
 
-      {/* ════════════ MOBILE FLOATING VIEW SWITCHER PILL (Elevated to avoid bottom collisions) ════════════ */}
-      <div className="lg:hidden fixed bottom-20 sm:bottom-8 left-1/2 -translate-x-1/2 z-40 pointer-events-auto">
-        <button
-          onClick={() => setViewMode(viewMode === "list" ? "map" : "list")}
-          className="flex items-center gap-2 px-4 py-2.5 rounded-full bg-slate-900/95 hover:bg-slate-900 text-white shadow-2xl border border-white/20 text-xs font-bold active:scale-95 transition-all whitespace-nowrap"
-        >
-          {viewMode === "list" ? (
-            <>
-              <MapIcon className="w-4 h-4 text-emerald-400" />
-              <span>Harita ({filtered.filter((m) => m.lat !== null).length})</span>
-            </>
-          ) : (
-            <>
-              <List className="w-4 h-4 text-emerald-400" />
-              <span>Liste ({filtered.length})</span>
-            </>
-          )}
-        </button>
-      </div>
+      {/* ════════════ MOBILE FLOATING VIEW SWITCHER PILL (Only in list view) ════════════ */}
+      {viewMode === "list" && (
+        <div className="lg:hidden fixed bottom-20 sm:bottom-8 left-1/2 -translate-x-1/2 z-40 pointer-events-auto">
+          <button
+            onClick={() => {
+              setViewMode("map");
+              window.dispatchEvent(new Event("resize"));
+            }}
+            className="flex items-center gap-2 px-4 py-2.5 rounded-full bg-slate-900/95 hover:bg-slate-900 text-white shadow-2xl border border-white/20 text-xs font-bold active:scale-95 transition-all whitespace-nowrap"
+          >
+            <MapIcon className="w-4 h-4 text-emerald-400" />
+            <span>Harita ({filtered.filter((m) => m.lat !== null).length})</span>
+          </button>
+        </div>
+      )}
 
       {/* ════════════ FAB: Mekan Oner (Elevated to avoid bottom collisions) ════════════ */}
       <div className="fixed bottom-20 sm:bottom-8 right-3 sm:right-4 z-40">

@@ -230,6 +230,37 @@ function BoundsFitter({ mekanlar, hasTarget }: { mekanlar: HelalMekan[]; hasTarg
   return null;
 }
 
+// Dismiss popup when clicking or tapping on empty space on the map
+function MapClickHandler({ onMapClick }: { onMapClick: () => void }) {
+  const map = useMap();
+
+  useEffect(() => {
+    const handleMapClick = (e: L.LeafletMouseEvent) => {
+      const orig = e.originalEvent;
+      const target = orig?.target as HTMLElement | null;
+      if (
+        target &&
+        (target.closest(".leaflet-popup") ||
+          target.closest(".leaflet-marker-icon") ||
+          target.closest(".leaflet-control") ||
+          target.closest("button") ||
+          target.closest("input") ||
+          target.closest("a"))
+      ) {
+        return;
+      }
+      onMapClick();
+    };
+
+    map.on("click", handleMapClick);
+    return () => {
+      map.off("click", handleMapClick);
+    };
+  }, [map, onMapClick]);
+
+  return null;
+}
+
 // Force Leaflet to recalculate container dimensions when switching views or resizing
 function MapResizer() {
   const map = useMap();
@@ -357,9 +388,9 @@ function ClusteredMarkers({
             icon={pinIcon}
             zIndexOffset={isSelected ? 1000 : (mekan.highlight ? 400 : 1)}
             eventHandlers={{
-              click: () => {
+              click: (e) => {
+                L.DomEvent.stopPropagation(e);
                 onMarkerClick(mekan);
-                onSelectMekan(mekan);
               },
             }}
           />
@@ -797,21 +828,41 @@ export default function MapView({
           onMarkerClick={(m) => setActivePopupMekan(m)}
         />
 
+        {/* Map Click Handler: Closes popup when clicking empty space */}
+        <MapClickHandler onMapClick={() => setActivePopupMekan(null)} />
+
         {/* Single Dynamic Popup (Only renders when a place is active) */}
         {activePopupMekan && activePopupMekan.lat !== null && activePopupMekan.lng !== null && (
           <Popup
             key={activePopupMekan.id}
             position={[activePopupMekan.lat, activePopupMekan.lng]}
+            closeButton={false}
+            autoPan={true}
+            autoPanPaddingTopLeft={[20, 115]}
+            autoPanPaddingBottomRight={[20, 80]}
             eventHandlers={{
               remove: () => setActivePopupMekan(null),
             }}
           >
-            <div className="p-1 min-w-[210px] max-w-[270px]">
-              <div className="flex items-start gap-2 mb-1.5">
-                <div>
-                  <p className="font-bold text-sm text-slate-900 leading-tight">{activePopupMekan.isim}</p>
-                  <p className="text-xs text-gray-500">{activePopupMekan.sehir} {activePopupMekan.adres ? `· ${activePopupMekan.adres}` : ""}</p>
+            <div className="p-1 min-w-[215px] max-w-[280px]">
+              {/* Header with Title and Touch-Friendly Close Button */}
+              <div className="flex items-start justify-between gap-2 mb-1.5">
+                <div className="min-w-0 flex-1 pr-1">
+                  <p className="font-bold text-sm text-slate-900 leading-tight truncate">{activePopupMekan.isim}</p>
+                  <p className="text-xs text-gray-500 truncate">{activePopupMekan.sehir} {activePopupMekan.adres ? `· ${activePopupMekan.adres}` : ""}</p>
                 </div>
+                <button
+                  type="button"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    setActivePopupMekan(null);
+                  }}
+                  className="shrink-0 p-1 -mr-1 -mt-1 text-gray-400 hover:text-slate-900 hover:bg-slate-100 rounded-full transition-colors cursor-pointer"
+                  title="Kapat"
+                  aria-label="Kapat"
+                >
+                  <X className="w-4 h-4" />
+                </button>
               </div>
 
               {/* Stars */}
