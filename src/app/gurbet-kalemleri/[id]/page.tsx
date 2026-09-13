@@ -176,18 +176,18 @@ export default function LiteraryWorkPage() {
               )}
             </div>
             
-            <h1 className="text-4xl md:text-5xl font-bold text-slate-900 dark:text-slate-100 leading-tight">
+            <h1 className="text-2xl sm:text-3xl md:text-5xl font-bold text-slate-900 dark:text-slate-100 leading-tight break-words">
               {work.title}
             </h1>
             
-            <div className="flex items-center gap-2 text-lg text-slate-600 dark:text-slate-400">
-              <User className="w-5 h-5" />
+            <div className="flex items-center gap-2 text-base sm:text-lg text-slate-600 dark:text-slate-400">
+              <User className="w-5 h-5 flex-shrink-0" />
               <span className="font-medium">{work.author}</span>
             </div>
 
             {/* Tags */}
             <div className="flex flex-wrap gap-2 pt-2">
-              <Tag className="w-4 h-4 text-slate-400" />
+              <Tag className="w-4 h-4 text-slate-400 self-center" />
               {work.tags && work.tags.map(tag => (
                 <Link key={tag} href={`/gurbet-kalemleri?tag=${tag}`}>
                   <Badge variant="secondary" className="hover:bg-slate-200 dark:hover:bg-slate-700 cursor-pointer">
@@ -199,9 +199,9 @@ export default function LiteraryWorkPage() {
           </header>
 
           {/* Content */}
-          <Card className="border-l-4 border-l-slate-400 dark:border-l-slate-600">
-            <CardContent className="p-8 md:p-12">
-              <div className={`text-base md:text-lg leading-relaxed text-slate-800 dark:text-slate-200 ${
+          <Card className="border-l-4 border-l-amber-500/70 dark:border-l-amber-500 shadow-sm">
+            <CardContent className="p-5 sm:p-8 md:p-12">
+              <div className={`text-base sm:text-lg leading-relaxed text-slate-800 dark:text-slate-200 break-words ${
                 work.type === 'Şiir' ? 'whitespace-pre-wrap font-serif' : 'whitespace-pre-wrap'
               }`}>
                 {work.content}
@@ -210,55 +210,50 @@ export default function LiteraryWorkPage() {
           </Card>
 
           {/* Copyright Notice */}
-          <div className="bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-800 rounded-lg p-4">
-            <p className="text-sm text-amber-900 dark:text-amber-200 text-center">
-              <span className="font-semibold">Telif Hakkı:</span> Bu eser, kapalı bir iletişim grubunda paylaşılmış olup, 
-              yazarın hakları saklıdır.
+          <div className="bg-amber-50/80 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-800 rounded-xl p-4">
+            <p className="text-xs sm:text-sm text-amber-900 dark:text-amber-200 text-center">
+              <span className="font-semibold">Telif ve Hatıra Notu:</span> Bu eser, gurbetteki dostların paylaştığı antoloji arşivimizden derlenmiş olup her bir kelimesi çok kıymetlidir.
             </p>
           </div>
 
           {/* Navigation: Previous/Next */}
-          <div className="pt-8 space-y-4">
-            <div className="text-center text-sm text-slate-600 dark:text-slate-400">
+          <div className="pt-6 space-y-4">
+            <div className="text-center text-xs sm:text-sm text-slate-600 dark:text-slate-400">
               <span className="font-semibold">{work.author}</span> yazarının {' '}
               <span className="font-bold text-slate-900 dark:text-slate-100">{currentIndex + 1}</span>
               /{authorWorks.length} eseri
             </div>
-            <div className="grid md:grid-cols-2 gap-4">
-            {prevWork ? (
+            <div className={`grid gap-4 ${prevWork && nextWork ? 'grid-cols-1 sm:grid-cols-2' : 'grid-cols-1'}`}>
+            {prevWork && (
               <Link href={`/gurbet-kalemleri/${prevWork.id}`}>
-                <Card className="h-full hover:shadow-lg transition-all duration-300 hover:-translate-y-1 cursor-pointer group border-l-4 border-l-slate-300 hover:border-l-slate-600">
-                  <CardContent className="p-6">
-                    <div className="flex items-center gap-2 text-sm text-slate-500 dark:text-slate-400 mb-2">
+                <Card className="h-full hover:shadow-md transition-all duration-300 hover:-translate-y-0.5 cursor-pointer group border-l-4 border-l-slate-300 hover:border-l-amber-500">
+                  <CardContent className="p-4 sm:p-5">
+                    <div className="flex items-center gap-2 text-xs sm:text-sm text-slate-500 dark:text-slate-400 mb-1.5">
                       <ChevronLeft className="w-4 h-4" />
                       <span>Önceki Eser</span>
                     </div>
-                    <h3 className="font-semibold text-slate-900 dark:text-slate-100 group-hover:text-primary transition-colors line-clamp-2">
+                    <h3 className="font-semibold text-sm sm:text-base text-slate-900 dark:text-slate-100 group-hover:text-amber-800 dark:group-hover:text-amber-300 transition-colors line-clamp-2">
                       {prevWork.title}
                     </h3>
                   </CardContent>
                 </Card>
               </Link>
-            ) : (
-              <div></div>
             )}
 
-            {nextWork ? (
+            {nextWork && (
               <Link href={`/gurbet-kalemleri/${nextWork.id}`}>
-                <Card className="h-full hover:shadow-lg transition-all duration-300 hover:-translate-y-1 cursor-pointer group border-l-4 border-l-slate-300 hover:border-l-slate-600">
-                  <CardContent className="p-6">
-                    <div className="flex items-center justify-end gap-2 text-sm text-slate-500 dark:text-slate-400 mb-2">
+                <Card className="h-full hover:shadow-md transition-all duration-300 hover:-translate-y-0.5 cursor-pointer group border-l-4 border-l-slate-300 hover:border-l-amber-500">
+                  <CardContent className="p-4 sm:p-5">
+                    <div className="flex items-center justify-end gap-2 text-xs sm:text-sm text-slate-500 dark:text-slate-400 mb-1.5">
                       <span>Sonraki Eser</span>
                       <ChevronRight className="w-4 h-4" />
                     </div>
-                    <h3 className="font-semibold text-slate-900 dark:text-slate-100 group-hover:text-primary transition-colors line-clamp-2 text-right">
+                    <h3 className="font-semibold text-sm sm:text-base text-slate-900 dark:text-slate-100 group-hover:text-amber-800 dark:group-hover:text-amber-300 transition-colors line-clamp-2 text-right">
                       {nextWork.title}
                     </h3>
                   </CardContent>
                 </Card>
               </Link>
-            ) : (
-              <div></div>
             )}
             </div>
           </div>

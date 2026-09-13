@@ -1,10 +1,50 @@
 // Shared constants, category mappings, URL slug helpers, and special filter definitions
 
 export const ALMANYA_QUICK_CITIES = [
-  "Berlin", "Hamburg", "Munchen", "Frankfurt",
-  "Koln", "Stuttgart", "Dusseldorf", "Bremen",
-  "Leipzig", "Dortmund", "Hannover", "Nurnberg",
+  "Frankfurt",
+  "Köln",
+  "Berlin",
+  "Stuttgart",
+  "München",
+  "Dortmund",
+  "Mannheim",
+  "Düsseldorf",
+  "Hamburg",
+  "Bochum",
+  "Bonn",
+  "Nürnberg",
+  "Hannover",
+  "Bremen",
+  "Essen",
 ] as const;
+
+export function normalizeCityName(str: string): string {
+  return (str || "")
+    .toLowerCase()
+    .replace(/ü/g, "u")
+    .replace(/ö/g, "o")
+    .replace(/ä/g, "a")
+    .replace(/ß/g, "ss")
+    .replace(/ı/g, "i")
+    .replace(/ğ/g, "g")
+    .replace(/ş/g, "s")
+    .replace(/ç/g, "c")
+    .trim();
+}
+
+export function isCityMatch(placeCity: string | null | undefined, filterCity: string): boolean {
+  if (!placeCity || !filterCity) return false;
+  if (filterCity === "all" || filterCity === "Tumu") return true;
+  if (placeCity.toLowerCase() === filterCity.toLowerCase()) return true;
+
+  const normPlace = normalizeCityName(placeCity);
+  const normFilter = normalizeCityName(filterCity);
+
+  if (normPlace === normFilter) return true;
+  if (normPlace.startsWith(normFilter) || normFilter.startsWith(normPlace)) return true;
+
+  return false;
+}
 
 export const KATEGORILER = [
   "Tumu", "Restoran", "Kafe", "Firin", "Fast Food", "Market", "Kasap", "Diger",

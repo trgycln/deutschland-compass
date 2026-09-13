@@ -80,7 +80,6 @@ export function TopAuthorsDisplay({ onAuthorClick }: TopAuthorsDisplayProps) {
       { name: 'Ayşe Demir', workCount: 7, totalLikes: 95, totalViews: 580, avgLikes: 14 },
       { name: 'Mehmet Kaya', workCount: 6, totalLikes: 78, totalViews: 450, avgLikes: 13 },
     ];
-    setAuthors(mockAuthors);
     return (
       <Card className="border-amber-100 bg-white/80 shadow-md">
         <CardHeader>

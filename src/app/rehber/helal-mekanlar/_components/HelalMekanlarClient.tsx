@@ -11,7 +11,7 @@ import PlaceCard from "./PlaceCard";
 import PlaceDetailModal from "./PlaceDetailModal";
 import MekanOnerModal from "./MekanOnerModal";
 import { getPlacePhoto } from "./placePhoto";
-import { ALMANYA_QUICK_CITIES, KATEGORI_SLUG, SLUG_TO_KATEGORI, type SortOption } from "./constants";
+import { ALMANYA_QUICK_CITIES, KATEGORI_SLUG, SLUG_TO_KATEGORI, isCityMatch, normalizeCityName, type SortOption } from "./constants";
 
 // Dynamic import to avoid SSR issues with Leaflet
 const MapView = dynamic(() => import("./MapView"), {
@@ -124,7 +124,7 @@ export default function HelalMekanlarClient({ initialData }: { initialData: Hela
   const handleCountryChange  = (country: string)  => setFilter({ country: country === "all" ? "" : country, city: "" });
   const handleCityChange     = (city: string)     => setFilter({ city });
   const handleCategoryChange = (cat: string)      => setFilter({ category: KATEGORI_SLUG[cat] ?? "" });
-  const handleQuickCity      = (city: string)      => setFilter({ city: city === selectedCity ? "" : city });
+  const handleQuickCity      = (city: string)      => setFilter({ city: isCityMatch(city, selectedCity) ? "" : city });
   const toggleSpecial        = (key: string) => setActiveSpecials((prev) => {
     const next = new Set(prev);
     next.has(key) ? next.delete(key) : next.add(key);

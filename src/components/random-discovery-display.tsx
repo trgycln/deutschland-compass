@@ -99,7 +99,6 @@ export function RandomDiscoveryDisplay({ onDiscoverClick, triggerId }: { onDisco
         views: 0,
         likes: 0,
       };
-      setRandomWork(mockWork);
       return (
         <Card className="border-amber-100 bg-gradient-to-br from-amber-50 to-white/80 shadow-md">
           <CardContent className="p-6">

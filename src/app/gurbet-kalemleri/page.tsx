@@ -28,6 +28,22 @@ import {
   X,
   PenTool,
   Send,
+  MessageCircle,
+  ExternalLink,
+  Heart,
+  Eye,
+  Trophy,
+  Compass,
+  ArrowRight,
+  SlidersHorizontal,
+  Flame,
+  Radio,
+  Tag as TagIcon,
+  Dice5,
+  Clock,
+  ChevronRight,
+  Users,
+  CheckCircle2,
 } from "lucide-react";
 import { LikeButton } from "@/components/like-button";
 import { CommentForm } from "@/components/comment-form";
@@ -53,6 +69,7 @@ interface LiteraryWork {
   audio_url?: string;
   views?: number;
   likes?: number;
+  created_at?: string;
 }
 
 const serifStyle = {
@@ -83,14 +100,25 @@ export default function GurbetKalemleriPage() {
   const [literaryWorks, setLiteraryWorks] = useState<LiteraryWork[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
+  
+  // Navigasyon / Sekme State'i: 'featured' | 'catalog' | 'leaderboards' | 'community'
+  const [activeTab, setActiveTab] = useState<"featured" | "catalog" | "leaderboards" | "community">("featured");
+  
+  // Keşfet / Sıralamalar alt sekmesi
+  const [leaderboardTab, setLeaderboardTab] = useState<"authors" | "likes" | "narrated" | "views" | "recent" | "tags" | "random">("authors");
+  const [showAllLeaderboards, setShowAllLeaderboards] = useState(false);
+
+  // Arama ve Filtreleme
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedAuthor, setSelectedAuthor] = useState("all");
   const [selectedType, setSelectedType] = useState("all");
   const [selectedTags, setSelectedTags] = useState<string[]>([]);
-  const [featuredId, setFeaturedId] = useState<number | null>(null);
-  const [commentsRefresh, setCommentsRefresh] = useState(0);
   const [showOnlyNarrated, setShowOnlyNarrated] = useState(false);
   const [filtersOpen, setFiltersOpen] = useState(false);
+
+  // Seçili / Günün Eseri
+  const [featuredId, setFeaturedId] = useState<number | null>(null);
+  const [commentsRefresh, setCommentsRefresh] = useState(0);
 
   useEffect(() => {
     async function fetchWorks() {
@@ -119,62 +147,27 @@ export default function GurbetKalemleriPage() {
   }, [literaryWorks, featuredId]);
 
   const authors = useMemo(
-    () => Array.from(new Set(literaryWorks.map((work) => work.author)))
-      .filter((author) => author !== 'Anonim')
-      .sort(),
+    () =>
+      Array.from(new Set(literaryWorks.map((work) => work.author)))
+        .filter((author) => author !== "Anonim")
+        .sort((a, b) => a.localeCompare(b, "tr-TR")),
     [literaryWorks]
   );
+
   const types = useMemo(
-    () => Array.from(new Set(literaryWorks.map((work) => work.type))).sort(),
+    () => Array.from(new Set(literaryWorks.map((work) => work.type))).sort((a, b) => a.localeCompare(b, "tr-TR")),
     [literaryWorks]
   );
+
   const tags = useMemo(
-    () => Array.from(new Set(literaryWorks.flatMap((work) => work.tags || []))).sort(),
+    () => Array.from(new Set(literaryWorks.flatMap((work) => work.tags || []))).sort((a, b) => a.localeCompare(b, "tr-TR")),
     [literaryWorks]
   );
+
   const fallbackTags = [
-    // Orijinal temel temalar
-    "aci",
-    "ozlem",
-    "hasret",
-    "gurbet",
-    "umut",
-    "yalnizlik",
-    "sevda",
-    "yol",
-    "dus",
-    "hatira",
-    // İlişki ve aile temaları
-    "anne",
-    "aile",
-    "ayrilik",
-    "dostluk",
-    "baba",
-    // Kimlik ve dil
-    "dil",
-    "kimlik",
-    "kadin",
-    // Evrensel temalar
-    "kedi",
-    "ask",
-    "gonul",
-    "veda",
-    "adalet",
-    "insan",
-    "huzur",
-    "nur",
-    "umup",
-    "cuma",
-    // Felsefi ve analitik
-    "tefekur",
-    "bakis",
-    "goru",
-    "fark",
-    "kirma",
-    "aglamak",
-    "isa",
-    
+    "gurbet", "ozlem", "hasret", "umut", "yalnizlik", "sevda", "yol", "anne", "ayrilik", "dostluk", "aile", "veda"
   ];
+
   const popularTags = useMemo(() => {
     const counts = new Map<string, number>();
     literaryWorks.forEach((work) => {
@@ -184,13 +177,13 @@ export default function GurbetKalemleriPage() {
     });
     const sorted = Array.from(counts.entries())
       .sort((a, b) => b[1] - a[1] || a[0].localeCompare(b[0]))
-      .slice(0, 12)
+      .slice(0, 14)
       .map(([tag]) => tag);
     return sorted.length > 0 ? sorted : fallbackTags;
   }, [literaryWorks]);
 
   const filteredWorks = useMemo(() => {
-    const query = searchQuery.toLowerCase();
+    const query = searchQuery.toLowerCase().trim();
     return literaryWorks.filter((work) => {
       const matchesSearch =
         !query ||
@@ -208,8 +201,8 @@ export default function GurbetKalemleriPage() {
   }, [literaryWorks, searchQuery, selectedAuthor, selectedType, selectedTags, showOnlyNarrated]);
 
   const featuredWork = useMemo(() => {
-    if (!featuredId) return null;
-    return literaryWorks.find((work) => work.id === featuredId) || null;
+    if (!featuredId) return literaryWorks[0] || null;
+    return literaryWorks.find((work) => work.id === featuredId) || literaryWorks[0] || null;
   }, [literaryWorks, featuredId]);
 
   const featuredTags = featuredWork?.tags || [];
@@ -218,6 +211,14 @@ export default function GurbetKalemleriPage() {
     if (filteredWorks.length === 0) return;
     const randomIndex = Math.floor(Math.random() * filteredWorks.length);
     setFeaturedId(filteredWorks[randomIndex].id);
+    setActiveTab("featured");
+    window.scrollTo({ top: 320, behavior: "smooth" });
+  };
+
+  const selectWorkAndRead = (workId: number) => {
+    setFeaturedId(workId);
+    setActiveTab("featured");
+    window.scrollTo({ top: 320, behavior: "smooth" });
   };
 
   const toggleTag = (tag: string) => {
@@ -227,19 +228,41 @@ export default function GurbetKalemleriPage() {
     });
   };
 
-  useEffect(() => {
-    if (filteredWorks.length === 0) return;
-    if (!featuredId || !filteredWorks.some((work) => work.id === featuredId)) {
-      setFeaturedId(filteredWorks[0].id);
-    }
-  }, [filteredWorks, featuredId]);
+  const clearAllFilters = () => {
+    setSearchQuery("");
+    setSelectedAuthor("all");
+    setSelectedType("all");
+    setSelectedTags([]);
+    setShowOnlyNarrated(false);
+  };
+
+  const activeFiltersCount = useMemo(() => {
+    let count = 0;
+    if (searchQuery.trim()) count += 1;
+    if (selectedAuthor !== "all") count += 1;
+    if (selectedType !== "all") count += 1;
+    if (selectedTags.length > 0) count += selectedTags.length;
+    if (showOnlyNarrated) count += 1;
+    return count;
+  }, [searchQuery, selectedAuthor, selectedType, selectedTags, showOnlyNarrated]);
+
+  const narratedWorksCount = useMemo(() => {
+    return literaryWorks.filter((w) => !!w.audio_url).length;
+  }, [literaryWorks]);
+
+  const totalAuthorsCount = useMemo(() => {
+    return new Set(literaryWorks.map((w) => w.author)).size;
+  }, [literaryWorks]);
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-[#f7f1e8] flex items-center justify-center">
+      <div className="min-h-screen bg-[#f7f1e8] flex items-center justify-center p-4">
         <div className="text-center">
-          <Loader2 className="w-12 h-12 animate-spin text-amber-700 mx-auto mb-4" />
-          <p className="text-stone-600">Eserler yükleniyor...</p>
+          <div className="w-14 h-14 rounded-2xl bg-amber-100/80 border border-amber-200 flex items-center justify-center mx-auto mb-4 shadow-sm">
+            <Feather className="w-7 h-7 text-amber-800 animate-pulse" />
+          </div>
+          <p className="text-stone-800 font-medium text-lg" style={accentStyle}>Gurbet Kalemleri Açılıyor...</p>
+          <p className="text-stone-500 text-sm mt-1" style={serifStyle}>Antolojideki nadide eserler derleniyor</p>
         </div>
       </div>
     );
@@ -248,548 +271,309 @@ export default function GurbetKalemleriPage() {
   if (error) {
     return (
       <div className="min-h-screen bg-[#f7f1e8] flex items-center justify-center p-4">
-        <Alert className="max-w-md bg-rose-50 border-rose-200">
-          <AlertCircle className="h-4 w-4 text-rose-600" />
-          <AlertDescription className="text-rose-800">{error}</AlertDescription>
+        <Alert className="max-w-md bg-rose-50 border-rose-200 shadow-sm">
+          <AlertCircle className="h-5 w-5 text-rose-600" />
+          <AlertDescription className="text-rose-800 ml-2">{error}</AlertDescription>
         </Alert>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-[#f7f1e8] text-stone-900 w-full">
-      <div className="relative overflow-hidden w-full">
-        <div className="absolute inset-0 bg-[radial-gradient(circle_at_top,#f6d7b8,transparent_55%),radial-gradient(circle_at_bottom,#f2c3c8,transparent_60%)] opacity-70"></div>
-        <div className="absolute inset-0 bg-[linear-gradient(115deg,rgba(247,241,232,0.9),rgba(255,248,235,0.6))]"></div>
-        <div className="max-w-5xl mx-auto px-4 py-12 relative z-10">
-          <div className="w-full">
-            <div className="inline-flex items-center gap-2 rounded-full bg-white/70 px-4 py-2 text-sm text-amber-900 shadow-sm border border-amber-100">
-              <Sparkles className="w-4 h-4" />
-              <span>Gurbetin sesi, kalemin susmayan izi</span>
-            </div>
-            <h1
-              className="mt-4 text-3xl md:text-4xl font-semibold text-stone-900"
-              style={accentStyle}
-            >
-              Gurbet Kalemleri
-            </h1>
-            <p className="mt-3 text-base md:text-lg text-stone-700 max-w-2xl" style={serifStyle}>
-              Her gün bir eser, kalbe ağır gelen uzaklıkları bir sayfaya sığdırır. Okumak için
-              dur, nefeslen, yeniden hatırla.
-            </p>
-
-            {/* Telegram Linkleri */}
-            <div className="mt-5 grid grid-cols-1 md:grid-cols-2 gap-3 max-w-2xl">
-              <a
-                href="https://t.me/+JSmuDvozRY43OGMy"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="group relative overflow-hidden rounded-xl bg-gradient-to-br from-blue-500 to-blue-600 p-4 shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-[1.02]"
-              >
-                <div className="absolute inset-0 bg-gradient-to-br from-white/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
-                <div className="relative flex items-center gap-3">
-                  <div className="p-2 bg-white/20 backdrop-blur-sm rounded-lg">
-                    <svg className="w-5 h-5 text-white" fill="currentColor" viewBox="0 0 24 24">
-                      <path d="M12 0C5.373 0 0 5.373 0 12s5.373 12 12 12 12-5.373 12-12S18.627 0 12 0zm5.894 8.221l-1.97 9.28c-.145.658-.537.818-1.084.508l-3-2.21-1.446 1.394c-.14.18-.357.295-.6.295-.002 0-.003 0-.005 0l.213-3.054 5.56-5.022c.24-.213-.054-.334-.373-.121l-6.869 4.326-2.96-.924c-.64-.203-.658-.64.135-.954l11.566-4.458c.538-.196 1.006.128.832.941z"/>
-                    </svg>
-                  </div>
-                  <div className="flex-1">
-                    <div className="text-white font-semibold text-sm">Yazılarını Paylaş</div>
-                    <div className="text-blue-100 text-xs">Telegram Grubu</div>
-                  </div>
-                </div>
-              </a>
-
-              <a
-                href="https://t.me/+yI1or4k3nMswN2Ni"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="group relative overflow-hidden rounded-xl bg-gradient-to-br from-amber-500 to-amber-600 p-4 shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-[1.02]"
-              >
-                <div className="absolute inset-0 bg-gradient-to-br from-white/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
-                <div className="relative flex items-center gap-3">
-                  <div className="p-2 bg-white/20 backdrop-blur-sm rounded-lg">
-                    <svg className="w-5 h-5 text-white" fill="currentColor" viewBox="0 0 24 24">
-                      <path d="M12 0C5.373 0 0 5.373 0 12s5.373 12 12 12 12-5.373 12-12S18.627 0 12 0zm5.894 8.221l-1.97 9.28c-.145.658-.537.818-1.084.508l-3-2.21-1.446 1.394c-.14.18-.357.295-.6.295-.002 0-.003 0-.005 0l.213-3.054 5.56-5.022c.24-.213-.054-.334-.373-.121l-6.869 4.326-2.96-.924c-.64-.203-.658-.64.135-.954l11.566-4.458c.538-.196 1.006.128.832.941z"/>
-                    </svg>
-                  </div>
-                  <div className="flex-1">
-                    <div className="text-white font-semibold text-sm">Deutschland Compass</div>
-                    <div className="text-amber-100 text-xs">Telegram Kanalı</div>
-                  </div>
-                </div>
-              </a>
-            </div>
-
-            {/* 📝 Eser Paylaşım CTA Banner */}
-            <div className="mt-6 mb-2">
-              <Link href="/gurbet-kalemleri/gonder">
-                <div className="group relative overflow-hidden rounded-2xl bg-gradient-to-br from-emerald-500 via-teal-500 to-cyan-500 p-6 md:p-8 shadow-2xl hover:shadow-3xl transition-all duration-300 hover:scale-[1.02] cursor-pointer">
-                  <div className="absolute inset-0 bg-gradient-to-br from-white/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
-                  <div className="absolute top-0 right-0 w-64 h-64 bg-white/10 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2" />
-                  <div className="relative flex flex-col md:flex-row items-center justify-between gap-4">
-                    <div className="flex items-start gap-4 flex-1">
-                      <div className="p-4 bg-white/20 backdrop-blur-sm rounded-2xl group-hover:scale-110 transition-transform duration-300">
-                        <PenTool className="w-8 h-8 text-white" />
-                      </div>
-                      <div className="flex-1 text-center md:text-left">
-                        <h3 className="text-white font-bold text-2xl md:text-3xl mb-2" style={accentStyle}>
-                          Kalemin Sesin Olsun
-                        </h3>
-                        <p className="text-white/90 text-sm md:text-base" style={serifStyle}>
-                          Şiirini, öykünü ya da denemeni paylaş. Gurbetin sesine ses ol, kalplere dokunacak cümlelerini bizimle buluştur.
-                        </p>
-                      </div>
-                    </div>
-                    <div className="flex items-center gap-3 px-6 py-3 bg-white/20 backdrop-blur-sm rounded-full border-2 border-white/30 group-hover:bg-white/30 transition-all duration-300">
-                      <span className="text-white font-semibold text-lg">Eserini Paylaş</span>
-                      <Send className="w-5 h-5 text-white group-hover:translate-x-1 transition-transform duration-300" />
-                    </div>
-                  </div>
-                </div>
-              </Link>
-            </div>
-
-            <div className="mt-5 text-sm text-stone-600">
-              <div className="flex flex-wrap items-center gap-4">
-                <div className="flex items-center gap-2">
-                  <Feather className="w-4 h-4" />
-                  <span>{literaryWorks.length} eser</span>
-                </div>
-                <div className="flex items-center gap-2">
-                  <User className="w-4 h-4" />
-                  <span>{new Set(literaryWorks.map((work) => work.author)).size} yazar</span>
-                </div>
+    <div className="min-h-screen bg-[#f7f1e8] text-stone-900 w-full selection:bg-amber-200 selection:text-amber-950">
+      {/* 🌟 1. ZARİF VE DERLİ TOPLU HERO ALANI */}
+      <header className="relative overflow-hidden w-full border-b border-amber-200/60">
+        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top,#fbe6d0,transparent_60%),radial-gradient(ellipse_at_bottom,#fae1e4,transparent_65%)] opacity-70"></div>
+        <div className="absolute inset-0 bg-[linear-gradient(115deg,rgba(247,241,232,0.92),rgba(255,248,235,0.7))]"></div>
+        
+        <div className="max-w-6xl mx-auto px-4 sm:px-6 pt-8 pb-7 relative z-10">
+          <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-6">
+            {/* Sol: Başlık ve Edebi İthaf */}
+            <div className="max-w-2xl">
+              <div className="inline-flex items-center gap-2 rounded-full bg-white/85 px-3.5 py-1.5 text-xs sm:text-sm text-amber-900 shadow-sm border border-amber-200/80 mb-3">
+                <Sparkles className="w-3.5 h-3.5 text-amber-700" />
+                <span className="font-medium">Gurbetin sesi, kalemin susmayan izi</span>
               </div>
-            </div>
-          </div>
-        </div>
-      </div>
+              <h1
+                className="text-3xl sm:text-4xl md:text-5xl font-semibold text-stone-900 tracking-tight leading-tight"
+                style={accentStyle}
+              >
+                Gurbet Kalemleri
+              </h1>
+              <p
+                className="mt-2 text-stone-700 text-sm sm:text-base md:text-lg leading-relaxed max-w-xl"
+                style={serifStyle}
+              >
+                Her bir satırı gurbetin sinesinden süzülen nadide hatıralar... Kalbe ağır gelen uzaklıkları kelimelerle buluşturan antolojimiz.
+              </p>
 
-      {/* 📊 İstatistikler ve Keşif Bölümü */}
-      <div className="bg-gradient-to-b from-amber-50/30 to-transparent py-8 border-t border-amber-100 w-full">
-        <div className="max-w-5xl mx-auto px-4 py-8 relative z-10">
-          {/* 3 KolonLayout: 6 kart + Random */}
-          <div className="grid gap-4 md:grid-cols-3 mb-8 w-full">
-            {/* Satır 1, Kolon 1: Yazarlar */}
-            <TopAuthorsDisplay onAuthorClick={(authorName) => {
-              setSelectedAuthor(authorName);
-              // Mobile'da filtreleri aç
-              if (window.innerWidth < 768) {
-                setFiltersOpen(true);
-              }
-              // Filtre bölümüne scroll
-              setTimeout(() => {
-                const filterSection = document.querySelector('[data-filter-section="true"]');
-                if (filterSection) {
-                  filterSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
-                }
-              }, 50);
-            }} />
-            
-            {/* Satır 1, Kolon 2: Eserler */}
-            <TopWorksDisplay />
-            
-            {/* Satır 1, Kolon 3: Sesli Dinlenenler */}
-            <TopNarratedWorksDisplay />
-          </div>
-
-          <div className="grid gap-4 md:grid-cols-3 mb-8 w-full">
-            {/* Satır 2, Kolon 1: Sesli Recent */}
-            <RecentNarratedWorksDisplay />
-            
-            {/* Satır 2, Kolon 2: En Çok Görüntülenen */}
-            <TopViewedWorksDisplay />
-            
-            {/* Satır 2, Kolon 3: Son Eserler */}
-            <RecentWorksDisplay />
-          </div>
-
-          {/* Satır 3: Popüler Etiketler + Random */}
-          <div className="grid gap-4 md:grid-cols-3 mb-8 w-full">
-            <PopularTagsDisplay onTagClick={(tag) => {
-              setSelectedTags([tag]);
-              // Mobile'da filtreleri aç
-              if (window.innerWidth < 768) {
-                setFiltersOpen(true);
-              }
-            }} />
-
-            <div className="md:col-span-1">
-              <RandomDiscoveryDisplay 
-                triggerId={featuredId || undefined}
-              />
-            </div>
-
-            <div className="hidden md:block" />
-          </div>
-        </div>
-      </div>
-
-      <div className="md:sticky top-16 z-30 border-y border-amber-100 bg-white/90 backdrop-blur w-full" data-filter-section="true">
-        <div className="max-w-5xl mx-auto px-4 py-3 w-full">
-          {/* Mobil: Kompakt Filtre Butonu */}
-          <div className="md:hidden">
-            <button
-              onClick={() => setFiltersOpen(!filtersOpen)}
-              className="w-full flex items-center justify-between p-3 rounded-lg bg-white/80 border border-amber-100 hover:bg-amber-50 transition"
-            >
-              <div className="flex items-center gap-2">
-                <Filter className="w-4 h-4 text-amber-700" />
-                <span className="text-sm font-medium text-stone-700">
-                  Filtrele
-                  {(searchQuery || selectedAuthor !== "all" || selectedType !== "all" || selectedTags.length > 0 || showOnlyNarrated) && 
-                    " (aktif)"}
+              {/* Kompakt Sayaç */}
+              <div className="mt-4 flex flex-wrap items-center gap-3 text-xs sm:text-sm text-stone-600">
+                <span className="inline-flex items-center gap-1.5 bg-white/70 px-2.5 py-1 rounded-md border border-amber-100 shadow-xs">
+                  <Feather className="w-3.5 h-3.5 text-amber-700" />
+                  <strong className="text-stone-900 font-semibold">{literaryWorks.length}</strong> Eser
+                </span>
+                <span className="inline-flex items-center gap-1.5 bg-white/70 px-2.5 py-1 rounded-md border border-amber-100 shadow-xs">
+                  <User className="w-3.5 h-3.5 text-amber-700" />
+                  <strong className="text-stone-900 font-semibold">{totalAuthorsCount}</strong> Yazar
+                </span>
+                <span className="inline-flex items-center gap-1.5 bg-white/70 px-2.5 py-1 rounded-md border border-amber-100 shadow-xs">
+                  <Music className="w-3.5 h-3.5 text-emerald-700" />
+                  <strong className="text-stone-900 font-semibold">{narratedWorksCount}</strong> Sesli Eser
                 </span>
               </div>
-              {filtersOpen ? 
-                <X className="w-4 h-4 text-stone-500" /> : 
-                <Filter className="w-4 h-4 text-stone-500" />
-              }
-            </button>
-            
-            {filtersOpen && (
-              <div className="mt-3 space-y-3 pb-2">
-                <div className="relative">
-                  <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-stone-400" />
-                  <Input
-                    placeholder="Ara..."
-                    value={searchQuery}
-                    onChange={(event) => setSearchQuery(event.target.value)}
-                    className="pl-9 bg-white/80 border-amber-100"
-                  />
-                </div>
-                <div className="grid grid-cols-3 gap-2">
-                  <div>
-                    <label className="text-xs font-medium text-stone-600 block mb-1">Yazar</label>
-                    <Select value={selectedAuthor} onValueChange={setSelectedAuthor}>
-                      <SelectTrigger className="bg-white/80 border-amber-100 text-xs">
-                        <SelectValue placeholder="Seç" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="all">Tümü</SelectItem>
-                        {authors.map((author) => (
-                          <SelectItem key={author} value={author}>
-                            {author}
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
-                  </div>
-                  <div>
-                    <label className="text-xs font-medium text-stone-600 block mb-1">Türü</label>
-                    <Select value={selectedType} onValueChange={setSelectedType}>
-                      <SelectTrigger className="bg-white/80 border-amber-100 text-xs">
-                        <SelectValue placeholder="Seç" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="all">Tümü</SelectItem>
-                        {types.map((type) => (
-                          <SelectItem key={type} value={type}>
-                            {type}
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
-                  </div>
-                  <div>
-                    <label className="text-xs font-medium text-stone-600 block mb-1">Etiket</label>
-                    <Select
-                      value={selectedTags.length === 1 ? selectedTags[0] : "all"}
-                      onValueChange={(value) => {
-                        if (value === "all") {
-                          setSelectedTags([]);
-                        } else {
-                          setSelectedTags([value]);
-                        }
-                      }}
-                    >
-                      <SelectTrigger className="bg-white/80 border-amber-100 text-xs">
-                        <SelectValue placeholder="Seç" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="all">Tümü</SelectItem>
-                        {tags.map((tag) => (
-                          <SelectItem key={tag} value={tag}>
-                            {tag}
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
-                  </div>
-                </div>
-                
-                {/* Seslendirilmiş Filtresi */}
-                <div className="flex items-center gap-2 px-3 py-2 bg-white/80 rounded-lg border border-amber-100">
-                  <input
-                    type="checkbox"
-                    id="narrated-filter-mobile"
-                    checked={showOnlyNarrated}
-                    onChange={(e) => setShowOnlyNarrated(e.target.checked)}
-                    className="w-4 h-4 cursor-pointer"
-                  />
-                  <label htmlFor="narrated-filter-mobile" className="flex items-center gap-1 cursor-pointer text-stone-700 text-sm">
-                    <Music className="w-4 h-4 text-amber-600" />
-                    <span>Sadece Seslendirilmiş Eserler</span>
-                  </label>
-                </div>
-                
-                {/* Popüler Etiketler - Horizontal Scroll */}
-                <div className="overflow-x-auto -mx-4 px-4">
-                  <div className="flex gap-2 pb-2">
-                    {popularTags.slice(0, 8).map((tag) => {
-                      const isActive = selectedTags.includes(tag);
-                      return (
-                        <button
-                          key={tag}
-                          onClick={() => toggleTag(tag)}
-                          className={`flex-shrink-0 rounded-full border px-3 py-1 text-xs transition ${
-                            isActive
-                              ? "border-amber-400 bg-amber-100 text-amber-900"
-                              : "border-amber-100 bg-white/80 text-stone-600"
-                          }`}
-                        >
-                          {tag}
-                        </button>
-                      );
-                    })}
-                  </div>
-                </div>
-              </div>
-            )}
-          </div>
+            </div>
 
-          {/* Desktop: Tam Filtreler */}
-          <div className="hidden md:block">
-            <div className="grid gap-3 md:grid-cols-[1.2fr_0.8fr_0.8fr_0.8fr]">
-              <div className="relative">
-                <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-stone-400" />
-                <Input
-                  placeholder="Eser, yazar veya icerikte ara..."
-                  value={searchQuery}
-                  onChange={(event) => setSearchQuery(event.target.value)}
-                  className="pl-9 bg-white/80 border-amber-100"
-                />
-              </div>
-              <Select value={selectedAuthor} onValueChange={setSelectedAuthor}>
-                <SelectTrigger className="bg-white/80 border-amber-100">
-                  <SelectValue placeholder="Yazar" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="all">Tum yazarlar</SelectItem>
-                  {authors.map((author) => (
-                    <SelectItem key={author} value={author}>
-                      {author}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-              <Select value={selectedType} onValueChange={setSelectedType}>
-                <SelectTrigger className="bg-white/80 border-amber-100">
-                  <SelectValue placeholder="Tur" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="all">Tum turler</SelectItem>
-                  {types.map((type) => (
-                    <SelectItem key={type} value={type}>
-                      {type}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-              <Select
-                value={selectedTags.length === 1 ? selectedTags[0] : "all"}
-                onValueChange={(value) => {
-                  if (value === "all") {
-                    setSelectedTags([]);
-                  } else {
-                    setSelectedTags([value]);
-                  }
-                }}
-              >
-                <SelectTrigger className="bg-white/80 border-amber-100">
-                  <SelectValue placeholder="Etiket" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="all">Tum etiketler</SelectItem>
-                  {tags.map((tag) => (
-                    <SelectItem key={tag} value={tag}>
-                      {tag}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </div>
-            
-            {/* Seslendirilmiş Filtresi */}
-            <div className="flex items-center gap-2 px-3 py-2 bg-white/80 rounded-lg border border-amber-100 w-fit">
-              <input
-                type="checkbox"
-                id="narrated-filter-desktop"
-                checked={showOnlyNarrated}
-                onChange={(e) => setShowOnlyNarrated(e.target.checked)}
-                className="w-4 h-4 cursor-pointer"
-              />
-              <label htmlFor="narrated-filter-desktop" className="flex items-center gap-1 cursor-pointer text-stone-700 text-sm">
-                <Music className="w-4 h-4 text-amber-600" />
-                <span>Sadece Seslendirilmiş Eserler</span>
-              </label>
-            </div>
-            
-            <div className="mt-4">
-              <div className="text-sm text-stone-500" style={serifStyle}>
-                Etiketlere dokun, duyguya gore kesfet.
-              </div>
-              {tags.length === 0 && (
-                <div className="mt-1 text-xs text-stone-400" style={serifStyle}>
-                  Not: Etiket bilgisi olmayan eserlerde onerilen etiketler gosterilir.
+            {/* Sağ: Kompakt & Şık Hızlı Aksiyon Kartı */}
+            <div className="flex flex-col sm:flex-row md:flex-col gap-2.5 sm:w-auto w-full">
+              <Link href="/gurbet-kalemleri/gonder" className="w-full">
+                <div className="flex items-center justify-between gap-3 px-4 py-3 bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-700 hover:to-teal-700 text-white rounded-xl shadow-md hover:shadow-lg transition-all transform hover:-translate-y-0.5 active:translate-y-0">
+                  <div className="flex items-center gap-2.5">
+                    <PenTool className="w-4 h-4 text-emerald-100" />
+                    <div>
+                      <div className="text-sm font-semibold leading-none">Eserini Paylaş</div>
+                      <div className="text-[11px] text-emerald-100 mt-1">Antolojiye yeni şiir/yazı ekle</div>
+                    </div>
+                  </div>
+                  <Send className="w-4 h-4 text-emerald-200" />
                 </div>
-              )}
-              <div className="mt-3 flex flex-wrap gap-2">
-                {popularTags.map((tag) => {
-                  const isActive = selectedTags.includes(tag);
+              </Link>
+
+              <div className="grid grid-cols-2 gap-2 w-full">
+                <a
+                  href="https://t.me/+JSmuDvozRY43OGMy"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="flex items-center justify-center gap-2 px-3 py-2 rounded-xl bg-blue-600/90 hover:bg-blue-600 text-white text-xs font-medium shadow-sm transition hover:shadow"
+                >
+                  <MessageCircle className="w-3.5 h-3.5" />
+                  <span>Yazı Grubu</span>
+                </a>
+                <a
+                  href="https://t.me/+yI1or4k3nMswN2Ni"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="flex items-center justify-center gap-2 px-3 py-2 rounded-xl bg-amber-600/90 hover:bg-amber-600 text-white text-xs font-medium shadow-sm transition hover:shadow"
+                >
+                  <Radio className="w-3.5 h-3.5" />
+                  <span>Kanal</span>
+                </a>
+              </div>
+            </div>
+          </div>
+        </div>
+      </header>
+
+      {/* 🧭 2. MERKEZİ SEKME GEZİNTİSİ (Segmented Control) */}
+      <nav className="sticky top-16 z-30 bg-[#fbf7f0]/95 backdrop-blur-md border-b border-amber-200/80 shadow-xs w-full">
+        <div className="max-w-6xl mx-auto px-3 sm:px-6">
+          <div className="flex items-center justify-between gap-2 overflow-x-auto py-2.5 no-scrollbar">
+            <div className="inline-flex p-1 rounded-xl bg-amber-100/60 border border-amber-200/70 text-xs sm:text-sm font-medium w-full sm:w-auto">
+              <button
+                onClick={() => setActiveTab("featured")}
+                className={`flex items-center justify-center gap-1.5 px-3 sm:px-4 py-2 rounded-lg transition-all whitespace-nowrap flex-1 sm:flex-initial ${
+                  activeTab === "featured"
+                    ? "bg-white text-amber-950 shadow-sm font-semibold"
+                    : "text-stone-600 hover:text-stone-900"
+                }`}
+              >
+                <BookOpen className="w-4 h-4 text-amber-700" />
+                <span>Günün Eseri</span>
+              </button>
+
+              <button
+                onClick={() => setActiveTab("catalog")}
+                className={`flex items-center justify-center gap-1.5 px-3 sm:px-4 py-2 rounded-lg transition-all whitespace-nowrap flex-1 sm:flex-initial ${
+                  activeTab === "catalog"
+                    ? "bg-white text-amber-950 shadow-sm font-semibold"
+                    : "text-stone-600 hover:text-stone-900"
+                }`}
+              >
+                <Compass className="w-4 h-4 text-amber-700" />
+                <span>Tüm Eserler</span>
+                <span className="text-[11px] px-1.5 py-0.2 bg-amber-100 text-amber-900 rounded-full font-bold">
+                  {filteredWorks.length}
+                </span>
+              </button>
+
+              <button
+                onClick={() => setActiveTab("leaderboards")}
+                className={`flex items-center justify-center gap-1.5 px-3 sm:px-4 py-2 rounded-lg transition-all whitespace-nowrap flex-1 sm:flex-initial ${
+                  activeTab === "leaderboards"
+                    ? "bg-white text-amber-950 shadow-sm font-semibold"
+                    : "text-stone-600 hover:text-stone-900"
+                }`}
+              >
+                <Trophy className="w-4 h-4 text-amber-700" />
+                <span>Sıralamalar & Keşif</span>
+              </button>
+
+              <button
+                onClick={() => setActiveTab("community")}
+                className={`flex items-center justify-center gap-1.5 px-3 sm:px-4 py-2 rounded-lg transition-all whitespace-nowrap flex-1 sm:flex-initial ${
+                  activeTab === "community"
+                    ? "bg-white text-amber-950 shadow-sm font-semibold"
+                    : "text-stone-600 hover:text-stone-900"
+                }`}
+              >
+                <Users className="w-4 h-4 text-amber-700" />
+                <span>Topluluk & Telegram</span>
+              </button>
+            </div>
+
+            {/* Hızlı Rastgele Butonu */}
+            <div className="hidden md:flex items-center">
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={handleRefreshFeatured}
+                className="text-stone-700 hover:text-amber-900 hover:bg-amber-100/60 text-xs gap-1.5"
+              >
+                <RefreshCcw className="w-3.5 h-3.5" />
+                <span>Rastgele Eser</span>
+              </Button>
+            </div>
+          </div>
+        </div>
+      </nav>
+
+      {/* 📄 3. İÇERİK BÖLÜMÜ (Aktif Sekmeye Göre) */}
+      <main className="max-w-6xl mx-auto px-4 sm:px-6 py-6 md:py-8">
+        
+        {/* ======================================================== */}
+        {/* SEKME 1: 📖 GÜNÜN ESERİ / SEÇİLEN ESER                    */}
+        {/* ======================================================== */}
+        {activeTab === "featured" && (
+          <div className="grid gap-6 lg:grid-cols-[300px_1fr] items-start">
+            {/* Sol Kolon (Desktop): Hızlı Eser Gezgini */}
+            <aside className="rounded-2xl bg-white/85 shadow-sm border border-amber-200/80 hidden lg:block overflow-hidden sticky top-36">
+              <div className="p-4 border-b border-amber-100 bg-amber-50/40">
+                <div className="flex items-center justify-between">
+                  <h3 className="text-sm font-semibold text-stone-800" style={accentStyle}>
+                    Diğer Eserler
+                  </h3>
+                  <button
+                    onClick={() => setActiveTab("catalog")}
+                    className="text-xs text-amber-800 hover:underline flex items-center gap-0.5"
+                  >
+                    Tümü ({literaryWorks.length}) <ChevronRight className="w-3 h-3" />
+                  </button>
+                </div>
+                <div className="relative mt-2">
+                  <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-stone-400" />
+                  <Input
+                    placeholder="Listede hızlı ara..."
+                    value={searchQuery}
+                    onChange={(e) => setSearchQuery(e.target.value)}
+                    className="pl-8 h-8 text-xs bg-white border-amber-200/70"
+                  />
+                </div>
+              </div>
+
+              <div className="max-h-[55vh] overflow-y-auto p-2 space-y-1 divide-y divide-amber-50/50">
+                {filteredWorks.slice(0, 40).map((work) => {
+                  const isActive = work.id === featuredId;
                   return (
                     <button
-                      key={tag}
-                      onClick={() => toggleTag(tag)}
-                      aria-pressed={isActive}
-                      className={`rounded-full border px-3 py-1 text-xs transition ${
+                      key={work.id}
+                      onClick={() => setFeaturedId(work.id)}
+                      className={`w-full text-left p-2.5 rounded-xl transition text-xs block ${
                         isActive
-                          ? "border-amber-400 bg-amber-100 text-amber-900"
-                          : "border-amber-100 bg-white/80 text-stone-600 hover:border-amber-200 hover:bg-amber-50"
+                          ? "bg-amber-100/70 border border-amber-300/80 shadow-2xs font-medium"
+                          : "hover:bg-amber-50/70 border border-transparent"
                       }`}
                     >
-                      {tag}
+                      <div className="flex items-center justify-between gap-1 text-stone-500 mb-0.5">
+                        <span className="truncate max-w-[170px]" style={serifStyle}>
+                          {work.author}
+                        </span>
+                        {work.audio_url && <Music className="w-3 h-3 text-emerald-600 flex-shrink-0" />}
+                      </div>
+                      <div className="font-semibold text-stone-800 truncate" style={accentStyle}>
+                        {work.title}
+                      </div>
                     </button>
                   );
                 })}
               </div>
-            </div>
-          </div>
-        </div>
-      </div>
+            </aside>
 
-      <div className="max-w-7xl mx-auto px-4 py-10">
-        <div className="grid gap-8 lg:grid-cols-[320px_1fr]">
-          <aside className="rounded-3xl bg-white/80 shadow-lg border border-amber-100 hidden lg:block">
-            <div className="p-6 border-b border-amber-100">
-              <h2 className="text-xl text-stone-800" style={accentStyle}>
-                Tum Eserler
-              </h2>
-              <p className="text-sm text-stone-500 mt-1" style={serifStyle}>
-                Baslik veya yazar adina gore ara.
-              </p>
-              <div className="relative mt-4">
-                <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-stone-400" />
-                <Input
-                  placeholder="Ara..."
-                  value={searchQuery}
-                  onChange={(event) => setSearchQuery(event.target.value)}
-                  className="pl-9 bg-white/80 border-amber-100"
-                />
-              </div>
-            </div>
-            <div className="max-h-[60vh] overflow-y-auto p-4 space-y-2">
-              {filteredWorks.length === 0 && (
-                <div className="text-sm text-stone-500 px-2 py-6" style={serifStyle}>
-                  Aradigin kriterlerde eser bulunamadi.
-                </div>
-              )}
-              {filteredWorks.map((work) => {
-                const isActive = work.id === featuredId;
-                return (
-                  <Link
-                    key={work.id}
-                    href={`/gurbet-kalemleri/${work.id}`}
-                    className={`block w-full text-left rounded-2xl border px-4 py-3 transition ${
-                      isActive
-                        ? "border-amber-400 bg-amber-50 shadow-sm"
-                        : "border-transparent hover:border-amber-100 hover:bg-amber-50/60"
-                    }`}
-                  >
-                    <div className="text-sm text-stone-500" style={serifStyle}>
-                      {work.author}
-                    </div>
-                    <div className="flex items-start gap-2 justify-between">
-                      <div className="text-base text-stone-800 line-clamp-2 flex-1" style={accentStyle}>
-                        {work.title}
-                      </div>
-                      {work.audio_url && (
-                        <Music className="w-4 h-4 text-amber-600 flex-shrink-0 mt-0.5" />
+            {/* Sağ Kolon: Okuma Odaklı Eser Kartı */}
+            <article className="rounded-3xl bg-white/95 border border-amber-200 shadow-md overflow-hidden">
+              {featuredWork ? (
+                <div className="p-5 sm:p-8 md:p-10">
+                  {/* Üst Bilgi Rozetleri & Aksiyonlar */}
+                  <div className="flex flex-wrap items-center justify-between gap-3 pb-5 border-b border-amber-100">
+                    <div className="flex flex-wrap items-center gap-2">
+                      <Badge className="bg-amber-200 text-amber-950 font-medium hover:bg-amber-300">
+                        Seçilen Eser
+                      </Badge>
+                      <Badge variant="outline" className="border-amber-300 text-stone-700 bg-amber-50/50">
+                        {featuredWork.type}
+                      </Badge>
+                      {featuredWork.audio_url && (
+                        <Badge className="bg-emerald-100 text-emerald-900 border-emerald-200 flex items-center gap-1">
+                          <Music className="w-3 h-3" />
+                          Seslendirilmiş
+                        </Badge>
                       )}
                     </div>
-                  </Link>
-                );
-              })}
-            </div>
-          </aside>
 
-          <section className="rounded-[32px] bg-white/90 border border-amber-100 shadow-xl animate-fadeIn">
-            <div className="p-8 md:p-10">
-              <div className="flex flex-wrap items-center gap-3">
-                <Badge className="bg-amber-200 text-amber-900 animate-pulse">Seçilen Eser</Badge>
-                {featuredWork?.audio_url && (
-                  <Badge className="bg-blue-100 text-blue-900 flex items-center gap-1">
-                    <Music className="w-3 h-3" />
-                    Seslendirilmis
-                  </Badge>
-                )}
-                <Button
-                  variant="outline"
-                  onClick={handleRefreshFeatured}
-                  className="border-amber-200 text-amber-900 hover:bg-amber-50"
-                >
-                  <RefreshCcw className="w-4 h-4 mr-2" />
-                  Baska bir eser
-                </Button>
-              </div>
-
-              {featuredWork ? (
-                <div className="mt-8">
-                  <div className="flex flex-wrap items-center gap-4 text-sm text-stone-500" style={serifStyle}>
                     <div className="flex items-center gap-2">
-                      <User className="w-4 h-4" />
-                      <span>{featuredWork.author}</span>
-                    </div>
-                    <div className="flex items-center gap-2">
-                      <Calendar className="w-4 h-4" />
-                      <span>{featuredWork.date}</span>
-                    </div>
-                    <div className="flex items-center gap-2">
-                      <BookOpen className="w-4 h-4" />
-                      <span>{featuredWork.type}</span>
-                    </div>
-                    <div className="flex items-center gap-2 ml-auto">
-                      <span className="text-lg">👁️</span>
-                      <span className="font-semibold text-blue-600">{featuredWork.views || 0}</span>
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={handleRefreshFeatured}
+                        className="border-amber-200 text-amber-900 hover:bg-amber-50 text-xs h-8 gap-1.5"
+                      >
+                        <RefreshCcw className="w-3.5 h-3.5" />
+                        <span>Başka Eser 🎲</span>
+                      </Button>
+                      <Link href={`/gurbet-kalemleri/${featuredWork.id}`}>
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          className="text-stone-700 hover:text-amber-900 hover:bg-amber-50 text-xs h-8 gap-1"
+                        >
+                          <BookOpen className="w-3.5 h-3.5" />
+                          <span className="hidden sm:inline">Ayrı Sayfa</span>
+                          <ExternalLink className="w-3 h-3" />
+                        </Button>
+                      </Link>
                     </div>
                   </div>
 
-                  <div className="flex items-start justify-between gap-4">
-                    <h2 className="mt-4 text-3xl text-stone-900 pb-3 border-b-2 border-amber-200 md:border-b-0 flex-1" style={accentStyle}>
+                  {/* Eser Başlığı ve Yazarı */}
+                  <div className="mt-6">
+                    <h2
+                      className="text-2xl sm:text-3xl md:text-4xl font-bold text-stone-900 leading-tight break-words"
+                      style={accentStyle}
+                    >
                       {featuredWork.title}
                     </h2>
-                    <Link href={`/gurbet-kalemleri/${featuredWork.id}`}>
-                      <Button variant="outline" className="border-blue-200 text-blue-700 hover:bg-blue-50">
-                        <BookOpen className="w-4 h-4 mr-2" />
-                        Detaylı Görüntüle
-                      </Button>
-                    </Link>
+
+                    <div className="mt-3 flex flex-wrap items-center gap-4 text-xs sm:text-sm text-stone-600" style={serifStyle}>
+                      <div className="flex items-center gap-1.5">
+                        <User className="w-4 h-4 text-amber-800" />
+                        <span className="font-semibold text-stone-800">{featuredWork.author}</span>
+                      </div>
+                      <div className="flex items-center gap-1.5">
+                        <Calendar className="w-4 h-4 text-stone-400" />
+                        <span>{featuredWork.date}</span>
+                      </div>
+                      <div className="flex items-center gap-1.5 ml-auto text-stone-500">
+                        <Eye className="w-4 h-4 text-stone-400" />
+                        <span>{featuredWork.views || 0} görüntüleme</span>
+                      </div>
+                    </div>
                   </div>
 
-                  <div
-                    className="mt-6 text-[17px] leading-8 text-stone-700 whitespace-pre-wrap"
-                    style={serifStyle}
-                  >
-                    {featuredWork.content}
-                  </div>
-
-                  {/* Audio Player */}
+                  {/* Sesli Çalar (Varsa) */}
                   {featuredWork.audio_url && (
-                    <div className="mt-8">
-                      <AudioPlayer 
-                        audioUrl={featuredWork.audio_url} 
-                        title={featuredWork.title} 
+                    <div className="mt-6">
+                      <AudioPlayer
+                        audioUrl={featuredWork.audio_url}
+                        title={featuredWork.title}
                         workId={featuredWork.id}
                         content={featuredWork.content}
                         author={featuredWork.author}
@@ -797,65 +581,678 @@ export default function GurbetKalemleriPage() {
                     </div>
                   )}
 
+                  {/* Şiir / Yazı Metni */}
+                  <div
+                    className="mt-8 text-base sm:text-lg leading-relaxed sm:leading-8 text-stone-800 whitespace-pre-wrap break-words bg-amber-50/20 p-4 sm:p-6 rounded-2xl border border-amber-100/60"
+                    style={serifStyle}
+                  >
+                    {featuredWork.content}
+                  </div>
+
+                  {/* Etiketler */}
                   {featuredTags.length > 0 && (
-                    <div className="mt-6 flex flex-wrap gap-2">
-                      {featuredTags.slice(0, 6).map((tag) => (
-                        <Badge key={tag} variant="outline" className="border-amber-200 text-amber-900">
-                          {tag}
-                        </Badge>
+                    <div className="mt-6 flex flex-wrap items-center gap-2 pt-4 border-t border-amber-100">
+                      <TagIcon className="w-3.5 h-3.5 text-stone-400" />
+                      {featuredTags.map((tag) => (
+                        <button
+                          key={tag}
+                          onClick={() => {
+                            setSelectedTags([tag]);
+                            setActiveTab("catalog");
+                          }}
+                          className="text-xs px-2.5 py-1 rounded-full bg-amber-50 hover:bg-amber-100 text-amber-900 border border-amber-200 transition"
+                        >
+                          #{tag}
+                        </button>
                       ))}
                     </div>
                   )}
 
-                  {/* Beğeni ve Yorumlar Bölümü */}
-                  <div className="mt-10 border-t border-amber-100 pt-8">
-                    <div className="mb-6">
+                  {/* Hatıra ve Telif Notu */}
+                  <div className="mt-8 p-3.5 bg-amber-50/60 rounded-xl border border-amber-200/70 text-xs text-amber-900/90 flex items-start gap-2.5">
+                    <Sparkles className="w-4 h-4 text-amber-700 flex-shrink-0 mt-0.5" />
+                    <span>
+                      Bu eser, <strong>Gurbet Kalemleri</strong> topluluk arşivimizin kıymetli bir parçasıdır. Her kelimesi gurbetin sinesinden süzülen gerçek bir duygu ve hatıradır.
+                    </span>
+                  </div>
+
+                  {/* Beğeni & Yorum Alanı */}
+                  <div className="mt-8 pt-8 border-t border-amber-200">
+                    <div className="flex items-center justify-between flex-wrap gap-4 mb-6">
+                      <div>
+                        <h4 className="text-lg font-semibold text-stone-800" style={accentStyle}>
+                          Bu Eser Sende Ne Uyandırdı?
+                        </h4>
+                        <p className="text-xs text-stone-500" style={serifStyle}>
+                          Yazara hislerini iletebilir, beğeni bırakabilirsin.
+                        </p>
+                      </div>
                       <LikeButton workId={featuredWork.id} />
                     </div>
 
-                    <div className="mb-8">
-                      <h3 className="text-xl text-stone-800 mb-4" style={accentStyle}>
-                        Yorum Yap
-                      </h3>
-                      <CommentForm
-                        workId={featuredWork.id}
-                        onCommentAdded={() => setCommentsRefresh((prev) => prev + 1)}
-                      />
-                    </div>
+                    <CommentForm
+                      workId={featuredWork.id}
+                      onCommentAdded={() => setCommentsRefresh((prev) => prev + 1)}
+                    />
 
                     <div className="mt-8">
-                      <CommentsList
-                        workId={featuredWork.id}
-                        refresh={commentsRefresh}
-                      />
+                      <CommentsList workId={featuredWork.id} refresh={commentsRefresh} />
                     </div>
                   </div>
                 </div>
               ) : (
-                <div className="mt-10 text-stone-500" style={serifStyle}>
-                  Gunun eseri hazirlaniyor.
+                <div className="p-12 text-center text-stone-500" style={serifStyle}>
+                  Seçilen eser yüklenemedi.
+                </div>
+              )}
+            </article>
+          </div>
+        )}
+
+        {/* ======================================================== */}
+        {/* SEKME 2: 📚 TÜM ESERLER / ANTOLOJİ KATALOĞU               */}
+        {/* ======================================================== */}
+        {activeTab === "catalog" && (
+          <div className="space-y-6">
+            {/* Arama ve Filtre Kontrol Barı */}
+            <div className="p-4 sm:p-5 bg-white/95 rounded-2xl border border-amber-200 shadow-sm">
+              <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3">
+                {/* Arama Kutusu */}
+                <div className="relative flex-1">
+                  <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-stone-400" />
+                  <Input
+                    placeholder="Eser başlığı, yazar veya şiir metninde ara..."
+                    value={searchQuery}
+                    onChange={(e) => setSearchQuery(e.target.value)}
+                    className="pl-9 h-11 bg-stone-50/60 border-amber-200 text-sm focus-visible:ring-amber-400"
+                  />
+                  {searchQuery && (
+                    <button
+                      onClick={() => setSearchQuery("")}
+                      className="absolute right-3 top-1/2 -translate-y-1/2 text-stone-400 hover:text-stone-700"
+                    >
+                      <X className="w-4 h-4" />
+                    </button>
+                  )}
+                </div>
+
+                {/* Filtre Aç/Kapa Butonu */}
+                <Button
+                  variant="outline"
+                  onClick={() => setFiltersOpen(!filtersOpen)}
+                  className={`h-11 px-4 gap-2 border-amber-200 transition ${
+                    filtersOpen || activeFiltersCount > 0 ? "bg-amber-100 text-amber-950 border-amber-300" : "bg-white"
+                  }`}
+                >
+                  <SlidersHorizontal className="w-4 h-4 text-amber-700" />
+                  <span>Filtreler</span>
+                  {activeFiltersCount > 0 && (
+                    <span className="w-5 h-5 rounded-full bg-amber-800 text-white text-xs flex items-center justify-center font-bold">
+                      {activeFiltersCount}
+                    </span>
+                  )}
+                </Button>
+
+                {activeFiltersCount > 0 && (
+                  <Button
+                    variant="ghost"
+                    onClick={clearAllFilters}
+                    className="h-11 text-xs text-stone-600 hover:text-rose-700"
+                  >
+                    Temizle
+                  </Button>
+                )}
+              </div>
+
+              {/* Genişletilebilir Filtre Paneli */}
+              {filtersOpen && (
+                <div className="mt-4 pt-4 border-t border-amber-100 space-y-4">
+                  <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                    <div>
+                      <label className="text-xs font-semibold text-stone-700 block mb-1.5">
+                        Yazara Göre
+                      </label>
+                      <Select value={selectedAuthor} onValueChange={setSelectedAuthor}>
+                        <SelectTrigger className="bg-white border-amber-200 h-10 text-xs">
+                          <SelectValue placeholder="Tüm Yazarlar" />
+                        </SelectTrigger>
+                        <SelectContent className="max-h-60">
+                          <SelectItem value="all">Tüm Yazarlar ({authors.length})</SelectItem>
+                          {authors.map((author) => (
+                            <SelectItem key={author} value={author}>
+                              {author}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                    </div>
+
+                    <div>
+                      <label className="text-xs font-semibold text-stone-700 block mb-1.5">
+                        Türe Göre
+                      </label>
+                      <Select value={selectedType} onValueChange={setSelectedType}>
+                        <SelectTrigger className="bg-white border-amber-200 h-10 text-xs">
+                          <SelectValue placeholder="Tüm Türler" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="all">Tüm Türler ({types.length})</SelectItem>
+                          {types.map((type) => (
+                            <SelectItem key={type} value={type}>
+                              {type}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                    </div>
+
+                    <div>
+                      <label className="text-xs font-semibold text-stone-700 block mb-1.5">
+                        Temaya / Etikete Göre
+                      </label>
+                      <Select
+                        value={selectedTags.length === 1 ? selectedTags[0] : "all"}
+                        onValueChange={(val) => setSelectedTags(val === "all" ? [] : [val])}
+                      >
+                        <SelectTrigger className="bg-white border-amber-200 h-10 text-xs">
+                          <SelectValue placeholder="Tüm Etiketler" />
+                        </SelectTrigger>
+                        <SelectContent className="max-h-60">
+                          <SelectItem value="all">Tüm Temalar</SelectItem>
+                          {tags.map((tag) => (
+                            <SelectItem key={tag} value={tag}>
+                              {tag}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                    </div>
+                  </div>
+
+                  {/* Sesli Eser Checkbox */}
+                  <div className="flex items-center justify-between pt-2">
+                    <label className="flex items-center gap-2 cursor-pointer text-xs font-medium text-stone-700">
+                      <input
+                        type="checkbox"
+                        checked={showOnlyNarrated}
+                        onChange={(e) => setShowOnlyNarrated(e.target.checked)}
+                        className="w-4 h-4 rounded text-amber-700 focus:ring-amber-500 cursor-pointer"
+                      />
+                      <Music className="w-3.5 h-3.5 text-emerald-700" />
+                      <span>Sadece Seslendirilmiş Eserleri Göster ({narratedWorksCount})</span>
+                    </label>
+                  </div>
+
+                  {/* Hızlı Popüler Etiketler */}
+                  <div className="pt-2">
+                    <span className="text-xs text-stone-500 block mb-1.5" style={serifStyle}>
+                      Öne çıkan duygular ve temalar:
+                    </span>
+                    <div className="flex flex-wrap gap-1.5">
+                      {popularTags.map((tag) => {
+                        const isSelected = selectedTags.includes(tag);
+                        return (
+                          <button
+                            key={tag}
+                            onClick={() => toggleTag(tag)}
+                            className={`text-xs px-2.5 py-1 rounded-full transition border ${
+                              isSelected
+                                ? "bg-amber-800 text-white border-amber-900"
+                                : "bg-stone-50 hover:bg-amber-100/60 text-stone-700 border-amber-200/80"
+                            }`}
+                          >
+                            #{tag}
+                          </button>
+                        );
+                      })}
+                    </div>
+                  </div>
                 </div>
               )}
             </div>
-          </section>
-        </div>
-      </div>
+
+            {/* Arama Sonuç Durumu */}
+            <div className="flex items-center justify-between text-xs sm:text-sm text-stone-600 px-1">
+              <span>
+                <strong>{filteredWorks.length}</strong> eser bulundu
+                {activeFiltersCount > 0 && " (filtrelenmiş sonuçlar)"}
+              </span>
+              {activeFiltersCount > 0 && (
+                <button onClick={clearAllFilters} className="text-amber-800 hover:underline">
+                  Tüm Filtreleri Kaldır
+                </button>
+              )}
+            </div>
+
+            {/* Eserler Grid Listesi */}
+            {filteredWorks.length === 0 ? (
+              <div className="bg-white/80 rounded-2xl border border-amber-200 p-10 text-center">
+                <Feather className="w-10 h-10 text-stone-300 mx-auto mb-3" />
+                <h3 className="text-lg font-semibold text-stone-800" style={accentStyle}>
+                  Aradığınız kriterde eser bulunamadı
+                </h3>
+                <p className="text-sm text-stone-500 mt-1 max-w-md mx-auto" style={serifStyle}>
+                  Filtreleri sıfırlayarak veya farklı bir kelime aratarak diğer güzel eserlere göz atabilirsiniz.
+                </p>
+                <Button onClick={clearAllFilters} className="mt-4 bg-amber-800 hover:bg-amber-900 text-white text-xs">
+                  Filtreleri Temizle
+                </Button>
+              </div>
+            ) : (
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                {filteredWorks.map((work) => (
+                  <div
+                    key={work.id}
+                    className="rounded-2xl bg-white/95 border border-amber-200/80 p-5 shadow-xs hover:shadow-md transition-all duration-200 flex flex-col justify-between group hover:border-amber-400"
+                  >
+                    <div>
+                      {/* Üst Kısım: Tür ve Ses Rozeti */}
+                      <div className="flex items-center justify-between gap-2 mb-2.5">
+                        <Badge variant="outline" className="text-[11px] bg-amber-50 text-amber-900 border-amber-200">
+                          {work.type}
+                        </Badge>
+                        {work.audio_url && (
+                          <span className="inline-flex items-center gap-1 text-[11px] font-medium text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded-md border border-emerald-200">
+                            <Music className="w-3 h-3" />
+                            Sesli
+                          </span>
+                        )}
+                      </div>
+
+                      {/* Başlık ve Yazar */}
+                      <h3
+                        onClick={() => selectWorkAndRead(work.id)}
+                        className="text-lg font-semibold text-stone-900 group-hover:text-amber-900 transition line-clamp-2 cursor-pointer"
+                        style={accentStyle}
+                      >
+                        {work.title}
+                      </h3>
+
+                      <div className="text-xs text-stone-500 mt-1 flex items-center gap-1" style={serifStyle}>
+                        <User className="w-3 h-3 text-amber-700" />
+                        <span className="font-medium text-stone-700">{work.author}</span>
+                      </div>
+
+                      {/* Şiir Önizlemesi */}
+                      <p
+                        className="text-xs text-stone-600 line-clamp-3 mt-3 leading-relaxed bg-amber-50/30 p-2.5 rounded-lg border border-amber-100/50"
+                        style={serifStyle}
+                      >
+                        {work.content}
+                      </p>
+                    </div>
+
+                    {/* Alt Kısım: Butonlar ve İstatistikler */}
+                    <div className="pt-4 mt-4 border-t border-amber-100 flex items-center justify-between gap-2">
+                      <div className="flex items-center gap-2.5 text-[11px] text-stone-400">
+                        {work.views !== undefined && (
+                          <span className="flex items-center gap-1">
+                            <Eye className="w-3 h-3" /> {work.views}
+                          </span>
+                        )}
+                        {work.likes !== undefined && work.likes > 0 && (
+                          <span className="flex items-center gap-1 text-rose-500 font-medium">
+                            <Heart className="w-3 h-3 fill-rose-500" /> {work.likes}
+                          </span>
+                        )}
+                      </div>
+
+                      <div className="flex items-center gap-1.5">
+                        <Button
+                          size="sm"
+                          onClick={() => selectWorkAndRead(work.id)}
+                          className="h-7 px-2.5 bg-amber-800 hover:bg-amber-900 text-white text-xs gap-1 rounded-lg"
+                        >
+                          <span>Oku</span>
+                          <ArrowRight className="w-3 h-3" />
+                        </Button>
+                        <Link href={`/gurbet-kalemleri/${work.id}`}>
+                          <Button
+                            variant="ghost"
+                            size="sm"
+                            className="h-7 w-7 p-0 text-stone-500 hover:text-amber-900 hover:bg-amber-100/50 rounded-lg"
+                            title="Ayrı Sayfada Aç"
+                          >
+                            <ExternalLink className="w-3.5 h-3.5" />
+                          </Button>
+                        </Link>
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
+        )}
+
+        {/* ======================================================== */}
+        {/* SEKME 3: 🏆 KEŞFET & SIRALAMALAR HUB'I (DERLİ TOPLU)      */}
+        {/* ======================================================== */}
+        {activeTab === "leaderboards" && (
+          <div className="space-y-6">
+            {/* Üst Açıklama ve Alt Sekmeler */}
+            <div className="p-5 bg-white/95 rounded-2xl border border-amber-200 shadow-sm">
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-4">
+                <div>
+                  <h3 className="text-xl font-bold text-stone-900" style={accentStyle}>
+                    🏆 Antoloji Keşif Merkezi
+                  </h3>
+                  <p className="text-xs sm:text-sm text-stone-600 mt-0.5" style={serifStyle}>
+                    En aktif yazarlar, sevilen eserler ve sesli dinleme kayıtları bir arada.
+                  </p>
+                </div>
+
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => setShowAllLeaderboards(!showAllLeaderboards)}
+                  className="text-xs h-8 border-amber-200 text-amber-900 hover:bg-amber-100/60"
+                >
+                  {showAllLeaderboards ? "Sıkıştırılmış Sekmeli Görünüme Dön" : "Tüm Kartları Yan Yana Göster (Grid)"}
+                </Button>
+              </div>
+
+              {/* Kategori Alt Sekmeleri */}
+              {!showAllLeaderboards && (
+                <div className="flex flex-wrap gap-1.5 pt-2 border-t border-amber-100">
+                  <button
+                    onClick={() => setLeaderboardTab("authors")}
+                    className={`text-xs px-3 py-1.5 rounded-lg transition font-medium flex items-center gap-1.5 ${
+                      leaderboardTab === "authors"
+                        ? "bg-amber-800 text-white shadow-xs"
+                        : "bg-amber-50 hover:bg-amber-100 text-stone-700"
+                    }`}
+                  >
+                    <User className="w-3.5 h-3.5" />
+                    <span>En Aktif Yazarlar</span>
+                  </button>
+
+                  <button
+                    onClick={() => setLeaderboardTab("likes")}
+                    className={`text-xs px-3 py-1.5 rounded-lg transition font-medium flex items-center gap-1.5 ${
+                      leaderboardTab === "likes"
+                        ? "bg-amber-800 text-white shadow-xs"
+                        : "bg-amber-50 hover:bg-amber-100 text-stone-700"
+                    }`}
+                  >
+                    <Heart className="w-3.5 h-3.5" />
+                    <span>En Beğenilen Eserler</span>
+                  </button>
+
+                  <button
+                    onClick={() => setLeaderboardTab("narrated")}
+                    className={`text-xs px-3 py-1.5 rounded-lg transition font-medium flex items-center gap-1.5 ${
+                      leaderboardTab === "narrated"
+                        ? "bg-amber-800 text-white shadow-xs"
+                        : "bg-amber-50 hover:bg-amber-100 text-stone-700"
+                    }`}
+                  >
+                    <Music className="w-3.5 h-3.5" />
+                    <span>Sesli Dinlenenler</span>
+                  </button>
+
+                  <button
+                    onClick={() => setLeaderboardTab("views")}
+                    className={`text-xs px-3 py-1.5 rounded-lg transition font-medium flex items-center gap-1.5 ${
+                      leaderboardTab === "views"
+                        ? "bg-amber-800 text-white shadow-xs"
+                        : "bg-amber-50 hover:bg-amber-100 text-stone-700"
+                    }`}
+                  >
+                    <Eye className="w-3.5 h-3.5" />
+                    <span>En Çok Okunanlar</span>
+                  </button>
+
+                  <button
+                    onClick={() => setLeaderboardTab("recent")}
+                    className={`text-xs px-3 py-1.5 rounded-lg transition font-medium flex items-center gap-1.5 ${
+                      leaderboardTab === "recent"
+                        ? "bg-amber-800 text-white shadow-xs"
+                        : "bg-amber-50 hover:bg-amber-100 text-stone-700"
+                    }`}
+                  >
+                    <Clock className="w-3.5 h-3.5" />
+                    <span>Son Eklenenler</span>
+                  </button>
+
+                  <button
+                    onClick={() => setLeaderboardTab("tags")}
+                    className={`text-xs px-3 py-1.5 rounded-lg transition font-medium flex items-center gap-1.5 ${
+                      leaderboardTab === "tags"
+                        ? "bg-amber-800 text-white shadow-xs"
+                        : "bg-amber-50 hover:bg-amber-100 text-stone-700"
+                    }`}
+                  >
+                    <TagIcon className="w-3.5 h-3.5" />
+                    <span>Popüler Temalar</span>
+                  </button>
+
+                  <button
+                    onClick={() => setLeaderboardTab("random")}
+                    className={`text-xs px-3 py-1.5 rounded-lg transition font-medium flex items-center gap-1.5 ${
+                      leaderboardTab === "random"
+                        ? "bg-amber-800 text-white shadow-xs"
+                        : "bg-amber-50 hover:bg-amber-100 text-stone-700"
+                    }`}
+                  >
+                    <Dice5 className="w-3.5 h-3.5" />
+                    <span>Şansını Dene</span>
+                  </button>
+                </div>
+              )}
+            </div>
+
+            {/* Gösterim: Ya Seçili Tek Kart Ya da İstenirse Grid */}
+            {!showAllLeaderboards ? (
+              <div className="max-w-2xl mx-auto">
+                {leaderboardTab === "authors" && (
+                  <TopAuthorsDisplay
+                    onAuthorClick={(authorName) => {
+                      setSelectedAuthor(authorName);
+                      setActiveTab("catalog");
+                    }}
+                  />
+                )}
+                {leaderboardTab === "likes" && <TopWorksDisplay />}
+                {leaderboardTab === "narrated" && <TopNarratedWorksDisplay />}
+                {leaderboardTab === "views" && <TopViewedWorksDisplay />}
+                {leaderboardTab === "recent" && <RecentWorksDisplay />}
+                {leaderboardTab === "tags" && (
+                  <PopularTagsDisplay
+                    onTagClick={(tag) => {
+                      setSelectedTags([tag]);
+                      setActiveTab("catalog");
+                    }}
+                  />
+                )}
+                {leaderboardTab === "random" && (
+                  <RandomDiscoveryDisplay triggerId={featuredId || undefined} />
+                )}
+              </div>
+            ) : (
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                <TopAuthorsDisplay
+                  onAuthorClick={(authorName) => {
+                    setSelectedAuthor(authorName);
+                    setActiveTab("catalog");
+                  }}
+                />
+                <TopWorksDisplay />
+                <TopNarratedWorksDisplay />
+                <RecentNarratedWorksDisplay />
+                <TopViewedWorksDisplay />
+                <RecentWorksDisplay />
+                <PopularTagsDisplay
+                  onTagClick={(tag) => {
+                    setSelectedTags([tag]);
+                    setActiveTab("catalog");
+                  }}
+                />
+                <RandomDiscoveryDisplay triggerId={featuredId || undefined} />
+              </div>
+            )}
+          </div>
+        )}
+
+        {/* ======================================================== */}
+        {/* SEKME 4: 💬 TOPLULUK, TELEGRAM KAYNAKLARI & YENİ ESERLER   */}
+        {/* ======================================================== */}
+        {activeTab === "community" && (
+          <div className="space-y-6">
+            {/* Topluluk Başlığı ve Açıklaması */}
+            <div className="p-6 sm:p-8 bg-white/95 rounded-3xl border border-amber-200 shadow-sm relative overflow-hidden">
+              <div className="absolute -right-10 -bottom-10 w-48 h-48 bg-gradient-to-br from-amber-100 to-amber-200/50 rounded-full blur-2xl pointer-events-none" />
+              
+              <div className="max-w-2xl relative z-10">
+                <Badge className="bg-blue-100 text-blue-900 border-blue-200 mb-3">
+                  Canlı Topluluk & Kaynaklar
+                </Badge>
+                <h3 className="text-2xl sm:text-3xl font-bold text-stone-900" style={accentStyle}>
+                  Gurbet Kalemleri Nasıl Büyüyor?
+                </h3>
+                <p className="mt-2 text-stone-700 text-sm sm:text-base leading-relaxed" style={serifStyle}>
+                  Bu sayfada yer alan her bir eser, gurbetteki dostlarımızın Telegram gruplarında birbirleriyle paylaştığı, kalplerinden dökülen gerçek mısralar ve yazılardır. Hiçbir eser unutulmasın, kaybolmasın diye burada özenle arşivlenir ve seslendirilir.
+                </p>
+
+                {/* Bağlantı Butonları */}
+                <div className="mt-6 flex flex-wrap gap-3">
+                  <a
+                    href="https://t.me/+JSmuDvozRY43OGMy"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-blue-600 hover:bg-blue-700 text-white text-sm font-semibold shadow-sm transition"
+                  >
+                    <MessageCircle className="w-4 h-4" />
+                    <span>Yazılarını Paylaş (Telegram Grubu)</span>
+                    <ExternalLink className="w-3.5 h-3.5 opacity-80" />
+                  </a>
+
+                  <a
+                    href="https://t.me/+yI1or4k3nMswN2Ni"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-amber-600 hover:bg-amber-700 text-white text-sm font-semibold shadow-sm transition"
+                  >
+                    <Radio className="w-4 h-4" />
+                    <span>Deutschland Compass Kanalı</span>
+                    <ExternalLink className="w-3.5 h-3.5 opacity-80" />
+                  </a>
+
+                  <Link
+                    href="/gurbet-kalemleri/gonder"
+                    className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-sm font-semibold shadow-sm transition"
+                  >
+                    <PenTool className="w-4 h-4" />
+                    <span>Doğrudan Eser Gönder</span>
+                  </Link>
+                </div>
+              </div>
+            </div>
+
+            {/* Bilgilendirici Kartlar: Telegram & Eser Ekleme Süreci */}
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+              <div className="p-5 bg-white/90 rounded-2xl border border-amber-200/80 shadow-xs">
+                <div className="w-10 h-10 rounded-xl bg-blue-50 border border-blue-200 flex items-center justify-center text-blue-700 mb-3">
+                  <MessageCircle className="w-5 h-5" />
+                </div>
+                <h4 className="font-semibold text-stone-900 mb-1" style={accentStyle}>
+                  1. Telegram Paylaşımı
+                </h4>
+                <p className="text-xs text-stone-600 leading-relaxed" style={serifStyle}>
+                  Gurbet Kalemleri Telegram grubunda paylaşılan şiirler ve denemeler yazarlarının rızasıyla derlenir.
+                </p>
+              </div>
+
+              <div className="p-5 bg-white/90 rounded-2xl border border-amber-200/80 shadow-xs">
+                <div className="w-10 h-10 rounded-xl bg-emerald-50 border border-emerald-200 flex items-center justify-center text-emerald-700 mb-3">
+                  <CheckCircle2 className="w-5 h-5" />
+                </div>
+                <h4 className="font-semibold text-stone-900 mb-1" style={accentStyle}>
+                  2. Arşivleme & Doğrulama
+                </h4>
+                <p className="text-xs text-stone-600 leading-relaxed" style={serifStyle}>
+                  Eserin başlığı, yazarı, tarihi ve tematik etiketleri veritabanına titizlikle kaydedilir.
+                </p>
+              </div>
+
+              <div className="p-5 bg-white/90 rounded-2xl border border-amber-200/80 shadow-xs">
+                <div className="w-10 h-10 rounded-xl bg-purple-50 border border-purple-200 flex items-center justify-center text-purple-700 mb-3">
+                  <Music className="w-5 h-5" />
+                </div>
+                <h4 className="font-semibold text-stone-900 mb-1" style={accentStyle}>
+                  3. Seslendirme & Dinleme
+                </h4>
+                <p className="text-xs text-stone-600 leading-relaxed" style={serifStyle}>
+                  Uygun bulunan eserler seslendirilerek hem web sayfamızda hem de radyo/ses kütüphanesinde yayınlanır.
+                </p>
+              </div>
+            </div>
+
+            {/* Antolojiye Son Eklenen Eserler */}
+            <div className="p-5 sm:p-6 bg-white/95 rounded-2xl border border-amber-200 shadow-sm">
+              <div className="flex items-center justify-between mb-4 pb-3 border-b border-amber-100">
+                <div>
+                  <h4 className="font-bold text-stone-900 text-lg" style={accentStyle}>
+                    Antolojiye Yeni Katılan Eserler
+                  </h4>
+                  <p className="text-xs text-stone-500" style={serifStyle}>
+                    Tarih sırasıyla kaydedilmiş son paylaşımlar
+                  </p>
+                </div>
+                <Badge variant="outline" className="text-xs border-amber-200 text-amber-900">
+                  Toplam {literaryWorks.length} Kayıt
+                </Badge>
+              </div>
+
+              <div className="divide-y divide-amber-100/70">
+                {literaryWorks.slice(0, 10).map((item) => (
+                  <div key={item.id} className="py-3 flex items-center justify-between gap-3 group">
+                    <div className="flex-1 min-w-0">
+                      <div className="flex items-center gap-2">
+                        <span className="text-xs font-semibold text-amber-900/80" style={serifStyle}>
+                          {item.author}
+                        </span>
+                        <span className="text-[11px] text-stone-400">•</span>
+                        <span className="text-[11px] text-stone-400">{item.date}</span>
+                        {item.audio_url && (
+                          <Music className="w-3 h-3 text-emerald-600 flex-shrink-0" />
+                        )}
+                      </div>
+                      <h5
+                        onClick={() => selectWorkAndRead(item.id)}
+                        className="text-sm font-semibold text-stone-800 hover:text-amber-900 cursor-pointer truncate mt-0.5"
+                        style={accentStyle}
+                      >
+                        {item.title}
+                      </h5>
+                    </div>
+
+                    <Button
+                      size="sm"
+                      variant="ghost"
+                      onClick={() => selectWorkAndRead(item.id)}
+                      className="text-xs text-amber-800 hover:bg-amber-100/60 h-8 px-2.5 gap-1 flex-shrink-0"
+                    >
+                      <span>Oku</span>
+                      <ChevronRight className="w-3.5 h-3.5" />
+                    </Button>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+        )}
+      </main>
 
       {/* 🎯 Sticky Floating Action Button */}
       <Link href="/gurbet-kalemleri/gonder">
-        <div className="fixed bottom-8 right-8 z-50 group">
+        <div className="fixed bottom-6 right-4 sm:bottom-8 sm:right-8 z-40 group">
           <div className="relative">
-            {/* Pulse animation ring */}
-            <div className="absolute inset-0 bg-gradient-to-r from-emerald-500 to-teal-500 rounded-full animate-ping opacity-75"></div>
-            {/* Main button */}
-            <button className="relative flex items-center gap-3 px-6 py-4 bg-gradient-to-r from-emerald-600 to-teal-600 text-white rounded-full shadow-2xl hover:shadow-3xl hover:scale-110 transition-all duration-300 group-hover:from-emerald-700 group-hover:to-teal-700">
-              <PenTool className="w-6 h-6" />
-              <span className="hidden md:inline font-semibold text-lg">Eser Paylaş</span>
+            <div className="absolute inset-0 bg-gradient-to-r from-emerald-500 to-teal-500 rounded-full animate-ping opacity-60"></div>
+            <button className="relative flex items-center gap-2.5 px-4 py-3 sm:px-5 sm:py-3.5 bg-gradient-to-r from-emerald-600 to-teal-600 text-white rounded-full shadow-xl hover:shadow-2xl hover:scale-105 active:scale-95 transition-all duration-300">
+              <PenTool className="w-4 h-4 sm:w-5 sm:h-5" />
+              <span className="font-semibold text-xs sm:text-sm">Eser Paylaş</span>
             </button>
-            {/* Tooltip for mobile */}
-            <div className="md:hidden absolute bottom-full right-0 mb-2 px-3 py-2 bg-slate-900 text-white text-sm rounded-lg opacity-0 group-hover:opacity-100 transition-opacity duration-200 whitespace-nowrap pointer-events-none">
-              Eserini Paylaş
-            </div>
           </div>
         </div>
       </Link>
