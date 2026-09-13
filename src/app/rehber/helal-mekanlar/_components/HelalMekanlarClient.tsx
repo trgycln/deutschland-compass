@@ -4,7 +4,7 @@ import { useState, useMemo, useEffect, useCallback } from "react";
 import dynamic from "next/dynamic";
 import Image from "next/image";
 import { useSearchParams, useRouter, usePathname } from "next/navigation";
-import { MapPin, List, Map as MapIcon, Plus, Navigation, ChevronRight, Sparkles, MessageCircle } from "lucide-react";
+import { MapPin, List, Map as MapIcon, Plus, Navigation, ChevronRight, Sparkles, MessageCircle, ArrowUp } from "lucide-react";
 import type { HelalMekan } from "../page";
 import FilterBar from "./FilterBar";
 import PlaceCard from "./PlaceCard";
@@ -76,6 +76,20 @@ export default function HelalMekanlarClient({ initialData }: { initialData: Hela
   const [selectedMekan, setSelectedMekan]   = useState<HelalMekan | null>(null);
   const [showOnerModal, setShowOnerModal]   = useState(false);
   const [visibleLimit,  setVisibleLimit]    = useState(30);
+  const [showScrollTop, setShowScrollTop]   = useState(false);
+
+  // Monitor scroll position for scroll-to-top button
+  useEffect(() => {
+    const onScroll = () => {
+      setShowScrollTop(window.scrollY > 380);
+    };
+    window.addEventListener("scroll", onScroll, { passive: true });
+    return () => window.removeEventListener("scroll", onScroll);
+  }, []);
+
+  const scrollToTop = () => {
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  };
 
   // Sync searchInput when URL changes
   useEffect(() => { setSearchInput(searchParams.get("q") ?? ""); }, [searchParams]);
@@ -698,11 +712,11 @@ export default function HelalMekanlarClient({ initialData }: { initialData: Hela
         />
       )}
 
-      {/* ════════════ MOBILE FLOATING VIEW SWITCHER PILL ════════════ */}
-      <div className="lg:hidden fixed bottom-6 left-1/2 -translate-x-1/2 z-40 pointer-events-auto">
+      {/* ════════════ MOBILE FLOATING VIEW SWITCHER PILL (Elevated to avoid bottom collisions) ════════════ */}
+      <div className="lg:hidden fixed bottom-20 sm:bottom-8 left-1/2 -translate-x-1/2 z-40 pointer-events-auto">
         <button
           onClick={() => setViewMode(viewMode === "list" ? "map" : "list")}
-          className="flex items-center gap-2 px-4 py-2.5 rounded-full bg-slate-900/95 hover:bg-slate-900 text-white shadow-2xl backdrop-blur-md border border-white/20 text-xs font-bold active:scale-95 transition-all"
+          className="flex items-center gap-2 px-4 py-2.5 rounded-full bg-slate-900/95 hover:bg-slate-900 text-white shadow-2xl border border-white/20 text-xs font-bold active:scale-95 transition-all whitespace-nowrap"
         >
           {viewMode === "list" ? (
             <>
@@ -718,8 +732,8 @@ export default function HelalMekanlarClient({ initialData }: { initialData: Hela
         </button>
       </div>
 
-      {/* ════════════ FAB: Mekan Oner ════════════ */}
-      <div className="fixed bottom-6 right-3 sm:right-4 z-40">
+      {/* ════════════ FAB: Mekan Oner (Elevated to avoid bottom collisions) ════════════ */}
+      <div className="fixed bottom-20 sm:bottom-8 right-3 sm:right-4 z-40">
         <span className="absolute inset-0 rounded-full bg-emerald-400 animate-ping opacity-30 pointer-events-none" />
         <button
           onClick={() => setShowOnerModal(true)}
@@ -730,6 +744,21 @@ export default function HelalMekanlarClient({ initialData }: { initialData: Hela
           <span className="text-xs xs:hidden sm:hidden">Öner</span>
         </button>
       </div>
+
+      {/* ════════════ SCROLL TO TOP BUTTON (Bottom right, clean separation) ════════════ */}
+      {showScrollTop && (
+        <div className="fixed bottom-5 right-3.5 sm:right-5 z-30 animate-fadeIn">
+          <button
+            type="button"
+            onClick={scrollToTop}
+            className="w-10 h-10 rounded-full bg-white text-slate-700 shadow-xl border border-gray-200/90 hover:bg-slate-50 flex items-center justify-center transition-all active:scale-90"
+            title="Yukarı Çık"
+            aria-label="Sayfanın Başına Dön"
+          >
+            <ArrowUp className="w-4 h-4 text-slate-700" />
+          </button>
+        </div>
+      )}
     </div>
   );
 }

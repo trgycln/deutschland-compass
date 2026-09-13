@@ -1,4 +1,4 @@
-﻿"use client";
+"use client";
 
 import { useState, useSyncExternalStore } from 'react';
 import Link from 'next/link';
@@ -38,8 +38,9 @@ export function Navbar() {
               className="object-cover scale-110"
             />
           </div>
-          <span className="font-bold text-xl text-slate-900 dark:text-white hidden sm:inline-block">Deutschland Compass</span>
-          <span className="font-bold text-xl text-slate-900 dark:text-white sm:hidden">D. Compass</span>
+          <span className="font-bold text-base sm:text-xl text-slate-900 dark:text-white tracking-tight whitespace-nowrap">
+            Deutschland Compass
+          </span>
         </Link>
         
         {/* Actions / Right side */}
