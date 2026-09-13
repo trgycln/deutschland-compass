@@ -69,23 +69,48 @@ function getPinIcon(color: string, isHighlight: boolean, isSelected: boolean): L
   const size = isSelected ? 40 : (isHighlight ? 34 : 26);
   const inner = isSelected ? 12 : (isHighlight ? 10 : 8);
 
+  // Distinct radiant golden-amber gradient for highlighted venues
+  const pinBg = isHighlight
+    ? "linear-gradient(135deg, #f59e0b 0%, #d97706 100%)"
+    : color;
+
+  const pinShadow = isHighlight
+    ? "0 4px 14px rgba(217, 119, 6, 0.55), 0 0 0 1.5px rgba(251, 191, 36, 0.65)"
+    : "0 2px 8px rgba(0,0,0,0.32)";
+
+  const pinOutline = isSelected
+    ? "outline:3.5px solid #2563eb; outline-offset:2px; z-index:999;"
+    : (isHighlight ? "outline:2px solid #fbbf24; outline-offset:1px;" : "");
+
+  const innerContent = isHighlight
+    ? `<span style="
+        display:flex; align-items:center; justify-content:center;
+        transform:rotate(45deg);
+        color:#ffffff;
+        font-size:${isSelected ? 16 : 14}px;
+        line-height:1;
+        font-weight:bold;
+        filter: drop-shadow(0 1px 2px rgba(0,0,0,0.35));
+      ">★</span>`
+    : `<div style="
+        width:${inner}px; height:${inner}px;
+        background:white; border-radius:50%;
+        transform:rotate(45deg);
+      "></div>`;
+
   const icon = L.divIcon({
     className: "pin-icon-wrap",
     html: `<div style="
       width:${size}px; height:${size}px;
-      background:${color};
+      background:${pinBg};
       border: 2.5px solid #ffffff;
       border-radius: 50% 50% 50% 0;
       transform: rotate(-45deg);
-      box-shadow: 0 2px 8px rgba(0,0,0,0.32);
+      box-shadow: ${pinShadow};
       display:flex; align-items:center; justify-content:center;
-      ${isSelected ? "outline:3.5px solid #2563eb; outline-offset:2px; z-index:999;" : (isHighlight ? "outline:2.5px solid #f59e0b; outline-offset:1px;" : "")}
+      ${pinOutline}
     ">
-      <div style="
-        width:${inner}px; height:${inner}px;
-        background:white; border-radius:50%;
-        transform:rotate(45deg);
-      "></div>
+      ${innerContent}
     </div>`,
     iconSize: [size, size],
     iconAnchor: [size / 2, size],
@@ -330,6 +355,7 @@ function ClusteredMarkers({
             key={mekan.id}
             position={[lat, lng]}
             icon={pinIcon}
+            zIndexOffset={isSelected ? 1000 : (mekan.highlight ? 400 : 1)}
             eventHandlers={{
               click: () => {
                 onMarkerClick(mekan);

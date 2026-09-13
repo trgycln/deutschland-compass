@@ -1,5 +1,7 @@
-"use server";
 // Server Component — fetches halal places and passes to client
+
+export const dynamic = "force-dynamic";
+export const revalidate = 0;
 
 import { Suspense } from "react";
 import { supabase } from "@/lib/supabase";

@@ -110,12 +110,9 @@ export const KATEGORI_DB: Record<string, string> = {
 };
 
 export const SPECIAL_FILTERS = [
+  { key: "highlight",         label: "⭐ Öne Çıkanlar", emoji: "star" },
   { key: "telegram_yeni",     label: "✨ Yeni Eklenenler", emoji: "sparkles" },
   { key: "mescid_var",        label: "Mescidli",      emoji: "mosque" },
-  { key: "helal_sertifikali", label: "Sertifikali",   emoji: "check_mark_button" },
-  { key: "muslumana_ait",     label: "Muslumana Ait", emoji: "person" },
-  { key: "aile_dostu",        label: "Aile Dostu",    emoji: "family" },
-  { key: "highlight",         label: "One Cikan",     emoji: "star" },
 ] as const;
 
 export type SpecialFilterKey = (typeof SPECIAL_FILTERS)[number]["key"];

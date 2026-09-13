@@ -284,14 +284,19 @@ export default function FilterBar({
 
           {SPECIAL_FILTERS.map((f) => {
             const isActive = activeSpecials.has(f.key);
+            const isHighlight = f.key === "highlight";
             return (
               <button
                 key={f.key}
                 onClick={() => onToggleSpecial(f.key)}
                 className={`shrink-0 flex items-center gap-1 px-3 py-1.5 rounded-full text-xs font-semibold border transition-all whitespace-nowrap active:scale-95 ${
                   isActive
-                    ? "bg-emerald-600 text-white border-emerald-600 shadow-sm"
-                    : "bg-gray-50 text-gray-600 border-gray-200 hover:bg-emerald-50 hover:text-emerald-700 hover:border-emerald-300"
+                    ? isHighlight
+                      ? "bg-gradient-to-r from-amber-500 to-amber-600 text-white border-amber-500 shadow-sm ring-1 ring-amber-400/40"
+                      : "bg-emerald-600 text-white border-emerald-600 shadow-sm"
+                    : isHighlight
+                      ? "bg-amber-50/70 text-amber-900 border-amber-200/90 hover:bg-amber-100 hover:border-amber-300 shadow-2xs"
+                      : "bg-gray-50 text-gray-600 border-gray-200 hover:bg-emerald-50 hover:text-emerald-700 hover:border-emerald-300"
                 }`}
               >
                 {f.label}
