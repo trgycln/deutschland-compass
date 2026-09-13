@@ -54,6 +54,26 @@ function buildParams(updates: Record<string, string>): string {
   return params.toString();
 }
 
+export function normalizeCountryName(country?: string): string {
+  if (!country) return "Almanya";
+  const c = country.trim();
+  if (/^(l[üu]ksemburg|luxembourg|luxemburg)$/i.test(c)) return "Lüksemburg";
+  if (/^(deutschland|germany|almanya)$/i.test(c)) return "Almanya";
+  if (/^(niederlande|holland|netherlands|hollanda)$/i.test(c)) return "Hollanda";
+  if (/^(belgien|belgique|belgium|bel[çc]ika)$/i.test(c)) return "Belçika";
+  if (/^(frankreich|france|fransa)$/i.test(c)) return "Fransa";
+  if (/^(schweiz|switzerland|suisse|[iı]svi[çc]re)$/i.test(c)) return "İsviçre";
+  if (/^(österreich|austria|avusturya)$/i.test(c)) return "Avusturya";
+  return c;
+}
+
+export function isCountryMatch(countryA?: string, countryB?: string): boolean {
+  if (!countryB || countryB === "all") return true;
+  const normA = normalizeCountryName(countryA).toLowerCase();
+  const normB = normalizeCountryName(countryB).toLowerCase();
+  return normA === normB;
+}
+
 // ── Component ────────────────────────────────────────────────────────────────
 export default function HelalMekanlarClient({ initialData }: { initialData: HelalMekan[] }) {
   const searchParams = useSearchParams();
@@ -196,7 +216,7 @@ export default function HelalMekanlarClient({ initialData }: { initialData: Hela
     let r = initialData;
 
     if (selectedCountry !== "all") {
-      r = r.filter((m) => (m.ulke || "Almanya").toLowerCase() === selectedCountry.toLowerCase());
+      r = r.filter((m) => isCountryMatch(m.ulke, selectedCountry));
     }
     if (selectedCity !== "all")   r = r.filter((m) => isCityMatch(m.sehir, selectedCity));
     if (selectedCategory !== "Tumu") r = r.filter((m) => m.kategori === selectedCategory);
@@ -207,7 +227,7 @@ export default function HelalMekanlarClient({ initialData }: { initialData: Hela
         const nameMatch = m.isim.toLowerCase().includes(q) || normalizeCityName(m.isim).includes(normQ);
         const cityMatch = m.sehir.toLowerCase().includes(q) || normalizeCityName(m.sehir).includes(normQ);
         const addrMatch = m.adres.toLowerCase().includes(q) || normalizeCityName(m.adres).includes(normQ);
-        const countryMatch = m.ulke && (m.ulke.toLowerCase().includes(q) || normalizeCityName(m.ulke).includes(normQ));
+        const countryMatch = m.ulke && (m.ulke.toLowerCase().includes(q) || normalizeCityName(m.ulke).includes(normQ) || normalizeCountryName(m.ulke).toLowerCase().includes(q));
         return nameMatch || cityMatch || addrMatch || countryMatch;
       });
     }
@@ -245,7 +265,7 @@ export default function HelalMekanlarClient({ initialData }: { initialData: Hela
 
   // Featured places (highlight) for the strip
   const featuredPlaces = useMemo(
-    () => initialData.filter((m) => m.highlight).slice(0, 8),
+    () => initialData.filter((m) => m.highlight),
     [initialData]
   );
 
@@ -294,7 +314,7 @@ export default function HelalMekanlarClient({ initialData }: { initialData: Hela
   const countries = useMemo(() => {
     const counts: Record<string, number> = {};
     initialData.forEach((m) => {
-      const c = m.ulke?.trim() || "Almanya";
+      const c = normalizeCountryName(m.ulke);
       counts[c] = (counts[c] || 0) + 1;
     });
     const list = Object.keys(counts);
@@ -308,7 +328,7 @@ export default function HelalMekanlarClient({ initialData }: { initialData: Hela
 
   const cities = useMemo(() => {
     const scoped = selectedCountry !== "all"
-      ? initialData.filter((m) => (m.ulke || "Almanya").toLowerCase() === selectedCountry.toLowerCase())
+      ? initialData.filter((m) => isCountryMatch(m.ulke, selectedCountry))
       : initialData;
     return [...new Set(scoped.map((m) => m.sehir).filter(Boolean))].sort(compareStrings);
   }, [initialData, selectedCountry]);

@@ -126,12 +126,36 @@ def get_photo_for_food(food_str: str, seed: str = "") -> str:
 def resolve_maps_url(short_url: str):
     """Google Maps kısa linkini açarak gerçek yönlendirme adresini ve başlığı çözer"""
     try:
-        req = urllib.request.Request(short_url, headers={'User-Agent': 'Mozilla/5.0'})
+        req = urllib.request.Request(short_url, headers={'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64)'})
         with urllib.request.urlopen(req, timeout=5) as response:
             final_url = response.geturl()
             return final_url
     except Exception:
         return short_url
+
+def extract_info_from_maps_url(url: str):
+    """Google Maps linkinden lat, lng ve açık adres çıkarmayı dener"""
+    if not url:
+        return None, None, None
+    final_url = resolve_maps_url(url)
+    lat, lng = None, None
+    # 1. @lat,lng veya ?q=lat,lng koordinat tespiti
+    coord_m = re.search(r'[@?&]q?=([0-9]{1,2}\.[0-9]{4,}),([0-9]{1,2}\.[0-9]{4,})', final_url)
+    if coord_m:
+        try:
+            lat = float(coord_m.group(1))
+            lng = float(coord_m.group(2))
+        except Exception:
+            pass
+    # 2. q=Mekan+Adı,+Sokak,+Şehir adres tespiti
+    address = None
+    q_m = re.search(r'[?&]q=([^&]+)', final_url)
+    if q_m:
+        raw_q = urllib.parse.unquote(q_m.group(1).replace('+', ' '))
+        if ',' in raw_q:
+            parts = [p.strip() for p in raw_q.split(',')]
+            address = ", ".join(parts[1:]) if len(parts) > 1 else raw_q
+    return lat, lng, address
 
 def geocode_city_nominatim(city_name: str, country="Almanya"):
     """Nominatim ile koordinat bulur"""
@@ -146,6 +170,11 @@ def geocode_city_nominatim(city_name: str, country="Almanya"):
     except Exception as e:
         print(f"      [Geocode Hatası]: {e}")
     return None, None
+
+ABI_ARKADAS_REGEX = re.compile(
+    r'\b(?:abimiz|abimize|abimizin|abiler|abilerimiz|abilerden|abimizden|abinin|abi|arkada[sş]|arkada[sş]lar|arkada[sş][ıi]m[ıi]z|arkada[sş][ıi]m[ıi]za|arkada[sş][ıi]m[ıi]z[ıi]n|arkada[sş]lardan|tan[ıi]d[ıi]k|bizimkiler|bizim\s+arkada[sş]|bizim\s+abi|bizden)\b',
+    re.IGNORECASE
+)
 
 async def parse_messages_with_gemini(messages_text: str):
     if not GEMINI_KEY or not HAS_GEMINI:
@@ -163,10 +192,10 @@ TELEGRAM MESAJLARI:
 
 GÖREVİN:
 Her geçerli mekan tavsiyesi için aşağıdaki JSON objesini oluştur:
-- name: Mekanın tam adı (örn: "Kult Gemüse Kebab", "Vera Restaurant", "Akdeniz Kebap")
-- city: Şehir adı (örn: "Düsseldorf", "Köln", "Bremen")
-- country: Ülke (Varsayılan: "Almanya")
-- address: Varsa sokak/cadde/posta kodu veya semt (bilinmiyorsa null)
+- name: Mekanın tam adı (örn: "Kult Gemüse Kebab", "CTR Chicken Gare", "Akdeniz Kebap")
+- city: Şehir adı (örn: "Düsseldorf", "Lüksemburg", "Köln", "Bremen", "Brüksel", "Amsterdam")
+- country: Ülke adı ("Almanya", "Lüksemburg", "Belçika", "Hollanda", "Fransa", "Avusturya", "İsviçre", "İtalya" vb. Eğer şehir veya adres Lüksemburg ise MUTLAKA "Lüksemburg" yaz, Almanya yazma)
+- address: Varsa açık sokak/cadde/posta kodu veya semt (bilinmiyorsa null)
 - food: Yemek türü (örn: "Döner, Kebap", "Açık Büfe Kahvaltı", "Tantuni")
 - category: "restaurant" | "cafe" | "fast_food" | "bakery" | "market" | "butcher" | "other"
 - map_link: Varsa Google Maps linki (https://maps.app.goo.gl/... veya https://google.com/maps/...)
@@ -292,17 +321,48 @@ async def sync_helal_group(limit=50, force_min_id=None, external_client=None):
             if not place_record:
                 place_record = existing.data[0]
             print(f"   ℹ️ Mevcut mekan bulundu: {place_record['name']} (ID: {place_record['id']})")
+        # Ülke ve Şehir Normalizasyonu
+        raw_country = (item.get("country") or "").strip()
+        if re.search(r'l[üu]ksemburg|luxembourg|luxemburg', raw_country, re.I) or re.search(r'l[üu]ksemburg|luxembourg|luxemburg', city, re.I):
+            country = "Lüksemburg"
+            if city.lower() in ["luxembourg", "luxemburg", "bilinmiyor", ""]:
+                city = "Lüksemburg"
+        elif re.search(r'bel[çc]ika|belgium|belgien', raw_country, re.I):
+            country = "Belçika"
+        elif re.search(r'hollanda|netherlands|niederlande', raw_country, re.I):
+            country = "Hollanda"
+        elif re.search(r'fransa|france|frankreich', raw_country, re.I):
+            country = "Fransa"
+        elif re.search(r'[iı]svi[çc]re|switzerland|schweiz', raw_country, re.I):
+            country = "İsviçre"
+        elif re.search(r'avusturya|austria|österreich', raw_country, re.I):
+            country = "Avusturya"
+        elif raw_country:
+            country = raw_country
         else:
+            country = "Almanya"
+
+        # Öne Çıkanlar (Abiler / Arkadaşlarımız) kodlama filtresi tespiti
+        is_highlight = bool(ABI_ARKADAS_REGEX.search(f"{name} {comment}"))
+
+        if not place_record:
             # Yeni mekan ekle
             print(f"   ➕ Yeni mekan oluşturuluyor...")
-            lat, lng = geocode_city_nominatim(city, item.get("country", "Almanya"))
+            
+            # Google Maps linkinden koordinat ve açık adres çözümlemeyi dene
+            lat, lng, maps_addr = extract_info_from_maps_url(map_link)
+            if not lat or not lng:
+                lat, lng = geocode_city_nominatim(city, country)
+
+            default_address = f"{city}, {country}" if country != "Almanya" else f"{city}, Almanya"
+            resolved_address = maps_addr or item.get("address") or default_address
             foto_url = get_photo_for_food(food)
 
             new_place_data = {
                 "name": name,
                 "city": city,
-                "country": item.get("country", "Almanya"),
-                "address": item.get("address") or f"{city}, Almanya",
+                "country": country,
+                "address": resolved_address,
                 "food": food,
                 "category": category,
                 "map_link": map_link,
@@ -314,14 +374,14 @@ async def sync_helal_group(limit=50, force_min_id=None, external_client=None):
                 "helal_sertifikali": item.get("helal_sertifikali", False),
                 "muslumana_ait": item.get("muslumana_ait", True),
                 "mescid_var": item.get("mescid_var", False),
-                "highlight": False
+                "highlight": is_highlight
             }
             try:
                 ins_res = supabase.table("places").insert([new_place_data]).execute()
                 if ins_res.data:
                     place_record = ins_res.data[0]
                     added_count += 1
-                    print(f"   ✅ Başarıyla eklendi! ID: {place_record['id']}")
+                    print(f"   ✅ Başarıyla eklendi! ID: {place_record['id']} (Highlight: {is_highlight})")
             except Exception as e:
                 print(f"   ⚠️ Mekan ekleme hatası: {e}")
 
@@ -340,12 +400,14 @@ async def sync_helal_group(limit=50, force_min_id=None, external_client=None):
                 review_count += 1
                 print(f"   💬 Topluluk tavsiyesi yorum olarak eklendi.")
 
-                # Puanı güncelle
-                current_cnt = (place_record.get("rating_count") or 1) + 1
-                supabase.table("places").update({
-                    "rating_count": current_cnt,
+                # Puanı güncelle ve gerekiyorsa highlight işaretle
+                update_fields = {
+                    "rating_count": (place_record.get("rating_count") or 1) + 1,
                     "rating_avg": 5.0
-                }).eq("id", place_record["id"]).execute()
+                }
+                if is_highlight:
+                    update_fields["highlight"] = True
+                supabase.table("places").update(update_fields).eq("id", place_record["id"]).execute()
             except Exception as e:
                 print(f"   ⚠️ Yorum ekleme hatası: {e}")
 

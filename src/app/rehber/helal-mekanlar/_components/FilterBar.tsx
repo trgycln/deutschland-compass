@@ -9,6 +9,8 @@ const COUNTRY_FLAGS: Record<string, string> = {
   "Hollanda": "🇳🇱",
   "Belçika": "🇧🇪",
   "Fransa": "🇫🇷",
+  "Lüksemburg": "🇱🇺",
+  "Luxembourg": "🇱🇺",
   "Bosna-Hersek": "🇧🇦",
   "İsviçre": "🇨🇭",
   "İtalya": "🇮🇹",
