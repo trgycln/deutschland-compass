@@ -42,10 +42,7 @@ function CategoryIcon({ kategori }: { kategori: string }) {
 }
 
 const FEATURE_BADGES = [
-  { key: "mescid_var"        as keyof HelalMekan, label: "Mescidli",     cls: "bg-teal-50 text-teal-700 border-teal-200"   },
-  { key: "helal_sertifikali" as keyof HelalMekan, label: "Sertifikali",  cls: "bg-green-50 text-green-700 border-green-200" },
-  { key: "muslumana_ait"     as keyof HelalMekan, label: "Muslumana Ait",cls: "bg-purple-50 text-purple-700 border-purple-200"},
-  { key: "aile_dostu"        as keyof HelalMekan, label: "Aile Dostu",   cls: "bg-orange-50 text-orange-700 border-orange-200"},
+  { key: "mescid_var" as keyof HelalMekan, label: "Mescidli", cls: "bg-teal-50 text-teal-700 border-teal-200" },
 ];
 
 export default function PlaceCard({ mekan, distance, onDetay, highlighted, isRecent }: PlaceCardProps) {
@@ -78,16 +75,15 @@ export default function PlaceCard({ mekan, distance, onDetay, highlighted, isRec
           <span className={`inline-flex items-center gap-1 text-[11px] font-bold px-2 py-0.5 rounded-full border ${colors.bg} ${colors.text} ${colors.border}`}>
             {mekan.kategori}
           </span>
-          {isRecent && (
+          {highlighted ? (
+            <span className="inline-flex items-center gap-1 text-[11px] font-bold px-2.5 py-0.5 rounded-full bg-gradient-to-r from-amber-500 to-amber-600 text-white border border-amber-400 shadow-xs">
+              <Star className="w-2.5 h-2.5 fill-white" /> Öne Çıkan
+            </span>
+          ) : isRecent ? (
             <span className="inline-flex items-center gap-1 text-[10px] font-bold px-2 py-0.5 rounded-full bg-gradient-to-r from-sky-500 to-indigo-600 text-white shadow-xs">
               ✨ Yeni Keşif
             </span>
-          )}
-          {highlighted && !isRecent && (
-            <span className="inline-flex items-center gap-1 text-[11px] font-bold px-2 py-0.5 rounded-full bg-amber-400 text-white border border-amber-500">
-              <Star className="w-2.5 h-2.5 fill-white" /> One Cikan
-            </span>
-          )}
+          ) : null}
         </div>
 
         {/* Distance badge */}

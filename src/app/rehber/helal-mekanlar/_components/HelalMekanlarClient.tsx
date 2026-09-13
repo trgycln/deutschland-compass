@@ -263,9 +263,12 @@ export default function HelalMekanlarClient({ initialData }: { initialData: Hela
     return sorted;
   }, [initialData, selectedCountry, selectedCity, selectedCategory, searchQuery, activeSpecials, sortBy, distanceMap, newestPlaceIds]);
 
-  // Featured places (highlight) for the strip
+  // Featured places (highlight) for the strip - newest first
   const featuredPlaces = useMemo(
-    () => initialData.filter((m) => m.highlight),
+    () =>
+      [...initialData]
+        .filter((m) => m.highlight)
+        .sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime()),
     [initialData]
   );
 

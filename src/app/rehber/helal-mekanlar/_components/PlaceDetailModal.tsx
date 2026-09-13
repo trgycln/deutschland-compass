@@ -13,10 +13,7 @@ interface Props {
 }
 
 const FEATURE_BADGES = [
-  { key: "mescid_var"        as keyof HelalMekan, label: "Mescidli",      cls: "bg-teal-50 text-teal-700 border-teal-200"    },
-  { key: "helal_sertifikali" as keyof HelalMekan, label: "Sertifikalı",   cls: "bg-green-50 text-green-700 border-green-200"  },
-  { key: "muslumana_ait"     as keyof HelalMekan, label: "Müslümana Ait", cls: "bg-purple-50 text-purple-700 border-purple-200"},
-  { key: "aile_dostu"        as keyof HelalMekan, label: "Aile Dostu",    cls: "bg-orange-50 text-orange-700 border-orange-200"},
+  { key: "mescid_var" as keyof HelalMekan, label: "Mescidli", cls: "bg-teal-50 text-teal-700 border-teal-200" },
 ];
 
 function CategoryHero({ kategori, highlight }: { kategori: string; highlight: boolean }) {
