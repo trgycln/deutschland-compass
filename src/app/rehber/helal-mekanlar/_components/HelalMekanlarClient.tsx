@@ -4,7 +4,7 @@ import { useState, useMemo, useEffect, useCallback } from "react";
 import dynamic from "next/dynamic";
 import Image from "next/image";
 import { useSearchParams, useRouter, usePathname } from "next/navigation";
-import { MapPin, List, Map as MapIcon, Plus, Navigation, ChevronRight, Sparkles, MessageCircle, ArrowUp } from "lucide-react";
+import { MapPin, List, Map as MapIcon, Plus, Navigation, ChevronRight, Sparkles, MessageCircle, ArrowUp, ArrowRight } from "lucide-react";
 import type { HelalMekan } from "../page";
 import FilterBar from "./FilterBar";
 import PlaceCard from "./PlaceCard";
@@ -198,16 +198,18 @@ export default function HelalMekanlarClient({ initialData }: { initialData: Hela
     if (selectedCountry !== "all") {
       r = r.filter((m) => (m.ulke || "Almanya").toLowerCase() === selectedCountry.toLowerCase());
     }
-    if (selectedCity !== "all")   r = r.filter((m) => m.sehir === selectedCity);
+    if (selectedCity !== "all")   r = r.filter((m) => isCityMatch(m.sehir, selectedCity));
     if (selectedCategory !== "Tumu") r = r.filter((m) => m.kategori === selectedCategory);
     if (searchQuery.trim()) {
       const q = searchQuery.toLowerCase();
-      r = r.filter((m) =>
-        m.isim.toLowerCase().includes(q) ||
-        m.adres.toLowerCase().includes(q) ||
-        m.sehir.toLowerCase().includes(q) ||
-        (m.ulke && m.ulke.toLowerCase().includes(q))
-      );
+      const normQ = normalizeCityName(searchQuery);
+      r = r.filter((m) => {
+        const nameMatch = m.isim.toLowerCase().includes(q) || normalizeCityName(m.isim).includes(normQ);
+        const cityMatch = m.sehir.toLowerCase().includes(q) || normalizeCityName(m.sehir).includes(normQ);
+        const addrMatch = m.adres.toLowerCase().includes(q) || normalizeCityName(m.adres).includes(normQ);
+        const countryMatch = m.ulke && (m.ulke.toLowerCase().includes(q) || normalizeCityName(m.ulke).includes(normQ));
+        return nameMatch || cityMatch || addrMatch || countryMatch;
+      });
     }
     if (activeSpecials.has("telegram_yeni"))     r = r.filter((m) => newestPlaceIds.has(m.id));
     if (activeSpecials.has("mescid_var"))        r = r.filter((m) => m.mescid_var);
@@ -374,28 +376,89 @@ export default function HelalMekanlarClient({ initialData }: { initialData: Hela
 
         {/* City quick-select pills */}
         <div className="max-w-4xl mx-auto mt-6 flex flex-wrap justify-center gap-2 relative z-10">
-          {(selectedCountry === "all" || selectedCountry === "Almanya" ? ALMANYA_QUICK_CITIES : cities.slice(0, 10)).map((city) => (
-            <button
-              key={city}
-              onClick={() => handleQuickCity(city)}
-              className={`min-h-[34px] px-3.5 py-1 rounded-full text-xs sm:text-sm font-medium transition-all backdrop-blur-md active:scale-95 ${
-                selectedCity === city
-                  ? "bg-emerald-500 text-white font-bold shadow-lg shadow-emerald-900/50 border border-emerald-300 ring-2 ring-emerald-400/40"
-                  : "bg-black/40 hover:bg-black/60 text-slate-200 hover:text-white border border-white/15"
-              }`}
-            >
-              {city}
-            </button>
-          ))}
+          {(selectedCountry === "all" || selectedCountry === "Almanya" ? ALMANYA_QUICK_CITIES : cities.slice(0, 15)).map((city) => {
+            const isSelected = isCityMatch(city, selectedCity);
+            return (
+              <button
+                key={city}
+                onClick={() => handleQuickCity(city)}
+                className={`min-h-[34px] px-3.5 py-1 rounded-full text-xs sm:text-sm font-medium transition-all backdrop-blur-md active:scale-95 ${
+                  isSelected
+                    ? "bg-emerald-500 text-white font-bold shadow-lg shadow-emerald-900/50 border border-emerald-300 ring-2 ring-emerald-400/40"
+                    : "bg-black/40 hover:bg-black/60 text-slate-200 hover:text-white border border-white/15"
+                }`}
+              >
+                {city}
+              </button>
+            );
+          })}
         </div>
       </section>
+
+      {/* ════════════ TELEGRAM KANALI & TOPLULUK ════════════ */}
+      <div className="bg-slate-100 dark:bg-slate-900/60 py-4 border-b border-slate-200 dark:border-slate-800">
+        <div className="max-w-7xl mx-auto px-4">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-3 sm:gap-4 max-w-4xl mx-auto">
+            {/* Kart 1: Resmi Telegram Kanalı */}
+            <a
+              href="https://t.me/deutschlandcompassin"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="block group relative overflow-hidden rounded-xl bg-gradient-to-br from-amber-500 to-amber-600 p-4 sm:p-5 shadow-md hover:shadow-xl transition-all duration-300 hover:scale-[1.01]"
+            >
+              <div className="absolute inset-0 bg-gradient-to-br from-white/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+              <div className="relative flex items-center gap-3.5 sm:gap-4">
+                <div className="p-3 bg-white/25 backdrop-blur-sm rounded-xl shrink-0">
+                  <svg className="w-6 h-6 text-white" fill="currentColor" viewBox="0 0 24 24">
+                    <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm4.64 6.8c-.15 1.58-.8 5.42-1.13 7.19-.14.75-.42 1-.68 1.03-.58.05-1.02-.38-1.58-.75-.88-.58-1.38-.94-2.23-1.5-.99-.65-.35-1.01.22-1.59.15-.15 2.71-2.48 2.76-2.69a.2.2 0 00-.05-.18c-.06-.05-.14-.03-.21-.02-.09.02-1.49.95-4.22 2.79-.4.27-.76.41-1.08.4-.36-.01-1.04-.2-1.55-.37-.63-.2-1.12-.31-1.08-.66.02-.18.27-.36.74-.55 2.92-1.27 4.86-2.11 5.83-2.51 2.78-1.16 3.35-1.36 3.73-1.36.08 0 .27.02.39.12.1.08.13.19.14.27-.01.06.01.24 0 .38z"/>
+                  </svg>
+                </div>
+                <div className="flex-1 min-w-0">
+                  <div className="flex items-center gap-2 flex-wrap">
+                    <div className="font-bold text-white text-base sm:text-lg">Deutschland Compass</div>
+                    <span className="text-[10px] sm:text-xs font-semibold px-2 py-0.5 rounded-full bg-white/20 text-white border border-white/30">
+                      @deutschlandcompassin
+                    </span>
+                  </div>
+                  <div className="text-xs sm:text-sm text-amber-100 mt-0.5">
+                    Telegram Kanalımız · Yeni mekan & rehber duyuruları
+                  </div>
+                </div>
+                <ArrowRight className="w-5 h-5 text-white/90 transform group-hover:translate-x-1 transition-transform shrink-0" />
+              </div>
+            </a>
+
+            {/* Kart 2: 90+ Telegram Grupları */}
+            <a
+              href="/telegram-gruplari"
+              className="block group relative overflow-hidden rounded-xl bg-gradient-to-br from-blue-500 to-blue-600 p-4 sm:p-5 shadow-md hover:shadow-xl transition-all duration-300 hover:scale-[1.01]"
+            >
+              <div className="absolute inset-0 bg-gradient-to-br from-white/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+              <div className="relative flex items-center gap-3.5 sm:gap-4">
+                <div className="p-3 bg-white/25 backdrop-blur-sm rounded-xl shrink-0">
+                  <svg className="w-6 h-6 text-white" fill="currentColor" viewBox="0 0 24 24">
+                    <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm4.64 6.8c-.15 1.58-.8 5.42-1.13 7.19-.14.75-.42 1-.68 1.03-.58.05-1.02-.38-1.58-.75-.88-.58-1.38-.94-2.23-1.5-.99-.65-.35-1.01.22-1.59.15-.15 2.71-2.48 2.76-2.69a.2.2 0 00-.05-.18c-.06-.05-.14-.03-.21-.02-.09.02-1.49.95-4.22 2.79-.4.27-.76.41-1.08.4-.36-.01-1.04-.2-1.55-.37-.63-.2-1.12-.31-1.08-.66.02-.18.27-.36.74-.55 2.92-1.27 4.86-2.11 5.83-2.51 2.78-1.16 3.35-1.36 3.73-1.36.08 0 .27.02.39.12.1.08.13.19.14.27-.01.06.01.24 0 .38z"/>
+                  </svg>
+                </div>
+                <div className="flex-1 min-w-0">
+                  <div className="font-bold text-white text-base sm:text-lg">Faydalı Telegram Grupları</div>
+                  <div className="text-xs sm:text-sm text-blue-100 mt-0.5">
+                    90+ Dayanışma, meslek & yaşam grubu
+                  </div>
+                </div>
+                <ArrowRight className="w-5 h-5 text-white/90 transform group-hover:translate-x-1 transition-transform shrink-0" />
+              </div>
+            </a>
+          </div>
+        </div>
+      </div>
 
       {/* ════════════ FILTER BAR ════════════ */}
       <FilterBar
         countries={countries}
         cities={cities}
         selectedCountry={selectedCountry}
-        selectedCity={selectedCity}
+        selectedCity={cities.find((c) => isCityMatch(c, selectedCity)) || selectedCity}
         selectedCategory={selectedCategory}
         searchInput={searchInput}
         filteredCount={filtered.length}
@@ -448,15 +511,27 @@ export default function HelalMekanlarClient({ initialData }: { initialData: Hela
                 )}
               </div>
 
-              {showcaseTab === "telegram" && (
-                <button
-                  onClick={() => toggleSpecial("telegram_yeni")}
-                  className="hidden sm:flex items-center gap-1 text-xs font-semibold text-emerald-700 hover:text-emerald-800"
+              <div className="flex items-center gap-2">
+                {showcaseTab === "telegram" && (
+                  <button
+                    onClick={() => toggleSpecial("telegram_yeni")}
+                    className="hidden sm:flex items-center gap-1 text-xs font-semibold text-emerald-700 hover:text-emerald-800"
+                  >
+                    <span>Tümünü Filtrele</span>
+                    <ChevronRight className="w-3.5 h-3.5" />
+                  </button>
+                )}
+                <a
+                  href="https://t.me/deutschlandcompassin"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg text-xs font-bold text-sky-700 bg-sky-50 hover:bg-sky-100 border border-sky-200 transition-all hover:scale-[1.02]"
                 >
-                  <span>Tümünü Filtrele</span>
-                  <ChevronRight className="w-3.5 h-3.5" />
-                </button>
-              )}
+                  <MessageCircle className="w-3.5 h-3.5 text-sky-600" />
+                  <span className="hidden xs:inline sm:inline">Kanalımıza Abone Ol</span>
+                  <span className="xs:hidden sm:hidden">Abone Ol</span>
+                </a>
+              </div>
             </div>
 
             {/* Content for Active Tab */}
@@ -691,6 +766,34 @@ export default function HelalMekanlarClient({ initialData }: { initialData: Hela
                     </button>
                   </div>
                 )}
+
+                {/* Telegram Subscription Callout Card */}
+                <div className="mt-8 p-4 sm:p-5 bg-gradient-to-r from-amber-500/10 via-sky-500/10 to-emerald-500/10 rounded-2xl border border-amber-200/80 dark:border-amber-800/40 flex flex-col sm:flex-row items-center justify-between gap-4">
+                  <div className="text-left flex-1">
+                    <div className="flex items-center gap-2 mb-1">
+                      <span className="p-1.5 rounded-lg bg-amber-500 text-white shadow-xs">
+                        <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
+                          <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm4.64 6.8c-.15 1.58-.8 5.42-1.13 7.19-.14.75-.42 1-.68 1.03-.58.05-1.02-.38-1.58-.75-.88-.58-1.38-.94-2.23-1.5-.99-.65-.35-1.01.22-1.59.15-.15 2.71-2.48 2.76-2.69a.2.2 0 00-.05-.18c-.06-.05-.14-.03-.21-.02-.09.02-1.49.95-4.22 2.79-.4.27-.76.41-1.08.4-.36-.01-1.04-.2-1.55-.37-.63-.2-1.12-.31-1.08-.66.02-.18.27-.36.74-.55 2.92-1.27 4.86-2.11 5.83-2.51 2.78-1.16 3.35-1.36 3.73-1.36.08 0 .27.02.39.12.1.08.13.19.14.27-.01.06.01.24 0 .38z"/>
+                        </svg>
+                      </span>
+                      <h4 className="font-bold text-slate-900 dark:text-slate-100 text-sm">
+                        Yeni Mekan Keşiflerini Kaçırmayın
+                      </h4>
+                    </div>
+                    <p className="text-xs text-slate-600 dark:text-slate-400">
+                      Telegram kanalımıza (<span className="font-semibold text-slate-800 dark:text-slate-200">@deutschlandcompassin</span>) abone olarak yeni eklenen mekanlar ve topluluk tavsiyelerinden anında haberdar olun.
+                    </p>
+                  </div>
+                  <a
+                    href="https://t.me/deutschlandcompassin"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="shrink-0 px-4 py-2 bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-600 hover:to-amber-700 text-white font-bold text-xs rounded-xl shadow-md hover:shadow-lg transition-all active:scale-95 inline-flex items-center gap-2"
+                  >
+                    <span>Abone Ol</span>
+                    <ArrowRight className="w-3.5 h-3.5" />
+                  </a>
+                </div>
               </div>
             )}
           </div>
