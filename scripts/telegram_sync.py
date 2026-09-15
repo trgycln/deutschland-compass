@@ -249,6 +249,8 @@ async def sync_telegram():
 
     print(f"📌 Tespit Edilen & Eşleşen Grup Sayısı: {len(matched_targets)} adet\n")
 
+    executed_special = set()
+
     for item in matched_targets:
         d = item["dialog"]
         cat = item["category"]
@@ -260,19 +262,21 @@ async def sync_telegram():
 
         # Özel Kategori: Gurbet Kalemleri (edebi içerik)
         if cat.get("type") == "literary":
+            executed_special.add("literary")
             try:
                 from sync_gurbet_kalemler import sync_gurbet_kalemler
-                await sync_gurbet_kalemler(external_client=client)
+                await sync_gurbet_kalemler(external_client=client, target_dialog=d)
             except Exception as ge:
                 print(f"   ⚠️ Gurbet Kalemleri senkronizasyon hatası: {ge}")
             await asyncio.sleep(2)
             continue
 
         # Özel Kategori: Helal Mekanlar ve Restoranlar
-        if cat_slug == 'helal-mekanlar':
+        if cat_slug == 'helal-mekanlar' or cat.get("type") == "helal":
+            executed_special.add("helal-mekanlar")
             try:
                 from sync_helal_places import sync_helal_group
-                await sync_helal_group(limit=50, external_client=client)
+                await sync_helal_group(limit=50, external_client=client, target_dialog=d)
             except Exception as he:
                 print(f"   ⚠️ Helal mekanlar senkronizasyon hatası: {he}")
             await asyncio.sleep(2)
@@ -366,9 +370,28 @@ async def sync_telegram():
         # Telegram hız sınırına uymak için kısa bekleme
         await asyncio.sleep(2)
 
+    # Garanti Modül Kontrolü: Diyalog listesinde bulunmadıysa doğrudan çağır
+    if "helal-mekanlar" not in executed_special:
+        print("\n🍴 Helal Mekanlar grubu taranıyor (doğrudan)...")
+        try:
+            from sync_helal_places import sync_helal_group
+            await sync_helal_group(limit=50, external_client=client)
+        except Exception as he:
+            print(f"   ⚠️ Helal mekanlar senkronizasyon hatası: {he}")
+        await asyncio.sleep(2)
+
+    if "literary" not in executed_special:
+        print("\n📜 Gurbet Kalemleri kanalı taranıyor (doğrudan)...")
+        try:
+            from sync_gurbet_kalemler import sync_gurbet_kalemler
+            await sync_gurbet_kalemler(external_client=client)
+        except Exception as ge:
+            print(f"   ⚠️ Gurbet Kalemleri senkronizasyon hatası: {ge}")
+        await asyncio.sleep(2)
+
     await client.disconnect()
     print("\n" + "=" * 65)
-    print("🎉 Tüm Grupların Wikipedia Sentezleme Senkronizasyonu Tamamlandı!")
+    print("🎉 Tüm Grupların (Topluluk, Helal Mekanlar, Gurbet Kalemleri) Senkronizasyonu Tamamlandı!")
     print("=" * 65)
 
 if __name__ == '__main__':

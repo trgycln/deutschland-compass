@@ -224,7 +224,7 @@ Her geçerli mekan tavsiyesi için aşağıdaki JSON objesini oluştur:
         print(f"   ⚠️ Gemini Ayrıştırma Hatası: {e}", flush=True)
         return []
 
-async def sync_helal_group(limit=50, force_min_id=None, external_client=None):
+async def sync_helal_group(limit=50, force_min_id=None, external_client=None, target_dialog=None):
     print("🚀 Helal Mekanlar Senkronizasyonu Başlatılıyor...", flush=True)
     if not SESSION_FILE.with_suffix('.session').exists():
         print("❌ Telegram oturumu bulunamadı!", flush=True)
@@ -253,16 +253,17 @@ async def sync_helal_group(limit=50, force_min_id=None, external_client=None):
         print("❌ Telegram oturumu yetkili değil.", flush=True)
         return
 
-    dialogs = await client.get_dialogs()
-    target_dialog = None
-    for d in dialogs:
-        if 'HELAL RESTAURANT' in d.name.upper():
-            target_dialog = d
-            break
+    if target_dialog is None:
+        dialogs = await client.get_dialogs()
+        for d in dialogs:
+            if 'HELAL RESTAURANT' in d.name.upper():
+                target_dialog = d
+                break
 
     if not target_dialog:
         print("❌ 'ŞEHİRLERDE HELAL RESTAURANTLAR' grubu bulunamadı.")
-        await client.disconnect()
+        if should_disconnect:
+            await client.disconnect()
         return
 
     print(f"📡 Hedef Grup: {target_dialog.name} (ID: {target_dialog.id})")
@@ -273,7 +274,7 @@ async def sync_helal_group(limit=50, force_min_id=None, external_client=None):
     messages = []
     max_id_seen = last_id
 
-    async for m in client.iter_messages(target_dialog, limit=limit, min_id=last_id):
+    async for m in client.iter_messages(target_dialog, limit=limit, min_id=last_id, reverse=True):
         if m.id > max_id_seen:
             max_id_seen = m.id
         if m.text and len(m.text.strip()) > 15:
@@ -283,7 +284,12 @@ async def sync_helal_group(limit=50, force_min_id=None, external_client=None):
 
     if not messages:
         print("ℹ️ Yeni taranacak mesaj bulunamadı.")
-        await client.disconnect()
+        if max_id_seen > last_id:
+            state["mekanlar"] = max_id_seen
+            with open(STATE_FILE, 'w', encoding='utf-8') as f:
+                json.dump(state, f, ensure_ascii=False, indent=2)
+        if should_disconnect:
+            await client.disconnect()
         return
 
     # Gemini ile ayrıştır

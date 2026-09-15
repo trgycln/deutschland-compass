@@ -511,6 +511,19 @@ GROUP_CATALOG = [
         "category_title": "Gurbet Kalemleri",
         "url": "https://t.me/+JSmuDvozRY43OGMy",
         "type": "literary"   # özel tip: literary works tablosuna yazar
+    },
+    # ===== REHBER & MEKANLAR =====
+    {
+        "id": "mekanlar",
+        "title": "ŞEHİRLERDE HELAL RESTAURANTLAR",
+        "keywords": [
+            "helal restaurant", "helal restoran", "helal mekan",
+            "sehirlerde helal", "şehirlerde helal", "helal restaurantlar"
+        ],
+        "category_slug": "helal-mekanlar",
+        "category_title": "Helal Mekanlar ve Restoranlar",
+        "url": "",
+        "type": "helal"
     }
 ]
 

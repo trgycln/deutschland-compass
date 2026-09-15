@@ -12,6 +12,8 @@
     "telegram:qr-login": "python scripts/telegram_qr_login.py",
     "telegram:check-groups": "python scripts/check_my_groups.py",
     "telegram:sync": "python scripts/telegram_sync.py",
+    "sync:all": "python scripts/telegram_sync.py",
+    "sync:daily": "cmd /c scripts\\run_daily_sync.bat",
     "telegram:sync-helal": "python scripts/sync_helal_places.py",
     "gurbet:sync": "python scripts/sync_gurbet_kalemler.py"
   },

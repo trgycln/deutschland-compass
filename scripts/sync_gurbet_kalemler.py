@@ -174,7 +174,7 @@ def link_exists(supabase, url):
     except Exception:
         return False
 
-async def sync_gurbet_kalemler(external_client=None):
+async def sync_gurbet_kalemler(external_client=None, target_dialog=None):
     print("=" * 65)
     print("Gurbet Kalemleri Senkronizasyon Motoru Baslatiliyor...")
     print("=" * 65)
@@ -197,14 +197,16 @@ async def sync_gurbet_kalemler(external_client=None):
     else:
         client = external_client
 
-    print(f"Kanal taranıyor: {LITERARY_CHANNEL_TITLE}")
+    target_entity = target_dialog if target_dialog is not None else LITERARY_CHANNEL_ID
+    target_name = getattr(target_dialog, 'name', LITERARY_CHANNEL_TITLE)
+    print(f"Kanal taranıyor: {target_name}")
     print(f"   Kaldigi yer (min_id): {last_id}\n")
 
     raw_messages = []
     max_id_seen  = last_id
 
     try:
-        async for msg in client.iter_messages(LITERARY_CHANNEL_ID, limit=200, min_id=last_id, reverse=True):
+        async for msg in client.iter_messages(target_entity, limit=200, min_id=last_id, reverse=True):
             if msg.id > max_id_seen:
                 max_id_seen = msg.id
             sender = await msg.get_sender()
