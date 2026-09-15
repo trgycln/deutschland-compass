@@ -497,6 +497,20 @@ GROUP_CATALOG = [
         "category_slug": "otobus-soforlugu",
         "category_title": "Yol Yardım & Ulaşım",
         "url": "https://t.me/+2Xz_sClWPgRmNDMy"
+    },
+    # ===== EDEBİYAT & SANAT GRUPLARI =====
+    {
+        "id": "kendi-yazdiginiz-yazilar",
+        "title": "KENDİ YAZDIĞINIZ YAZILAR VE ŞİİRLER",
+        "keywords": [
+            "kendi yazdığınız", "kendi yazdiginiz",
+            "yazilar siirler", "yazilar ve siirler",
+            "yazılar şiirler",
+        ],
+        "category_slug": "gurbet-kalemleri",
+        "category_title": "Gurbet Kalemleri",
+        "url": "https://t.me/+JSmuDvozRY43OGMy",
+        "type": "literary"   # özel tip: literary works tablosuna yazar
     }
 ]
 

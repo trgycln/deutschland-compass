@@ -258,6 +258,16 @@ async def sync_telegram():
 
         print(f"📡 Grup İnceleniyor: {d.name} --> [{cat_title}]")
 
+        # Özel Kategori: Gurbet Kalemleri (edebi içerik)
+        if cat.get("type") == "literary":
+            try:
+                from sync_gurbet_kalemler import sync_gurbet_kalemler
+                await sync_gurbet_kalemler(external_client=client)
+            except Exception as ge:
+                print(f"   ⚠️ Gurbet Kalemleri senkronizasyon hatası: {ge}")
+            await asyncio.sleep(2)
+            continue
+
         # Özel Kategori: Helal Mekanlar ve Restoranlar
         if cat_slug == 'helal-mekanlar':
             try:

@@ -339,12 +339,12 @@ export default function GurbetKalemleriPage() {
                 </div>
               </Link>
 
-              <div className="grid grid-cols-2 gap-2 w-full">
+              <div className="grid grid-cols-3 gap-2 w-full">
                 <a
                   href="https://t.me/+JSmuDvozRY43OGMy"
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="flex items-center justify-center gap-2 px-3 py-2 rounded-xl bg-blue-600/90 hover:bg-blue-600 text-white text-xs font-medium shadow-sm transition hover:shadow"
+                  className="flex items-center justify-center gap-1.5 px-3 py-2 rounded-xl bg-blue-600/90 hover:bg-blue-600 text-white text-xs font-medium shadow-sm transition hover:shadow"
                 >
                   <MessageCircle className="w-3.5 h-3.5" />
                   <span>Yazı Grubu</span>
@@ -353,11 +353,18 @@ export default function GurbetKalemleriPage() {
                   href="https://t.me/+yI1or4k3nMswN2Ni"
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="flex items-center justify-center gap-2 px-3 py-2 rounded-xl bg-amber-600/90 hover:bg-amber-600 text-white text-xs font-medium shadow-sm transition hover:shadow"
+                  className="flex items-center justify-center gap-1.5 px-3 py-2 rounded-xl bg-amber-600/90 hover:bg-amber-600 text-white text-xs font-medium shadow-sm transition hover:shadow"
                 >
                   <Radio className="w-3.5 h-3.5" />
                   <span>Kanal</span>
                 </a>
+                <Link
+                  href="/gurbet-kalemleri/linkler"
+                  className="flex items-center justify-center gap-1.5 px-3 py-2 rounded-xl bg-stone-700/90 hover:bg-stone-700 text-white text-xs font-medium shadow-sm transition hover:shadow"
+                >
+                  <ExternalLink className="w-3.5 h-3.5" />
+                  <span>Linkler</span>
+                </Link>
               </div>
             </div>
           </div>
