@@ -5,8 +5,7 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { Button } from '@/components/ui/button';
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from '@/components/ui/sheet';
-import { Menu, Utensils, Sparkles, BookOpen, PenTool, MessageSquare, Briefcase } from 'lucide-react';
-import { Badge } from '@/components/ui/badge';
+import { Menu, Utensils, Sparkles, BookOpen, PenTool, MessageSquare, Briefcase, Home } from 'lucide-react';
 
 export function Navbar() {
   const [isOpen, setIsOpen] = useState(false);
@@ -60,7 +59,6 @@ export function Navbar() {
             >
               <Sparkles className="w-4 h-4" />
               AI Kariyerleri
-              <Badge className="ml-1 text-[10px] px-1.5 py-0 bg-fuchsia-600 text-white border-none">Yeni</Badge>
             </Link>
           </div>
 
@@ -92,6 +90,14 @@ export function Navbar() {
                 {/* Ana Menü */}
                 <div className="space-y-4">
                   <h4 className="text-xs font-semibold text-slate-400 uppercase tracking-wider">Kesfet</h4>
+                  <Link
+                    href="/"
+                    className="flex items-center gap-3 p-3 rounded-xl bg-slate-50 hover:bg-slate-100 dark:bg-slate-900 dark:hover:bg-slate-800 text-slate-700 dark:text-slate-200 transition-colors font-medium"
+                    onClick={() => setIsOpen(false)}
+                  >
+                    <Home className="w-5 h-5 text-primary" />
+                    <span className="text-sm font-medium">Ana Sayfa</span>
+                  </Link>
                   <div className="grid grid-cols-2 gap-3">
                     <Link 
                       href="/meslekler" 
@@ -135,7 +141,6 @@ export function Navbar() {
                         <Sparkles className="w-5 h-5 text-fuchsia-700 dark:text-fuchsia-400" />
                       </div>
                       AI Kariyerleri
-                      <Badge className="ml-auto bg-fuchsia-600 text-white hover:bg-fuchsia-700">Yeni</Badge>
                     </Link>
                   </div>
                 </div>

@@ -478,7 +478,7 @@ export default function HelalMekanlarClient({ initialData }: { initialData: Hela
 
             {/* Kart 2: Deutschland Compass Resmi Telegram Kanalı */}
             <a
-              href="https://t.me/deutschlandcompassin"
+              href="https://t.me/+yI1or4k3nMswN2Ni"
               target="_blank"
               rel="noopener noreferrer"
               className="block group relative overflow-hidden rounded-xl bg-gradient-to-br from-amber-500 to-amber-600 p-4 sm:p-5 shadow-md hover:shadow-xl transition-all duration-300 hover:scale-[1.01]"
@@ -939,7 +939,7 @@ export default function HelalMekanlarClient({ initialData }: { initialData: Hela
                       <ArrowRight className="w-3.5 h-3.5" />
                     </a>
                     <a
-                      href="https://t.me/deutschlandcompassin"
+                      href="https://t.me/+yI1or4k3nMswN2Ni"
                       target="_blank"
                       rel="noopener noreferrer"
                       className="px-3.5 py-2 bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-600 hover:to-amber-700 text-white font-bold text-xs rounded-xl shadow-md hover:shadow-lg transition-all active:scale-95 inline-flex items-center gap-1.5"
