@@ -199,7 +199,7 @@ function MapFlyController({
 function UserLocationHandler({ userLocation }: { userLocation: { lat: number; lng: number } | null }) {
   const map = useMap();
   useEffect(() => {
-    if (userLocation) {
+    if (userLocation && isFinite(userLocation.lat) && isFinite(userLocation.lng)) {
       map.flyTo([userLocation.lat, userLocation.lng], 13, { duration: 1.2 });
     }
   }, [userLocation, map]);

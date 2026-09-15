@@ -10,6 +10,7 @@ import FilterBar from "./FilterBar";
 import PlaceCard from "./PlaceCard";
 import PlaceDetailModal from "./PlaceDetailModal";
 import MekanOnerModal from "./MekanOnerModal";
+import { MapErrorBoundary } from "./MapErrorBoundary";
 import { getPlacePhoto } from "./placePhoto";
 import { ALMANYA_QUICK_CITIES, KATEGORI_SLUG, SLUG_TO_KATEGORI, isCityMatch, normalizeCityName, type SortOption } from "./constants";
 
@@ -198,7 +199,14 @@ export default function HelalMekanlarClient({ initialData }: { initialData: Hela
     setLocationLoading(true);
     navigator.geolocation.getCurrentPosition(
       (pos) => {
-        setUserLocation({ lat: pos.coords.latitude, lng: pos.coords.longitude });
+        const lat = pos.coords.latitude;
+        const lng = pos.coords.longitude;
+        if (!isFinite(lat) || !isFinite(lng)) {
+          setLocationLoading(false);
+          alert("Geçersiz konum verisi alındı. Lütfen tekrar deneyin.");
+          return;
+        }
+        setUserLocation({ lat, lng });
         setLocationLoading(false);
       },
       (err) => {
@@ -764,16 +772,18 @@ export default function HelalMekanlarClient({ initialData }: { initialData: Hela
 
             {/* Map Viewport */}
             <div className="flex-1 w-full relative overflow-hidden lg:sticky lg:top-24 lg:h-[calc(100vh-140px)]">
-              <MapView
-                mekanlar={filtered}
-                allMekanlar={initialData}
-                userLocation={userLocation}
-                onSelectMekan={setSelectedMekan}
-                selectedMekanId={selectedMekan?.id}
-                distances={distanceMap}
-                onLocateUser={requestLocation}
-                locationLoading={locationLoading}
-              />
+              <MapErrorBoundary>
+                <MapView
+                  mekanlar={filtered}
+                  allMekanlar={initialData}
+                  userLocation={userLocation}
+                  onSelectMekan={setSelectedMekan}
+                  selectedMekanId={selectedMekan?.id}
+                  distances={distanceMap}
+                  onLocateUser={requestLocation}
+                  locationLoading={locationLoading}
+                />
+              </MapErrorBoundary>
               <p className="text-[11px] text-gray-400 text-center mt-1.5 hidden lg:block">
                 {filtered.filter((m) => m.lat !== null).length} mekanda koordinat var
               </p>
