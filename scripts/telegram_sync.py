@@ -231,7 +231,8 @@ async def sync_telegram():
     print(f"✅ Bağlanılan Hesap: {me.first_name} {me.last_name or ''} (@{me.username or 'kullanıcı adı yok'})")
     print("🔍 Hesabınızın üye olduğu gruplar taranıyor...\n")
 
-    dialogs = await client.get_dialogs()
+    # limit=None: tüm diyalogları getir (varsayılan ~100 ile sınırlı kalır ve bazı gruplar atlanır)
+    dialogs = await client.get_dialogs(limit=None)
     
     # Eşleşen grupları dinamik tespit et
     matched_targets = []
@@ -272,7 +273,9 @@ async def sync_telegram():
         max_id_seen = last_id
 
         try:
-            async for message in client.iter_messages(d, limit=50, min_id=last_id):
+            # reverse=True + min_id=last_id: last_id'DEN SONRA gelen mesajları artan sırayla getirir
+            # Bu sayede her çalıştırmada kaldığı yerden devam eder, eski mesajları tekrar okumaz
+            async for message in client.iter_messages(d, limit=100, min_id=last_id, reverse=True):
                 if message.id > max_id_seen:
                     max_id_seen = message.id
                 
