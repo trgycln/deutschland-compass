@@ -17,6 +17,7 @@ export function PwaInstallBanner() {
   const [showModal, setShowModal] = useState(false);
   const [isInstalled, setIsInstalled] = useState(false);
   const [isHydrated, setIsHydrated] = useState(false);
+  const [isSamsungBrowser, setIsSamsungBrowser] = useState(false);
   const [platform, setPlatform] = useState<Platform>("desktop");
 
   useEffect(() => {
@@ -30,6 +31,9 @@ export function PwaInstallBanner() {
     const ua = navigator.userAgent;
     const isIOS = /iPad|iPhone|iPod/.test(ua) && !ua.includes("CriOS");
     const isAndroid = /Android/.test(ua);
+    const samsungBrowser = /SamsungBrowser/i.test(ua);
+    
+    setIsSamsungBrowser(samsungBrowser);
 
     if (isIOS) setPlatform("ios");
     else if (isAndroid) setPlatform("android");
@@ -66,7 +70,7 @@ export function PwaInstallBanner() {
   }, []);
 
   const handleInstall = useCallback(async () => {
-    if (deferredPrompt) {
+    if (deferredPrompt && !isSamsungBrowser) {
       await deferredPrompt.prompt();
       const { outcome } = await deferredPrompt.userChoice;
       if (outcome === "accepted") {
@@ -77,7 +81,7 @@ export function PwaInstallBanner() {
     } else {
       setShowModal(true);
     }
-  }, [deferredPrompt]);
+  }, [deferredPrompt, isSamsungBrowser]);
 
   const handleDismiss = useCallback(() => {
     localStorage.setItem("pwa-banner-v2-dismissed", new Date().toISOString());
@@ -91,9 +95,9 @@ export function PwaInstallBanner() {
       { icon: <Download className="w-5 h-5 text-blue-500" />, text: "Sağ üstteki \"Ekle\" düğmesine dokun — bitti! 🎉" },
     ],
     android: [
-      { icon: <MoreVertical className="w-5 h-5 text-blue-500" />, text: "Chrome'da sağ üstteki 3 nokta (⋮) menüsüne dokun" },
+      { icon: <MoreVertical className="w-5 h-5 text-blue-500" />, text: "Tarayıcı menüsüne dokun (Chrome'da sağ üstte ⋮, Samsung'da sağ altta ≡)" },
       { icon: <Plus className="w-5 h-5 text-blue-500" />, text: "\"Ana Ekrana Ekle\" veya \"Uygulamayı Yükle\" seçeneğini seç" },
-      { icon: <Download className="w-5 h-5 text-blue-500" />, text: "\"Ekle\" veya \"Yükle\"ye dokun — uygulama yüklendi! 🎉" },
+      { icon: <Download className="w-5 h-5 text-blue-500" />, text: "Google Chrome ile yüklemeniz tavsiye edilir (Daha hızlı ve güvenli) 🎉" },
     ],
     desktop: [
       { icon: <Download className="w-5 h-5 text-blue-500" />, text: "Chrome/Edge adres çubuğunun sağındaki ⊕ ikonuna tıkla" },
@@ -132,7 +136,7 @@ export function PwaInstallBanner() {
 
                 {/* Actions */}
                 <div className="flex items-center gap-2 flex-shrink-0">
-                  {deferredPrompt ? (
+                  {deferredPrompt && !isSamsungBrowser ? (
                     <button onClick={handleInstall} className="flex items-center gap-1.5 px-4 py-2 bg-blue-500 hover:bg-blue-400 text-white text-xs font-bold rounded-xl transition-all hover:scale-105 active:scale-95 shadow-md shadow-blue-500/30">
                       <Download className="w-3.5 h-3.5" /> Yükle
                     </button>
@@ -233,7 +237,7 @@ export function PwaInstallBanner() {
               </div>
 
               {/* Direct install if prompt available */}
-              {deferredPrompt && (
+              {deferredPrompt && !isSamsungBrowser && (
                 <button
                   onClick={handleInstall}
                   className="mt-4 w-full flex items-center justify-center gap-2 py-3.5 bg-blue-600 hover:bg-blue-700 text-white font-bold text-sm rounded-2xl transition-all hover:scale-[1.02] active:scale-95 shadow-lg shadow-blue-500/25"
@@ -241,6 +245,14 @@ export function PwaInstallBanner() {
                   <Download className="w-4 h-4" />
                   Hemen Yükle (Tek Tıkla)
                 </button>
+              )}
+
+              {isSamsungBrowser && (
+                <div className="mt-4 p-3 bg-amber-50 dark:bg-amber-950/30 rounded-xl border border-amber-200 dark:border-amber-800">
+                  <p className="text-xs text-amber-800 dark:text-amber-200 font-medium text-center">
+                    ⚠️ Güvenlik uyarısı almamak için siteyi <b>Google Chrome</b> ile açarak yüklemenizi tavsiye ederiz. Veya doğrudan tarayıcı menüsünden (≡) <b>"Ana ekrana ekle"</b> diyebilirsiniz.
+                  </p>
+                </div>
               )}
 
               <button onClick={() => setShowModal(false)} className="mt-3 w-full py-2.5 text-slate-400 hover:text-slate-600 dark:hover:text-slate-300 text-sm transition-colors">
