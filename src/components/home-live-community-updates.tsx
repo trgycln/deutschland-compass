@@ -106,7 +106,7 @@ export function HomeLiveCommunityUpdates() {
   };
 
   return (
-    <section className="py-12 md:py-16 bg-gradient-to-b from-slate-50 via-white to-slate-50 dark:from-slate-950 dark:via-slate-900 dark:to-slate-950 border-y border-slate-200 dark:border-slate-800 relative overflow-hidden">
+    <section id="community-updates" className="scroll-mt-20 py-12 md:py-16 bg-gradient-to-b from-slate-50 via-white to-slate-50 dark:from-slate-950 dark:via-slate-900 dark:to-slate-950 border-y border-slate-200 dark:border-slate-800 relative overflow-hidden">
       {/* Arka plan parlama efekti */}
       <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full max-w-4xl h-80 bg-amber-500/5 dark:bg-amber-500/10 blur-3xl pointer-events-none -z-10 rounded-full" />
 
@@ -179,7 +179,7 @@ export function HomeLiveCommunityUpdates() {
                   </span>
 
                   <Link 
-                    href={`${getPageRoute(item.category_slug)}?tab=updates`}
+                    href={`${getPageRoute(item.category_slug)}?tab=updates#update-${item.id}`}
                     className="font-semibold text-amber-600 dark:text-amber-400 hover:text-amber-700 dark:hover:text-amber-300 flex items-center gap-1 group/btn shrink-0"
                   >
                     <span>Sayfada Gör</span>

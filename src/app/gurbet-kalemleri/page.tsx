@@ -140,9 +140,31 @@ export default function GurbetKalemleriPage() {
   }, []);
 
   useEffect(() => {
-    if (literaryWorks.length > 0 && featuredId === null) {
-      const dailyIndex = getDailyIndex(literaryWorks.length);
-      setFeaturedId(literaryWorks[dailyIndex].id);
+    if (literaryWorks.length > 0) {
+      if (typeof window !== "undefined") {
+        const urlParams = new URLSearchParams(window.location.search);
+        const workParam = urlParams.get("work");
+        const hash = window.location.hash.replace("#", "");
+        const targetId = workParam
+          ? parseInt(workParam, 10)
+          : hash.startsWith("work-")
+          ? parseInt(hash.replace("work-", ""), 10)
+          : null;
+
+        if (targetId && literaryWorks.some((w) => w.id === targetId)) {
+          setFeaturedId(targetId);
+          setActiveTab("featured");
+          setTimeout(() => {
+            window.scrollTo({ top: 320, behavior: "smooth" });
+          }, 200);
+          return;
+        }
+      }
+
+      if (featuredId === null) {
+        const dailyIndex = getDailyIndex(literaryWorks.length);
+        setFeaturedId(literaryWorks[dailyIndex].id);
+      }
     }
   }, [literaryWorks, featuredId]);
 

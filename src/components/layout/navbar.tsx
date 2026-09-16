@@ -5,7 +5,7 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { Button } from '@/components/ui/button';
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from '@/components/ui/sheet';
-import { Menu, Utensils, Sparkles, BookOpen, PenTool, MessageSquare, Briefcase, Home, Radio, GraduationCap, Share2, Check, Smartphone } from 'lucide-react';
+import { Menu, Utensils, Sparkles, BookOpen, PenTool, MessageSquare, Briefcase, Home, Radio, GraduationCap, Share2, Check, Smartphone, ChevronRight } from 'lucide-react';
 
 export function Navbar() {
   const [isOpen, setIsOpen] = useState(false);
@@ -134,165 +134,214 @@ export function Navbar() {
                 <span className="sr-only">Menüyü aç</span>
               </Button>
             </SheetTrigger>
-            <SheetContent side="right" className="w-full sm:w-[400px] flex flex-col p-0">
-              <div className="p-6 pb-4 border-b border-slate-100 dark:border-slate-800">
-                <SheetHeader className="flex flex-col items-center gap-4 mt-4">
-                  <div className="relative w-16 h-16 rounded-full overflow-hidden border-2 border-slate-100 dark:border-slate-800 bg-white flex items-center justify-center shadow-md">
+            <SheetContent side="right" className="w-full sm:w-[380px] flex flex-col p-0 bg-white dark:bg-slate-950">
+              {/* Sleek Compact Header */}
+              <div className="px-5 py-3.5 border-b border-slate-100 dark:border-slate-800 flex items-center pr-12">
+                <SheetHeader className="flex flex-row items-center gap-3 text-left space-y-0">
+                  <div className="relative w-9 h-9 rounded-xl overflow-hidden border border-slate-200 dark:border-slate-700 bg-white flex items-center justify-center shadow-xs flex-shrink-0">
                     <Image 
                       src="/dc_logo.png" 
                       alt="Deutschland Compass Logo" 
-                      width={64} 
-                      height={64} 
+                      width={36} 
+                      height={36} 
                       className="object-cover scale-110"
                     />
                   </div>
-                  <SheetTitle className="text-2xl font-bold text-center">Deutschland Compass</SheetTitle>
+                  <div className="flex flex-col">
+                    <SheetTitle className="text-base font-bold text-slate-900 dark:text-white leading-tight">
+                      Deutschland Compass
+                    </SheetTitle>
+                    <span className="text-[11px] text-slate-500 dark:text-slate-400 font-medium">
+                      Dayanışma & Rehberlik Ağı
+                    </span>
+                  </div>
                 </SheetHeader>
               </div>
               
-              <div className="flex-1 overflow-y-auto p-6 flex flex-col gap-8">
-                {/* Ana Menü */}
-                <div className="space-y-4">
-                  <h4 className="text-xs font-semibold text-slate-400 uppercase tracking-wider">Kesfet</h4>
+              {/* Scrollable Content Area */}
+              <div className="flex-1 overflow-y-auto px-4 py-3.5 space-y-4">
+                {/* Hızlı Erişim Kartları (2x2 Grid) */}
+                <div className="grid grid-cols-2 gap-2">
                   <Link
                     href="/"
-                    className="flex items-center gap-3 p-3 rounded-xl bg-slate-50 hover:bg-slate-100 dark:bg-slate-900 dark:hover:bg-slate-800 text-slate-700 dark:text-slate-200 transition-colors font-medium"
+                    className="flex items-center gap-2.5 p-2.5 rounded-xl bg-slate-50 hover:bg-slate-100 dark:bg-slate-900 dark:hover:bg-slate-800 text-slate-800 dark:text-slate-100 transition-all active:scale-98 border border-slate-100/80 dark:border-slate-800"
                     onClick={() => setIsOpen(false)}
                   >
-                    <Home className="w-5 h-5 text-primary" />
-                    <span className="text-sm font-medium">Ana Sayfa</span>
+                    <div className="w-8 h-8 rounded-lg bg-blue-50 dark:bg-blue-950/60 flex items-center justify-center flex-shrink-0 text-blue-600 dark:text-blue-400">
+                      <Home className="w-4 h-4" />
+                    </div>
+                    <div className="min-w-0 flex-1">
+                      <p className="text-xs font-bold leading-tight">Ana Sayfa</p>
+                      <p className="text-[10px] text-slate-400 truncate">Genel Bakış</p>
+                    </div>
                   </Link>
-                  <div className="grid grid-cols-3 gap-2.5">
-                    <Link 
-                      href="/meslekler" 
-                      className="flex flex-col items-center justify-center gap-1.5 p-3 rounded-xl bg-slate-50 hover:bg-slate-100 dark:bg-slate-900 dark:hover:bg-slate-800 text-slate-700 dark:text-slate-200 transition-colors text-center"
-                      onClick={() => setIsOpen(false)}
-                    >
-                      <Briefcase className="w-5 h-5 text-primary" />
-                      <span className="text-xs font-medium">Meslekler</span>
-                    </Link>
-                    <Link 
-                      href="/rehber" 
-                      className="flex flex-col items-center justify-center gap-1.5 p-3 rounded-xl bg-slate-50 hover:bg-slate-100 dark:bg-slate-900 dark:hover:bg-slate-800 text-slate-700 dark:text-slate-200 transition-colors text-center"
-                      onClick={() => setIsOpen(false)}
-                    >
-                      <BookOpen className="w-5 h-5 text-primary" />
-                      <span className="text-xs font-medium">Rehberler</span>
-                    </Link>
-                    <Link 
-                      href="/sinav-hazirlik" 
-                      className="flex flex-col items-center justify-center gap-1.5 p-3 rounded-xl bg-blue-50 hover:bg-blue-100 dark:bg-blue-950/40 dark:hover:bg-blue-900/50 text-blue-900 dark:text-blue-200 transition-colors text-center border border-blue-100 dark:border-blue-800"
-                      onClick={() => setIsOpen(false)}
-                    >
-                      <GraduationCap className="w-5 h-5 text-blue-600 dark:text-blue-400" />
-                      <span className="text-xs font-bold">B2 Sınavı</span>
-                    </Link>
-                  </div>
+
+                  <Link
+                    href="/sinav-hazirlik"
+                    className="flex items-center gap-2.5 p-2.5 rounded-xl bg-gradient-to-br from-blue-50 to-indigo-50/60 dark:from-blue-950/40 dark:to-indigo-950/30 text-blue-950 dark:text-blue-100 transition-all active:scale-98 border border-blue-200/60 dark:border-blue-800/60 shadow-xs"
+                    onClick={() => setIsOpen(false)}
+                  >
+                    <div className="w-8 h-8 rounded-lg bg-blue-600 flex items-center justify-center flex-shrink-0 text-white shadow-xs">
+                      <GraduationCap className="w-4 h-4" />
+                    </div>
+                    <div className="min-w-0 flex-1">
+                      <div className="flex items-center gap-1">
+                        <p className="text-xs font-bold leading-tight text-blue-900 dark:text-blue-200">B2 Sınavı</p>
+                        <span className="text-[8px] bg-blue-600 text-white font-bold px-1 rounded">HOT</span>
+                      </div>
+                      <p className="text-[10px] text-blue-600/70 dark:text-blue-300/70 truncate">Soru Havuzu</p>
+                    </div>
+                  </Link>
+
+                  <Link
+                    href="/meslekler"
+                    className="flex items-center gap-2.5 p-2.5 rounded-xl bg-slate-50 hover:bg-slate-100 dark:bg-slate-900 dark:hover:bg-slate-800 text-slate-800 dark:text-slate-100 transition-all active:scale-98 border border-slate-100/80 dark:border-slate-800"
+                    onClick={() => setIsOpen(false)}
+                  >
+                    <div className="w-8 h-8 rounded-lg bg-emerald-50 dark:bg-emerald-950/60 flex items-center justify-center flex-shrink-0 text-emerald-600 dark:text-emerald-400">
+                      <Briefcase className="w-4 h-4" />
+                    </div>
+                    <div className="min-w-0 flex-1">
+                      <p className="text-xs font-bold leading-tight">Meslekler</p>
+                      <p className="text-[10px] text-slate-400 truncate">Kariyer & Denklik</p>
+                    </div>
+                  </Link>
+
+                  <Link
+                    href="/rehber"
+                    className="flex items-center gap-2.5 p-2.5 rounded-xl bg-slate-50 hover:bg-slate-100 dark:bg-slate-900 dark:hover:bg-slate-800 text-slate-800 dark:text-slate-100 transition-all active:scale-98 border border-slate-100/80 dark:border-slate-800"
+                    onClick={() => setIsOpen(false)}
+                  >
+                    <div className="w-8 h-8 rounded-lg bg-purple-50 dark:bg-purple-950/60 flex items-center justify-center flex-shrink-0 text-purple-600 dark:text-purple-400">
+                      <BookOpen className="w-4 h-4" />
+                    </div>
+                    <div className="min-w-0 flex-1">
+                      <p className="text-xs font-bold leading-tight">Rehberler</p>
+                      <p className="text-[10px] text-slate-400 truncate">Bürokrasi & Yaşam</p>
+                    </div>
+                  </Link>
                 </div>
 
-                {/* Öne Çikanlar */}
-                <div className="space-y-4">
-                  <h4 className="text-xs font-semibold text-slate-400 uppercase tracking-wider">Öne Çikanlar</h4>
-                  <div className="space-y-2">
+                {/* Topluluk Nabzı - Canlı Banner */}
+                <button
+                  onClick={() => {
+                    setIsOpen(false);
+                    window.dispatchEvent(new CustomEvent('open-community-pulse'));
+                  }}
+                  className="w-full flex items-center gap-2.5 p-2.5 rounded-xl bg-gradient-to-r from-emerald-500/10 via-emerald-500/5 to-teal-500/10 hover:from-emerald-500/15 hover:to-teal-500/15 border border-emerald-500/30 text-emerald-950 dark:text-emerald-100 transition-all active:scale-98 text-left"
+                >
+                  <div className="w-8 h-8 rounded-lg bg-emerald-600 flex items-center justify-center text-white flex-shrink-0 shadow-xs">
+                    <Radio className="w-4 h-4 animate-pulse" />
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <div className="flex items-center gap-1.5">
+                      <span className="text-xs font-bold">Topluluk Nabzı</span>
+                      <span className="text-[9px] bg-emerald-600 text-white font-bold px-1.5 py-0.2 rounded-full">CANLI</span>
+                    </div>
+                    <span className="text-[10px] text-emerald-700/80 dark:text-emerald-300/80 truncate block">Saha notları & anlık duyurular</span>
+                  </div>
+                  <ChevronRight className="w-4 h-4 text-emerald-600/60 dark:text-emerald-400/60 flex-shrink-0" />
+                </button>
+
+                {/* Öne Çıkanlar */}
+                <div className="space-y-1">
+                  <h4 className="text-[10px] font-semibold text-slate-400 dark:text-slate-500 uppercase tracking-wider px-1">
+                    Öne Çıkan Rehberler
+                  </h4>
+                  <div className="grid grid-cols-1 gap-1">
                     <Link 
                       href="/rehber/helal-mekanlar" 
-                      className="flex items-center gap-3 p-3 rounded-lg bg-amber-50 hover:bg-amber-100 dark:bg-amber-950/30 dark:hover:bg-amber-900/40 text-amber-900 dark:text-amber-200 transition-colors font-semibold"
+                      className="flex items-center justify-between p-2 rounded-xl hover:bg-slate-50 dark:hover:bg-slate-900 text-slate-700 dark:text-slate-200 transition-colors"
                       onClick={() => setIsOpen(false)}
                     >
-                      <div className="bg-amber-200/50 dark:bg-amber-800/50 p-2 rounded-md">
-                        <Utensils className="w-5 h-5 text-amber-700 dark:text-amber-400" />
+                      <div className="flex items-center gap-2.5 min-w-0">
+                        <div className="w-7 h-7 rounded-lg bg-amber-100 dark:bg-amber-950/60 flex items-center justify-center text-amber-700 dark:text-amber-400 flex-shrink-0">
+                          <Utensils className="w-3.5 h-3.5" />
+                        </div>
+                        <div className="min-w-0">
+                          <p className="text-xs font-semibold truncate">Helal Mekanlar</p>
+                          <p className="text-[10px] text-slate-400 truncate">Restoran & helal marketler</p>
+                        </div>
                       </div>
-                      Helal Mekanlar
+                      <ChevronRight className="w-4 h-4 text-slate-300 dark:text-slate-600 flex-shrink-0" />
                     </Link>
+
                     <Link 
                       href="/rehber/yapay-zeka-kariyerleri" 
-                      className="flex items-center gap-3 p-3 rounded-lg bg-fuchsia-50 hover:bg-fuchsia-100 dark:bg-fuchsia-950/30 dark:hover:bg-fuchsia-900/40 text-fuchsia-900 dark:text-fuchsia-200 transition-colors font-semibold"
+                      className="flex items-center justify-between p-2 rounded-xl hover:bg-slate-50 dark:hover:bg-slate-900 text-slate-700 dark:text-slate-200 transition-colors"
                       onClick={() => setIsOpen(false)}
                     >
-                      <div className="bg-fuchsia-200/50 dark:bg-fuchsia-800/50 p-2 rounded-md">
-                        <Sparkles className="w-5 h-5 text-fuchsia-700 dark:text-fuchsia-400" />
+                      <div className="flex items-center gap-2.5 min-w-0">
+                        <div className="w-7 h-7 rounded-lg bg-fuchsia-100 dark:bg-fuchsia-950/60 flex items-center justify-center text-fuchsia-700 dark:text-fuchsia-400 flex-shrink-0">
+                          <Sparkles className="w-3.5 h-3.5" />
+                        </div>
+                        <div className="min-w-0">
+                          <p className="text-xs font-semibold truncate">AI Kariyerleri</p>
+                          <p className="text-[10px] text-slate-400 truncate">Yapay zeka ile kariyer olanakları</p>
+                        </div>
                       </div>
-                      AI Kariyerleri
-                    </Link>
-                    <Link 
-                      href="/sinav-hazirlik" 
-                      className="flex items-center gap-3 p-3 rounded-lg bg-blue-50 hover:bg-blue-100 dark:bg-blue-950/30 dark:hover:bg-blue-900/40 text-blue-900 dark:text-blue-200 transition-colors font-semibold"
-                      onClick={() => setIsOpen(false)}
-                    >
-                      <div className="bg-blue-200/50 dark:bg-blue-800/50 p-2 rounded-md">
-                        <GraduationCap className="w-5 h-5 text-blue-700 dark:text-blue-400" />
-                      </div>
-                      B2 Sınav Hazırlığı
+                      <ChevronRight className="w-4 h-4 text-slate-300 dark:text-slate-600 flex-shrink-0" />
                     </Link>
                   </div>
                 </div>
 
                 {/* Topluluk */}
-                <div className="space-y-4">
-                  <h4 className="text-xs font-semibold text-slate-400 uppercase tracking-wider">Topluluk</h4>
-                  <div className="space-y-1">
-                    <button
-                      onClick={() => {
-                        setIsOpen(false);
-                        window.dispatchEvent(new CustomEvent('open-community-pulse'));
-                      }}
-                      className="w-full flex items-center gap-3 p-3 rounded-lg bg-emerald-50/80 hover:bg-emerald-100 dark:bg-emerald-950/30 dark:hover:bg-emerald-900/40 text-emerald-900 dark:text-emerald-200 transition-colors font-semibold text-left mb-1"
-                    >
-                      <div className="bg-emerald-200/60 dark:bg-emerald-800/60 p-2 rounded-md">
-                        <Radio className="w-5 h-5 text-emerald-700 dark:text-emerald-400 animate-pulse" />
-                      </div>
-                      <div className="flex-1">
-                        <div className="flex items-center justify-between">
-                          <span>Topluluk Nabzı</span>
-                          <span className="text-[10px] bg-emerald-600 text-white font-bold px-1.5 py-0.5 rounded-full">CANLI</span>
-                        </div>
-                        <span className="text-xs font-normal text-emerald-700/80 dark:text-emerald-400/80">Son gelişmeler ve saha notları</span>
-                      </div>
-                    </button>
+                <div className="space-y-1">
+                  <h4 className="text-[10px] font-semibold text-slate-400 dark:text-slate-500 uppercase tracking-wider px-1">
+                    Topluluk & İletişim
+                  </h4>
+                  <div className="grid grid-cols-3 gap-1.5">
                     <Link 
                       href="/gurbet-kalemleri" 
-                      className="flex items-center gap-3 p-3 rounded-lg hover:bg-slate-50 dark:hover:bg-slate-900 text-slate-700 dark:text-slate-200 transition-colors"
+                      className="flex flex-col items-center justify-center gap-1 p-2 rounded-xl bg-slate-50 hover:bg-slate-100 dark:bg-slate-900 dark:hover:bg-slate-800 text-slate-700 dark:text-slate-200 transition-colors text-center"
                       onClick={() => setIsOpen(false)}
                     >
-                      <PenTool className="w-5 h-5 text-slate-400" />
-                      Gurbet Kalemleri
+                      <PenTool className="w-4 h-4 text-slate-500" />
+                      <span className="text-[11px] font-medium leading-tight">Gurbet Kalemleri</span>
                     </Link>
                     <Link 
                       href="/telegram-gruplari" 
-                      className="flex items-center gap-3 p-3 rounded-lg hover:bg-slate-50 dark:hover:bg-slate-900 text-slate-700 dark:text-slate-200 transition-colors"
+                      className="flex flex-col items-center justify-center gap-1 p-2 rounded-xl bg-slate-50 hover:bg-slate-100 dark:bg-slate-900 dark:hover:bg-slate-800 text-slate-700 dark:text-slate-200 transition-colors text-center"
                       onClick={() => setIsOpen(false)}
                     >
-                      <MessageSquare className="w-5 h-5 text-slate-400" />
-                      Telegram Gruplari
+                      <MessageSquare className="w-4 h-4 text-slate-500" />
+                      <span className="text-[11px] font-medium leading-tight">Telegram Grupları</span>
                     </Link>
                     <Link 
                       href="/blog" 
-                      className="flex items-center gap-3 p-3 rounded-lg hover:bg-slate-50 dark:hover:bg-slate-900 text-slate-700 dark:text-slate-200 transition-colors"
+                      className="flex flex-col items-center justify-center gap-1 p-2 rounded-xl bg-slate-50 hover:bg-slate-100 dark:bg-slate-900 dark:hover:bg-slate-800 text-slate-700 dark:text-slate-200 transition-colors text-center"
                       onClick={() => setIsOpen(false)}
                     >
-                      <BookOpen className="w-5 h-5 text-slate-400" />
-                      Blog
+                      <BookOpen className="w-4 h-4 text-slate-500" />
+                      <span className="text-[11px] font-medium leading-tight">Blog</span>
                     </Link>
                   </div>
                 </div>
+
+                {/* Subtle Copyright */}
+                <div className="pt-1 text-center">
+                  <span className="text-[10px] text-slate-400">&copy; {new Date().getFullYear()} Deutschland Compass</span>
+                </div>
               </div>
               
-              <div className="p-6 border-t border-slate-100 dark:border-slate-800 bg-slate-50 dark:bg-slate-950/50 flex flex-col items-center gap-3">
-                <button
-                  onClick={() => { handleShare(); setIsOpen(false); }}
-                  className="w-full flex items-center justify-center gap-2 py-3 px-4 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-semibold text-sm transition-all active:scale-95 shadow-md"
-                >
-                  <Share2 className="w-4 h-4" />
-                  Uygulamayı Arkadaşlarınla Paylaş
-                </button>
-                <button
-                  onClick={() => { window.dispatchEvent(new CustomEvent('open-install-modal')); setIsOpen(false); }}
-                  className="w-full flex items-center justify-center gap-2 py-2.5 px-4 rounded-xl bg-slate-800 hover:bg-slate-700 text-white font-semibold text-sm transition-all active:scale-95"
-                >
-                  <Smartphone className="w-4 h-4" />
-                  Telefona Uygulama Olarak Yükle
-                </button>
-                <span className="text-sm text-slate-400">&copy; {new Date().getFullYear()} Deutschland Compass</span>
+              {/* Compact Dual Action Bottom Bar */}
+              <div className="p-3 px-4 border-t border-slate-100 dark:border-slate-800 bg-slate-50/90 dark:bg-slate-900/80 backdrop-blur">
+                <div className="grid grid-cols-2 gap-2">
+                  <button
+                    onClick={() => { handleShare(); setIsOpen(false); }}
+                    className="flex items-center justify-center gap-1.5 py-2.5 px-3 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-medium text-xs transition-all active:scale-95 shadow-xs"
+                  >
+                    <Share2 className="w-3.5 h-3.5 flex-shrink-0" />
+                    <span>Paylaş</span>
+                  </button>
+                  <button
+                    onClick={() => { window.dispatchEvent(new CustomEvent('open-install-modal')); setIsOpen(false); }}
+                    className="flex items-center justify-center gap-1.5 py-2.5 px-3 rounded-xl bg-slate-800 hover:bg-slate-700 text-white font-medium text-xs transition-all active:scale-95"
+                  >
+                    <Smartphone className="w-3.5 h-3.5 flex-shrink-0" />
+                    <span>Uygulamayı Yükle</span>
+                  </button>
+                </div>
               </div>
             </SheetContent>
           </Sheet>

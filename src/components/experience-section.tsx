@@ -19,6 +19,7 @@ type Experience = {
 export function ExperienceSection({ professionSlug }: { professionSlug: string }) {
   const [experiences, setExperiences] = useState<Experience[]>([]);
   const [loading, setLoading] = useState(true);
+  const [highlightedExpId, setHighlightedExpId] = useState<string | null>(null);
 
   useEffect(() => {
     async function fetchExperiences() {
@@ -60,6 +61,27 @@ export function ExperienceSection({ professionSlug }: { professionSlug: string }
     fetchExperiences();
   }, [professionSlug]);
 
+  useEffect(() => {
+    if (typeof window === 'undefined' || !window.location.hash) return;
+    const hash = window.location.hash.substring(1);
+    if (hash.startsWith('experience-')) {
+      const expId = hash.replace('experience-', '');
+      setHighlightedExpId(expId);
+
+      setTimeout(() => {
+        const el = document.getElementById(hash);
+        if (el) {
+          el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        }
+      }, 400);
+
+      const timer = setTimeout(() => {
+        setHighlightedExpId(null);
+      }, 3500);
+      return () => clearTimeout(timer);
+    }
+  }, [experiences]);
+
   if (loading) {
     return <div className="flex justify-center p-8"><Loader2 className="animate-spin text-blue-600" /></div>;
   }
@@ -75,34 +97,52 @@ export function ExperienceSection({ professionSlug }: { professionSlug: string }
 
   return (
     <div className="grid gap-6 md:grid-cols-2">
-      {experiences.map((exp) => (
-        <Card key={exp.id} className="flex flex-col h-full hover:shadow-md transition-shadow">
-          <CardHeader className="pb-3">
-            <div className="flex items-center justify-between">
-              <div className="flex items-center gap-2">
-                <div className="w-8 h-8 rounded-full bg-blue-100 dark:bg-blue-900/30 flex items-center justify-center text-blue-600 dark:text-blue-400">
-                  <User className="w-4 h-4" />
-                </div>
-                <div>
-                  <CardTitle className="text-base font-medium">{exp.name || 'Anonim'}</CardTitle>
-                  <div className="flex items-center gap-1 text-xs text-slate-500">
-                    <Calendar className="w-3 h-3" />
-                    {new Date(exp.created_at).toLocaleDateString('tr-TR')}
+      {experiences.map((exp) => {
+        const isTargeted = highlightedExpId === String(exp.id);
+        return (
+          <Card 
+            key={exp.id} 
+            id={`experience-${exp.id}`}
+            className={`flex flex-col h-full transition-all duration-500 scroll-mt-28 ${
+              isTargeted
+                ? 'border-amber-500 ring-4 ring-amber-400/80 ring-offset-2 dark:ring-offset-slate-950 shadow-2xl scale-[1.01] bg-amber-50/30 dark:bg-amber-950/30'
+                : 'hover:shadow-md'
+            }`}
+          >
+            <CardHeader className="pb-3">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-2">
+                  <div className="w-8 h-8 rounded-full bg-blue-100 dark:bg-blue-900/30 flex items-center justify-center text-blue-600 dark:text-blue-400">
+                    <User className="w-4 h-4" />
+                  </div>
+                  <div>
+                    <div className="flex items-center gap-2">
+                      <CardTitle className="text-base font-medium">{exp.name || 'Anonim'}</CardTitle>
+                      {isTargeted && (
+                        <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-amber-500 text-white animate-pulse">
+                          🎯 Seçilen Tecrübe
+                        </span>
+                      )}
+                    </div>
+                    <div className="flex items-center gap-1 text-xs text-slate-500">
+                      <Calendar className="w-3 h-3" />
+                      {new Date(exp.created_at).toLocaleDateString('tr-TR')}
+                    </div>
                   </div>
                 </div>
+                <Badge variant="secondary" className="text-xs font-normal">
+                  {exp.profession}
+                </Badge>
               </div>
-              <Badge variant="secondary" className="text-xs font-normal">
-                {exp.profession}
-              </Badge>
-            </div>
-          </CardHeader>
-          <CardContent>
-            <p className="text-sm text-slate-600 dark:text-slate-300 leading-relaxed whitespace-pre-wrap">
-              {exp.content}
-            </p>
-          </CardContent>
-        </Card>
-      ))}
+            </CardHeader>
+            <CardContent>
+              <p className="text-sm text-slate-600 dark:text-slate-300 leading-relaxed whitespace-pre-wrap">
+                {exp.content}
+              </p>
+            </CardContent>
+          </Card>
+        );
+      })}
     </div>
   );
 }

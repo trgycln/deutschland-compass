@@ -107,7 +107,7 @@ export function CommunityPulseNotification() {
     setIsOpen(false);
   };
 
-  const handleItemClick = () => {
+  const handleItemClick = (item: PulseItem) => {
     // When an item is clicked, close and mark as dismissed for today
     const todayDate = new Date().toISOString().slice(0, 10);
     localStorage.setItem(STORAGE_DISMISSED_DATE_KEY, todayDate);
@@ -116,6 +116,31 @@ export function CommunityPulseNotification() {
     }
     setHasUnread(false);
     setIsOpen(false);
+
+    // If already on target page, perform in-page tab switch and hash navigation immediately
+    if (typeof window !== "undefined") {
+      const targetPath = item.link.split("?")[0].split("#")[0];
+      if (pathname === targetPath) {
+        const url = new URL(item.link, window.location.origin);
+        const tab = url.searchParams.get("tab");
+        const hash = url.hash.replace("#", "");
+
+        if (tab) {
+          const tabBtn = document.querySelector<HTMLButtonElement>(`button[value="${tab}"], [data-value="${tab}"]`);
+          if (tabBtn) tabBtn.click();
+        }
+
+        if (hash) {
+          window.location.hash = hash;
+          setTimeout(() => {
+            const el = document.getElementById(hash);
+            if (el) {
+              el.scrollIntoView({ behavior: "smooth", block: "center" });
+            }
+          }, 150);
+        }
+      }
+    }
   };
 
   if (!isHydrated || !isLoaded || items.length === 0) {
@@ -210,7 +235,7 @@ export function CommunityPulseNotification() {
                 <Link
                   key={item.id}
                   href={item.link}
-                  onClick={handleItemClick}
+                  onClick={() => handleItemClick(item)}
                   className="group block pt-2.5 first:pt-0 hover:bg-slate-50 dark:hover:bg-slate-800/40 p-2 rounded-xl transition-all"
                 >
                   <div className="flex items-center justify-between gap-2 mb-1.5">

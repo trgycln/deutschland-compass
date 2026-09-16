@@ -138,7 +138,7 @@ export async function GET() {
             badgeStyle: 'bg-emerald-100 text-emerald-800 dark:bg-emerald-950/60 dark:text-emerald-300 border-emerald-200 dark:border-emerald-800',
             title: cu.title || `${catName} Saha Notu`,
             teaser: truncateText(cu.content, 130),
-            link: route,
+            link: `${route}?tab=updates#update-${cu.id}`,
             source: cu.badge_text || 'Saha Tecrübesi',
             timestamp: itemTime
           });
@@ -169,7 +169,7 @@ export async function GET() {
             badgeStyle: 'bg-violet-100 text-violet-800 dark:bg-violet-950/60 dark:text-violet-300 border-violet-200 dark:border-violet-800',
             title: lw.title && lw.title !== '...' ? lw.title : `Yeni ${typeLabel}`,
             teaser: snippet ? `"${snippet}" — ${authorInitial}` : `Topluluktan yeni ${typeLabel.toLowerCase()} yayında.`,
-            link: `/gurbet-kalemleri?tab=recent`,
+            link: `/gurbet-kalemleri?tab=featured&work=${lw.id}#work-${lw.id}`,
             source: typeLabel,
             timestamp: lw.created_at || new Date().toISOString()
           });
@@ -211,7 +211,7 @@ export async function GET() {
             badgeStyle: 'bg-amber-100 text-amber-800 dark:bg-amber-950/60 dark:text-amber-300 border-amber-200 dark:border-amber-800',
             title: `${exp.profession} Alanında Yeni Saha Tecrübesi`,
             teaser: `Almanya'da çalışan bir meslektaşımız süreçlerini ve tavsiyelerini aktardı.`,
-            link: `${route}#experience-${exp.id}`,
+            link: `${route}?tab=experiences#experience-${exp.id}`,
             source: 'Tecrübe Paylaşımı',
             timestamp: exp.created_at || new Date().toISOString()
           });

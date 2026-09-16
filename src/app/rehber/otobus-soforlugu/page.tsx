@@ -53,6 +53,7 @@ export default function BusDriverGuidePage() {
   const [pageDescription, setPageDescription] = useState(description);
   const [hashProcessed, setHashProcessed] = useState(false);
   const [activeTab, setActiveTab] = useState('guide');
+  const [highlightedUpdateId, setHighlightedUpdateId] = useState<string | null>(null);
 
   useEffect(() => {
     // Check URL tab parameter
@@ -144,77 +145,96 @@ export default function BusDriverGuidePage() {
     fetchPageData();
   }, []);
 
-  // Separate useEffect for hash navigation - runs when experiences change
+  // Separate useEffect for hash navigation - handles experiences and updates
   useEffect(() => {
+    if (typeof window === 'undefined' || !window.location.hash) return;
+    const hash = window.location.hash.substring(1);
+
+    // Handle updates hash
+    if (hash.startsWith('update-') || hash.startsWith('cu-')) {
+      const rawId = hash.replace('update-', '').replace('cu-', '');
+      setHighlightedUpdateId(rawId);
+      setActiveTab('updates');
+
+      setTimeout(() => {
+        const element = document.getElementById(`update-${rawId}`) || document.getElementById(hash);
+        if (element) {
+          element.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        }
+      }, 400);
+
+      const timer = setTimeout(() => {
+        setHighlightedUpdateId(null);
+      }, 3500);
+      return () => clearTimeout(timer);
+    }
+
     if (hashProcessed || experiences.length === 0) return;
     
-    if (typeof window !== 'undefined' && window.location.hash) {
-      const hash = window.location.hash.substring(1);
-      if (hash.startsWith('experience-')) {
-        setHashProcessed(true);
-        console.log('Processing hash after experiences loaded:', hash);
-        
-        const experienceId = parseInt(hash.replace('experience-', ''));
-        
-        // Check if experience exists in current list
-        const expExists = experiences.some(exp => exp.id === experienceId);
-        if (!expExists) {
-          console.log('Experience not in this profession list, checking database...');
-          // Redirect to correct profession
-          supabase
-            .from('experiences')
-            .select('profession')
-            .eq('id', experienceId)
-            .single()
-            .then(({ data }) => {
-              if (data) {
-                const slug = data.profession
-                  .toLowerCase()
-                  .replace(/ğ/g, 'g')
-                  .replace(/ü/g, 'u')
-                  .replace(/ş/g, 's')
-                  .replace(/ı/g, 'i')
-                  .replace(/i̇/g, 'i')
-                  .replace(/ö/g, 'o')
-                  .replace(/ç/g, 'c')
-                  .replace(/[^a-z0-9-]/g, '-')
-                  .replace(/-+/g, '-')
-                  .replace(/^-|-$/g, '');
-                
-                window.location.href = `/rehber/${slug}#experience-${experienceId}`;
-              }
-            });
-          return;
+    if (hash.startsWith('experience-')) {
+      setHashProcessed(true);
+      console.log('Processing hash after experiences loaded:', hash);
+      
+      const experienceId = parseInt(hash.replace('experience-', ''));
+      
+      // Check if experience exists in current list
+      const expExists = experiences.some(exp => exp.id === experienceId);
+      if (!expExists) {
+        console.log('Experience not in this profession list, checking database...');
+        // Redirect to correct profession
+        supabase
+          .from('experiences')
+          .select('profession')
+          .eq('id', experienceId)
+          .single()
+          .then(({ data }) => {
+            if (data) {
+              const slug = data.profession
+                .toLowerCase()
+                .replace(/ğ/g, 'g')
+                .replace(/ü/g, 'u')
+                .replace(/ş/g, 's')
+                .replace(/ı/g, 'i')
+                .replace(/i̇/g, 'i')
+                .replace(/ö/g, 'o')
+                .replace(/ç/g, 'c')
+                .replace(/[^a-z0-9-]/g, '-')
+                .replace(/-+/g, '-')
+                .replace(/^-|-$/g, '');
+              
+              window.location.href = `/rehber/${slug}#experience-${experienceId}`;
+            }
+          });
+        return;
+      }
+      
+      // Experience exists, proceed with tab switch
+      setTimeout(() => {
+        let experiencesTab = document.querySelector('button[value="experiences"]') as HTMLElement;
+        if (!experiencesTab) {
+          const allButtons = Array.from(document.querySelectorAll('button'));
+          experiencesTab = allButtons.find(btn => btn.textContent?.trim() === 'Tecrübeler') as HTMLElement;
         }
         
-        // Experience exists, proceed with tab switch
-        setTimeout(() => {
-          let experiencesTab = document.querySelector('button[value="experiences"]') as HTMLElement;
-          if (!experiencesTab) {
-            const allButtons = Array.from(document.querySelectorAll('button'));
-            experiencesTab = allButtons.find(btn => btn.textContent?.trim() === 'Tecrübeler') as HTMLElement;
-          }
+        if (experiencesTab) {
+          console.log('Clicking experiences tab...');
+          experiencesTab.click();
           
-          if (experiencesTab) {
-            console.log('Clicking experiences tab...');
-            experiencesTab.click();
-            
-            setTimeout(() => {
-              const element = document.getElementById(hash);
-              if (element) {
-                console.log('Scrolling to:', hash);
-                element.scrollIntoView({ behavior: 'smooth', block: 'center' });
-                element.classList.add('ring-2', 'ring-amber-500', 'ring-offset-2', 'transition-all');
-                setTimeout(() => {
-                  element.classList.remove('ring-2', 'ring-amber-500', 'ring-offset-2');
-                }, 3000);
-              }
-            }, 800);
-          }
-        }, 500);
-      }
+          setTimeout(() => {
+            const element = document.getElementById(hash);
+            if (element) {
+              console.log('Scrolling to:', hash);
+              element.scrollIntoView({ behavior: 'smooth', block: 'center' });
+              element.classList.add('ring-2', 'ring-amber-500', 'ring-offset-2', 'transition-all');
+              setTimeout(() => {
+                element.classList.remove('ring-2', 'ring-amber-500', 'ring-offset-2');
+              }, 3000);
+            }
+          }, 800);
+        }
+      }, 500);
     }
-  }, [experiences, hashProcessed]);
+  }, [experiences, communityUpdates, hashProcessed]);
 
   const getIconForSection = (id: string) => {
     switch (id) {
@@ -417,8 +437,17 @@ export default function BusDriverGuidePage() {
               </div>
             </div>
             <button
-              onClick={() => setActiveTab('updates')}
-              className="text-xs font-bold text-amber-900 dark:text-amber-200 bg-amber-200/80 hover:bg-amber-300 dark:bg-amber-900/60 dark:hover:bg-amber-800 px-3 py-1.5 rounded-lg transition-all flex items-center gap-1.5 shrink-0 border border-amber-300 dark:border-amber-700 hover:shadow-xs cursor-pointer"
+              onClick={() => {
+                setActiveTab('updates');
+                setTimeout(() => {
+                  const target = document.getElementById('updates-content-section');
+                  if (target) {
+                    target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                  }
+                }, 120);
+              }}
+              className="text-xs font-bold text-amber-900 dark:text-amber-200 bg-amber-200/80 hover:bg-amber-300 dark:bg-amber-900/60 dark:hover:bg-amber-800 px-3 py-1.5 rounded-lg transition-all flex items-center gap-1.5 shrink-0 border border-amber-300 dark:border-amber-700 hover:shadow-xs cursor-pointer active:scale-95"
+              title="Sayfadaki güncel gelişmelere git"
             >
               <span>Gelişmeleri İncele</span>
               <ArrowRight className="w-3.5 h-3.5" />
@@ -512,7 +541,7 @@ export default function BusDriverGuidePage() {
           </TabsContent>
 
           {/* Updates Tab */}
-          <TabsContent value="updates" className="space-y-6">
+          <TabsContent value="updates" id="updates-content-section" className="space-y-6 scroll-mt-24">
             <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 bg-gradient-to-br from-amber-50 to-orange-50/50 dark:from-amber-950/30 dark:to-slate-900 p-6 rounded-2xl border border-amber-200 dark:border-amber-800/60 shadow-xs">
               <div>
                 <div className="inline-flex items-center gap-2 text-xs font-bold text-amber-800 dark:text-amber-300 uppercase tracking-wider mb-1">
@@ -536,40 +565,58 @@ export default function BusDriverGuidePage() {
             
             <div className="grid gap-5">
               {communityUpdates.filter(u => u.target_tab === 'updates' || !u.target_tab).length > 0 ? (
-                communityUpdates.filter(u => u.target_tab === 'updates' || !u.target_tab).map(update => (
-                  <Card key={update.id} className="border border-slate-200 dark:border-slate-800 border-l-4 border-l-amber-500 hover:shadow-md transition-all bg-white dark:bg-slate-900">
-                    <CardHeader className="pb-3 flex flex-row items-start justify-between space-y-0 gap-4">
-                      <div>
-                        <CardTitle className="text-lg md:text-xl font-bold text-slate-900 dark:text-white leading-snug">
-                          {update.title}
-                        </CardTitle>
-                        <div className="text-xs text-slate-500 dark:text-slate-400 mt-2 flex items-center gap-3 flex-wrap">
-                          <span className="flex items-center gap-1.5 font-medium text-amber-700 dark:text-amber-400">
-                            <Clock className="w-3.5 h-3.5" />
-                            {update.badge_text || 'Güncel Sentez'}
-                          </span>
-                          <span>•</span>
-                          <span className="flex items-center gap-1">
-                            <Calendar className="w-3.5 h-3.5" />
-                            {new Date(update.created_at).toLocaleDateString('tr-TR')}
-                          </span>
-                          <span>•</span>
-                          <span>Kaynak: {update.source_group}</span>
+                communityUpdates.filter(u => u.target_tab === 'updates' || !u.target_tab).map(update => {
+                  const isTargeted = highlightedUpdateId === String(update.id);
+                  return (
+                    <Card 
+                      key={update.id} 
+                      id={`update-${update.id}`}
+                      className={`transition-all duration-500 bg-white dark:bg-slate-900 scroll-mt-28 ${
+                        isTargeted
+                          ? 'border-amber-500 ring-4 ring-amber-400/80 ring-offset-2 dark:ring-offset-slate-950 shadow-2xl scale-[1.01] bg-amber-50/30 dark:bg-amber-950/30'
+                          : 'border border-slate-200 dark:border-slate-800 border-l-4 border-l-amber-500 hover:shadow-md'
+                      }`}
+                    >
+                      <CardHeader className="pb-3 flex flex-row items-start justify-between space-y-0 gap-4">
+                        <div>
+                          <div className="flex items-center gap-2 flex-wrap">
+                            <CardTitle className="text-lg md:text-xl font-bold text-slate-900 dark:text-white leading-snug">
+                              {update.title}
+                            </CardTitle>
+                            {isTargeted && (
+                              <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-amber-500 text-white animate-pulse">
+                                🎯 Seçilen Bilgi
+                              </span>
+                            )}
+                          </div>
+                          <div className="text-xs text-slate-500 dark:text-slate-400 mt-2 flex items-center gap-3 flex-wrap">
+                            <span className="flex items-center gap-1.5 font-medium text-amber-700 dark:text-amber-400">
+                              <Clock className="w-3.5 h-3.5" />
+                              {update.badge_text || 'Güncel Sentez'}
+                            </span>
+                            <span>•</span>
+                            <span className="flex items-center gap-1">
+                              <Calendar className="w-3.5 h-3.5" />
+                              {new Date(update.created_at).toLocaleDateString('tr-TR')}
+                            </span>
+                            <span>•</span>
+                            <span>Kaynak: {update.source_group}</span>
+                          </div>
                         </div>
-                      </div>
-                      
-                      <div className="flex items-center gap-1.5 text-xs text-emerald-600 dark:text-emerald-400 font-semibold bg-emerald-50 dark:bg-emerald-950/50 border border-emerald-200 dark:border-emerald-800 px-2.5 py-1 rounded-md shrink-0">
-                        <CheckCircle2 className="w-3.5 h-3.5" />
-                        <span>Sentezlendi</span>
-                      </div>
-                    </CardHeader>
-                    <CardContent className="pt-1">
-                      <div className="text-slate-700 dark:text-slate-200 text-sm md:text-base leading-relaxed bg-slate-50/60 dark:bg-slate-800/40 p-4 rounded-xl border border-slate-100 dark:border-slate-800">
-                        {update.content}
-                      </div>
-                    </CardContent>
-                  </Card>
-                ))
+                        
+                        <div className="flex items-center gap-1.5 text-xs text-emerald-600 dark:text-emerald-400 font-semibold bg-emerald-50 dark:bg-emerald-950/50 border border-emerald-200 dark:border-emerald-800 px-2.5 py-1 rounded-md shrink-0">
+                          <CheckCircle2 className="w-3.5 h-3.5" />
+                          <span>Sentezlendi</span>
+                        </div>
+                      </CardHeader>
+                      <CardContent className="pt-1">
+                        <div className="text-slate-700 dark:text-slate-200 text-sm md:text-base leading-relaxed bg-slate-50/60 dark:bg-slate-800/40 p-4 rounded-xl border border-slate-100 dark:border-slate-800">
+                          {update.content}
+                        </div>
+                      </CardContent>
+                    </Card>
+                  );
+                })
               ) : (
                 <Card className="bg-slate-50 dark:bg-slate-900 border-dashed border-2 border-slate-200 dark:border-slate-800">
                   <CardContent className="flex flex-col items-center justify-center py-12 text-center">
