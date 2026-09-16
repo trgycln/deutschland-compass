@@ -75,12 +75,23 @@ def save_state(state):
         json.dump(state, f, ensure_ascii=False, indent=2)
 
 def clean_and_anonymize(text: str) -> str:
-    """Kişisel verileri (telefon, e-posta, telegram kullanıcı adları) anonimleştirir"""
+    """
+    Kisisel verileri anonimlestirir.
+    Kural (.agents/rules/veri-gizliligi-ve-anonimlik.md):
+      telefon, e-posta, @kullanici, IBAN, TC kimlik numaralari.
+    """
     if not text:
         return ""
-    text = re.sub(r'(\+?\d{1,3}[-.\s]?)?\(?\d{3}\)?[-.\s]?\d{3}[-.\s]?\d{4}', '[Telefon]', text)
-    text = re.sub(r'[\w\.-]+@[\w\.-]+\.\w+', '[E-posta]', text)
-    text = re.sub(r'@\w+', '[Kullanıcı]', text)
+    # Telefon numaralari
+    text = re.sub(r'(\+?\d{1,3}[\-.\s]?)?\(?\d{3}\)?[\-.\s]?\d{3}[\-.\s]?\d{4}', '[Telefon]', text)
+    # E-posta
+    text = re.sub(r'[\w\.\-]+@[\w\.\-]+\.\w+', '[E-posta]', text)
+    # Telegram kullanici adlari
+    text = re.sub(r'@\w+', '[Kullanici]', text)
+    # IBAN
+    text = re.sub(r'\b[A-Z]{2}\d{2}[\s]?(\d{4}[\s]?){4,7}\b', '[Hesap No]', text)
+    # TC Kimlik (11 hane)
+    text = re.sub(r'\b\d{11}\b', '[Kimlik No]', text)
     return text.strip()
 
 def is_meaningful_message(text: str) -> bool:

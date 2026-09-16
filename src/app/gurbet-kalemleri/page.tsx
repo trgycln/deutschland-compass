@@ -101,8 +101,8 @@ export default function GurbetKalemleriPage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
   
-  // Navigasyon / Sekme State'i: 'featured' | 'catalog' | 'leaderboards' | 'community'
-  const [activeTab, setActiveTab] = useState<"featured" | "catalog" | "leaderboards" | "community">("featured");
+  // Navigasyon / Sekme State'i: 'featured' | 'recent' | 'catalog' | 'leaderboards' | 'community'
+  const [activeTab, setActiveTab] = useState<"featured" | "recent" | "catalog" | "leaderboards" | "community">("featured");
   
   // Keşfet / Sıralamalar alt sekmesi
   const [leaderboardTab, setLeaderboardTab] = useState<"authors" | "likes" | "narrated" | "views" | "recent" | "tags" | "random">("authors");
@@ -199,6 +199,29 @@ export default function GurbetKalemleriPage() {
       return matchesSearch && matchesAuthor && matchesType && matchesTag && matchesNarration;
     });
   }, [literaryWorks, searchQuery, selectedAuthor, selectedType, selectedTags, showOnlyNarrated]);
+
+  const recentWorks = useMemo(() => {
+    return [...literaryWorks].sort((a, b) => {
+      const timeA = a.created_at ? new Date(a.created_at).getTime() : 0;
+      const timeB = b.created_at ? new Date(b.created_at).getTime() : 0;
+      if (timeB !== timeA) return timeB - timeA;
+      return (b.id || 0) - (a.id || 0);
+    });
+  }, [literaryWorks]);
+
+  const latestSyncDateFormatted = useMemo(() => {
+    if (recentWorks.length === 0) return "";
+    const first = recentWorks[0];
+    if (first.created_at) {
+      try {
+        const d = new Date(first.created_at);
+        if (!isNaN(d.getTime())) {
+          return d.toLocaleDateString("tr-TR", { day: "numeric", month: "long", year: "numeric" });
+        }
+      } catch {}
+    }
+    return first.date || "";
+  }, [recentWorks]);
 
   const featuredWork = useMemo(() => {
     if (!featuredId) return literaryWorks[0] || null;
@@ -358,13 +381,6 @@ export default function GurbetKalemleriPage() {
                   <Radio className="w-3.5 h-3.5" />
                   <span>Kanal</span>
                 </a>
-                <Link
-                  href="/gurbet-kalemleri/linkler"
-                  className="flex items-center justify-center gap-1.5 px-3 py-2 rounded-xl bg-stone-700/90 hover:bg-stone-700 text-white text-xs font-medium shadow-sm transition hover:shadow"
-                >
-                  <ExternalLink className="w-3.5 h-3.5" />
-                  <span>Linkler</span>
-                </Link>
               </div>
             </div>
           </div>
@@ -386,6 +402,21 @@ export default function GurbetKalemleriPage() {
               >
                 <BookOpen className="w-4 h-4 text-amber-700" />
                 <span>Günün Eseri</span>
+              </button>
+
+              <button
+                onClick={() => setActiveTab("recent")}
+                className={`flex items-center justify-center gap-1.5 px-3 sm:px-4 py-2 rounded-lg transition-all whitespace-nowrap flex-1 sm:flex-initial ${
+                  activeTab === "recent"
+                    ? "bg-white text-amber-950 shadow-sm font-semibold"
+                    : "text-stone-600 hover:text-stone-900"
+                }`}
+              >
+                <Clock className="w-4 h-4 text-amber-700" />
+                <span>Son Eklenenler</span>
+                <span className="text-[10px] px-1.5 py-0.5 bg-emerald-100 text-emerald-800 rounded-full font-bold">
+                  Güncel
+                </span>
               </button>
 
               <button
@@ -657,8 +688,149 @@ export default function GurbetKalemleriPage() {
         )}
 
         {/* ======================================================== */}
-        {/* SEKME 2: 📚 TÜM ESERLER / ANTOLOJİ KATALOĞU               */}
+        {/* SEKME: ⏰ SON EKLENENLER / EN GÜNCEL ESERLER             */}
         {/* ======================================================== */}
+        {activeTab === "recent" && (
+          <div className="space-y-6">
+            {/* Üst Bilgilendirme ve Canlılık Başlığı */}
+            <div className="p-5 sm:p-6 bg-white/95 rounded-2xl border border-amber-200 shadow-sm relative overflow-hidden">
+              <div className="absolute -right-8 -bottom-8 w-40 h-40 bg-amber-100/50 rounded-full blur-2xl pointer-events-none" />
+              <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 relative z-10">
+                <div>
+                  <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-emerald-50 border border-emerald-200/80 text-emerald-800 text-xs font-semibold mb-2">
+                    <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
+                    <span>Canlı & Güncel Eserler Akışı</span>
+                  </div>
+                  <h2 className="text-2xl sm:text-3xl font-bold text-stone-900 tracking-tight" style={accentStyle}>
+                    Son Eklenen Yazı ve Şiirler
+                  </h2>
+                  <p className="text-stone-600 text-sm mt-1 max-w-2xl" style={serifStyle}>
+                    Telegram kanalından ve antolojimizden sisteme en son senkronize edilen şiir ve düz yazılar.
+                    Eserler yüklenme ve derlenme tarihine göre en yeniden en eskiye doğru listelenmektedir.
+                  </p>
+                </div>
+
+                <div className="flex flex-wrap items-center gap-3 self-start md:self-auto">
+                  <div className="px-4 py-2.5 rounded-xl bg-amber-50 border border-amber-200/70 text-right">
+                    <span className="block text-[11px] text-stone-500 font-medium uppercase tracking-wider">Son Senkronizasyon</span>
+                    <span className="text-sm font-bold text-amber-900 flex items-center gap-1.5 justify-end">
+                      <Clock className="w-3.5 h-3.5 text-amber-700" />
+                      {latestSyncDateFormatted || "Güncel"}
+                    </span>
+                  </div>
+                  <div className="px-4 py-2.5 rounded-xl bg-stone-50 border border-stone-200/70 text-right">
+                    <span className="block text-[11px] text-stone-500 font-medium uppercase tracking-wider">Toplam Eser</span>
+                    <span className="text-sm font-bold text-stone-800">{literaryWorks.length} Adet</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* Eser Kartları Grid */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+              {recentWorks.slice(0, 30).map((work, idx) => {
+                const isNew = idx < 10;
+                let formattedDate = work.date || "";
+                if (work.created_at) {
+                  try {
+                    const d = new Date(work.created_at);
+                    if (!isNaN(d.getTime())) {
+                      formattedDate = d.toLocaleDateString("tr-TR", { day: "numeric", month: "long", year: "numeric" });
+                    }
+                  } catch {}
+                }
+
+                return (
+                  <article
+                    key={work.id}
+                    className="group bg-white rounded-2xl border border-amber-200/80 p-5 shadow-sm hover:shadow-md transition-all duration-300 flex flex-col justify-between hover:border-amber-400"
+                  >
+                    <div>
+                      {/* Üst Bilgi Rozetleri */}
+                      <div className="flex items-center justify-between gap-2 pb-3 mb-3 border-b border-stone-100">
+                        <div className="flex items-center gap-2 flex-wrap">
+                          <span className={`text-[11px] font-semibold px-2.5 py-0.5 rounded-full border ${
+                            work.type === "siir" || work.type === "Şiir"
+                              ? "bg-purple-50 text-purple-800 border-purple-200"
+                              : "bg-blue-50 text-blue-800 border-blue-200"
+                          }`}>
+                            {work.type === "siir" ? "Şiir" : (work.type === "duz_yazi" ? "Düz Yazı" : work.type)}
+                          </span>
+                          {work.audio_url && (
+                            <span className="inline-flex items-center gap-1 text-[11px] font-semibold px-2 py-0.5 rounded-full bg-amber-50 text-amber-800 border border-amber-200">
+                              <Music className="w-3 h-3 text-amber-700" />
+                              <span>Sesli</span>
+                            </span>
+                          )}
+                          {isNew && (
+                            <span className="inline-flex items-center gap-1 text-[10px] font-bold px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-800 border border-emerald-300">
+                              <Sparkles className="w-2.5 h-2.5 text-emerald-600" />
+                              <span>Yeni</span>
+                            </span>
+                          )}
+                        </div>
+
+                        {/* Yüklenme / Senkronizasyon Tarihi */}
+                        <div className="flex items-center gap-1 text-xs text-amber-800/90 font-medium bg-amber-50/80 px-2.5 py-1 rounded-lg border border-amber-200/50" title="Sisteme Yüklenme / Senkronizasyon Tarihi">
+                          <Calendar className="w-3.5 h-3.5 text-amber-600" />
+                          <span>Yüklenme: {formattedDate}</span>
+                        </div>
+                      </div>
+
+                      {/* Başlık & Yazar */}
+                      <h3
+                        onClick={() => selectWorkAndRead(work.id)}
+                        className="text-xl font-bold text-stone-900 group-hover:text-amber-900 transition-colors cursor-pointer leading-snug"
+                        style={accentStyle}
+                      >
+                        {work.title}
+                      </h3>
+
+                      <div className="flex items-center gap-1.5 text-xs text-stone-600 font-medium mt-1 mb-3">
+                        <Feather className="w-3.5 h-3.5 text-amber-600" />
+                        <span>{work.author}</span>
+                      </div>
+
+                      {/* Önizleme Metni */}
+                      <p
+                        className="text-stone-600 text-sm leading-relaxed line-clamp-4 italic border-l-2 border-amber-300/80 pl-3 my-3"
+                        style={serifStyle}
+                      >
+                        {work.content}
+                      </p>
+                    </div>
+
+                    {/* Alt Kısım ve Buton */}
+                    <div className="pt-3 border-t border-stone-100 flex items-center justify-between gap-2 mt-2">
+                      <div className="flex items-center gap-3 text-xs text-stone-500">
+                        <span className="flex items-center gap-1">
+                          <Heart className="w-3.5 h-3.5 text-rose-500" />
+                          <span>{work.likes || 0}</span>
+                        </span>
+                        <span className="flex items-center gap-1">
+                          <Eye className="w-3.5 h-3.5 text-stone-400" />
+                          <span>{work.views || 0}</span>
+                        </span>
+                      </div>
+
+                      <Button
+                        size="sm"
+                        variant="ghost"
+                        onClick={() => selectWorkAndRead(work.id)}
+                        className="text-amber-900 hover:text-amber-950 hover:bg-amber-100/60 font-semibold text-xs gap-1.5"
+                      >
+                        <span>Eseri Oku</span>
+                        <ArrowRight className="w-3.5 h-3.5" />
+                      </Button>
+                    </div>
+                  </article>
+                );
+              })}
+            </div>
+          </div>
+        )}
+
+
         {activeTab === "catalog" && (
           <div className="space-y-6">
             {/* Arama ve Filtre Kontrol Barı */}

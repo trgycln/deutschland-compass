@@ -1,0 +1,112 @@
+=================================================================== 
+[16.09.2026  7:54:37,37] Gunluk Senkronizasyon Baslatildi 
+=================================================================== 
+C:\Users\User\Projeler (Web Sayfalari)\deutschland_compass\scripts\telegram_sync.py:41: FutureWarning: 
+
+All support for the `google.generativeai` package has ended. It will no longer be receiving 
+updates or bug fixes. Please switch to the `google.genai` package as soon as possible.
+See README for more details:
+
+https://github.com/google-gemini/deprecated-generative-ai-python/blob/main/README.md
+
+  import google.generativeai as genai
+=================================================================
+🚀 Deutschlandcompass Telegram Wikipedia Sentezleme Motoru Başlatılıyor...
+=================================================================
+✅ Bağlanılan Hesap: Trgy  (@trgy001)
+🔍 Hesabınızın üye olduğu gruplar taranıyor...
+
+📌 Tespit Edilen & Eşleşen Grup Sayısı: 36 adet
+
+📡 Grup İnceleniyor: 💠 HEMŞİRELER GRUBU --> [Hemşirelik]
+   📥 1 adet anlamlı mesaj/tecrübe süzüldü.
+   📚 Sayfadaki mevcut konu sayısı: 3 (Birleştirme için yapay zekaya iletiliyor...)
+   ✨ Yapay zeka sonucu: 1 işlem önerildi.
+      🔄 [GÜNCELLENDİ & BİRLEŞTİRİLDİ] ID 78: Hemşirelik Denkliği Eksik Tamamlama Yolları: Anpassungslehrgang ve Kenntnisprüfung
+📡 Grup İnceleniyor: 💠KENDİ YAZDIĞINIZ YAZILAR ŞİİRLER --> [Gurbet Kalemleri]
+=================================================================
+Gurbet Kalemleri Senkronizasyon Motoru Baslatiliyor...
+=================================================================
+Kanal taranıyor: 💠KENDİ YAZDIĞINIZ YAZILAR ŞİİRLER
+   Kaldigi yer (min_id): 503
+
+   200 mesaj cekildi.
+   50 edebi metin grubu (birlestirme sonrasi)
+   345 link paylasimi
+
+   Analiz ediliyor -> [Anonim] (312 karakter)
+      DB hatasi: {'message': "Could not find the 'source_group' column of 'literary_works' in the schema cache", 'code': 'PGRST204', 'hint': None, 'details': None}
+   Analiz ediliyor -> [💠 Yusuf Salih] (1268 karakter)
+      DB hatasi: {'message': "Could not find the 'source_group' column of 'literary_works' in the schema cache", 'code': 'PGRST204', 'hint': None, 'details': None}
+   Analiz ediliyor -> [💠 Yusuf Salih] (1667 karakter)
+      DB hatasi: {'message': "Could not find the 'source_group' column of 'literary_works' in the schema cache", 'code': 'PGRST204', 'hint': None, 'details': None}
+   Analiz ediliyor -> [Neli] (57 karakter)
+      DB hatasi: {'message': "Could not find the 'source_group' column of 'literary_works' in the schema cache", 'code': 'PGRST204', 'hint': None, 'details': None}
+   Analiz ediliyor -> [𝕮𝖆𝖓𝖆𝖓] (949 karakter)
+      DB hatasi: {'message': "Could not find the 'source_group' column of 'literary_works' in the schema cache", 'code': 'PGRST204', 'hint': None, 'details': None}
+   Analiz ediliyor -> [Dilek] (257 karakter)
+      DB hatasi: {'message': "Could not find the 'source_group' column of 'literary_works' in the schema cache", 'code': 'PGRST204', 'hint': None, 'details': None}
+   Analiz ediliyor -> [Gökhan] (347 karakter)
+      DB hatasi: {'message': "Could not find the 'source_group' column of 'literary_works' in the schema cache", 'code': 'PGRST204', 'hint': None, 'details': None}
+   Analiz ediliyor -> [Gökhan] (1124 karakter)
+      DB hatasi: {'message': "Could not find the 'source_group' column of 'literary_works' in the schema cache", 'code': 'PGRST204', 'hint': None, 'details': None}
+   Analiz ediliyor -> [Gökhan] (76 karakter)
+      DB hatasi: {'message': "Could not find the 'source_group' column of 'literary_works' in the schema cache", 'code': 'PGRST204', 'hint': None, 'details': None}
+   Analiz ediliyor -> [𝕮𝖆𝖓𝖆𝖓] (254 karakter)
+      DB hatasi: {'message': "Could not find the 'source_group' column of 'literary_works' in the schema cache", 'code': 'PGRST204', 'hint': None, 'details': None}
+   Analiz ediliyor -> [Frau Isik] (2135 karakter)
+      DB hatasi: {'message': "Could not find the 'source_group' column of 'literary_works' in the schema cache", 'code': 'PGRST204', 'hint': None, 'details': None}
+   Analiz ediliyor -> [💠 Yusuf Salih] (87 karakter)
+      DB hatasi: {'message': "Could not find the 'source_group' column of 'literary_works' in the schema cache", 'code': 'PGRST204', 'hint': None, 'details': None}
+   Analiz ediliyor -> [Tuba] (54 karakter)
+      DB hatasi: {'message': "Could not find the 'source_group' column of 'literary_works' in the schema cache", 'code': 'PGRST204', 'hint': None, 'details': None}
+   Analiz ediliyor -> [Mehmet] (438 karakter)
+      DB hatasi: {'message': "Could not find the 'source_group' column of 'literary_works' in the schema cache", 'code': 'PGRST204', 'hint': None, 'details': None}
+   Analiz ediliyor -> [Dilek] (1395 karakter)
+      DB hatasi: {'message': "Could not find the 'source_group' column of 'literary_works' in the schema cache", 'code': 'PGRST204', 'hint': None, 'details': None}
+   Analiz ediliyor -> [Dilek] (1113 karakter)
+      DB hatasi: {'message': "Could not find the 'source_group' column of 'literary_works' in the schema cache", 'code': 'PGRST204', 'hint': None, 'details': None}
+   Analiz ediliyor -> [Murat Arıkan] (63 karakter)
+      DB hatasi: {'message': "Could not find the 'source_group' column of 'literary_works' in the schema cache", 'code': 'PGRST204', 'hint': None, 'details': None}
+   Analiz ediliyor -> [ŞEREF Demirtaş] (503 karakter)
+      DB hatasi: {'message': "Could not find the 'source_group' column of 'literary_works' in the schema cache", 'code': 'PGRST204', 'hint': None, 'details': None}
+   Analiz ediliyor -> [Zehra] (2668 karakter)
+      Zaten mevcut, atlandi: Dil Gurbeti
+   Analiz ediliyor -> [Zehra] (2462 karakter)
+      DB hatasi: {'message': "Could not find the 'source_group' column of 'literary_works' in the schema cache", 'code': 'PGRST204', 'hint': None, 'details': None}
+   Analiz ediliyor -> [Murat Arıkan] (114 karakter)
+      DB hatasi: {'message': "Could not find the 'source_group' column of 'literary_works' in the schema cache", 'code': 'PGRST204', 'hint': None, 'details': None}
+   Analiz ediliyor -> [Murat Arıkan] (83 karakter)
+      DB hatasi: {'message': "Could not find the 'source_group' column of 'literary_works' in the schema cache", 'code': 'PGRST204', 'hint': None, 'details': None}
+   Analiz ediliyor -> [Murat Arıkan] (107 karakter)
+      DB hatasi: {'message': "Could not find the 'source_group' column of 'literary_works' in the schema cache", 'code': 'PGRST204', 'hint': None, 'details': None}
+   Analiz ediliyor -> [Habibe T.] (177 karakter)
+      DB hatasi: {'message': "Could not find the 'source_group' column of 'literary_works' in the schema cache", 'code': 'PGRST204', 'hint': None, 'details': None}
+   Analiz ediliyor -> [Nurluayy] (208 karakter)
+      DB hatasi: {'message': "Could not find the 'source_group' column of 'literary_works' in the schema cache", 'code': 'PGRST204', 'hint': None, 'details': None}
+   Analiz ediliyor -> [Habibe T.] (690 karakter)
+      Zaten mevcut, atlandi: Ben yusuf
+   Analiz ediliyor -> [Tuba🌸] (1898 karakter)
+      DB hatasi: {'message': "Could not find the 'source_group' column of 'literary_works' in the schema cache", 'code': 'PGRST204', 'hint': None, 'details': None}
+   Analiz ediliyor -> [Yaşar] (1824 karakter)
+      DB hatasi: {'message': "Could not find the 'source_group' column of 'literary_works' in the schema cache", 'code': 'PGRST204', 'hint': None, 'details': None}
+   Analiz ediliyor -> [Nurluayy] (1121 karakter)
+      Zaten mevcut, atlandi: İnsan dünyaya da göçmek için geliyor ,ne tuhaf dem
+   Analiz ediliyor -> [Tuba🌸] (788 karakter)
+      DB hatasi: {'message': "Could not find the 'source_group' column of 'literary_works' in the schema cache", 'code': 'PGRST204', 'hint': None, 'details': None}
+   Analiz ediliyor -> [Tuba🌸] (851 karakter)
+      DB hatasi: {'message': "Could not find the 'source_group' column of 'literary_works' in the schema cache", 'code': 'PGRST204', 'hint': None, 'details': None}
+   Analiz ediliyor -> [💠 Yusuf Salih] (1268 karakter)
+      DB hatasi: {'message': "Could not find the 'source_group' column of 'literary_works' in the schema cache", 'code': 'PGRST204', 'hint': None, 'details': None}
+   Analiz ediliyor -> [💠 Yusuf Salih] (1667 karakter)
+      DB hatasi: {'message': "Could not find the 'source_group' column of 'literary_works' in the schema cache", 'code': 'PGRST204', 'hint': None, 'details': None}
+   Analiz ediliyor -> [Zehra] (3158 karakter)
+      DB hatasi: {'message': "Could not find the 'source_group' column of 'literary_works' in the schema cache", 'code': 'PGRST204', 'hint': None, 'details': None}
+   Analiz ediliyor -> [💠 Yusuf Salih] (1268 karakter)
+      DB hatasi: {'message': "Could not find the 'source_group' column of 'literary_works' in the schema cache", 'code': 'PGRST204', 'hint': None, 'details': None}
+   Analiz ediliyor -> [💠 Yusuf Salih] (1667 karakter)
+      DB hatasi: {'message': "Could not find the 'source_group' column of 'literary_works' in the schema cache", 'code': 'PGRST204', 'hint': None, 'details': None}
+   Analiz ediliyor -> [Tuba🌸] (846 karakter)
+      DB hatasi: {'message': "Could not find the 'source_group' column of 'literary_works' in the schema cache", 'code': 'PGRST204', 'hint': None, 'details': None}
+   Analiz ediliyor -> [Tuba🌸] (1467 karakter)
+      DB hatasi: {'message': "Could not find the 'source_group' column of 'literary_works' in the schema cache", 'code': 'PGRST204', 'hint': None, 'details': None}^C

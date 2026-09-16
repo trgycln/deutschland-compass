@@ -60,11 +60,23 @@ export default function FilterBar({
 }: FilterBarProps) {
   const catScrollRef = useRef<HTMLDivElement>(null);
 
-  // Scroll active category chip into view
+  const isFirstRender = useRef(true);
+
+  // Scroll active category chip horizontally inside its own row without scrolling window
   useEffect(() => {
-    if (!catScrollRef.current) return;
-    const active = catScrollRef.current.querySelector('[data-active="true"]') as HTMLElement | null;
-    active?.scrollIntoView({ block: "nearest", inline: "center", behavior: "smooth" });
+    if (isFirstRender.current) {
+      isFirstRender.current = false;
+      return;
+    }
+    const container = catScrollRef.current;
+    if (!container) return;
+    const active = container.querySelector('[data-active="true"]') as HTMLElement | null;
+    if (active) {
+      const containerLeft = container.getBoundingClientRect().left;
+      const activeLeft = active.getBoundingClientRect().left;
+      const offset = activeLeft - containerLeft - container.clientWidth / 2 + active.clientWidth / 2;
+      container.scrollBy({ left: offset, behavior: "smooth" });
+    }
   }, [selectedCategory]);
 
   return (

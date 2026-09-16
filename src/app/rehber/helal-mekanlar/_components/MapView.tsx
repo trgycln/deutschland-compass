@@ -36,6 +36,18 @@ interface MapViewProps {
   distances: Record<string, number>;
   onLocateUser?: () => void;
   locationLoading?: boolean;
+  isMapActive?: boolean;
+}
+
+// Check if leaflet container is visible and has positive dimensions
+function isMapVisible(map: L.Map): boolean {
+  try {
+    const container = map.getContainer();
+    if (!container) return false;
+    return container.clientWidth > 0 && container.clientHeight > 0;
+  } catch {
+    return false;
+  }
 }
 
 // Germany center
@@ -180,15 +192,20 @@ function MapFlyController({
   const map = useMap();
 
   useEffect(() => {
-    if (flyTarget) {
-      map.flyTo([flyTarget.lat, flyTarget.lng], flyTarget.zoom, {
-        duration: 1.0,
-        easeLinearity: 0.25,
-      });
-      const timer = setTimeout(() => {
-        onFlyDone();
-      }, 1050);
-      return () => clearTimeout(timer);
+    if (flyTarget && isFinite(flyTarget.lat) && isFinite(flyTarget.lng) && isFinite(flyTarget.zoom)) {
+      if (!isMapVisible(map)) return;
+      try {
+        map.flyTo([flyTarget.lat, flyTarget.lng], flyTarget.zoom, {
+          duration: 1.0,
+          easeLinearity: 0.25,
+        });
+        const timer = setTimeout(() => {
+          onFlyDone();
+        }, 1050);
+        return () => clearTimeout(timer);
+      } catch (e) {
+        console.warn("[MapFlyController] flyTo caught:", e);
+      }
     }
   }, [flyTarget, map, onFlyDone]);
 
@@ -196,13 +213,27 @@ function MapFlyController({
 }
 
 // User location handler
-function UserLocationHandler({ userLocation }: { userLocation: { lat: number; lng: number } | null }) {
+function UserLocationHandler({
+  userLocation,
+  isMapActive,
+}: {
+  userLocation: { lat: number; lng: number } | null;
+  isMapActive?: boolean;
+}) {
   const map = useMap();
+
   useEffect(() => {
     if (userLocation && isFinite(userLocation.lat) && isFinite(userLocation.lng)) {
-      map.flyTo([userLocation.lat, userLocation.lng], 13, { duration: 1.2 });
+      if (!isMapVisible(map)) return;
+      try {
+        map.invalidateSize();
+        map.flyTo([userLocation.lat, userLocation.lng], 13, { duration: 1.1 });
+      } catch (e) {
+        console.warn("[UserLocationHandler] flyTo caught:", e);
+      }
     }
-  }, [userLocation, map]);
+  }, [userLocation, isMapActive, map]);
+
   return null;
 }
 
@@ -213,17 +244,24 @@ function BoundsFitter({ mekanlar, hasTarget }: { mekanlar: HelalMekan[]; hasTarg
 
   useEffect(() => {
     if (hasTarget) return;
+    if (!isMapVisible(map)) return;
 
-    if (withCoords.length === 0) {
-      map.setView(GERMANY_CENTER, DEFAULT_ZOOM);
-      return;
+    try {
+      if (withCoords.length === 0) {
+        map.setView(GERMANY_CENTER, DEFAULT_ZOOM);
+        return;
+      }
+      if (withCoords.length === 1) {
+        map.setView([withCoords[0].lat!, withCoords[0].lng!], CITY_ZOOM);
+        return;
+      }
+      const bounds = L.latLngBounds(withCoords.map((m) => [m.lat!, m.lng!] as [number, number]));
+      if (bounds.isValid()) {
+        map.fitBounds(bounds, { padding: [35, 35], maxZoom: 14 });
+      }
+    } catch (e) {
+      console.warn("[BoundsFitter] fitBounds caught:", e);
     }
-    if (withCoords.length === 1) {
-      map.setView([withCoords[0].lat!, withCoords[0].lng!], CITY_ZOOM);
-      return;
-    }
-    const bounds = L.latLngBounds(withCoords.map((m) => [m.lat!, m.lng!] as [number, number]));
-    map.fitBounds(bounds, { padding: [35, 35], maxZoom: 14 });
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [mekanlar]);
 
@@ -262,22 +300,30 @@ function MapClickHandler({ onMapClick }: { onMapClick: () => void }) {
 }
 
 // Force Leaflet to recalculate container dimensions when switching views or resizing
-function MapResizer() {
+function MapResizer({ isMapActive }: { isMapActive?: boolean }) {
   const map = useMap();
 
   useEffect(() => {
-    map.invalidateSize();
-    const t1 = setTimeout(() => map.invalidateSize(), 60);
-    const t2 = setTimeout(() => map.invalidateSize(), 300);
+    const trigger = () => {
+      try {
+        map.invalidateSize();
+      } catch (e) {
+        console.warn("[MapResizer] invalidateSize caught:", e);
+      }
+    };
 
-    const onResize = () => map.invalidateSize();
+    trigger();
+    const t1 = setTimeout(trigger, 80);
+    const t2 = setTimeout(trigger, 300);
+
+    const onResize = () => trigger();
     window.addEventListener("resize", onResize);
 
     const container = map.getContainer();
     let ro: ResizeObserver | null = null;
     if (typeof ResizeObserver !== "undefined" && container) {
       ro = new ResizeObserver(() => {
-        map.invalidateSize();
+        trigger();
       });
       ro.observe(container);
     }
@@ -288,7 +334,7 @@ function MapResizer() {
       window.removeEventListener("resize", onResize);
       ro?.disconnect();
     };
-  }, [map]);
+  }, [map, isMapActive]);
 
   return null;
 }
@@ -312,26 +358,42 @@ function ClusteredMarkers({
   onSelectMekan,
   selectedMekanId,
   onMarkerClick,
+  isMapActive,
 }: {
   clusterIndex: Supercluster<PointProps, ClusterProps>;
   onSelectMekan: (m: HelalMekan) => void;
   selectedMekanId?: string | null;
   onMarkerClick: (m: HelalMekan) => void;
+  isMapActive?: boolean;
 }) {
   const map = useMap();
   const [clusters, setClusters] = useState<ClusterItem[]>([]);
 
   const updateClusters = useCallback(() => {
-    const bounds = map.getBounds();
-    const zoom = Math.round(map.getZoom());
-    const bbox: [number, number, number, number] = [
-      bounds.getWest(),
-      bounds.getSouth(),
-      bounds.getEast(),
-      bounds.getNorth(),
-    ];
-    const items = clusterIndex.getClusters(bbox, zoom);
-    setClusters(items);
+    if (!isMapVisible(map)) return;
+    try {
+      const bounds = map.getBounds();
+      if (!bounds || !bounds.isValid()) return;
+      const west = bounds.getWest();
+      const south = bounds.getSouth();
+      const east = bounds.getEast();
+      const north = bounds.getNorth();
+      if (!isFinite(west) || !isFinite(south) || !isFinite(east) || !isFinite(north)) return;
+
+      const zoom = Math.round(map.getZoom());
+      if (!isFinite(zoom) || zoom < 0) return;
+
+      const bbox: [number, number, number, number] = [
+        Math.max(-180, Math.min(180, west)),
+        Math.max(-85, Math.min(85, south)),
+        Math.max(-180, Math.min(180, east)),
+        Math.max(-85, Math.min(85, north)),
+      ];
+      const items = clusterIndex.getClusters(bbox, zoom);
+      setClusters(items);
+    } catch (e) {
+      console.warn("[ClusteredMarkers] updateClusters caught:", e);
+    }
   }, [clusterIndex, map]);
 
   useEffect(() => {
@@ -343,7 +405,7 @@ function ClusteredMarkers({
       map.off("moveend", updateClusters);
       map.off("zoomend", updateClusters);
     };
-  }, [map, updateClusters]);
+  }, [map, updateClusters, isMapActive]);
 
   const handleClusterClick = useCallback(
     (clusterId: number, lat: number, lng: number) => {
@@ -409,6 +471,7 @@ export default function MapView({
   distances,
   onLocateUser,
   locationLoading = false,
+  isMapActive = false,
 }: MapViewProps) {
   const sourcePlaces = allMekanlar && allMekanlar.length > 0 ? allMekanlar : mekanlar;
   const withCoords = useMemo(() => mekanlar.filter((m) => m.lat !== null && m.lng !== null), [mekanlar]);
@@ -419,6 +482,16 @@ export default function MapView({
   const [isGeocoding, setIsGeocoding] = useState(false);
   const [flyTarget, setFlyTarget] = useState<{ lat: number; lng: number; zoom: number; placeId?: string } | null>(null);
   const [feedbackMsg, setFeedbackMsg] = useState<string | null>(null);
+
+  const handleLocateClick = useCallback(() => {
+    if (userLocation && isFinite(userLocation.lat) && isFinite(userLocation.lng)) {
+      setFlyTarget({ lat: userLocation.lat, lng: userLocation.lng, zoom: 14 });
+      setFeedbackMsg("📍 Bulunduğunuz konuma gidildi.");
+      setTimeout(() => setFeedbackMsg(null), 2500);
+    } else if (onLocateUser) {
+      onLocateUser();
+    }
+  }, [userLocation, onLocateUser]);
 
   // Single active popup state (replaces 730 separate popups)
   const [activePopupMekan, setActivePopupMekan] = useState<HelalMekan | null>(null);
@@ -637,12 +710,12 @@ export default function MapView({
             )}
 
             {/* GPS / My Location button */}
-            {onLocateUser && (
+            {(onLocateUser || userLocation) && (
               <button
                 type="button"
-                onClick={onLocateUser}
+                onClick={handleLocateClick}
                 disabled={locationLoading}
-                className="flex items-center gap-1 px-2 py-1 rounded-lg text-[11px] font-semibold bg-emerald-50 text-emerald-700 hover:bg-emerald-100 border border-emerald-200/60 transition-colors shrink-0 disabled:opacity-50"
+                className="flex items-center gap-1 px-2 py-1 rounded-lg text-[11px] font-semibold bg-emerald-50 text-emerald-700 hover:bg-emerald-100 border border-emerald-200/60 transition-colors shrink-0 disabled:opacity-50 cursor-pointer"
                 title="Bulunduğum Konuma Git"
               >
                 {locationLoading ? (
@@ -797,10 +870,10 @@ export default function MapView({
         {/* Reposition zoom controls to bottom-left so floating search bar never collides */}
         <ZoomControl position="bottomleft" />
 
-        <MapResizer />
+        <MapResizer isMapActive={isMapActive} />
         <BoundsFitter mekanlar={mekanlar} hasTarget={flyTarget !== null} />
         <MapFlyController flyTarget={flyTarget} onFlyDone={handleFlyDone} />
-        <UserLocationHandler userLocation={userLocation} />
+        <UserLocationHandler userLocation={userLocation} isMapActive={isMapActive} />
 
         {/* User location marker */}
         {userLocation && (
@@ -826,6 +899,7 @@ export default function MapView({
           onSelectMekan={onSelectMekan}
           selectedMekanId={selectedMekanId}
           onMarkerClick={(m) => setActivePopupMekan(m)}
+          isMapActive={isMapActive}
         />
 
         {/* Map Click Handler: Closes popup when clicking empty space */}

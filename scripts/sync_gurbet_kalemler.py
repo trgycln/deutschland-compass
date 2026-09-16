@@ -1,6 +1,12 @@
 #!/usr/bin/env python3
 """
 Deutschlandcompass — Gurbet Kalemleri Telegram Senkronizasyon Motoru
+
+ANONIMLESTIRME POLITIKASI (.agents/rules/veri-gizliligi-ve-anonimlik.md):
+- Hicbir gercek isim / soyisim veritabanina yazilmaz.
+- Yazar adi yalnizca bas harfler (initials) veya 'Anonim Kalem' olabilir.
+- Metin icerigindeki telefon, e-posta, @kullanici, IBAN, TC kimlik anonimlestirilir.
+- Link paylasimi ALINMAMAKTADIR (tamamen devre disi).
 """
 
 import os
@@ -20,7 +26,6 @@ if sys.platform == 'win32':
 
 from dotenv import load_dotenv
 from telethon import TelegramClient
-from telethon.tl.types import MessageMediaWebPage, WebPage
 from supabase import create_client, Client
 
 try:
@@ -60,41 +65,46 @@ def save_state(state):
     with open(STATE_FILE, 'w', encoding='utf-8') as f:
         json.dump(state, f, ensure_ascii=False, indent=2)
 
-def clean_text(text):
+# ─── Anonimlesme Fonksiyonlari (.agents/rules/veri-gizliligi-ve-anonimlik.md) ───
+
+def anonymize_author(sender) -> str:
+    """
+    Telegram sender nesnesinden YALNIZCA bas harfler (initials) uretir.
+    Tam isim / soyisim asla doğrudan kullanilmaz (proje politikasi geregi).
+    """
+    if sender is None:
+        return "Anonim Kalem"
+    first = (getattr(sender, 'first_name', '') or '').strip()
+    last  = (getattr(sender, 'last_name',  '') or '').strip()
+    initials = ""
+    if first:
+        initials += first[0].upper() + "."
+    if last:
+        initials += last[0].upper() + "."
+    return initials if initials else "Anonim Kalem"
+
+
+def anonymize_text(text: str) -> str:
+    """
+    Metin icindeki tum kisisel verileri anonimlestirir.
+    Kural: telefon, e-posta, @kullanici, IBAN, TC kimlik, URL icindeki @ler.
+    """
     if not text:
         return ""
-    text = re.sub(r'(\+?\d{1,3}[.\-\s]?)?\(?\d{3}\)?[.\-\s]?\d{3}[.\-\s]?\d{4}', '[Telefon]', text)
+    # Telefon numaralari
+    text = re.sub(r'(\+?\d{1,3}[\-.\s]?)?\(?\d{3}\)?[\-.\s]?\d{3}[\-.\s]?\d{4}', '[Telefon]', text)
+    # E-posta
     text = re.sub(r'[\w.\-]+@[\w.\-]+\.\w+', '[E-posta]', text)
+    # Telegram kullanici adlari
+    text = re.sub(r'@\w+', '[Kullanici]', text)
+    # IBAN
+    text = re.sub(r'\b[A-Z]{2}\d{2}[\s]?(\d{4}[\s]?){4,7}\b', '[Hesap No]', text)
+    # TC Kimlik (11 hane rakam)
+    text = re.sub(r'\b\d{11}\b', '[Kimlik No]', text)
     return text.strip()
 
-def get_author_name(sender):
-    if sender is None:
-        return "Anonim"
-    first  = getattr(sender, 'first_name', '') or ''
-    last   = getattr(sender, 'last_name',  '') or ''
-    full   = f"{first} {last}".strip()
-    return full if full else "Anonim"
-
-def detect_link_type(url):
-    lower = url.lower()
-    if 'youtube.com' in lower or 'youtu.be' in lower:
-        return 'youtube'
-    if 't.me' in lower or 'telegram.me' in lower:
-        return 'telegram_channel'
-    if 'instagram.com' in lower:
-        return 'instagram'
-    if 'twitter.com' in lower or 'x.com' in lower:
-        return 'twitter'
-    if 'spotify.com' in lower:
-        return 'spotify'
-    if 'soundcloud.com' in lower:
-        return 'soundcloud'
-    return 'article'
-
+# URL_RE: yalnizca metin icindeki linkleri tespit edip metinden cikarmak icin
 URL_RE = re.compile(r'https?://\S+')
-
-def extract_links(text):
-    return URL_RE.findall(text or '')
 
 async def analyze_literary_content(text, author):
     if not GEMINI_KEY or not HAS_GEMINI:
@@ -167,13 +177,6 @@ def work_exists(supabase, author, title):
     except Exception:
         return False
 
-def link_exists(supabase, url):
-    try:
-        res = supabase.table('gurbet_links').select('id').eq('url', url).execute()
-        return len(res.data or []) > 0
-    except Exception:
-        return False
-
 async def sync_gurbet_kalemler(external_client=None, target_dialog=None):
     print("=" * 65)
     print("Gurbet Kalemleri Senkronizasyon Motoru Baslatiliyor...")
@@ -210,46 +213,59 @@ async def sync_gurbet_kalemler(external_client=None, target_dialog=None):
             if msg.id > max_id_seen:
                 max_id_seen = msg.id
             sender = await msg.get_sender()
-            author = get_author_name(sender)
-            raw_messages.append({"id": msg.id, "date": msg.date, "author": author, "text": msg.text or "", "media": msg.media})
+            # KURAL: Tam isim asla alinmaz — yalnizca bas harfler (initials)
+            author = anonymize_author(sender)
+            raw_messages.append({
+                "id": msg.id,
+                "date": msg.date,
+                "author": author,
+                "text": msg.text or "",
+            })
     except Exception as e:
         print(f"   Mesaj okuma hatasi: {e}")
 
     print(f"   {len(raw_messages)} mesaj cekildi.")
 
+    # Gruplama: yalnizca metinler; linkler artik alinmiyor (proje politikasi)
     grouped = []
     for msg in raw_messages:
-        links = extract_links(msg["text"])
-        link_text_only = len(msg["text"].strip()) - sum(len(l) for l in links) < 20 if links else False
+        # URL'leri metinden temizle (icerige dahil etme)
+        urls_in_msg = URL_RE.findall(msg["text"])
+        text_part = msg["text"]
+        for url in urls_in_msg:
+            text_part = text_part.replace(url, "").strip()
 
-        if links:
-            for url in links:
-                grouped.append({"kind": "link", "author": msg["author"], "date": msg["date"], "url": url, "caption": msg["text"].replace(url, "").strip(), "media": msg["media"]})
-            if link_text_only:
-                continue
+        # Yalnizca link olan mesajlari atla
+        if not text_part.strip():
+            continue
 
-        if not link_text_only and msg["text"].strip():
-            text_part = msg["text"]
-            for lnk in links:
-                text_part = text_part.replace(lnk, "").strip()
-            if text_part:
-                if (grouped and grouped[-1].get("kind") == "text" and grouped[-1]["author"] == msg["author"] and (msg["date"] - grouped[-1]["last_date"]) <= timedelta(minutes=MESSAGE_MERGE_WINDOW_MINUTES)):
-                    grouped[-1]["text"] += "\n" + text_part
-                    grouped[-1]["last_date"] = msg["date"]
-                    grouped[-1]["message_count"] += 1
-                else:
-                    grouped.append({"kind": "text", "author": msg["author"], "date": msg["date"], "last_date": msg["date"], "text": text_part, "message_count": 1})
+        # KURAL: Metin anonimlestirilir
+        text_part = anonymize_text(text_part)
 
-    texts      = [g for g in grouped if g["kind"] == "text"]
-    links_list = [g for g in grouped if g["kind"] == "link"]
-    print(f"   {len(texts)} edebi metin grubu (birlestirme sonrasi)")
-    print(f"   {len(links_list)} link paylasimi\n")
+        if text_part:
+            if (grouped
+                    and grouped[-1]["author"] == msg["author"]
+                    and (msg["date"] - grouped[-1]["last_date"]) <= timedelta(minutes=MESSAGE_MERGE_WINDOW_MINUTES)):
+                grouped[-1]["text"] += "\n" + text_part
+                grouped[-1]["last_date"] = msg["date"]
+                grouped[-1]["message_count"] += 1
+            else:
+                grouped.append({
+                    "author": msg["author"],
+                    "date": msg["date"],
+                    "last_date": msg["date"],
+                    "text": text_part,
+                    "message_count": 1,
+                })
+
+    print(f"   {len(grouped)} edebi metin grubu (anonimlestirilmis, birlestirme sonrasi)")
+    print(f"   NOT: Link paylasimi artik alinmamaktadir (proje politikasi).\n")
 
     added_works   = 0
     skipped_works = 0
 
-    for item in texts:
-        text = clean_text(item["text"])
+    for item in grouped:
+        text = item["text"]
         if len(text) < 50:
             skipped_works += 1
             continue
@@ -269,42 +285,22 @@ async def sync_gurbet_kalemler(external_client=None, target_dialog=None):
             skipped_works += 1
             continue
         try:
-            supabase.table('literary_works').insert({"title": title, "author": author, "date": date_str, "type": work_type, "tags": tags, "content": text, "is_approved": True, "submitted_by": "telegram_sync", "source_group": LITERARY_CHANNEL_TITLE}).execute()
+            supabase.table('literary_works').insert({
+                "title": title,
+                "author": author,       # initials veya "Anonim Kalem"
+                "date": date_str,
+                "type": work_type,
+                "tags": tags,
+                "content": text,        # anonymize_text() gecmis icerik
+                "is_approved": True,
+                "submitted_by": "telegram_sync"
+            }).execute()
             print(f"      Eklendi: [{work_type}] {title[:60]}")
             added_works += 1
         except Exception as db_err:
             print(f"      DB hatasi: {db_err}")
         await asyncio.sleep(1)
 
-    added_links   = 0
-    skipped_links = 0
-
-    for item in links_list:
-        url      = item["url"]
-        author   = item["author"]
-        caption  = item.get("caption", "")
-        date_str = item["date"].strftime("%Y-%m-%d")
-        link_type = detect_link_type(url)
-        webpage_title = ""
-        webpage_desc  = ""
-        media = item.get("media")
-        if isinstance(media, MessageMediaWebPage) and isinstance(media.webpage, WebPage):
-            wp = media.webpage
-            webpage_title = wp.title or ""
-            webpage_desc  = wp.description or ""
-        if link_exists(supabase, url):
-            print(f"   Link zaten kayitli: {url[:60]}")
-            skipped_links += 1
-            continue
-        print(f"   Link isleniyor -> [{link_type}] {url[:60]}")
-        meta = await summarize_link(url, caption, webpage_title, webpage_desc, author)
-        try:
-            supabase.table('gurbet_links').insert({"url": url, "link_type": link_type, "title": meta.get("title", webpage_title or url), "description": meta.get("description", ""), "thumbnail_url": "", "shared_by": author, "shared_date": date_str, "caption": caption, "is_approved": True, "source_channel": LITERARY_CHANNEL_TITLE}).execute()
-            print(f"      Kaydedildi: {meta.get('title', '')[:60]}")
-            added_links += 1
-        except Exception as db_err:
-            print(f"      gurbet_links DB hatasi: {db_err}")
-        await asyncio.sleep(1)
 
     if max_id_seen > last_id:
         state[STATE_KEY] = max_id_seen
@@ -317,27 +313,9 @@ async def sync_gurbet_kalemler(external_client=None, target_dialog=None):
     print("\n" + "=" * 65)
     print(f"Gurbet Kalemleri Senkronizasyonu Tamamlandi!")
     print(f"   Eklenen eser  : {added_works}")
-    print(f"   Eklenen link  : {added_links}")
-    print(f"   Atlanan       : {skipped_works + skipped_links}")
+    print(f"   Atlanan       : {skipped_works}")
+    print(f"   Politika      : Link paylasimi alinmiyor (anonim platform kurali)")
     print("=" * 65)
-    print("""
-gurbet_links tablosu Supabase'de yoksa su SQL'i calistirin:
-CREATE TABLE IF NOT EXISTS gurbet_links (
-  id              BIGSERIAL PRIMARY KEY,
-  url             TEXT NOT NULL,
-  link_type       TEXT NOT NULL DEFAULT 'article',
-  title           TEXT NOT NULL DEFAULT '',
-  description     TEXT DEFAULT '',
-  thumbnail_url   TEXT DEFAULT '',
-  shared_by       TEXT NOT NULL DEFAULT 'Anonim',
-  shared_date     DATE,
-  caption         TEXT DEFAULT '',
-  is_approved     BOOLEAN DEFAULT TRUE,
-  source_channel  TEXT DEFAULT '',
-  created_at      TIMESTAMPTZ DEFAULT NOW(),
-  UNIQUE(url)
-);
-""")
 
 if __name__ == '__main__':
     asyncio.run(sync_gurbet_kalemler())

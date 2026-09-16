@@ -3,16 +3,18 @@
 import React from "react";
 import { MapPin, RefreshCw } from "lucide-react";
 
+interface Props {
+  children: React.ReactNode;
+  resetKey?: any;
+}
+
 interface State {
   hasError: boolean;
   error?: Error;
 }
 
-export class MapErrorBoundary extends React.Component<
-  { children: React.ReactNode },
-  State
-> {
-  constructor(props: { children: React.ReactNode }) {
+export class MapErrorBoundary extends React.Component<Props, State> {
+  constructor(props: Props) {
     super(props);
     this.state = { hasError: false };
   }
@@ -23,6 +25,12 @@ export class MapErrorBoundary extends React.Component<
 
   componentDidCatch(error: Error, info: React.ErrorInfo) {
     console.error("[MapErrorBoundary] Harita hatasi:", error, info);
+  }
+
+  componentDidUpdate(prevProps: Props) {
+    if (this.state.hasError && prevProps.resetKey !== this.props.resetKey) {
+      this.setState({ hasError: false, error: undefined });
+    }
   }
 
   render() {

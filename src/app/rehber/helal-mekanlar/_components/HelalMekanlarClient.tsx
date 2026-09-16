@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useMemo, useEffect, useCallback } from "react";
+import { useState, useMemo, useEffect, useCallback, useRef } from "react";
 import dynamic from "next/dynamic";
 import Image from "next/image";
 import { useSearchParams, useRouter, usePathname } from "next/navigation";
@@ -144,6 +144,13 @@ export default function HelalMekanlarClient({ initialData }: { initialData: Hela
     return () => window.removeEventListener("keydown", onKeyDown);
   }, [viewMode]);
 
+  // Ensure page always starts at top on initial mount
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      window.scrollTo(0, 0);
+    }
+  }, []);
+
   // Sync searchInput when URL changes
   useEffect(() => { setSearchInput(searchParams.get("q") ?? ""); }, [searchParams]);
 
@@ -152,8 +159,13 @@ export default function HelalMekanlarClient({ initialData }: { initialData: Hela
     setVisibleLimit(30);
   }, [selectedCountry, selectedCity, selectedCategory, searchQuery, activeSpecials, sortBy]);
 
-  // Debounce search to URL
+  // Debounce search to URL (skip initial mount)
+  const isSearchMountedRef = useRef(false);
   useEffect(() => {
+    if (!isSearchMountedRef.current) {
+      isSearchMountedRef.current = true;
+      return;
+    }
     const t = setTimeout(() => {
       const q = buildParams({ q: searchInput.trim() });
       router.replace(q ? `${pathname}?${q}` : pathname, { scroll: false });
@@ -177,7 +189,16 @@ export default function HelalMekanlarClient({ initialData }: { initialData: Hela
   const handleCountryChange  = (country: string)  => setFilter({ country: country === "all" ? "" : country, city: "" });
   const handleCityChange     = (city: string)     => setFilter({ city });
   const handleCategoryChange = (cat: string)      => setFilter({ category: KATEGORI_SLUG[cat] ?? "" });
-  const handleQuickCity      = (city: string)      => setFilter({ city: isCityMatch(city, selectedCity) ? "" : city });
+  const handleQuickCity = (city: string) => {
+    const isAlreadySelected = isCityMatch(city, selectedCity);
+    const nextCity = isAlreadySelected ? "" : city;
+    setFilter({ city: nextCity });
+    if (!isAlreadySelected && typeof window !== "undefined") {
+      setTimeout(() => {
+        document.getElementById("helal-filter-bar")?.scrollIntoView({ behavior: "smooth" });
+      }, 100);
+    }
+  };
   const toggleSpecial        = (key: string) => setActiveSpecials((prev) => {
     const next = new Set(prev);
     next.has(key) ? next.delete(key) : next.add(key);
@@ -191,7 +212,7 @@ export default function HelalMekanlarClient({ initialData }: { initialData: Hela
   };
 
   // ── Geolocation ─────────────────────────────────────────────────────────
-  const requestLocation = () => {
+  const requestLocation = (openMapAfter: boolean = true) => {
     if (typeof window === "undefined" || !navigator.geolocation) {
       alert("Tarayıcınız konum servisini desteklemiyor.");
       return;
@@ -208,6 +229,14 @@ export default function HelalMekanlarClient({ initialData }: { initialData: Hela
         }
         setUserLocation({ lat, lng });
         setLocationLoading(false);
+        setSortBy("distance");
+
+        if (openMapAfter) {
+          setViewMode("map");
+          if (typeof window !== "undefined" && window.innerWidth >= 1024) {
+            document.getElementById("helal-map-section")?.scrollIntoView({ behavior: "smooth" });
+          }
+        }
       },
       (err) => {
         setLocationLoading(false);
@@ -219,7 +248,7 @@ export default function HelalMekanlarClient({ initialData }: { initialData: Hela
           alert("Konumunuz tespit edilemedi. Lütfen cihazınızın konum servislerinin açık olduğunu kontrol edin.");
         }
       },
-      { timeout: 12000, enableHighAccuracy: false, maximumAge: 60000 }
+      { timeout: 12000, enableHighAccuracy: true, maximumAge: 60000 }
     );
   };
 
@@ -415,11 +444,11 @@ export default function HelalMekanlarClient({ initialData }: { initialData: Hela
           </p>
 
           {/* Location Action Button */}
-          {!userLocation && (
+          {!userLocation ? (
             <button
-              onClick={requestLocation}
+              onClick={() => requestLocation(true)}
               disabled={locationLoading}
-              className="mt-1 inline-flex items-center gap-2 px-6 py-3 bg-emerald-600 hover:bg-emerald-500 text-white rounded-full font-bold text-sm shadow-xl shadow-emerald-950/50 hover:shadow-emerald-500/25 hover:scale-[1.02] transition-all active:scale-95 disabled:opacity-70 border border-emerald-400/30"
+              className="mt-1 inline-flex items-center gap-2 px-6 py-3 bg-emerald-600 hover:bg-emerald-500 text-white rounded-full font-bold text-sm shadow-xl shadow-emerald-950/50 hover:shadow-emerald-500/25 hover:scale-[1.02] transition-all active:scale-95 disabled:opacity-70 border border-emerald-400/30 cursor-pointer"
             >
               {locationLoading ? (
                 <span className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
@@ -428,11 +457,31 @@ export default function HelalMekanlarClient({ initialData }: { initialData: Hela
               )}
               {locationLoading ? "Konum alınıyor..." : "Yakınımdaki Mekanları Bul"}
             </button>
-          )}
-          {userLocation && (
-            <div className="mt-1 inline-flex items-center gap-2 px-4 py-2 bg-emerald-600/80 backdrop-blur-md border border-emerald-400/40 rounded-full text-sm font-semibold shadow-lg">
-              <Navigation className="w-3.5 h-3.5 text-emerald-200 animate-pulse" />
-              Konum aktif — mekanlar mesafenize göre listeleniyor
+          ) : (
+            <div className="mt-2 flex flex-wrap items-center justify-center gap-2">
+              <button
+                type="button"
+                onClick={() => {
+                  setViewMode("map");
+                  if (typeof window !== "undefined" && window.innerWidth >= 1024) {
+                    document.getElementById("helal-map-section")?.scrollIntoView({ behavior: "smooth" });
+                  }
+                }}
+                className="inline-flex items-center gap-2 px-5 py-2.5 bg-emerald-600 hover:bg-emerald-500 text-white rounded-full font-bold text-sm shadow-xl shadow-emerald-950/50 hover:scale-[1.02] transition-all active:scale-95 border border-emerald-400/30 cursor-pointer"
+              >
+                <MapIcon className="w-4 h-4 text-emerald-100" />
+                <span>Haritada Konumuma Git</span>
+              </button>
+              <button
+                type="button"
+                onClick={() => requestLocation(true)}
+                disabled={locationLoading}
+                className="inline-flex items-center gap-1.5 px-3.5 py-2.5 bg-black/40 hover:bg-black/60 text-emerald-200 hover:text-white rounded-full text-xs font-semibold backdrop-blur-md border border-white/20 transition-all active:scale-95 cursor-pointer"
+                title="Konumu Yenile"
+              >
+                <Navigation className={`w-3.5 h-3.5 ${locationLoading ? "animate-spin" : ""}`} />
+                <span>{locationLoading ? "Yenileniyor..." : "Konumu Yenile"}</span>
+              </button>
             </div>
           )}
         </div>
@@ -444,8 +493,9 @@ export default function HelalMekanlarClient({ initialData }: { initialData: Hela
             return (
               <button
                 key={city}
+                type="button"
                 onClick={() => handleQuickCity(city)}
-                className={`min-h-[34px] px-3.5 py-1 rounded-full text-xs sm:text-sm font-medium transition-all backdrop-blur-md active:scale-95 ${
+                className={`min-h-[34px] px-3.5 py-1 rounded-full text-xs sm:text-sm font-medium transition-all backdrop-blur-md active:scale-95 cursor-pointer ${
                   isSelected
                     ? "bg-emerald-500 text-white font-bold shadow-lg shadow-emerald-900/50 border border-emerald-300 ring-2 ring-emerald-400/40"
                     : "bg-black/40 hover:bg-black/60 text-slate-200 hover:text-white border border-white/15"
@@ -517,12 +567,12 @@ export default function HelalMekanlarClient({ initialData }: { initialData: Hela
       </div>
 
       {/* ════════════ FILTER BAR ════════════ */}
-      <div>
+      <div id="helal-filter-bar">
         <FilterBar
           countries={countries}
           cities={cities}
           selectedCountry={selectedCountry}
-          selectedCity={cities.find((c) => isCityMatch(c, selectedCity)) || selectedCity}
+          selectedCity={selectedCity === "all" ? "all" : (cities.find((c) => isCityMatch(c, selectedCity)) || selectedCity)}
           selectedCategory={selectedCategory}
           searchInput={searchInput}
           filteredCount={filtered.length}
@@ -536,7 +586,7 @@ export default function HelalMekanlarClient({ initialData }: { initialData: Hela
           onSearchChange={setSearchInput}
           onToggleSpecial={toggleSpecial}
           onSortChange={setSortBy}
-          onRequestLocation={requestLocation}
+          onRequestLocation={() => requestLocation(true)}
           onReset={resetFilters}
         />
       </div>
@@ -736,6 +786,7 @@ export default function HelalMekanlarClient({ initialData }: { initialData: Hela
 
           {/* ── LEFT: MAP (desktop sticky / mobile full-screen overlay) ── */}
           <div
+            id="helal-map-section"
             className={
               viewMode === "map"
                 ? "fixed inset-0 z-[55] bg-white flex flex-col h-[100dvh] w-full overflow-hidden lg:static lg:z-auto lg:h-auto lg:flex-none lg:w-[45%] lg:block"
@@ -748,7 +799,7 @@ export default function HelalMekanlarClient({ initialData }: { initialData: Hela
                 <button
                   type="button"
                   onClick={() => setViewMode("list")}
-                  className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-800 font-bold text-xs transition-all active:scale-95"
+                  className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-800 font-bold text-xs transition-all active:scale-95 cursor-pointer"
                 >
                   <List className="w-3.5 h-3.5 text-emerald-600" />
                   <span>Liste ({filtered.length})</span>
@@ -762,7 +813,7 @@ export default function HelalMekanlarClient({ initialData }: { initialData: Hela
                 <button
                   type="button"
                   onClick={() => setShowOnerModal(true)}
-                  className="flex items-center gap-1 px-2.5 py-1.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs transition-all active:scale-95 shadow-xs"
+                  className="flex items-center gap-1 px-2.5 py-1.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs transition-all active:scale-95 shadow-xs cursor-pointer"
                 >
                   <Plus className="w-3.5 h-3.5" />
                   <span>Öner</span>
@@ -772,7 +823,7 @@ export default function HelalMekanlarClient({ initialData }: { initialData: Hela
 
             {/* Map Viewport */}
             <div className="flex-1 w-full relative overflow-hidden lg:sticky lg:top-24 lg:h-[calc(100vh-140px)]">
-              <MapErrorBoundary>
+              <MapErrorBoundary resetKey={`${viewMode}_${userLocation ? "loc" : "noloc"}`}>
                 <MapView
                   mekanlar={filtered}
                   allMekanlar={initialData}
@@ -780,8 +831,9 @@ export default function HelalMekanlarClient({ initialData }: { initialData: Hela
                   onSelectMekan={setSelectedMekan}
                   selectedMekanId={selectedMekan?.id}
                   distances={distanceMap}
-                  onLocateUser={requestLocation}
+                  onLocateUser={() => requestLocation(true)}
                   locationLoading={locationLoading}
+                  isMapActive={viewMode === "map"}
                 />
               </MapErrorBoundary>
               <p className="text-[11px] text-gray-400 text-center mt-1.5 hidden lg:block">

@@ -32,16 +32,37 @@ export function normalizeCityName(str: string): string {
     .trim();
 }
 
-export function isCityMatch(placeCity: string | null | undefined, filterCity: string): boolean {
+export function isCityMatch(placeCity: string | null | undefined, filterCity: string | null | undefined): boolean {
   if (!placeCity || !filterCity) return false;
-  if (filterCity === "all" || filterCity === "Tumu") return true;
-  if (placeCity.toLowerCase() === filterCity.toLowerCase()) return true;
+  const trimmedFilter = filterCity.trim();
+  const trimmedPlace = placeCity.trim();
+  if (trimmedFilter === "" || trimmedFilter === "all" || trimmedFilter === "Tumu" || trimmedPlace === "" || trimmedPlace === "all" || trimmedPlace === "Tumu") {
+    return false;
+  }
+  if (trimmedPlace.toLowerCase() === trimmedFilter.toLowerCase()) return true;
 
-  const normPlace = normalizeCityName(placeCity);
-  const normFilter = normalizeCityName(filterCity);
+  const normPlace = normalizeCityName(trimmedPlace);
+  const normFilter = normalizeCityName(trimmedFilter);
 
   if (normPlace === normFilter) return true;
-  if (normPlace.startsWith(normFilter) || normFilter.startsWith(normPlace)) return true;
+
+  // Prefix matching with word boundary or separators (e.g., "Frankfurt am Main" matches "Frankfurt")
+  if (
+    normPlace.startsWith(normFilter + " ") ||
+    normPlace.startsWith(normFilter + "-") ||
+    normPlace.startsWith(normFilter + "/") ||
+    normPlace.startsWith(normFilter + "(")
+  ) {
+    return true;
+  }
+  if (
+    normFilter.startsWith(normPlace + " ") ||
+    normFilter.startsWith(normPlace + "-") ||
+    normFilter.startsWith(normPlace + "/") ||
+    normFilter.startsWith(normPlace + "(")
+  ) {
+    return true;
+  }
 
   return false;
 }
