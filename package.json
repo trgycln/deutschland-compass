@@ -18,6 +18,7 @@
     "gurbet:sync": "python scripts/sync_gurbet_kalemler.py"
   },
   "dependencies": {
+    "@google/generative-ai": "^0.24.1",
     "@radix-ui/react-accordion": "^1.2.12",
     "@radix-ui/react-avatar": "^1.1.11",
     "@radix-ui/react-dialog": "^1.1.15",
@@ -41,6 +42,7 @@
     "leaflet": "^1.9.4",
     "lucide-react": "^0.555.0",
     "next": "^16.0.7",
+    "next-pwa": "^5.6.0",
     "react": "19.2.0",
     "react-dom": "19.2.0",
     "react-icons": "^5.5.0",

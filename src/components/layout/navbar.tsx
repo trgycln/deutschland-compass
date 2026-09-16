@@ -5,7 +5,7 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { Button } from '@/components/ui/button';
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from '@/components/ui/sheet';
-import { Menu, Utensils, Sparkles, BookOpen, PenTool, MessageSquare, Briefcase, Home, Radio } from 'lucide-react';
+import { Menu, Utensils, Sparkles, BookOpen, PenTool, MessageSquare, Briefcase, Home, Radio, GraduationCap } from 'lucide-react';
 
 export function Navbar() {
   const [isOpen, setIsOpen] = useState(false);
@@ -69,6 +69,13 @@ export function Navbar() {
             >
               <Sparkles className="w-4 h-4" />
               AI Kariyerleri
+            </Link>
+            <Link 
+              href="/sinav-hazirlik" 
+              className="hover:text-blue-700 text-blue-800 dark:text-blue-300 transition-colors flex items-center gap-1.5 font-semibold bg-blue-50 dark:bg-blue-900/20 px-3 py-1.5 rounded-full border border-blue-100 dark:border-blue-800"
+            >
+              <GraduationCap className="w-4 h-4" />
+              B2 Hazırlık
             </Link>
           </div>
 
@@ -151,6 +158,16 @@ export function Navbar() {
                         <Sparkles className="w-5 h-5 text-fuchsia-700 dark:text-fuchsia-400" />
                       </div>
                       AI Kariyerleri
+                    </Link>
+                    <Link 
+                      href="/sinav-hazirlik" 
+                      className="flex items-center gap-3 p-3 rounded-lg bg-blue-50 hover:bg-blue-100 dark:bg-blue-950/30 dark:hover:bg-blue-900/40 text-blue-900 dark:text-blue-200 transition-colors font-semibold"
+                      onClick={() => setIsOpen(false)}
+                    >
+                      <div className="bg-blue-200/50 dark:bg-blue-800/50 p-2 rounded-md">
+                        <GraduationCap className="w-5 h-5 text-blue-700 dark:text-blue-400" />
+                      </div>
+                      B2 Sınav Hazırlığı
                     </Link>
                   </div>
                 </div>
