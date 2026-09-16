@@ -115,22 +115,30 @@ export function Navbar() {
                     <Home className="w-5 h-5 text-primary" />
                     <span className="text-sm font-medium">Ana Sayfa</span>
                   </Link>
-                  <div className="grid grid-cols-2 gap-3">
+                  <div className="grid grid-cols-3 gap-2.5">
                     <Link 
                       href="/meslekler" 
-                      className="flex flex-col items-center justify-center gap-2 p-4 rounded-xl bg-slate-50 hover:bg-slate-100 dark:bg-slate-900 dark:hover:bg-slate-800 text-slate-700 dark:text-slate-200 transition-colors"
+                      className="flex flex-col items-center justify-center gap-1.5 p-3 rounded-xl bg-slate-50 hover:bg-slate-100 dark:bg-slate-900 dark:hover:bg-slate-800 text-slate-700 dark:text-slate-200 transition-colors text-center"
                       onClick={() => setIsOpen(false)}
                     >
-                      <Briefcase className="w-6 h-6 text-primary" />
-                      <span className="text-sm font-medium">Meslekler</span>
+                      <Briefcase className="w-5 h-5 text-primary" />
+                      <span className="text-xs font-medium">Meslekler</span>
                     </Link>
                     <Link 
                       href="/rehber" 
-                      className="flex flex-col items-center justify-center gap-2 p-4 rounded-xl bg-slate-50 hover:bg-slate-100 dark:bg-slate-900 dark:hover:bg-slate-800 text-slate-700 dark:text-slate-200 transition-colors"
+                      className="flex flex-col items-center justify-center gap-1.5 p-3 rounded-xl bg-slate-50 hover:bg-slate-100 dark:bg-slate-900 dark:hover:bg-slate-800 text-slate-700 dark:text-slate-200 transition-colors text-center"
                       onClick={() => setIsOpen(false)}
                     >
-                      <BookOpen className="w-6 h-6 text-primary" />
-                      <span className="text-sm font-medium">Rehberler</span>
+                      <BookOpen className="w-5 h-5 text-primary" />
+                      <span className="text-xs font-medium">Rehberler</span>
+                    </Link>
+                    <Link 
+                      href="/sinav-hazirlik" 
+                      className="flex flex-col items-center justify-center gap-1.5 p-3 rounded-xl bg-blue-50 hover:bg-blue-100 dark:bg-blue-950/40 dark:hover:bg-blue-900/50 text-blue-900 dark:text-blue-200 transition-colors text-center border border-blue-100 dark:border-blue-800"
+                      onClick={() => setIsOpen(false)}
+                    >
+                      <GraduationCap className="w-5 h-5 text-blue-600 dark:text-blue-400" />
+                      <span className="text-xs font-bold">B2 Sınavı</span>
                     </Link>
                   </div>
                 </div>
@@ -241,6 +249,14 @@ export function Navbar() {
             <Link href="/rehber" className="hover:text-primary transition-colors flex items-center gap-2">
               <BookOpen className="w-4 h-4" />
               Rehberler
+            </Link>
+            <Link 
+              href="/sinav-hazirlik" 
+              className="hover:text-blue-700 text-blue-800 dark:text-blue-300 transition-colors flex items-center gap-1.5 font-semibold bg-blue-50/80 dark:bg-blue-950/40 px-2.5 py-1 rounded-md border border-blue-200/70 dark:border-blue-800/60"
+            >
+              <GraduationCap className="w-4 h-4 text-blue-600 dark:text-blue-400" />
+              <span>B2 Sınav Hazırlığı</span>
+              <span className="text-[10px] bg-blue-600 text-white font-bold px-1.5 py-0.2 rounded-full">telc</span>
             </Link>
             <Link href="/gurbet-kalemleri" className="hover:text-primary transition-colors flex items-center gap-2">
               <PenTool className="w-4 h-4" />
