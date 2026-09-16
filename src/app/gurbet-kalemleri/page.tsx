@@ -1445,9 +1445,9 @@ export default function GurbetKalemleriPage() {
         )}
       </main>
 
-      {/* 🎯 Sticky Floating Action Button */}
+      {/* 🎯 Sticky Floating Action Button (Positioned above Community Pulse) */}
       <Link href="/gurbet-kalemleri/gonder">
-        <div className="fixed bottom-6 right-4 sm:bottom-8 sm:right-8 z-40 group">
+        <div className="fixed bottom-20 right-4 sm:bottom-22 sm:right-6 z-40 group">
           <div className="relative">
             <div className="absolute inset-0 bg-gradient-to-r from-emerald-500 to-teal-500 rounded-full animate-ping opacity-60"></div>
             <button className="relative flex items-center gap-2.5 px-4 py-3 sm:px-5 sm:py-3.5 bg-gradient-to-r from-emerald-600 to-teal-600 text-white rounded-full shadow-xl hover:shadow-2xl hover:scale-105 active:scale-95 transition-all duration-300">
