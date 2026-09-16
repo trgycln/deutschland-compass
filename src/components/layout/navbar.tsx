@@ -1,19 +1,39 @@
 "use client";
 
-import { useState, useSyncExternalStore } from 'react';
+import { useState, useSyncExternalStore, useCallback } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { Button } from '@/components/ui/button';
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from '@/components/ui/sheet';
-import { Menu, Utensils, Sparkles, BookOpen, PenTool, MessageSquare, Briefcase, Home, Radio, GraduationCap } from 'lucide-react';
+import { Menu, Utensils, Sparkles, BookOpen, PenTool, MessageSquare, Briefcase, Home, Radio, GraduationCap, Share2, Check } from 'lucide-react';
 
 export function Navbar() {
   const [isOpen, setIsOpen] = useState(false);
+  const [shareCopied, setShareCopied] = useState(false);
   const isHydrated = useSyncExternalStore(
     () => () => {},
     () => true,
     () => false
   );
+
+  const handleShare = useCallback(async () => {
+    const shareData = {
+      title: 'Deutschland Compass',
+      text: "Almanya'daki profesyoneller için dayanışma ağı — rehberler, kariyer, sınav hazırlık ve daha fazlası!",
+      url: 'https://deutschland-compass-self.vercel.app',
+    };
+    try {
+      if (navigator.share && navigator.canShare && navigator.canShare(shareData)) {
+        await navigator.share(shareData);
+      } else {
+        await navigator.clipboard.writeText(shareData.url);
+        setShareCopied(true);
+        setTimeout(() => setShareCopied(false), 2500);
+      }
+    } catch {
+      // User cancelled or error
+    }
+  }, []);
 
   if (!isHydrated) {
     return (
@@ -43,7 +63,7 @@ export function Navbar() {
         </Link>
         
         {/* Actions / Right side */}
-        <div className="flex items-center gap-4">
+        <div className="flex items-center gap-2 sm:gap-4">
           <div className="hidden lg:flex items-center gap-3 mr-2">
             <button 
               onClick={() => window.dispatchEvent(new CustomEvent('open-community-pulse'))}
@@ -78,6 +98,23 @@ export function Navbar() {
               B2 Hazırlık
             </Link>
           </div>
+
+          {/* Share Button */}
+          <button
+            onClick={handleShare}
+            title="Uygulamayı arkadaşlarınla paylaş"
+            className={`flex items-center gap-1.5 px-3 py-1.5 rounded-full font-semibold text-sm transition-all duration-200 border ${
+              shareCopied
+                ? 'bg-green-50 dark:bg-green-950/30 text-green-700 dark:text-green-300 border-green-200 dark:border-green-700 scale-95'
+                : 'bg-blue-600 hover:bg-blue-700 dark:bg-blue-500 dark:hover:bg-blue-600 text-white border-blue-600 hover:scale-105 active:scale-95 shadow-md hover:shadow-blue-500/30 shadow-blue-500/20'
+            }`}
+          >
+            {shareCopied ? (
+              <><Check className="w-4 h-4" /><span className="hidden sm:inline">Kopyalandı!</span></>
+            ) : (
+              <><Share2 className="w-4 h-4" /><span className="hidden sm:inline">Paylaş</span></>
+            )}
+          </button>
 
           {/* Mobile Menu Toggle */}
           <Sheet open={isOpen} onOpenChange={setIsOpen}>
@@ -230,8 +267,15 @@ export function Navbar() {
                 </div>
               </div>
               
-              <div className="p-6 border-t border-slate-100 dark:border-slate-800 text-center text-sm text-slate-400 bg-slate-50 dark:bg-slate-950/50">
-                &copy; {new Date().getFullYear()} Deutschland Compass
+              <div className="p-6 border-t border-slate-100 dark:border-slate-800 bg-slate-50 dark:bg-slate-950/50 flex flex-col items-center gap-3">
+                <button
+                  onClick={() => { handleShare(); setIsOpen(false); }}
+                  className="w-full flex items-center justify-center gap-2 py-3 px-4 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-semibold text-sm transition-all active:scale-95 shadow-md"
+                >
+                  <Share2 className="w-4 h-4" />
+                  Uygulamayı Arkadaşlarınla Paylaş
+                </button>
+                <span className="text-sm text-slate-400">&copy; {new Date().getFullYear()} Deutschland Compass</span>
               </div>
             </SheetContent>
           </Sheet>
