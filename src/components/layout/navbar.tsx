@@ -82,8 +82,8 @@ export function Navbar() {
           {/* Mobile Menu Toggle */}
           <Sheet open={isOpen} onOpenChange={setIsOpen}>
             <SheetTrigger asChild>
-              <Button variant="ghost" size="icon" className="lg:hidden">
-                <Menu className="h-6 w-6" />
+              <Button variant="ghost" size="icon" className="lg:hidden w-11 h-11">
+                <Menu className="h-7 w-7" />
                 <span className="sr-only">Menüyü aç</span>
               </Button>
             </SheetTrigger>

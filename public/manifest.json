@@ -1,27 +1,52 @@
 {
-  "name": "B2 Beruf Sınav Hazırlığı – Deutschland Compass",
-  "short_name": "B2 Hazırlık",
-  "description": "telc Deutsch-Test für den Beruf B2 interaktif sınav hazırlık uygulaması",
-  "start_url": "/sinav-hazirlik",
+  "name": "Deutschland Compass",
+  "short_name": "DC Compass",
+  "description": "Almanya'daki profesyoneller için karşılıklı fayda esaslı rehberlik ve tecrübe paylaşım platformu",
+  "start_url": "/",
+  "scope": "/",
   "display": "standalone",
   "background_color": "#FAF9F6",
-  "theme_color": "#2B2B2B",
+  "theme_color": "#1e293b",
   "orientation": "portrait-primary",
   "icons": [
     {
-      "src": "/dc_logo.png",
+      "src": "/icons/icon-16x16.png",
+      "sizes": "16x16",
+      "type": "image/png"
+    },
+    {
+      "src": "/icons/icon-32x32.png",
+      "sizes": "32x32",
+      "type": "image/png"
+    },
+    {
+      "src": "/icons/icon-180x180.png",
+      "sizes": "180x180",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/icons/icon-192x192.png",
       "sizes": "192x192",
       "type": "image/png",
       "purpose": "any maskable"
     },
     {
-      "src": "/dc_logo.png",
+      "src": "/icons/icon-512x512.png",
       "sizes": "512x512",
       "type": "image/png",
       "purpose": "any maskable"
     }
   ],
-  "categories": ["education", "productivity"],
-  "lang": "de",
+  "screenshots": [
+    {
+      "src": "/icons/icon-512x512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "form_factor": "narrow"
+    }
+  ],
+  "categories": ["education", "productivity", "social"],
+  "lang": "tr",
   "dir": "ltr"
 }

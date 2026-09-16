@@ -5,6 +5,7 @@ import { Navbar } from './navbar'
 import { Footer } from './footer'
 import { SiteVisitTracker } from '@/components/site-visit-tracker'
 import { CommunityPulseNotification } from '@/components/community-pulse-notification'
+import { PwaInstallBanner } from '@/components/pwa-install-banner'
 
 const HIDE_CHROME_PATHS = ['/login']
 
@@ -23,6 +24,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
       <main suppressHydrationWarning className="flex-1">{children}</main>
       <Footer />
       <CommunityPulseNotification />
+      <PwaInstallBanner />
     </>
   )
 }

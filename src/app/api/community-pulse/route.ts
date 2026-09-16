@@ -21,6 +21,7 @@ export interface PulseItem {
   timestamp: string;
 }
 
+// Pages that live under /rehber/* (NOT /meslekler/*)
 const REHBER_PAGES = [
   'otobus-soforlugu',
   'aile-birlesimi',
@@ -30,21 +31,41 @@ const REHBER_PAGES = [
   'elektrikci',
   'erzieherin',
   'hasta-yasli-bakimi',
-  'hemsire',
   'veteriner-hekimligi',
   'ogs-calisanlari',
   'okul-oncesi-ogretmenligi',
-  'it-sektoru',
-  'yazilim-gelistirme',
   'doktorluk',
   'ogretmenlik',
   'sosyal-pedagoji'
+];
+
+// Pages that live under /meslekler/* (verified directory listing)
+const MESLEKLER_PAGES = [
+  'hemsire',
+  'veri-bilimi',
+  'yazilim-gelistirici',
+  'bilisim-it',
+  'cloud-devops',
+  'siber-guvenlik',
+  'sap-uzmanligi',
+  'yazilim-test-uzmanligi',
+  'it-donanim',
+  'fizyoterapist',
+  'lkw-soforlugu',
+  'lokfuhrer',
+  'insaat-muhendisligi',
+  'gida-muhendisligi',
+  'isletme-iktisat',
 ];
 
 function getCategoryRoute(slug: string): string {
   if (REHBER_PAGES.includes(slug)) {
     return `/rehber/${slug}`;
   }
+  if (MESLEKLER_PAGES.includes(slug)) {
+    return `/meslekler/${slug}`;
+  }
+  // Default: try meslekler first
   return `/meslekler/${slug}`;
 }
 
@@ -52,6 +73,7 @@ function getCategoryName(slug: string): string {
   const map: Record<string, string> = {
     'otobus-soforlugu': 'Otobüs Şoförlüğü',
     'lokfuhrer': 'Makinistlik',
+    'lkw-soforlugu': 'LKW Şoförlüğü',
     'aile-birlesimi': 'Aile Birleşimi',
     'anerkennung': 'Diploma Denkliği',
     'vergi-beyani': 'Vergi Beyanı',
@@ -59,14 +81,27 @@ function getCategoryName(slug: string): string {
     'elektrikci': 'Elektrik & Elektronik',
     'erzieherin': 'Erzieherin',
     'hasta-yasli-bakimi': 'Hasta & Yaşlı Bakımı',
-    'hemsire': 'Hemşirelik Denkliği',
+    'hemsire': 'Hemşirelik',
     'veteriner-hekimligi': 'Veteriner Hekimliği',
     'ogs-calisanlari': 'OGS Çalışanları',
     'okul-oncesi-ogretmenligi': 'Okul Öncesi',
     'it-sektoru': 'IT Sektörü',
-    'yazilim-gelistirme': 'Yazılım',
+    'yazilim-gelistirme': 'Yazılım Geliştirme',
+    'yazilim-gelistirici': 'Yazılım Geliştirici',
     'doktorluk': 'Tıp & Doktorluk',
-    'ogretmenlik': 'Öğretmenlik'
+    'ogretmenlik': 'Öğretmenlik',
+    'veri-bilimi': 'Veri Bilimi',
+    'bilisim-it': 'Bilişim & IT',
+    'cloud-devops': 'Cloud & DevOps',
+    'siber-guvenlik': 'Siber Güvenlik',
+    'sap-uzmanligi': 'SAP Uzmanlığı',
+    'yazilim-test-uzmanligi': 'Yazılım Test',
+    'it-donanim': 'IT Donanım',
+    'fizyoterapist': 'Fizyoterapist',
+    'insaat-muhendisligi': 'İnşaat Mühendisliği',
+    'gida-muhendisligi': 'Gıda Mühendisliği',
+    'isletme-iktisat': 'İşletme & İktisat',
+    'sosyal-pedagoji': 'Sosyal Pedagoji',
   };
   return map[slug] || (slug.charAt(0).toUpperCase() + slug.slice(1).replace(/-/g, ' '));
 }
