@@ -5,7 +5,7 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { Button } from '@/components/ui/button';
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from '@/components/ui/sheet';
-import { Menu, Utensils, Sparkles, BookOpen, PenTool, MessageSquare, Briefcase, Home, Radio, GraduationCap, Share2, Check } from 'lucide-react';
+import { Menu, Utensils, Sparkles, BookOpen, PenTool, MessageSquare, Briefcase, Home, Radio, GraduationCap, Share2, Check, Smartphone } from 'lucide-react';
 
 export function Navbar() {
   const [isOpen, setIsOpen] = useState(false);
@@ -98,6 +98,16 @@ export function Navbar() {
               B2 Hazırlık
             </Link>
           </div>
+
+          {/* Install App Button */}
+          <button
+            onClick={() => window.dispatchEvent(new CustomEvent('open-install-modal'))}
+            title="Uygulamayı telefonuna yükle"
+            className="hidden sm:flex items-center gap-1.5 px-3 py-1.5 rounded-full font-semibold text-sm transition-all duration-200 border bg-slate-800 hover:bg-slate-700 dark:bg-slate-700 dark:hover:bg-slate-600 text-white border-slate-600 hover:scale-105 active:scale-95 shadow-sm"
+          >
+            <Smartphone className="w-4 h-4" />
+            <span className="hidden md:inline">Uygulamayı Yükle</span>
+          </button>
 
           {/* Share Button */}
           <button
@@ -274,6 +284,13 @@ export function Navbar() {
                 >
                   <Share2 className="w-4 h-4" />
                   Uygulamayı Arkadaşlarınla Paylaş
+                </button>
+                <button
+                  onClick={() => { window.dispatchEvent(new CustomEvent('open-install-modal')); setIsOpen(false); }}
+                  className="w-full flex items-center justify-center gap-2 py-2.5 px-4 rounded-xl bg-slate-800 hover:bg-slate-700 text-white font-semibold text-sm transition-all active:scale-95"
+                >
+                  <Smartphone className="w-4 h-4" />
+                  Telefona Uygulama Olarak Yükle
                 </button>
                 <span className="text-sm text-slate-400">&copy; {new Date().getFullYear()} Deutschland Compass</span>
               </div>
