@@ -5,7 +5,7 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { Button } from '@/components/ui/button';
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from '@/components/ui/sheet';
-import { Menu, Utensils, Sparkles, BookOpen, PenTool, MessageSquare, Briefcase, Home } from 'lucide-react';
+import { Menu, Utensils, Sparkles, BookOpen, PenTool, MessageSquare, Briefcase, Home, Radio } from 'lucide-react';
 
 export function Navbar() {
   const [isOpen, setIsOpen] = useState(false);
@@ -44,8 +44,18 @@ export function Navbar() {
         
         {/* Actions / Right side */}
         <div className="flex items-center gap-4">
-          {/* Featured Highlights (Desktop) */}
           <div className="hidden lg:flex items-center gap-3 mr-2">
+            <button 
+              onClick={() => window.dispatchEvent(new CustomEvent('open-community-pulse'))}
+              className="hover:text-emerald-700 text-emerald-800 dark:text-emerald-300 transition-all flex items-center gap-1.5 font-semibold bg-emerald-50 dark:bg-emerald-950/30 px-3 py-1.5 rounded-full border border-emerald-200 dark:border-emerald-800 hover:scale-105 active:scale-95"
+              title="Son saha notları ve güncellemeleri gör"
+            >
+              <span className="relative flex h-2 w-2">
+                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75" />
+                <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500" />
+              </span>
+              Topluluk Nabzı
+            </button>
             <Link 
               href="/rehber/helal-mekanlar" 
               className="hover:text-amber-600 text-amber-700 dark:text-amber-400 transition-colors flex items-center gap-1.5 font-semibold bg-amber-50 dark:bg-amber-900/20 px-3 py-1.5 rounded-full border border-amber-100 dark:border-amber-800"
@@ -149,6 +159,24 @@ export function Navbar() {
                 <div className="space-y-4">
                   <h4 className="text-xs font-semibold text-slate-400 uppercase tracking-wider">Topluluk</h4>
                   <div className="space-y-1">
+                    <button
+                      onClick={() => {
+                        setIsOpen(false);
+                        window.dispatchEvent(new CustomEvent('open-community-pulse'));
+                      }}
+                      className="w-full flex items-center gap-3 p-3 rounded-lg bg-emerald-50/80 hover:bg-emerald-100 dark:bg-emerald-950/30 dark:hover:bg-emerald-900/40 text-emerald-900 dark:text-emerald-200 transition-colors font-semibold text-left mb-1"
+                    >
+                      <div className="bg-emerald-200/60 dark:bg-emerald-800/60 p-2 rounded-md">
+                        <Radio className="w-5 h-5 text-emerald-700 dark:text-emerald-400 animate-pulse" />
+                      </div>
+                      <div className="flex-1">
+                        <div className="flex items-center justify-between">
+                          <span>Topluluk Nabzı</span>
+                          <span className="text-[10px] bg-emerald-600 text-white font-bold px-1.5 py-0.5 rounded-full">CANLI</span>
+                        </div>
+                        <span className="text-xs font-normal text-emerald-700/80 dark:text-emerald-400/80">Son gelişmeler ve saha notları</span>
+                      </div>
+                    </button>
                     <Link 
                       href="/gurbet-kalemleri" 
                       className="flex items-center gap-3 p-3 rounded-lg hover:bg-slate-50 dark:hover:bg-slate-900 text-slate-700 dark:text-slate-200 transition-colors"

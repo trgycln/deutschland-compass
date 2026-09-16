@@ -4,6 +4,7 @@ import { usePathname } from 'next/navigation'
 import { Navbar } from './navbar'
 import { Footer } from './footer'
 import { SiteVisitTracker } from '@/components/site-visit-tracker'
+import { CommunityPulseNotification } from '@/components/community-pulse-notification'
 
 const HIDE_CHROME_PATHS = ['/login']
 
@@ -21,6 +22,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
       <Navbar />
       <main suppressHydrationWarning className="flex-1">{children}</main>
       <Footer />
+      <CommunityPulseNotification />
     </>
   )
 }
