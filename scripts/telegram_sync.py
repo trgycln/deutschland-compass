@@ -95,17 +95,44 @@ def clean_and_anonymize(text: str) -> str:
     return text.strip()
 
 def is_meaningful_message(text: str) -> bool:
-    """Kısa, anlamsız selamlaşma ve spam mesajları eler"""
-    if not text or len(text) < 35:
+    """
+    Kısa, anlamsız selamlaşma, ticari reklam ve güvenlik/sahte hesap uyarısı gibi
+    sayfa konusuyla ilgisi olmayan mesajları eler.
+    """
+    if not text or len(text.strip()) < 35:
         return False
     
     lower = text.lower().strip()
+    
+    # 1. Selamlaşma ve nezaket kalıpları
     greetings = ['günaydın', 'gunaydin', 'iyi akşamlar', 'iyi aksamlar', 'merhaba arkadaşlar', 'hayırlı cumalar', 'selamlar', 'teşekkürler', 'sagolun', 'sağolun']
     if lower in greetings:
         return False
     
-    # Sadece link içerenleri ele
+    # 2. Sadece link içerenleri ele
     if re.fullmatch(r'https?://\S+', lower):
+        return False
+
+    # 3. KESİN YASAK: Sosyal medya / grup güvenlik uyarıları, sahte hesaplar, dolandırıcılık, soru satışı uyarıları
+    offtopic_security_patterns = [
+        'sahte hesap', 'türkiye merkezli', 'turkiye merkezli', 'dolandır', 'dolandir',
+        'güvenlik uyarısı', 'guvenlik uyarisi', 'grup güvenliği', 'grup guvenligi',
+        'telifli sınav', 'telifli sinav', 'şüpheli bağlantı', 'supheli baglanti',
+        'şüpheli link', 'supheli link', 'şüpheli paylaşım', 'supheli paylasim',
+        'soru satan', 'ücret talep eden', 'ucret talep eden', 'telif ihlali',
+        'itibar etmeyiniz', 'grup kuralları', 'grup kurallari', 'reklam linkleri',
+        'katkı payı talep', 'katki payi talep'
+    ]
+    if any(p in lower for p in offtopic_security_patterns):
+        return False
+
+    # 4. Ticari reklam ve satış kalıpları
+    promo_patterns = [
+        'satın al', 'satın alma', 'kaufen', '5 puan', 'kitabımız çıktı',
+        'kitabimiz cikti', 'fiyatı', 'sipariş ver', 'siparis ver',
+        'kampanya', 'indirim', 'e-book', 'pdf indir'
+    ]
+    if any(p in lower for p in promo_patterns):
         return False
         
     return True
@@ -131,8 +158,7 @@ async def synthesize_with_gemini(category_title: str, existing_items: list, new_
 
     genai.configure(api_key=GEMINI_KEY)
     
-    # Model seçimi: gemini-3.6-flash
-    model = genai.GenerativeModel("models/gemini-3.6-flash")
+    MODELS_TO_TRY = ['gemini-3.5-flash', 'gemini-3.6-flash', 'gemini-flash-latest']
 
     existing_context = ""
     if existing_items:
@@ -154,7 +180,15 @@ YENİ GELEN TELEGRAM MESAJLARI:
 {"---".join(new_messages[:30])}
 
 TALİMATLAR:
-1. GÜNCELLEME VE BİRLEŞTİRME (ÖNCELİKLİ):
+1. KATI KONU UYUMU (RELEVANCE) VE KESİN YASAKLAR:
+   - YALNIZCA ve SADECE bu sayfanın konusu olan '{category_title}' mesleği/alanı ile doğrudan ilgili pratik bilgiler, denklik aşamaları, dil gereksinimleri, eyalet kuralları, Ausbildung/Umschulung, iş arama ve çalışma tecrübeleri derlenebilir.
+   - KESİNLİKLE YASAK (ASLA KART AÇMA, ASLA GÜNCELLEME):
+     * Sosyal medya / Telegram grup güvenlik uyarıları (örn: 'sahte hesaplar', 'Türkiye merkezli hesaplar', 'şüpheli linkler', 'dolandırıcılık', 'sınav soruları satanlar', 'katkı payı isteyenler'). Bunlar sayfa rehberi DEĞİLDİR; KESİNLİKLE SİTEYE ALINMAYACAKTIR.
+     * Grup içi sohbet, selamlaşma, yönetici uyarıları, grup kuralları.
+     * Ticari tanıtım, kitap veya ürün satışı, ücretli danışmanlık reklamları.
+     * Sayfanın konusu ('{category_title}') ile ilgisi olmayan genel veya diğer branşların konuları.
+
+2. GÜNCELLEME VE BİRLEŞTİRME (ÖNCELİKLİ):
    - Eğer yeni mesajlar, yukarıdaki MEVCUT konulardan birine bir detay, tecrübe, kural değişikliği veya pratik bir püf noktası ekliyorsa:
      * "action": "UPDATE"
      * "target_id": İlgili mevcut konunun ID numarası (integer)
@@ -163,17 +197,17 @@ TALİMATLAR:
      * "badge_text": "Güncellendi: {datetime.now().strftime('%B %Y')}"
      * "target_tab": "updates" | "guide" | "experiences"
 
-2. YENİ KONU OLUŞTURMA (Yalnızca gerçekten mevcut konularda yer almayan yeni bir konuysa):
-   - Eğer mesajlar mevcut hiçbir başlığa uymayan, ama bu meslek/rehber için çok önemli bir konuyu (örn. yeni bir sınav, yeni bir bürokratik aşama, yeni bir vize kuralı vb.) ele alıyorsa:
+3. YENİ KONU OLUŞTURMA (Yalnızca gerçekten mevcut konularda yer almayan yeni bir konuysa):
+   - Eğer mesajlar mevcut hiçbir başlığa uymayan, ama bu meslek/rehber için çok önemli bir konuyu (örn. yeni bir sınav, yeni bir bürokratik aşama, yeni bir mevzuat kuralı vb.) ele alıyorsa:
      * "action": "CREATE"
      * "title": Kısa, net ansiklopedi başlığı
      * "content": 2-4 cümlelik derli toplu, tarafsız ve açıklayıcı bilgi
      * "badge_text": "Yeni Bilgi" veya "{datetime.now().strftime('%B %Y')}"
      * "target_tab": "updates" | "guide" | "experiences"
-     * "update_type": "official_rule" | "tip" | "experience" | "warning"
+     * "update_type": "official_rule" | "tip" | "experience"
 
-3. ELEME / ÇÖP:
-   - Selamlaşma, özel sohbet, spam, satılık ilanları veya kayda değer bir bilgi taşımayan mesajları tamamen yok say.
+4. ELEME / ÇÖP:
+   - Yukarıdaki yasakları içeren veya '{category_title}' alanı ile doğrudan ilgisi olmayan tüm mesajları tamamen yok say.
    - Eğer incelenecek kayda değer hiçbir yeni bilgi yoksa boş bir JSON array döndür: []
 
 Çıktıyı SADECE geçerli bir JSON array olarak ver. Markdown ```json kod bloğu dışında hiçbir açıklama yazma.
@@ -190,31 +224,33 @@ TALİMATLAR:
   }}
 ]
 """
-    # Maksimum 3 deneme ve 429 kota beklemesi
-    for attempt in range(3):
-        try:
-            response = model.generate_content(prompt)
-            raw_text = response.text.strip()
-            if raw_text.startswith("```json"):
-                raw_text = raw_text[7:]
-            elif raw_text.startswith("```"):
-                raw_text = raw_text[3:]
-            if raw_text.endswith("```"):
-                raw_text = raw_text[:-3]
-            
-            parsed = json.loads(raw_text.strip())
-            if isinstance(parsed, list):
-                return parsed
-            break
-        except Exception as e:
-            err_msg = str(e)
-            if "429" in err_msg:
-                wait_sec = 25 * (attempt + 1)
-                print(f"   ⏳ Gemini istek limiti (429). {wait_sec} saniye beklenip tekrar deneniyor...")
-                await asyncio.sleep(wait_sec)
-            else:
-                print(f"   ⚠️  Gemini sentezleme hatası: {e}")
+    for model_name in MODELS_TO_TRY:
+        for attempt in range(2):
+            try:
+                model = genai.GenerativeModel(f"models/{model_name}")
+                response = model.generate_content(prompt)
+                raw_text = response.text.strip()
+                if raw_text.startswith("```json"):
+                    raw_text = raw_text[7:]
+                elif raw_text.startswith("```"):
+                    raw_text = raw_text[3:]
+                if raw_text.endswith("```"):
+                    raw_text = raw_text[:-3]
+                
+                parsed = json.loads(raw_text.strip())
+                if isinstance(parsed, list):
+                    return parsed
                 break
+            except Exception as e:
+                err_msg = str(e)
+                if "429" in err_msg or "quota" in err_msg.lower():
+                    print(f"   ⏳ {model_name} kotası doldu, diğer model deneniyor...")
+                    break
+                elif "404" in err_msg:
+                    break
+                else:
+                    print(f"   ⚠️  Gemini sentezleme hatası: {e}")
+                    break
     
     return []
 
