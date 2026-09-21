@@ -162,14 +162,10 @@ def is_promotional_or_non_literary(text: str) -> bool:
     if any(p in lower for p in event_patterns):
         return True
         
-    # 4. Grup içi sohbet / kural mesajları
-    chat_patterns = [
-        'grupta fotoğraf', 'fotoğrafı paylaşmadan önce', 'arkadaşlardan ricam',
-        'hayırlı cumalar', 'günaydın arkadaşlar', 'hoş geldiniz', 'hoşgeldiniz'
-    ]
-    if any(p in lower for p in chat_patterns):
+    # Temel uzunluk ve yapı kontrolü: Çok kısaysa ve hiç satır atlaması yoksa, muhtemelen düz bir cümledir (şiir değil).
+    if len(text.strip()) < 100 and '\n' not in text:
         return True
-        
+
     return False
 
 # ─── Gemini Çoklu Model Yardımcısı ───
@@ -209,7 +205,14 @@ async def analyze_literary_content(text, author):
         return {"is_literary": False, "rejection_reason": "kural_tabanli_reklam_veya_duyuru"}
 
     prompt = f"""Sen Gurbet Kalemleri edebiyat antolojisi için baş editörsün.
-Görevin: Yalnızca edebi niteliği olan eserleri (şiir, edebi deneme, kısa öykü, edebiyat hatıratı) kabul etmek; reklam, duyuru, kitap satışı, grup listesi veya sohbet mesajlarını KESİNLİKLE REDDETMEKTİR.
+Görev: Bir metnin GERÇEK BİR EDEBİ ESER (şiir, edebi deneme, kısa öykü, edebiyat hatıratı) olup olmadığını tespit etmektir. 
+Sadece bağımsız, kendi başına edebi bir değer taşıyan, sanatsal bir üslupla yazılmış eserleri kabul etmelisin. 
+
+Eğer metin:
+- Günlük bir sohbet, yorum, teşekkür veya taziye mesajıysa,
+- Bir duyuru, haber, reklam veya bilgilendirme metniyse,
+- Edebi bir derinliği olmayan sıradan, anlık bir ifadeyse,
+KESİNLİKLE REDDET ("is_literary": false).
 
 YAZAR: {author}
 METİN:
@@ -218,15 +221,14 @@ METİN:
 SADECE aşağıdaki JSON formatında yanıt ver:
 {{
   "is_literary": true | false,
-  "rejection_reason": null | "reklam" | "kitap_satisi" | "grup_listesi" | "etkinlik_duyurusu" | "sohbet" | "edebi_nitelik_yetersiz",
+  "rejection_reason": null | "edebi_degil_sohbet" | "edebi_degil_duyuru" | "edebi_nitelik_yetersiz",
   "title": "Eserin başlığı (maks 60 karakter)",
   "type": "siir | deneme | hikaye | aforizma | ani",
   "tags": ["gurbet", "ozlem"]
 }}
 
 Kurallar:
-- Kitap satışı, reklam, grup listeleri, zoom davetleri -> "is_literary": false
-- Şiir veya edebi deneme/öykü -> "is_literary": true
+- KABUL İÇİN TEK KRİTER: Metnin bariz bir şekilde edebi bir üslupla yazılmış gerçek bir eser (şiir, öykü vb.) olmasıdır.
 - tags: lowercase ASCII, 2-6 adet (gurbet, ozlem, hasret, umut, yalnizlik, sevda, vatan, anne, dostluk vb.)
 """
     result = call_gemini_models(prompt)
