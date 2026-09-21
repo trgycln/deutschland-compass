@@ -90,13 +90,7 @@ export function Navbar() {
               <Sparkles className="w-4 h-4" />
               AI Kariyerleri
             </Link>
-            <Link 
-              href="/sinav-hazirlik" 
-              className="hover:text-blue-700 text-blue-800 dark:text-blue-300 transition-colors flex items-center gap-1.5 font-semibold bg-blue-50 dark:bg-blue-900/20 px-3 py-1.5 rounded-full border border-blue-100 dark:border-blue-800"
-            >
-              <GraduationCap className="w-4 h-4" />
-              B2 Hazırlık
-            </Link>
+
           </div>
 
           {/* Install App Button */}
@@ -177,19 +171,18 @@ export function Navbar() {
                   </Link>
 
                   <Link
-                    href="/sinav-hazirlik"
-                    className="flex items-center gap-2.5 p-2.5 rounded-xl bg-gradient-to-br from-blue-50 to-indigo-50/60 dark:from-blue-950/40 dark:to-indigo-950/30 text-blue-950 dark:text-blue-100 transition-all active:scale-98 border border-blue-200/60 dark:border-blue-800/60 shadow-xs"
+                    href="/rehber/helal-mekanlar"
+                    className="flex items-center gap-2.5 p-2.5 rounded-xl bg-amber-50/60 hover:bg-amber-100/60 dark:bg-amber-950/30 dark:hover:bg-amber-950/50 text-amber-950 dark:text-amber-100 transition-all active:scale-98 border border-amber-200/60 dark:border-amber-800/60 shadow-xs"
                     onClick={() => setIsOpen(false)}
                   >
-                    <div className="w-8 h-8 rounded-lg bg-blue-600 flex items-center justify-center flex-shrink-0 text-white shadow-xs">
-                      <GraduationCap className="w-4 h-4" />
+                    <div className="w-8 h-8 rounded-lg bg-amber-500 flex items-center justify-center flex-shrink-0 text-white shadow-xs">
+                      <Utensils className="w-4 h-4" />
                     </div>
                     <div className="min-w-0 flex-1">
                       <div className="flex items-center gap-1">
-                        <p className="text-xs font-bold leading-tight text-blue-900 dark:text-blue-200">B2 Sınavı</p>
-                        <span className="text-[8px] bg-blue-600 text-white font-bold px-1 rounded">HOT</span>
+                        <p className="text-xs font-bold leading-tight text-amber-900 dark:text-amber-200">Helal Mekanlar</p>
                       </div>
-                      <p className="text-[10px] text-blue-600/70 dark:text-blue-300/70 truncate">Soru Havuzu</p>
+                      <p className="text-[10px] text-amber-600/80 dark:text-amber-300/80 truncate">Restoran & Market</p>
                     </div>
                   </Link>
 
@@ -360,14 +353,7 @@ export function Navbar() {
               <BookOpen className="w-4 h-4" />
               Rehberler
             </Link>
-            <Link 
-              href="/sinav-hazirlik" 
-              className="hover:text-blue-700 text-blue-800 dark:text-blue-300 transition-colors flex items-center gap-1.5 font-semibold bg-blue-50/80 dark:bg-blue-950/40 px-2.5 py-1 rounded-md border border-blue-200/70 dark:border-blue-800/60"
-            >
-              <GraduationCap className="w-4 h-4 text-blue-600 dark:text-blue-400" />
-              <span>B2 Sınav Hazırlığı</span>
-              <span className="text-[10px] bg-blue-600 text-white font-bold px-1.5 py-0.2 rounded-full">telc</span>
-            </Link>
+
             <Link href="/gurbet-kalemleri" className="hover:text-primary transition-colors flex items-center gap-2">
               <PenTool className="w-4 h-4" />
               Gurbet Kalemleri

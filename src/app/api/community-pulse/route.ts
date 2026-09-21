@@ -9,6 +9,8 @@ const supabase = createClient(supabaseUrl, supabaseServiceKey);
 export const dynamic = 'force-dynamic';
 export const revalidate = 60; // Cache for 60 seconds
 
+import { resolveCategoryRoute, resolveCategoryTitle } from '@/lib/route-resolver';
+
 export interface PulseItem {
   id: string;
   type: 'community_update' | 'literary' | 'experience' | 'guide';
@@ -21,97 +23,13 @@ export interface PulseItem {
   timestamp: string;
 }
 
-// Pages that live under /rehber/* (NOT /meslekler/*)
-const REHBER_PAGES = [
-  'otobus-soforlugu',
-  'aile-birlesimi',
-  'anerkennung',
-  'vergi-beyani',
-  'sirket-kurma',
-  'elektrikci',
-  'erzieherin',
-  'hasta-yasli-bakimi',
-  'veteriner-hekimligi',
-  'ogs-calisanlari',
-  'okul-oncesi-ogretmenligi',
-  'doktorluk',
-  'ogretmenlik',
-  'sosyal-pedagoji'
-];
-
-// Pages that live under /meslekler/* (verified directory listing)
-const MESLEKLER_PAGES = [
-  'hemsire',
-  'veri-bilimi',
-  'yazilim-gelistirici',
-  'bilisim-it',
-  'cloud-devops',
-  'siber-guvenlik',
-  'sap-uzmanligi',
-  'yazilim-test-uzmanligi',
-  'it-donanim',
-  'fizyoterapist',
-  'lkw-soforlugu',
-  'lokfuhrer',
-  'insaat-muhendisligi',
-  'gida-muhendisligi',
-  'isletme-iktisat',
-];
-
-function getCategoryRoute(slug: string): string {
-  if (REHBER_PAGES.includes(slug)) {
-    return `/rehber/${slug}`;
-  }
-  if (MESLEKLER_PAGES.includes(slug)) {
-    return `/meslekler/${slug}`;
-  }
-  // Default: try meslekler first
-  return `/meslekler/${slug}`;
-}
-
-function getCategoryName(slug: string): string {
-  const map: Record<string, string> = {
-    'otobus-soforlugu': 'Otobüs Şoförlüğü',
-    'lokfuhrer': 'Makinistlik',
-    'lkw-soforlugu': 'LKW Şoförlüğü',
-    'aile-birlesimi': 'Aile Birleşimi',
-    'anerkennung': 'Diploma Denkliği',
-    'vergi-beyani': 'Vergi Beyanı',
-    'sirket-kurma': 'Gewerbe & Şirket',
-    'elektrikci': 'Elektrik & Elektronik',
-    'erzieherin': 'Erzieherin',
-    'hasta-yasli-bakimi': 'Hasta & Yaşlı Bakımı',
-    'hemsire': 'Hemşirelik',
-    'veteriner-hekimligi': 'Veteriner Hekimliği',
-    'ogs-calisanlari': 'OGS Çalışanları',
-    'okul-oncesi-ogretmenligi': 'Okul Öncesi',
-    'it-sektoru': 'IT Sektörü',
-    'yazilim-gelistirme': 'Yazılım Geliştirme',
-    'yazilim-gelistirici': 'Yazılım Geliştirici',
-    'doktorluk': 'Tıp & Doktorluk',
-    'ogretmenlik': 'Öğretmenlik',
-    'veri-bilimi': 'Veri Bilimi',
-    'bilisim-it': 'Bilişim & IT',
-    'cloud-devops': 'Cloud & DevOps',
-    'siber-guvenlik': 'Siber Güvenlik',
-    'sap-uzmanligi': 'SAP Uzmanlığı',
-    'yazilim-test-uzmanligi': 'Yazılım Test',
-    'it-donanim': 'IT Donanım',
-    'fizyoterapist': 'Fizyoterapist',
-    'insaat-muhendisligi': 'İnşaat Mühendisliği',
-    'gida-muhendisligi': 'Gıda Mühendisliği',
-    'isletme-iktisat': 'İşletme & İktisat',
-    'sosyal-pedagoji': 'Sosyal Pedagoji',
-  };
-  return map[slug] || (slug.charAt(0).toUpperCase() + slug.slice(1).replace(/-/g, ' '));
-}
-
 function truncateText(text: string, maxLen = 140): string {
   if (!text) return '';
   const clean = text.replace(/<[^>]*>/g, '').replace(/[\r\n]+/g, ' ').trim();
   if (clean.length <= maxLen) return clean;
   return clean.slice(0, maxLen).trim() + '...';
 }
+
 
 export async function GET() {
   try {
@@ -127,8 +45,8 @@ export async function GET() {
 
       if (communityUpdates) {
         for (const cu of communityUpdates) {
-          const catName = getCategoryName(cu.category_slug);
-          const route = getCategoryRoute(cu.category_slug);
+          const catName = resolveCategoryTitle(cu.category_slug);
+          const route = resolveCategoryRoute(cu.category_slug);
           const itemTime = cu.updated_at || cu.created_at || new Date().toISOString();
 
           items.push({
@@ -190,19 +108,7 @@ export async function GET() {
 
       if (experiences) {
         for (const exp of experiences) {
-          const profSlug = exp.profession
-            .toLowerCase()
-            .replace(/ğ/g, 'g')
-            .replace(/ü/g, 'u')
-            .replace(/ş/g, 's')
-            .replace(/ı/g, 'i')
-            .replace(/ö/g, 'o')
-            .replace(/ç/g, 'c')
-            .replace(/[^a-z0-9-]/g, '-')
-            .replace(/-+/g, '-')
-            .replace(/^-|-$/g, '');
-
-          const route = getCategoryRoute(profSlug);
+          const route = resolveCategoryRoute(exp.profession);
 
           items.push({
             id: `exp-${exp.id}`,

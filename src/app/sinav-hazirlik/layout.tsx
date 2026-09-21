@@ -1,9 +1,13 @@
 import type { Metadata } from 'next';
 
 export const metadata: Metadata = {
-  title: 'B2 Sınav Hazırlığı | telc Deutsch-Test für den Beruf B2 – Deutschland Compass',
+  title: 'B2 Sınav Hazırlığı (Hazırlanıyor) | Deutschland Compass',
   description:
-    'telc Deutsch-Test für den Beruf B2 sınavına interaktif hazırlık. Lesen, Hören, Schreiben ve Sprechen modülleri. Gerçek sınav materyalleri, kişisel ilerleme takibi ve Spaced Repetition.',
+    'telc Deutsch-Test für den Beruf B2 sınavına hazırlık modülü henüz yapım aşamasındadır.',
+  robots: {
+    index: false,
+    follow: false,
+  },
 };
 
 export default function SinavHazirlikLayout({

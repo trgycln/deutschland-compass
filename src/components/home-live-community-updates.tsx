@@ -6,6 +6,7 @@ import { Sparkles, ArrowRight, ShieldCheck, RefreshCw, MessageSquare, BookOpen, 
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
 import { supabase } from "@/lib/supabase";
+import { resolveCategoryRoute, resolveCategoryTitle } from "@/lib/route-resolver";
 
 interface LiveUpdateItem {
   id: number;
@@ -85,25 +86,13 @@ export function HomeLiveCommunityUpdates() {
   }, []);
 
   const getPageRoute = (category_slug: string) => {
-    const rehberPages = ['otobus-soforlugu', 'aile-birlesimi', 'anerkennung', 'vergi-beyani', 'sirket-kurma', 'elektrikci', 'erzieherin', 'hasta-yasli-bakimi'];
-    if (rehberPages.includes(category_slug)) {
-      return `/rehber/${category_slug}`;
-    }
-    return `/meslekler/${category_slug}`;
+    return resolveCategoryRoute(category_slug);
   };
 
   const getCategoryTitle = (slug: string) => {
-    const titles: Record<string, string> = {
-      'otobus-soforlugu': 'Otobüs Şoförlüğü',
-      'lokfuhrer': 'Makinistlik (Lokführer)',
-      'aile-birlesimi': 'Aile Birleşimi',
-      'anerkennung': 'Diploma Denkliği',
-      'hemsire': 'Hemşirelik',
-      'yazilim-gelistirici': 'Yazılım Geliştirici',
-      'isletme-iktisat': 'İşletme & İktisat'
-    };
-    return titles[slug] || slug.replace(/-/g, ' ').toUpperCase();
+    return resolveCategoryTitle(slug);
   };
+
 
   return (
     <section id="community-updates" className="scroll-mt-20 py-12 md:py-16 bg-gradient-to-b from-slate-50 via-white to-slate-50 dark:from-slate-950 dark:via-slate-900 dark:to-slate-950 border-y border-slate-200 dark:border-slate-800 relative overflow-hidden">

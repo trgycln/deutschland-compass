@@ -109,4 +109,1038 @@ Kanal taranıyor: 💠KENDİ YAZDIĞINIZ YAZILAR ŞİİRLER
    Analiz ediliyor -> [Tuba🌸] (846 karakter)
       DB hatasi: {'message': "Could not find the 'source_group' column of 'literary_works' in the schema cache", 'code': 'PGRST204', 'hint': None, 'details': None}
    Analiz ediliyor -> [Tuba🌸] (1467 karakter)
-      DB hatasi: {'message': "Could not find the 'source_group' column of 'literary_works' in the schema cache", 'code': 'PGRST204', 'hint': None, 'details': None}^C
+      DB hatasi: {'message': "Could not find the 'source_group' column of 'literary_works' in the schema cache", 'code': 'PGRST204', 'hint': None, 'details': None}^C=================================================================== 
+[17.09.2026 11:42:47,43] Gunluk Senkronizasyon Baslatildi 
+=================================================================== 
+C:\Users\User\Projeler (Web Sayfalari)\deutschland_compass\scripts\telegram_sync.py:41: FutureWarning: 
+
+All support for the `google.generativeai` package has ended. It will no longer be receiving 
+updates or bug fixes. Please switch to the `google.genai` package as soon as possible.
+See README for more details:
+
+https://github.com/google-gemini/deprecated-generative-ai-python/blob/main/README.md
+
+  import google.generativeai as genai
+Server closed the connection: 0 bytes read on a total of 8 expected bytes
+=================================================================
+🚀 Deutschlandcompass Telegram Wikipedia Sentezleme Motoru Başlatılıyor...
+=================================================================
+✅ Bağlanılan Hesap: Trgy  (@trgy001)
+🔍 Hesabınızın üye olduğu gruplar taranıyor...
+
+📌 Tespit Edilen & Eşleşen Grup Sayısı: 42 adet
+
+📡 Grup İnceleniyor: 💠AİLE BİRLEŞİMİ GRUBU👨‍👩‍👦 --> [Aile Birleşimi]
+   📥 2 adet anlamlı mesaj/tecrübe süzüldü.
+   📚 Sayfadaki mevcut konu sayısı: 7 (Birleştirme için yapay zekaya iletiliyor...)
+   ⏳ gemini-3.5-flash kotası doldu, diğer model deneniyor...
+   ✨ Yapay zeka sonucu: 0 işlem önerildi.
+📡 Grup İnceleniyor: 💠 LOKFÜHRER/IN (MAKİNİSTLİK) GRUBU --> [Makinistlik (Lokführer)]
+   📥 1 adet anlamlı mesaj/tecrübe süzüldü.
+   📚 Sayfadaki mevcut konu sayısı: 8 (Birleştirme için yapay zekaya iletiliyor...)
+   ⏳ gemini-3.5-flash kotası doldu, diğer model deneniyor...
+   ✨ Yapay zeka sonucu: 0 işlem önerildi.
+📡 Grup İnceleniyor: 💠 KİMYA ÖĞRETMENLERİ GRUBU --> [Kimya Öğretmenliği]
+   📥 1 adet anlamlı mesaj/tecrübe süzüldü.
+   📚 Sayfadaki mevcut konu sayısı: 3 (Birleştirme için yapay zekaya iletiliyor...)
+   ⏳ gemini-3.5-flash kotası doldu, diğer model deneniyor...
+   ✨ Yapay zeka sonucu: 0 işlem önerildi.
+📡 Grup İnceleniyor: 💠 DİN KÜLTÜRÜ ÖĞRETMENLERİ GRUBU --> [Din Kültürü Öğretmenliği]
+   📥 2 adet anlamlı mesaj/tecrübe süzüldü.
+   📚 Sayfadaki mevcut konu sayısı: 0 (Birleştirme için yapay zekaya iletiliyor...)
+   ⏳ gemini-3.5-flash kotası doldu, diğer model deneniyor...
+   ✨ Yapay zeka sonucu: 1 işlem önerildi.
+      ✨ [YENİ KONU EKLENDİ]: İlahiyat Denkliği ve Eyaletler Arası Tanınma Süreci
+📡 Grup İnceleniyor: 💠 ALMANYA EV ARAMA VE IKINCI EL EŞYA GRUBU --> [Ev Arama & Yaşam]
+   📥 1 adet anlamlı mesaj/tecrübe süzüldü.
+   📚 Sayfadaki mevcut konu sayısı: 5 (Birleştirme için yapay zekaya iletiliyor...)
+   ✨ Yapay zeka sonucu: 1 işlem önerildi.
+      ✨ [YENİ KONU EKLENDİ]: WBS (Wohnberechtigungsschein) ile Ev Kiralama ve Nachmieter Bulma Süreci
+📡 Grup İnceleniyor: 💠ŞEHİRLERDE HELAL RESTAURANTLAR --> [Helal Mekanlar & Restoranlar]
+🚀 Helal Mekanlar Senkronizasyonu Başlatılıyor...
+🔌 Supabase bağlanıyor...
+📡 Hedef Grup: 💠ŞEHİRLERDE HELAL RESTAURANTLAR (ID: -1001551101830)
+🔍 Mesajlar taranıyor (min_id: 10278, limit: 50)...
+📥 3 adet ilgili mesaj toplandı.
+🤖 Yapay zeka ile mekan ve tavsiyeler ayrıştırılıyor...
+✨ Tespit Edilen Mekan/Yorum Önerisi: 0 adet
+
+============================================================
+🎉 Helal Mekanlar Senkronizasyonu Tamamlandı!
+📊 Yeni Eklenen Mekan: 0 adet
+💬 Eklenen Topluluk Yorumu: 0 adet
+============================================================
+📡 Grup İnceleniyor: 💠 ERZIEHER/IN GRUBU --> [Erzieher / Kreş Eğitmenliği]
+   📥 0 adet anlamlı mesaj/tecrübe süzüldü.
+📡 Grup İnceleniyor: 💠 PFLEGER-IN /PFLEGEHELFER-IN GRUBU --> [Hasta ve Yaşlı Bakımı]
+   📥 68 adet anlamlı mesaj/tecrübe süzüldü.
+   📚 Sayfadaki mevcut konu sayısı: 0 (Birleştirme için yapay zekaya iletiliyor...)
+   ⏳ gemini-3.5-flash kotası doldu, diğer model deneniyor...
+   ✨ Yapay zeka sonucu: 4 işlem önerildi.
+      ✨ [YENİ KONU EKLENDİ]: Pflegefachfrau / Pflegefachmann (Genel Bakım Eğitimi)
+      ✨ [YENİ KONU EKLENDİ]: Bakım Sektöründe Aşı ve Sağlık Gereksinimleri
+      ✨ [YENİ KONU EKLENDİ]: Betreuungskraft ve Yardımcı Bakım Rolleri
+      ✨ [YENİ KONU EKLENDİ]: Hastane ve Yaşlı Bakımevlerinde Çalışma Dinamikleri
+📡 Grup İnceleniyor: 💠 HEMŞİRELER GRUBU --> [Hemşirelik]
+   📥 0 adet anlamlı mesaj/tecrübe süzüldü.
+📡 Grup İnceleniyor: 💠 ALMANCA ÖĞRETMENİ OLMAK İSTİYORUM --> [Almanca Öğretmenliği]
+   📥 0 adet anlamlı mesaj/tecrübe süzüldü.
+📡 Grup İnceleniyor: 💠KENDİ YAZDIĞINIZ YAZILAR ŞİİRLER --> [Gurbet Kalemleri]
+Server closed the connection: 0 bytes read on a total of 8 expected bytes
+Server sent a very old message with ID 7686440189555648513, ignoring (see FAQ for details)
+Server sent a very old message with ID 7686440436555430913, ignoring (see FAQ for details)
+Server closed the connection: 0 bytes read on a total of 8 expected bytes
+Security error while unpacking a received message: Server replied with a wrong session ID (see FAQ for details)
+Server sent a very old message with ID 7686442750108996609, ignoring (see FAQ for details)
+Server closed the connection: 0 bytes read on a total of 8 expected bytes
+Security error while unpacking a received message: Server replied with a wrong session ID (see FAQ for details)
+=================================================================
+Gurbet Kalemleri Senkronizasyon Motoru Başlatılıyor...
+  - Reklam / Satış / Tanıtım / Grup Listeleri Sıkı Şekilde Engellenir
+  - Resimli Şiirler (OCR) ve Edebi Linkler Desteklenir
+=================================================================
+Kanal taranıyor: 💠KENDİ YAZDIĞINIZ YAZILAR ŞİİRLER
+   Kaldığı yer (min_id): 503
+
+   [Görsel] İnceleniyor -> Yazar: Anonim Kalem
+      Görsel edebi eser değil veya reklam/afiş, atlandı.
+   [Görsel] İnceleniyor -> Yazar: Neli
+      Görsel edebi eser değil veya reklam/afiş, atlandı.
+   [Link] Taranıyor -> https://books.apple.com/de/book/deccal-yolun-ba%C5%9F%C4%B1/
+      Link edebi eser içermiyor, atlandı.
+   [Görsel] İnceleniyor -> Yazar: Gokhan
+      Görsel edebi eser değil veya reklam/afiş, atlandı.
+   [Görsel] İnceleniyor -> Yazar: Gokhan
+      Görsel edebi eser değil veya reklam/afiş, atlandı.
+   [Link] Taranıyor -> https://whatsapp.com/channel/0029VaDOcdTAe5Vgos9MbV39
+      Link edebi eser içermiyor, atlandı.
+   [Görsel] İnceleniyor -> Yazar: Canan
+      Görsel edebi eser değil veya reklam/afiş, atlandı.
+   [Görsel] İnceleniyor -> Yazar: Canan
+      Görsel edebi eser değil veya reklam/afiş, atlandı.
+   [Link] Taranıyor -> https://helezondergisi.com/bilgelik-yolculugu-canan-say/
+      + Eklendi (Web Linkinden): [deneme] BİLGELİK YOLCULUĞU
+   [Görsel] İnceleniyor -> Yazar: Mehmet
+      Görsel edebi eser değil veya reklam/afiş, atlandı.
+   [Görsel] İnceleniyor -> Yazar: Yusuf Salih
+      Görsel edebi eser değil veya reklam/afiş, atlandı.
+   [Link] Taranıyor -> https://tu-dresden.zoom-x.de/j/5707163555?pwd=TThjaStvVnBYY1
+      Link edebi eser içermiyor, atlandı.
+   [Görsel] İnceleniyor -> Yazar: Gokhan
+      Görsel edebi eser değil veya reklam/afiş, atlandı.
+   [Link] Taranıyor -> https://youtu.be/5wJz2Iug13U?si=tVskOs2ag4kRB18w
+      Link edebi eser içermiyor, atlandı.
+
+   45 adet edebi metin grubu inceleniyor...
+   Atlandı (Reklam/Duyuru tespit edildi) -> [Anonim Kalem]
+   Atlandı (Reklam/Duyuru tespit edildi) -> [Yusuf Salih]
+   İnceleniyor -> [Canan] (939 karakter)
+      Reddedildi (kitap_satisi), atlandı.
+   İnceleniyor -> [Dilek] (257 karakter)
+      + Eklendi: [siir] Bir Ağaç Büyüyor İçimizde
+   Atlandı (Reklam/Duyuru tespit edildi) -> [Turgay G.]
+   Atlandı (Reklam/Duyuru tespit edildi) -> [Gokhan]
+   İnceleniyor -> [Gokhan] (1124 karakter)
+      Reddedildi (etkinlik_duyurusu), atlandı.
+   Atlandı (Reklam/Duyuru tespit edildi) -> [M]
+   İnceleniyor -> [Gokhan] (73 karakter)
+      Reddedildi (sohbet), atlandı.
+   Atlandı (Reklam/Duyuru tespit edildi) -> [Gokhan]
+   İnceleniyor -> [Canan] (254 karakter)
+      Reddedildi (reklam), atlandı.
+   İnceleniyor -> [Frau I.] (2135 karakter)
+      + Eklendi: [deneme] Sevimli Antidepresanlar
+   İnceleniyor -> [Yusuf Salih] (87 karakter)
+      Reddedildi (sohbet), atlandı.
+   Atlandı (Reklam/Duyuru tespit edildi) -> [Zehra]
+   İnceleniyor -> [Tuba] (54 karakter)
+      Reddedildi (sohbet), atlandı.
+   Atlandı (Reklam/Duyuru tespit edildi) -> [Mehmet]
+   İnceleniyor -> [Dilek] (1395 karakter)
+      + Eklendi: [duz_yazi] Ich habe die Nacht gefragt...
+   Atlandı (Reklam/Duyuru tespit edildi) -> [Gokhan]
+   İnceleniyor -> [Dilek] (1113 karakter)
+      Zaten mevcut, atlandı: Geceye Sordum
+   İnceleniyor -> [Murat A.] (63 karakter)
+      Reddedildi (sohbet), atlandı.
+   Atlandı (Reklam/Duyuru tespit edildi) -> [Dilek]
+   Atlandı (Reklam/Duyuru tespit edildi) -> [SEREF D.]
+   İnceleniyor -> [Zehra] (2668 karakter)
+      Zaten mevcut, atlandı: Dil Gurbeti
+   İnceleniyor -> [Zehra] (2462 karakter)
+      Zaten mevcut, atlandı: Hâlâ Öğretmen miyim?
+   İnceleniyor -> [Murat A.] (114 karakter)
+      Reddedildi (sohbet), atlandı.
+   Atlandı (Reklam/Duyuru tespit edildi) -> [Zehra]
+   İnceleniyor -> [Murat A.] (83 karakter)
+      + Eklendi: [duz_yazi] Paylaşiminizda kız kardeşimi gördüm. O da benzer şeyleri yaş
+   İnceleniyor -> [Murat A.] (107 karakter)
+      + Eklendi: [duz_yazi] Yüreginize saglik öğretmen hanim, tez zamanda görevinize dön
+   İnceleniyor -> [Habibe T.] (177 karakter)
+      Zaten mevcut, atlandı: Öğretmenlik hep kutsaldı,ögretmenler hep değerli..
+   İnceleniyor -> [Nurluayy] (208 karakter)
+      Zaten mevcut, atlandı: Ögretmenlik dört duvara ,bir binaya,sıralara sıkış
+   İnceleniyor -> [Habibe T.] (690 karakter)
+      Zaten mevcut, atlandı: Ben Yusuf
+   İnceleniyor -> [Tuba] (1898 karakter)
+      Zaten mevcut, atlandı: Ben bir göçmen kızım. Hani hep anlatır ya neneler,
+   İnceleniyor -> [Yasar] (1824 karakter)
+      Zaten mevcut, atlandı: Göçmen kızlar... Evet, onların hikayesi şanla, güc
+   İnceleniyor -> [Nurluayy] (1121 karakter)
+      Zaten mevcut, atlandı: İnsan dünyaya da göçmek için geliyor ,ne tuhaf dem
+   İnceleniyor -> [Tuba] (788 karakter)
+      Zaten mevcut, atlandı: Kısa bir kamp psikolojisi analizi... Güçlü hissedi
+   İnceleniyor -> [Tuba] (851 karakter)
+      Zaten mevcut, atlandı: Kadın olmak çok güzeldir aslında. İçinde çocuk neş
+   Atlandı (Reklam/Duyuru tespit edildi) -> [Yusuf Salih]
+   İnceleniyor -> [Zehra] (3158 karakter)
+      + Eklendi: [duz_yazi] Sessizliğin içinde Biri
+   Atlandı (Reklam/Duyuru tespit edildi) -> [Yusuf Salih]
+   İnceleniyor -> [Tuba] (846 karakter)
+      + Eklendi: [duz_yazi] Benim annem beni hep yolcu etti.
+   Atlandı (Reklam/Duyuru tespit edildi) -> [Nurluayy]
+   İnceleniyor -> [Tuba] (1467 karakter)
+      Zaten mevcut, atlandı: Bir bebeğin göç hikayesini dinlediniz mi hiç?
+   Atlandı (Reklam/Duyuru tespit edildi) -> [Yusuf Salih]
+   İnceleniyor -> [Tuba] (1613 karakter)
+      + Eklendi: [duz_yazi] “Baba” deyince ne geliyor aklınıza?
+   İnceleniyor -> [Nurluayy] (1100 karakter)
+      + Eklendi: [duz_yazi] Bide ,hiç babası ile aynı karede olamamış ortak paydada hicb
+
+   State güncellendi. Yeni min_id: 726
+
+=================================================================
+Gurbet Kalemleri Senkronizasyonu Tamamlandı!
+   Eklenen eser  : 10
+   Atlanan       : 49
+=================================================================
+📡 Grup İnceleniyor: 💠 BIOLOGIELEHRER/IN GRUBU --> [Biyoloji Öğretmenliği]
+   📥 0 adet anlamlı mesaj/tecrübe süzüldü.
+📡 Grup İnceleniyor: 💠 BUSFAHRER/IN GRUBU --> [Otobüs Şoförlüğü]
+   📥 0 adet anlamlı mesaj/tecrübe süzüldü.
+📡 Grup İnceleniyor: 💠 DEUTSCHE POST/AMAZON /HERMES/UBER DAĞITIM ÇALIŞANLAR GRUBU --> [Kargo & Posta Dağıtım]
+   📥 0 adet anlamlı mesaj/tecrübe süzüldü.
+📡 Grup İnceleniyor: 💠 İŞLETME-İKTİSAT-MALİYE GRUBU --> [İşletme & İktisat]
+   📥 0 adet anlamlı mesaj/tecrübe süzüldü.
+📡 Grup İnceleniyor: 💠 ANERKENNUNG GRUBU --> [Diploma Denkliği]
+   📥 0 adet anlamlı mesaj/tecrübe süzüldü.
+📡 Grup İnceleniyor: 💠 ARICILIK GRUBU --> [Arıcılık]
+   📥 0 adet anlamlı mesaj/tecrübe süzüldü.
+📡 Grup İnceleniyor: 💠 GÜZEL SANATLAR ÖĞRETMEN GRUBU --> [Güzel Sanatlar Öğretmenliği]
+   📥 0 adet anlamlı mesaj/tecrübe süzüldü.
+📡 Grup İnceleniyor: 💠 GIDA MÜHENDİSLERİ GRUBU --> [Gıda Mühendisliği]
+   📥 0 adet anlamlı mesaj/tecrübe süzüldü.
+📡 Grup İnceleniyor: 💠 ENDÜSTRİ MÜHENDİSLERİ GRUBU --> [Mühendisler ve Mimarlar]
+   📥 0 adet anlamlı mesaj/tecrübe süzüldü.
+📡 Grup İnceleniyor: 💠 OGS ÇALIŞANLARI GRUBU --> [OGS Çalışanları]
+   📥 46 adet anlamlı mesaj/tecrübe süzüldü.
+   📚 Sayfadaki mevcut konu sayısı: 0 (Birleştirme için yapay zekaya iletiliyor...)
+   ⏳ gemini-3.5-flash kotası doldu, diğer model deneniyor...
+   ⏳ gemini-3.6-flash kotası doldu, diğer model deneniyor...
+   ⏳ gemini-flash-latest kotası doldu, diğer model deneniyor...
+   ✨ Yapay zeka sonucu: 0 işlem önerildi.
+📡 Grup İnceleniyor: 💠 FEN BİLGİSİ ÖĞRETMEN GRUBU --> [Fen Bilgisi Öğretmenliği]
+   📥 0 adet anlamlı mesaj/tecrübe süzüldü.
+📡 Grup İnceleniyor: 💠 ELEKTRİK AUSBILDUNG GRUBU --> [Elektrik & Elektronik]
+   📥 0 adet anlamlı mesaj/tecrübe süzüldü.
+📡 Grup İnceleniyor: 💠 ÇEVRE MÜHENDİSLERİ GRUBU --> [Çevre Mühendisliği]
+   📥 0 adet anlamlı mesaj/tecrübe süzüldü.
+📡 Grup İnceleniyor: 💠 COĞRAFYA ÖĞRETMENLERİ GRUBU --> [Coğrafya Öğretmenliği]
+   📥 0 adet anlamlı mesaj/tecrübe süzüldü.
+📡 Grup İnceleniyor: 💠 BEDEN EĞİTIMİ ÖĞRTMENLERİ --> [Beden Eğitimi Öğretmenliği]
+   📥 0 adet anlamlı mesaj/tecrübe süzüldü.
+📡 Grup İnceleniyor: 💠BEWERBUNG HAZIRLIK GRUBU --> [Bewerbung (CV ve Başvuru)]
+   📥 0 adet anlamlı mesaj/tecrübe süzüldü.
+📡 Grup İnceleniyor: 💠 ABITUR GRUBU --> [Abitur & Üniversite]
+   📥 0 adet anlamlı mesaj/tecrübe süzüldü.
+📡 Grup İnceleniyor: Avrupa’da Şirket Kurmak İstiyorum --> [Şirket Kurma]
+   📥 0 adet anlamlı mesaj/tecrübe süzüldü.
+📡 Grup İnceleniyor: 💠 IKINCI BRANŞ / BRANŞ TAMAMLAMA --> [İkinci Branş / OBAS]
+   📥 0 adet anlamlı mesaj/tecrübe süzüldü.
+📡 Grup İnceleniyor: 💠 BİLGİSAYAR ÖĞRETMENLERİ GRUBU --> [Bilgisayar Öğretmenliği]
+   📥 0 adet anlamlı mesaj/tecrübe süzüldü.
+📡 Grup İnceleniyor: 💠 OKUL ÖNCESİ ÖĞRETMENLERİ --> [Okul Öncesi Öğretmenliği]
+   📥 62 adet anlamlı mesaj/tecrübe süzüldü.
+   📚 Sayfadaki mevcut konu sayısı: 0 (Birleştirme için yapay zekaya iletiliyor...)
+   ⏳ gemini-3.5-flash kotası doldu, diğer model deneniyor...
+   ⏳ gemini-3.6-flash kotası doldu, diğer model deneniyor...
+   ⏳ gemini-flash-latest kotası doldu, diğer model deneniyor...
+   ✨ Yapay zeka sonucu: 0 işlem önerildi.
+📡 Grup İnceleniyor: 💠 AUSBILDUNG-WEITERBILDUNG GRUBU --> [Ausbildung & Weiterbildung]
+   📥 0 adet anlamlı mesaj/tecrübe süzüldü.
+📡 Grup İnceleniyor: 💠 FİZİK ÖĞRETMENLERİ GRUBU --> [Fizik Öğretmenliği]
+   📥 0 adet anlamlı mesaj/tecrübe süzüldü.
+📡 Grup İnceleniyor: 💠 ÖZEL EĞİTİM ÖĞRETMENLERİ GRUBU --> [Özel Eğitim Öğretmenliği]
+   📥 65 adet anlamlı mesaj/tecrübe süzüldü.
+   📚 Sayfadaki mevcut konu sayısı: 0 (Birleştirme için yapay zekaya iletiliyor...)
+   ⏳ gemini-3.5-flash kotası doldu, diğer model deneniyor...
+   ⏳ gemini-3.6-flash kotası doldu, diğer model deneniyor...
+   ⏳ gemini-flash-latest kotası doldu, diğer model deneniyor...
+   ✨ Yapay zeka sonucu: 0 işlem önerildi.
+📡 Grup İnceleniyor: 💠 KÜRTÇE ÖĞRETMENLERİ GRUBU --> [Kürtçe Öğretmenliği]
+   📥 0 adet anlamlı mesaj/tecrübe süzüldü.
+📡 Grup İnceleniyor: 💠 İNŞAAT MÜHENDİSLERİ GRUBU --> [İnşaat Mühendisliği]
+   📥 0 adet anlamlı mesaj/tecrübe süzüldü.
+📡 Grup İnceleniyor: 💠 MÜHENDİSLER-MİMARLAR GRUBU --> [Mühendisler ve Mimarlar]
+   📥 62 adet anlamlı mesaj/tecrübe süzüldü.
+   📚 Sayfadaki mevcut konu sayısı: 3 (Birleştirme için yapay zekaya iletiliyor...)
+   ⏳ gemini-3.5-flash kotası doldu, diğer model deneniyor...
+   ⏳ gemini-3.6-flash kotası doldu, diğer model deneniyor...
+   ⏳ gemini-flash-latest kotası doldu, diğer model deneniyor...
+   ✨ Yapay zeka sonucu: 0 işlem önerildi.
+📡 Grup İnceleniyor: 💠 (GIS) COĞRAFİ BILGI SISTEMLERI GRUBU --> [Coğrafi Bilgi Sistemleri (GIS)]
+   📥 0 adet anlamlı mesaj/tecrübe süzüldü.
+📡 Grup İnceleniyor: 💠 EHRENAMTLICH ÇALIŞMA GRUBU --> [Gönüllü Çalışma (Ehrenamt)]
+   📥 0 adet anlamlı mesaj/tecrübe süzüldü.
+📡 Grup İnceleniyor: 💠 AVRUPA'DA YOL YARDIM GRUBU --> [Yol Yardım & Ulaşım]
+   📥 0 adet anlamlı mesaj/tecrübe süzüldü.
+📡 Grup İnceleniyor: 💠 MYO MEZUNLARI GRUBU --> [MYO Mezunları]
+   📥 55 adet anlamlı mesaj/tecrübe süzüldü.
+   📚 Sayfadaki mevcut konu sayısı: 0 (Birleştirme için yapay zekaya iletiliyor...)
+   ⏳ gemini-3.5-flash kotası doldu, diğer model deneniyor...
+   ⏳ gemini-3.6-flash kotası doldu, diğer model deneniyor...
+   ⏳ gemini-flash-latest kotası doldu, diğer model deneniyor...
+   ✨ Yapay zeka sonucu: 0 işlem önerildi.
+
+=================================================================
+🎉 Tüm Grupların (Topluluk, Helal Mekanlar, Gurbet Kalemleri) Senkronizasyonu Tamamlandı!
+=================================================================
+[17.09.2026 12:11:37,34] Senkronizasyon Tamamlandi. Exit Code: 0 
+ 
+=================================================================== 
+[18.09.2026 10:41:17,49] Gunluk Senkronizasyon Baslatildi 
+=================================================================== 
+C:\Users\User\Projeler (Web Sayfalari)\deutschland_compass\scripts\telegram_sync.py:41: FutureWarning: 
+
+All support for the `google.generativeai` package has ended. It will no longer be receiving 
+updates or bug fixes. Please switch to the `google.genai` package as soon as possible.
+See README for more details:
+
+https://github.com/google-gemini/deprecated-generative-ai-python/blob/main/README.md
+
+  import google.generativeai as genai
+^C=================================================================== 
+[19.09.2026 10:53:59,73] Gunluk Senkronizasyon Baslatildi 
+=================================================================== 
+C:\Users\User\Projeler (Web Sayfalari)\deutschland_compass\scripts\telegram_sync.py:41: FutureWarning: 
+
+All support for the `google.generativeai` package has ended. It will no longer be receiving 
+updates or bug fixes. Please switch to the `google.genai` package as soon as possible.
+See README for more details:
+
+https://github.com/google-gemini/deprecated-generative-ai-python/blob/main/README.md
+
+  import google.generativeai as genai
+=================================================================
+🚀 Deutschlandcompass Telegram Wikipedia Sentezleme Motoru Başlatılıyor...
+=================================================================
+✅ Bağlanılan Hesap: Trgy  (@trgy001)
+🔍 Hesabınızın üye olduğu gruplar taranıyor...
+
+📌 Tespit Edilen & Eşleşen Grup Sayısı: 42 adet
+
+📡 Grup İnceleniyor: 💠 IKINCI BRANŞ / BRANŞ TAMAMLAMA --> [İkinci Branş / OBAS]
+   📥 1 adet anlamlı mesaj/tecrübe süzüldü.
+   📚 Sayfadaki mevcut konu sayısı: 4 (Birleştirme için yapay zekaya iletiliyor...)
+   ✨ Yapay zeka sonucu: 0 işlem önerildi.
+📡 Grup İnceleniyor: 💠ŞEHİRLERDE HELAL RESTAURANTLAR --> [Helal Mekanlar & Restoranlar]
+🚀 Helal Mekanlar Senkronizasyonu Başlatılıyor...
+🔌 Supabase bağlanıyor...
+📡 Hedef Grup: 💠ŞEHİRLERDE HELAL RESTAURANTLAR (ID: -1001551101830)
+🔍 Mesajlar taranıyor (min_id: 10278, limit: 50)...
+📥 12 adet ilgili mesaj toplandı.
+🤖 Yapay zeka ile mekan ve tavsiyeler ayrıştırılıyor...
+✨ Tespit Edilen Mekan/Yorum Önerisi: 3 adet
+
+🍽️ İşleniyor: Taco Bros (Bilinmiyor)
+   ➕ Yeni mekan oluşturuluyor...
+   ✅ Başarıyla eklendi! ID: 42fe7dec-150a-4a03-861b-247b3f4e6fbb (Highlight: False)
+   💬 Topluluk tavsiyesi yorum olarak eklendi.
+
+🍽️ İşleniyor: Sos Döner (Frankfurt)
+   ℹ️ Mevcut mekan bulundu: Frankfurt ta Hauptbahnhof ta Sos Döner (ID: 1bebefd1-92a8-44e1-962d-3fac961d5ecc)
+   💬 Topluluk tavsiyesi yorum olarak eklendi.
+
+🍽️ İşleniyor: Düsseldorf Kültür Merkezi (Düsseldorf)
+   ➕ Yeni mekan oluşturuluyor...
+   ✅ Başarıyla eklendi! ID: e98e1937-68ea-46a5-8083-bee6602e853a (Highlight: False)
+   💬 Topluluk tavsiyesi yorum olarak eklendi.
+
+============================================================
+🎉 Helal Mekanlar Senkronizasyonu Tamamlandı!
+📊 Yeni Eklenen Mekan: 2 adet
+💬 Eklenen Topluluk Yorumu: 3 adet
+============================================================
+📡 Grup İnceleniyor: 💠 ERZIEHER/IN GRUBU --> [Erzieher / Kreş Eğitmenliği]
+   📥 11 adet anlamlı mesaj/tecrübe süzüldü.
+   📚 Sayfadaki mevcut konu sayısı: 5 (Birleştirme için yapay zekaya iletiliyor...)
+   ✨ Yapay zeka sonucu: 3 işlem önerildi.
+      🔄 [GÜNCELLENDİ & BİRLEŞTİRİLDİ] ID 88: Yurt Dışı Çocuk Gelişimi Diploması İçin Denklik (Anerkennung) Süreci
+      🔄 [GÜNCELLENDİ & BİRLEŞTİRİLDİ] ID 91: Erzieher Ausbildung Türleri ve Müfredat İçeriği
+      🔄 [GÜNCELLENDİ & BİRLEŞTİRİLDİ] ID 87: Almanya'da Erzieher Mesleğine Geçiş: Dil Şartı, Kurs Seçimi ve Hospitation Süreci
+📡 Grup İnceleniyor: 💠 FEN BİLGİSİ ÖĞRETMEN GRUBU --> [Fen Bilgisi Öğretmenliği]
+   📥 2 adet anlamlı mesaj/tecrübe süzüldü.
+   📚 Sayfadaki mevcut konu sayısı: 3 (Birleştirme için yapay zekaya iletiliyor...)
+   ✨ Yapay zeka sonucu: 1 işlem önerildi.
+      🔄 [GÜNCELLENDİ & BİRLEŞTİRİLDİ] ID 99: Denklik Başvurusunda İstenen Belgeler: Ders İçerikleri (Modulbuch), Atama Genelgeleri ve Tecrübe Belgeleri
+📡 Grup İnceleniyor: 💠AİLE BİRLEŞİMİ GRUBU👨‍👩‍👦 --> [Aile Birleşimi]
+   📥 0 adet anlamlı mesaj/tecrübe süzüldü.
+📡 Grup İnceleniyor: 💠 BUSFAHRER/IN GRUBU --> [Otobüs Şoförlüğü]
+   📥 4 adet anlamlı mesaj/tecrübe süzüldü.
+   📚 Sayfadaki mevcut konu sayısı: 8 (Birleştirme için yapay zekaya iletiliyor...)
+   ✨ Yapay zeka sonucu: 0 işlem önerildi.
+📡 Grup İnceleniyor: 💠KENDİ YAZDIĞINIZ YAZILAR ŞİİRLER --> [Gurbet Kalemleri]
+Server closed the connection: 0 bytes read on a total of 8 expected bytes
+=================================================================
+Gurbet Kalemleri Senkronizasyon Motoru Başlatılıyor...
+  - Reklam / Satış / Tanıtım / Grup Listeleri Sıkı Şekilde Engellenir
+  - Resimli Şiirler (OCR) ve Edebi Linkler Desteklenir
+=================================================================
+Kanal taranıyor: 💠KENDİ YAZDIĞINIZ YAZILAR ŞİİRLER
+   Kaldığı yer (min_id): 503
+
+   [Görsel] İnceleniyor -> Yazar: Anonim Kalem
+      Görsel edebi eser değil veya reklam/afiş, atlandı.
+   [Görsel] İnceleniyor -> Yazar: Neli
+      Görsel edebi eser değil veya reklam/afiş, atlandı.
+   [Link] Taranıyor -> https://books.apple.com/de/book/deccal-yolun-ba%C5%9F%C4%B1/
+      Link edebi eser içermiyor, atlandı.
+   [Görsel] İnceleniyor -> Yazar: Gokhan
+      Görsel edebi eser değil veya reklam/afiş, atlandı.
+   [Görsel] İnceleniyor -> Yazar: Gokhan
+      Görsel edebi eser değil veya reklam/afiş, atlandı.
+   [Link] Taranıyor -> https://whatsapp.com/channel/0029VaDOcdTAe5Vgos9MbV39
+      Link edebi eser içermiyor, atlandı.
+   [Görsel] İnceleniyor -> Yazar: Canan
+      Görsel edebi eser değil veya reklam/afiş, atlandı.
+   [Görsel] İnceleniyor -> Yazar: Canan
+      Görsel edebi eser değil veya reklam/afiş, atlandı.
+   [Link] Taranıyor -> https://helezondergisi.com/bilgelik-yolculugu-canan-say/
+      Zaten mevcut: BİLGELİK YOLCULUĞU
+   [Görsel] İnceleniyor -> Yazar: Mehmet
+      Görsel edebi eser değil veya reklam/afiş, atlandı.
+   [Görsel] İnceleniyor -> Yazar: Yusuf Salih
+      Görsel edebi eser değil veya reklam/afiş, atlandı.
+   [Link] Taranıyor -> https://tu-dresden.zoom-x.de/j/5707163555?pwd=TThjaStvVnBYY1
+      Link edebi eser içermiyor, atlandı.
+   [Görsel] İnceleniyor -> Yazar: Gokhan
+      Görsel edebi eser değil veya reklam/afiş, atlandı.
+   [Link] Taranıyor -> https://youtu.be/5wJz2Iug13U?si=tVskOs2ag4kRB18w
+      Link edebi eser içermiyor, atlandı.
+
+   45 adet edebi metin grubu inceleniyor...
+   Atlandı (Reklam/Duyuru tespit edildi) -> [Anonim Kalem]
+   Atlandı (Reklam/Duyuru tespit edildi) -> [Yusuf Salih]
+   İnceleniyor -> [Canan] (939 karakter)
+      Reddedildi (kitap_satisi), atlandı.
+   İnceleniyor -> [Dilek] (257 karakter)
+      + Eklendi: [siir] İçimizdeki Ağaç
+   Atlandı (Reklam/Duyuru tespit edildi) -> [Turgay G.]
+   Atlandı (Reklam/Duyuru tespit edildi) -> [Gokhan]
+   İnceleniyor -> [Gokhan] (1124 karakter)
+      Reddedildi (etkinlik_duyurusu), atlandı.
+   Atlandı (Reklam/Duyuru tespit edildi) -> [M]
+   İnceleniyor -> [Gokhan] (73 karakter)
+      Reddedildi (sohbet), atlandı.
+   Atlandı (Reklam/Duyuru tespit edildi) -> [Gokhan]
+   İnceleniyor -> [Canan] (254 karakter)
+      Reddedildi (kitap_satisi), atlandı.
+   İnceleniyor -> [Frau I.] (2135 karakter)
+      Zaten mevcut, atlandı: Sevimli Antidepresanlar
+   İnceleniyor -> [Yusuf Salih] (87 karakter)
+      Reddedildi (sohbet), atlandı.
+   Atlandı (Reklam/Duyuru tespit edildi) -> [Zehra]
+   İnceleniyor -> [Tuba] (54 karakter)
+      Reddedildi (sohbet), atlandı.
+   Atlandı (Reklam/Duyuru tespit edildi) -> [Mehmet]
+   İnceleniyor -> [Dilek] (1395 karakter)
+      Zaten mevcut, atlandı: Ich habe die Nacht gefragt...
+   Atlandı (Reklam/Duyuru tespit edildi) -> [Gokhan]
+   İnceleniyor -> [Dilek] (1113 karakter)
+      Zaten mevcut, atlandı: Geceye Sordum
+   İnceleniyor -> [Murat A.] (63 karakter)
+      Reddedildi (sohbet), atlandı.
+   Atlandı (Reklam/Duyuru tespit edildi) -> [Dilek]
+   Atlandı (Reklam/Duyuru tespit edildi) -> [SEREF D.]
+   İnceleniyor -> [Zehra] (2668 karakter)
+      Zaten mevcut, atlandı: Dil Gurbeti
+   İnceleniyor -> [Zehra] (2462 karakter)
+      Zaten mevcut, atlandı: Hâlâ Öğretmenim
+   İnceleniyor -> [Murat A.] (114 karakter)
+      Reddedildi (sohbet), atlandı.
+   Atlandı (Reklam/Duyuru tespit edildi) -> [Zehra]
+   İnceleniyor -> [Murat A.] (83 karakter)
+      Reddedildi (sohbet), atlandı.
+   İnceleniyor -> [Murat A.] (107 karakter)
+      Reddedildi (sohbet), atlandı.
+   İnceleniyor -> [Habibe T.] (177 karakter)
+      Reddedildi (sohbet), atlandı.
+   İnceleniyor -> [Nurluayy] (208 karakter)
+      Reddedildi (sohbet), atlandı.
+   İnceleniyor -> [Habibe T.] (690 karakter)
+      Zaten mevcut, atlandı: Ben Yusuf
+   İnceleniyor -> [Tuba] (1898 karakter)
+      Zaten mevcut, atlandı: Ben Bir Göçmen Kızım
+   İnceleniyor -> [Yasar] (1824 karakter)
+      Zaten mevcut, atlandı: Göçmen Kızlar
+   İnceleniyor -> [Nurluayy] (1121 karakter)
+      Zaten mevcut, atlandı: Göç ve Ruhun Sükuneti
+   İnceleniyor -> [Tuba] (788 karakter)
+      Zaten mevcut, atlandı: Kamp Psikolojisi Analizi
+   İnceleniyor -> [Tuba] (851 karakter)
+      Reddedildi (sohbet), atlandı.
+   Atlandı (Reklam/Duyuru tespit edildi) -> [Yusuf Salih]
+   İnceleniyor -> [Zehra] (3158 karakter)
+      Zaten mevcut, atlandı: Sessizliğin içinde Biri
+   Atlandı (Reklam/Duyuru tespit edildi) -> [Yusuf Salih]
+   İnceleniyor -> [Tuba] (846 karakter)
+      + Eklendi: [deneme] Göçmen Bir Kızdan Annesine Mektup
+   Atlandı (Reklam/Duyuru tespit edildi) -> [Nurluayy]
+   İnceleniyor -> [Tuba] (1467 karakter)
+      Zaten mevcut, atlandı: Bir Bebeğin Göç Hikayesi
+   Atlandı (Reklam/Duyuru tespit edildi) -> [Yusuf Salih]
+   İnceleniyor -> [Tuba] (1613 karakter)
+      + Eklendi: [ani] Orada Olduğunu Bildiğim Sığınak
+   İnceleniyor -> [Nurluayy] (1100 karakter)
+      Reddedildi (sohbet), atlandı.
+
+   State güncellendi. Yeni min_id: 726
+
+=================================================================
+Gurbet Kalemleri Senkronizasyonu Tamamlandı!
+   Eklenen eser  : 3
+   Atlanan       : 56
+=================================================================
+📡 Grup İnceleniyor: 💠 OGS ÇALIŞANLARI GRUBU --> [OGS Çalışanları]
+   📥 53 adet anlamlı mesaj/tecrübe süzüldü.
+   📚 Sayfadaki mevcut konu sayısı: 0 (Birleştirme için yapay zekaya iletiliyor...)
+   ⏳ gemini-3.5-flash kotası doldu, diğer model deneniyor...
+   ✨ Yapay zeka sonucu: 4 işlem önerildi.
+      ✨ [YENİ KONU EKLENDİ]: OGS'de Çalışma Şartları, Saatler ve Maaş Yapısı
+      ✨ [YENİ KONU EKLENDİ]: OGS Başvuru Yolları, Dil Şartı ve Kariyer Gelişimi
+      ✨ [YENİ KONU EKLENDİ]: OGS Çalışanları İçin Sık Kullanılan Almanca Kalıplar
+      ✨ [YENİ KONU EKLENDİ]: OGS Günlük Düzeni: Yemek, Ev Ödevi ve Etkinlik Kuralları
+📡 Grup İnceleniyor: 💠 LOKFÜHRER/IN (MAKİNİSTLİK) GRUBU --> [Makinistlik (Lokführer)]
+   📥 1 adet anlamlı mesaj/tecrübe süzüldü.
+   📚 Sayfadaki mevcut konu sayısı: 8 (Birleştirme için yapay zekaya iletiliyor...)
+   ⏳ gemini-3.5-flash kotası doldu, diğer model deneniyor...
+   ⏳ gemini-3.6-flash kotası doldu, diğer model deneniyor...
+   ✨ Yapay zeka sonucu: 0 işlem önerildi.
+📡 Grup İnceleniyor: 💠 KİMYA ÖĞRETMENLERİ GRUBU --> [Kimya Öğretmenliği]
+   📥 0 adet anlamlı mesaj/tecrübe süzüldü.
+📡 Grup İnceleniyor: 💠 DİN KÜLTÜRÜ ÖĞRETMENLERİ GRUBU --> [Din Kültürü Öğretmenliği]
+   📥 0 adet anlamlı mesaj/tecrübe süzüldü.
+📡 Grup İnceleniyor: 💠 PFLEGER-IN /PFLEGEHELFER-IN GRUBU --> [Hasta ve Yaşlı Bakımı]
+   📥 54 adet anlamlı mesaj/tecrübe süzüldü.
+   📚 Sayfadaki mevcut konu sayısı: 4 (Birleştirme için yapay zekaya iletiliyor...)
+   ⏳ gemini-3.5-flash kotası doldu, diğer model deneniyor...
+   ⏳ gemini-3.6-flash kotası doldu, diğer model deneniyor...
+   ⏳ gemini-flash-latest kotası doldu, diğer model deneniyor...
+   ✨ Yapay zeka sonucu: 0 işlem önerildi.
+📡 Grup İnceleniyor: 💠 HEMŞİRELER GRUBU --> [Hemşirelik]
+   📥 0 adet anlamlı mesaj/tecrübe süzüldü.
+📡 Grup İnceleniyor: 💠 ALMANCA ÖĞRETMENİ OLMAK İSTİYORUM --> [Almanca Öğretmenliği]
+   📥 0 adet anlamlı mesaj/tecrübe süzüldü.
+📡 Grup İnceleniyor: 💠 BIOLOGIELEHRER/IN GRUBU --> [Biyoloji Öğretmenliği]
+   📥 0 adet anlamlı mesaj/tecrübe süzüldü.
+📡 Grup İnceleniyor: 💠 DEUTSCHE POST/AMAZON /HERMES/UBER DAĞITIM ÇALIŞANLAR GRUBU --> [Kargo & Posta Dağıtım]
+   📥 0 adet anlamlı mesaj/tecrübe süzüldü.
+📡 Grup İnceleniyor: 💠 İŞLETME-İKTİSAT-MALİYE GRUBU --> [İşletme & İktisat]
+   📥 0 adet anlamlı mesaj/tecrübe süzüldü.
+📡 Grup İnceleniyor: 💠 ANERKENNUNG GRUBU --> [Diploma Denkliği]
+   📥 0 adet anlamlı mesaj/tecrübe süzüldü.
+📡 Grup İnceleniyor: 💠 ARICILIK GRUBU --> [Arıcılık]
+   📥 0 adet anlamlı mesaj/tecrübe süzüldü.
+📡 Grup İnceleniyor: 💠 GÜZEL SANATLAR ÖĞRETMEN GRUBU --> [Güzel Sanatlar Öğretmenliği]
+   📥 0 adet anlamlı mesaj/tecrübe süzüldü.
+📡 Grup İnceleniyor: 💠 GIDA MÜHENDİSLERİ GRUBU --> [Gıda Mühendisliği]
+   📥 0 adet anlamlı mesaj/tecrübe süzüldü.
+📡 Grup İnceleniyor: 💠 ENDÜSTRİ MÜHENDİSLERİ GRUBU --> [Mühendisler ve Mimarlar]
+   📥 0 adet anlamlı mesaj/tecrübe süzüldü.
+📡 Grup İnceleniyor: 💠 ELEKTRİK AUSBILDUNG GRUBU --> [Elektrik & Elektronik]
+   📥 0 adet anlamlı mesaj/tecrübe süzüldü.
+📡 Grup İnceleniyor: 💠 ÇEVRE MÜHENDİSLERİ GRUBU --> [Çevre Mühendisliği]
+   📥 0 adet anlamlı mesaj/tecrübe süzüldü.
+📡 Grup İnceleniyor: 💠 COĞRAFYA ÖĞRETMENLERİ GRUBU --> [Coğrafya Öğretmenliği]
+   📥 0 adet anlamlı mesaj/tecrübe süzüldü.
+📡 Grup İnceleniyor: 💠 BEDEN EĞİTIMİ ÖĞRTMENLERİ --> [Beden Eğitimi Öğretmenliği]
+   📥 0 adet anlamlı mesaj/tecrübe süzüldü.
+📡 Grup İnceleniyor: 💠BEWERBUNG HAZIRLIK GRUBU --> [Bewerbung (CV ve Başvuru)]
+   📥 0 adet anlamlı mesaj/tecrübe süzüldü.
+📡 Grup İnceleniyor: 💠 ALMANYA EV ARAMA VE IKINCI EL EŞYA GRUBU --> [Ev Arama & Yaşam]
+   📥 0 adet anlamlı mesaj/tecrübe süzüldü.
+📡 Grup İnceleniyor: 💠 ABITUR GRUBU --> [Abitur & Üniversite]
+   📥 0 adet anlamlı mesaj/tecrübe süzüldü.
+📡 Grup İnceleniyor: Avrupa’da Şirket Kurmak İstiyorum --> [Şirket Kurma]
+   📥 0 adet anlamlı mesaj/tecrübe süzüldü.
+📡 Grup İnceleniyor: 💠 BİLGİSAYAR ÖĞRETMENLERİ GRUBU --> [Bilgisayar Öğretmenliği]
+   📥 0 adet anlamlı mesaj/tecrübe süzüldü.
+📡 Grup İnceleniyor: 💠 OKUL ÖNCESİ ÖĞRETMENLERİ --> [Okul Öncesi Öğretmenliği]
+   📥 56 adet anlamlı mesaj/tecrübe süzüldü.
+   📚 Sayfadaki mevcut konu sayısı: 0 (Birleştirme için yapay zekaya iletiliyor...)
+   ⏳ gemini-3.5-flash kotası doldu, diğer model deneniyor...
+   ⏳ gemini-3.6-flash kotası doldu, diğer model deneniyor...
+   ⏳ gemini-flash-latest kotası doldu, diğer model deneniyor...
+   ✨ Yapay zeka sonucu: 0 işlem önerildi.
+📡 Grup İnceleniyor: 💠 AUSBILDUNG-WEITERBILDUNG GRUBU --> [Ausbildung & Weiterbildung]
+   📥 0 adet anlamlı mesaj/tecrübe süzüldü.
+📡 Grup İnceleniyor: 💠 FİZİK ÖĞRETMENLERİ GRUBU --> [Fizik Öğretmenliği]
+   📥 0 adet anlamlı mesaj/tecrübe süzüldü.
+📡 Grup İnceleniyor: 💠 ÖZEL EĞİTİM ÖĞRETMENLERİ GRUBU --> [Özel Eğitim Öğretmenliği]
+   📥 59 adet anlamlı mesaj/tecrübe süzüldü.
+   📚 Sayfadaki mevcut konu sayısı: 0 (Birleştirme için yapay zekaya iletiliyor...)
+   ⏳ gemini-3.5-flash kotası doldu, diğer model deneniyor...
+   ⏳ gemini-3.6-flash kotası doldu, diğer model deneniyor...
+   ⏳ gemini-flash-latest kotası doldu, diğer model deneniyor...
+   ✨ Yapay zeka sonucu: 0 işlem önerildi.
+📡 Grup İnceleniyor: 💠 KÜRTÇE ÖĞRETMENLERİ GRUBU --> [Kürtçe Öğretmenliği]
+   📥 0 adet anlamlı mesaj/tecrübe süzüldü.
+📡 Grup İnceleniyor: 💠 İNŞAAT MÜHENDİSLERİ GRUBU --> [İnşaat Mühendisliği]
+   📥 0 adet anlamlı mesaj/tecrübe süzüldü.
+📡 Grup İnceleniyor: 💠 MÜHENDİSLER-MİMARLAR GRUBU --> [Mühendisler ve Mimarlar]
+   📥 75 adet anlamlı mesaj/tecrübe süzüldü.
+   📚 Sayfadaki mevcut konu sayısı: 3 (Birleştirme için yapay zekaya iletiliyor...)
+   ⏳ gemini-3.5-flash kotası doldu, diğer model deneniyor...
+   ⏳ gemini-3.6-flash kotası doldu, diğer model deneniyor...
+   ⏳ gemini-flash-latest kotası doldu, diğer model deneniyor...
+   ✨ Yapay zeka sonucu: 0 işlem önerildi.
+📡 Grup İnceleniyor: 💠 (GIS) COĞRAFİ BILGI SISTEMLERI GRUBU --> [Coğrafi Bilgi Sistemleri (GIS)]
+   📥 0 adet anlamlı mesaj/tecrübe süzüldü.
+📡 Grup İnceleniyor: 💠 EHRENAMTLICH ÇALIŞMA GRUBU --> [Gönüllü Çalışma (Ehrenamt)]
+   📥 0 adet anlamlı mesaj/tecrübe süzüldü.
+📡 Grup İnceleniyor: 💠 AVRUPA'DA YOL YARDIM GRUBU --> [Yol Yardım & Ulaşım]
+   📥 0 adet anlamlı mesaj/tecrübe süzüldü.
+📡 Grup İnceleniyor: 💠 MYO MEZUNLARI GRUBU --> [MYO Mezunları]
+   📥 52 adet anlamlı mesaj/tecrübe süzüldü.
+   📚 Sayfadaki mevcut konu sayısı: 0 (Birleştirme için yapay zekaya iletiliyor...)
+   ⏳ gemini-3.5-flash kotası doldu, diğer model deneniyor...
+   ⏳ gemini-3.6-flash kotası doldu, diğer model deneniyor...
+   ⏳ gemini-flash-latest kotası doldu, diğer model deneniyor...
+   ✨ Yapay zeka sonucu: 0 işlem önerildi.
+
+=================================================================
+🎉 Tüm Grupların (Topluluk, Helal Mekanlar, Gurbet Kalemleri) Senkronizasyonu Tamamlandı!
+=================================================================
+[19.09.2026 11:04:35,32] Senkronizasyon Tamamlandi. Exit Code: 0 
+ 
+=================================================================== 
+[20.09.2026  7:02:01,59] Gunluk Senkronizasyon Baslatildi 
+=================================================================== 
+C:\Users\User\Projeler (Web Sayfalari)\deutschland_compass\scripts\telegram_sync.py:41: FutureWarning: 
+
+All support for the `google.generativeai` package has ended. It will no longer be receiving 
+updates or bug fixes. Please switch to the `google.genai` package as soon as possible.
+See README for more details:
+
+https://github.com/google-gemini/deprecated-generative-ai-python/blob/main/README.md
+
+  import google.generativeai as genai
+=================================================================
+🚀 Deutschlandcompass Telegram Wikipedia Sentezleme Motoru Başlatılıyor...
+=================================================================
+✅ Bağlanılan Hesap: Trgy  (@trgy001)
+🔍 Hesabınızın üye olduğu gruplar taranıyor...
+
+📌 Tespit Edilen & Eşleşen Grup Sayısı: 42 adet
+
+📡 Grup İnceleniyor: 💠 ALMANCA ÖĞRETMENİ OLMAK İSTİYORUM --> [Almanca Öğretmenliği]
+   📥 0 adet anlamlı mesaj/tecrübe süzüldü.
+📡 Grup İnceleniyor: 💠 AUSBILDUNG-WEITERBILDUNG GRUBU --> [Ausbildung & Weiterbildung]
+   📥 2 adet anlamlı mesaj/tecrübe süzüldü.
+   📚 Sayfadaki mevcut konu sayısı: 4 (Birleştirme için yapay zekaya iletiliyor...)
+   ✨ Yapay zeka sonucu: 1 işlem önerildi.
+      ✨ [YENİ KONU EKLENDİ]: Ausbildung ve Weiterbildung Süreçlerinde Almanca Dil Seviyesi Gereksinimleri
+📡 Grup İnceleniyor: 💠 IKINCI BRANŞ / BRANŞ TAMAMLAMA --> [İkinci Branş / OBAS]
+   📥 2 adet anlamlı mesaj/tecrübe süzüldü.
+   📚 Sayfadaki mevcut konu sayısı: 5 (Birleştirme için yapay zekaya iletiliyor...)
+   ⏳ gemini-3.5-flash kotası doldu, diğer model deneniyor...
+   ✨ Yapay zeka sonucu: 0 işlem önerildi.
+📡 Grup İnceleniyor: 💠AİLE BİRLEŞİMİ GRUBU👨‍👩‍👦 --> [Aile Birleşimi]
+   📥 2 adet anlamlı mesaj/tecrübe süzüldü.
+   📚 Sayfadaki mevcut konu sayısı: 7 (Birleştirme için yapay zekaya iletiliyor...)
+   ✨ Yapay zeka sonucu: 1 işlem önerildi.
+      🔄 [GÜNCELLENDİ & BİRLEŞTİRİLDİ] ID 8: Aile Birleşimi Sürecinde IOM Belge Talebi ve Belediye Kaydı
+📡 Grup İnceleniyor: 💠 ERZIEHER/IN GRUBU --> [Erzieher / Kreş Eğitmenliği]
+   📥 4 adet anlamlı mesaj/tecrübe süzüldü.
+   📚 Sayfadaki mevcut konu sayısı: 5 (Birleştirme için yapay zekaya iletiliyor...)
+   ⏳ gemini-3.5-flash kotası doldu, diğer model deneniyor...
+   ⏳ gemini-3.6-flash kotası doldu, diğer model deneniyor...
+   ⏳ gemini-flash-latest kotası doldu, diğer model deneniyor...
+   ✨ Yapay zeka sonucu: 0 işlem önerildi.
+📡 Grup İnceleniyor: 💠 DEUTSCHE POST/AMAZON /HERMES/UBER DAĞITIM ÇALIŞANLAR GRUBU --> [Kargo & Posta Dağıtım]
+   📥 2 adet anlamlı mesaj/tecrübe süzüldü.
+   📚 Sayfadaki mevcut konu sayısı: 0 (Birleştirme için yapay zekaya iletiliyor...)
+   ⏳ gemini-3.5-flash kotası doldu, diğer model deneniyor...
+   ✨ Yapay zeka sonucu: 1 işlem önerildi.
+      ✨ [YENİ KONU EKLENDİ]: Dağıtım Güzergahına (Bezirk) Alışma Süreci ve Tavsiyeler
+📡 Grup İnceleniyor: 💠 BIOLOGIELEHRER/IN GRUBU --> [Biyoloji Öğretmenliği]
+   📥 1 adet anlamlı mesaj/tecrübe süzüldü.
+   📚 Sayfadaki mevcut konu sayısı: 3 (Birleştirme için yapay zekaya iletiliyor...)
+   ⏳ gemini-3.5-flash kotası doldu, diğer model deneniyor...
+   ⏳ gemini-3.6-flash kotası doldu, diğer model deneniyor...
+   ⏳ gemini-flash-latest kotası doldu, diğer model deneniyor...
+   ✨ Yapay zeka sonucu: 0 işlem önerildi.
+📡 Grup İnceleniyor: 💠ŞEHİRLERDE HELAL RESTAURANTLAR --> [Helal Mekanlar & Restoranlar]
+🚀 Helal Mekanlar Senkronizasyonu Başlatılıyor...
+🔌 Supabase bağlanıyor...
+📡 Hedef Grup: 💠ŞEHİRLERDE HELAL RESTAURANTLAR (ID: -1001551101830)
+🔍 Mesajlar taranıyor (min_id: 10278, limit: 50)...
+📥 18 adet ilgili mesaj toplandı.
+🤖 Yapay zeka ile mekan ve tavsiyeler ayrıştırılıyor...
+   ⚠️ Gemini Ayrıştırma Hatası: 429 You exceeded your current quota, please check your plan and billing details. For more information on this error, head to: https://ai.google.dev/gemini-api/docs/rate-limits. To monitor your current usage, head to: https://ai.dev/rate-limit. 
+* Quota exceeded for metric: generativelanguage.googleapis.com/generate_content_free_tier_requests, limit: 20, model: gemini-3.6-flash
+Please retry in 10.206203181s. [links {
+  description: "Learn more about Gemini API quotas"
+  url: "https://ai.google.dev/gemini-api/docs/rate-limits"
+}
+, violations {
+  quota_metric: "generativelanguage.googleapis.com/generate_content_free_tier_requests"
+  quota_id: "GenerateRequestsPerDayPerProjectPerModel-FreeTier"
+  quota_dimensions {
+    key: "model"
+    value: "gemini-3.6-flash"
+  }
+  quota_dimensions {
+    key: "location"
+    value: "global"
+  }
+  quota_value: 20
+}
+, retry_delay {
+  seconds: 10
+}
+]
+✨ Tespit Edilen Mekan/Yorum Önerisi: 0 adet
+
+============================================================
+🎉 Helal Mekanlar Senkronizasyonu Tamamlandı!
+📊 Yeni Eklenen Mekan: 0 adet
+💬 Eklenen Topluluk Yorumu: 0 adet
+============================================================
+📡 Grup İnceleniyor: 💠 PFLEGER-IN /PFLEGEHELFER-IN GRUBU --> [Hasta ve Yaşlı Bakımı]
+   📥 58 adet anlamlı mesaj/tecrübe süzüldü.
+   📚 Sayfadaki mevcut konu sayısı: 4 (Birleştirme için yapay zekaya iletiliyor...)
+   ⏳ gemini-3.5-flash kotası doldu, diğer model deneniyor...
+   ⏳ gemini-3.6-flash kotası doldu, diğer model deneniyor...
+   ⏳ gemini-flash-latest kotası doldu, diğer model deneniyor...
+   ✨ Yapay zeka sonucu: 0 işlem önerildi.
+📡 Grup İnceleniyor: 💠 FEN BİLGİSİ ÖĞRETMEN GRUBU --> [Fen Bilgisi Öğretmenliği]
+   📥 1 adet anlamlı mesaj/tecrübe süzüldü.
+   📚 Sayfadaki mevcut konu sayısı: 3 (Birleştirme için yapay zekaya iletiliyor...)
+   ⏳ gemini-3.5-flash kotası doldu, diğer model deneniyor...
+   ⏳ gemini-3.6-flash kotası doldu, diğer model deneniyor...
+   ⏳ gemini-flash-latest kotası doldu, diğer model deneniyor...
+   ✨ Yapay zeka sonucu: 0 işlem önerildi.
+📡 Grup İnceleniyor: 💠 BUSFAHRER/IN GRUBU --> [Otobüs Şoförlüğü]
+   📥 0 adet anlamlı mesaj/tecrübe süzüldü.
+📡 Grup İnceleniyor: 💠KENDİ YAZDIĞINIZ YAZILAR ŞİİRLER --> [Gurbet Kalemleri]
+=================================================================
+Gurbet Kalemleri Senkronizasyon Motoru Başlatılıyor...
+  - Reklam / Satış / Tanıtım / Grup Listeleri Sıkı Şekilde Engellenir
+  - Resimli Şiirler (OCR) ve Edebi Linkler Desteklenir
+=================================================================
+Kanal taranıyor: 💠KENDİ YAZDIĞINIZ YAZILAR ŞİİRLER
+   Kaldığı yer (min_id): 503
+
+   [Görsel] İnceleniyor -> Yazar: Anonim Kalem
+      Görsel edebi eser değil veya reklam/afiş, atlandı.
+   [Görsel] İnceleniyor -> Yazar: Neli
+      Görsel edebi eser değil veya reklam/afiş, atlandı.
+   [Link] Taranıyor -> https://books.apple.com/de/book/deccal-yolun-ba%C5%9F%C4%B1/
+      Link edebi eser içermiyor, atlandı.
+   [Görsel] İnceleniyor -> Yazar: Gokhan
+      Görsel edebi eser değil veya reklam/afiş, atlandı.
+   [Görsel] İnceleniyor -> Yazar: Gokhan
+      Görsel edebi eser değil veya reklam/afiş, atlandı.
+   [Link] Taranıyor -> https://whatsapp.com/channel/0029VaDOcdTAe5Vgos9MbV39
+      Link edebi eser içermiyor, atlandı.
+   [Görsel] İnceleniyor -> Yazar: Canan
+      Görsel edebi eser değil veya reklam/afiş, atlandı.
+   [Görsel] İnceleniyor -> Yazar: Canan
+      Görsel edebi eser değil veya reklam/afiş, atlandı.
+   [Link] Taranıyor -> https://helezondergisi.com/bilgelik-yolculugu-canan-say/
+      Link edebi eser içermiyor, atlandı.
+   [Görsel] İnceleniyor -> Yazar: Mehmet
+      Görsel edebi eser değil veya reklam/afiş, atlandı.
+   [Görsel] İnceleniyor -> Yazar: Yusuf Salih
+      Görsel edebi eser değil veya reklam/afiş, atlandı.
+   [Link] Taranıyor -> https://tu-dresden.zoom-x.de/j/5707163555?pwd=TThjaStvVnBYY1
+      Link edebi eser içermiyor, atlandı.
+   [Görsel] İnceleniyor -> Yazar: Gokhan
+      Görsel edebi eser değil veya reklam/afiş, atlandı.
+   [Link] Taranıyor -> https://youtu.be/5wJz2Iug13U?si=tVskOs2ag4kRB18w
+      Link edebi eser içermiyor, atlandı.
+
+   45 adet edebi metin grubu inceleniyor...
+   Atlandı (Reklam/Duyuru tespit edildi) -> [Anonim Kalem]
+   Atlandı (Reklam/Duyuru tespit edildi) -> [Yusuf Salih]
+   İnceleniyor -> [Canan] (939 karakter)
+      + Eklendi: [duz_yazi] Sevgili dostlar,sizlere bir hayalin daha gerçekleşmesinin mü
+   İnceleniyor -> [Dilek] (257 karakter)
+      Zaten mevcut, atlandı: ...
+   Atlandı (Reklam/Duyuru tespit edildi) -> [Turgay G.]
+   Atlandı (Reklam/Duyuru tespit edildi) -> [Gokhan]
+   İnceleniyor -> [Gokhan] (1124 karakter)
+      + Eklendi: [duz_yazi] Birazdan başlıyoruz
+   Atlandı (Reklam/Duyuru tespit edildi) -> [M]
+   İnceleniyor -> [Gokhan] (73 karakter)
+      + Eklendi: [duz_yazi] teknik sorundan dolayı instagrama geçtik
+   Atlandı (Reklam/Duyuru tespit edildi) -> [Gokhan]
+   İnceleniyor -> [Canan] (254 karakter)
+      + Eklendi: [duz_yazi] Her ne kadar “Öze Dönüş” gibi iddialı bir başlık taşısa da,
+   İnceleniyor -> [Frau I.] (2135 karakter)
+      + Eklendi: [duz_yazi] 🐈🐈‍⬛🐈
+   İnceleniyor -> [Yusuf Salih] (87 karakter)
+      + Eklendi: [duz_yazi] Hocam maşallah,  çok etkileyici. Yüreğinize sağlık.
+   Atlandı (Reklam/Duyuru tespit edildi) -> [Zehra]
+   İnceleniyor -> [Tuba] (54 karakter)
+      + Eklendi: [duz_yazi] Çok teşekkür ederim hocam. İnşallah ben de isterim 🙏🙏🙏
+   Atlandı (Reklam/Duyuru tespit edildi) -> [Mehmet]
+   İnceleniyor -> [Dilek] (1395 karakter)
+      Zaten mevcut, atlandı: Ich habe die Nacht gefragt...
+   Atlandı (Reklam/Duyuru tespit edildi) -> [Gokhan]
+   İnceleniyor -> [Dilek] (1113 karakter)
+      + Eklendi: [duz_yazi] Evet
+   İnceleniyor -> [Murat A.] (63 karakter)
+      + Eklendi: [duz_yazi] Yüreginize saglik, şiir duygu yüklü. Annenizi rahmet diliyor
+   Atlandı (Reklam/Duyuru tespit edildi) -> [Dilek]
+   Atlandı (Reklam/Duyuru tespit edildi) -> [SEREF D.]
+   İnceleniyor -> [Zehra] (2668 karakter)
+      Zaten mevcut, atlandı: Dil Gurbeti
+   İnceleniyor -> [Zehra] (2462 karakter)
+      Zaten mevcut, atlandı: Bugün 24 Kasım… Bir zamanlar heyecanla karşılayıp 
+   İnceleniyor -> [Murat A.] (114 karakter)
+      + Eklendi: [duz_yazi] 👍
+   Atlandı (Reklam/Duyuru tespit edildi) -> [Zehra]
+   İnceleniyor -> [Murat A.] (83 karakter)
+      Zaten mevcut, atlandı: Paylaşiminizda kız kardeşimi gördüm. O da benzer ş
+   İnceleniyor -> [Murat A.] (107 karakter)
+      Zaten mevcut, atlandı: Yüreginize saglik öğretmen hanim, tez zamanda göre
+   İnceleniyor -> [Habibe T.] (177 karakter)
+      Zaten mevcut, atlandı: Öğretmenlik hep kutsaldı,ögretmenler hep değerli..
+   İnceleniyor -> [Nurluayy] (208 karakter)
+      Zaten mevcut, atlandı: Ögretmenlik dört duvara ,bir binaya,sıralara sıkış
+   İnceleniyor -> [Habibe T.] (690 karakter)
+      Zaten mevcut, atlandı: Ben yusuf
+   İnceleniyor -> [Tuba] (1898 karakter)
+      Zaten mevcut, atlandı: Ben bir göçmen kızım. Hani hep anlatır ya neneler,
+   İnceleniyor -> [Yasar] (1824 karakter)
+      Zaten mevcut, atlandı: Göçmen kızlar... Evet, onların hikayesi şanla, güc
+   İnceleniyor -> [Nurluayy] (1121 karakter)
+      Zaten mevcut, atlandı: İnsan dünyaya da göçmek için geliyor ,ne tuhaf dem
+   İnceleniyor -> [Tuba] (788 karakter)
+      Zaten mevcut, atlandı: Kısa bir kamp psikolojisi analizi... Güçlü hissedi
+   İnceleniyor -> [Tuba] (851 karakter)
+      Zaten mevcut, atlandı: Kadın olmak çok güzeldir aslında. İçinde çocuk neş
+   Atlandı (Reklam/Duyuru tespit edildi) -> [Yusuf Salih]
+   İnceleniyor -> [Zehra] (3158 karakter)
+      Zaten mevcut, atlandı: Sessizliğin içinde Biri
+   Atlandı (Reklam/Duyuru tespit edildi) -> [Yusuf Salih]
+   İnceleniyor -> [Tuba] (846 karakter)
+      Zaten mevcut, atlandı: Benim annem beni hep yolcu etti.
+   Atlandı (Reklam/Duyuru tespit edildi) -> [Nurluayy]
+   İnceleniyor -> [Tuba] (1467 karakter)
+      Zaten mevcut, atlandı: Bir bebeğin göç hikayesini dinlediniz mi hiç?
+   Atlandı (Reklam/Duyuru tespit edildi) -> [Yusuf Salih]
+   İnceleniyor -> [Tuba] (1613 karakter)
+      Zaten mevcut, atlandı: “Baba” deyince ne geliyor aklınıza?
+   İnceleniyor -> [Nurluayy] (1100 karakter)
+      Zaten mevcut, atlandı: Bide ,hiç babası ile aynı karede olamamış ortak pa
+
+   State güncellendi. Yeni min_id: 726
+
+=================================================================
+Gurbet Kalemleri Senkronizasyonu Tamamlandı!
+   Eklenen eser  : 10
+   Atlanan       : 49
+=================================================================
+📡 Grup İnceleniyor: 💠 OGS ÇALIŞANLARI GRUBU --> [OGS Çalışanları]
+   📥 63 adet anlamlı mesaj/tecrübe süzüldü.
+   📚 Sayfadaki mevcut konu sayısı: 4 (Birleştirme için yapay zekaya iletiliyor...)
+   ⏳ gemini-3.5-flash kotası doldu, diğer model deneniyor...
+   ⏳ gemini-3.6-flash kotası doldu, diğer model deneniyor...
+   ⏳ gemini-flash-latest kotası doldu, diğer model deneniyor...
+   ✨ Yapay zeka sonucu: 0 işlem önerildi.
+📡 Grup İnceleniyor: 💠 LOKFÜHRER/IN (MAKİNİSTLİK) GRUBU --> [Makinistlik (Lokführer)]
+   📥 0 adet anlamlı mesaj/tecrübe süzüldü.
+📡 Grup İnceleniyor: 💠 KİMYA ÖĞRETMENLERİ GRUBU --> [Kimya Öğretmenliği]
+   📥 0 adet anlamlı mesaj/tecrübe süzüldü.
+📡 Grup İnceleniyor: 💠 DİN KÜLTÜRÜ ÖĞRETMENLERİ GRUBU --> [Din Kültürü Öğretmenliği]
+   📥 0 adet anlamlı mesaj/tecrübe süzüldü.
+📡 Grup İnceleniyor: 💠 HEMŞİRELER GRUBU --> [Hemşirelik]
+   📥 0 adet anlamlı mesaj/tecrübe süzüldü.
+📡 Grup İnceleniyor: 💠 İŞLETME-İKTİSAT-MALİYE GRUBU --> [İşletme & İktisat]
+   📥 0 adet anlamlı mesaj/tecrübe süzüldü.
+📡 Grup İnceleniyor: 💠 ANERKENNUNG GRUBU --> [Diploma Denkliği]
+   📥 0 adet anlamlı mesaj/tecrübe süzüldü.
+📡 Grup İnceleniyor: 💠 ARICILIK GRUBU --> [Arıcılık]
+   📥 0 adet anlamlı mesaj/tecrübe süzüldü.
+📡 Grup İnceleniyor: 💠 GÜZEL SANATLAR ÖĞRETMEN GRUBU --> [Güzel Sanatlar Öğretmenliği]
+   📥 0 adet anlamlı mesaj/tecrübe süzüldü.
+📡 Grup İnceleniyor: 💠 GIDA MÜHENDİSLERİ GRUBU --> [Gıda Mühendisliği]
+   📥 0 adet anlamlı mesaj/tecrübe süzüldü.
+📡 Grup İnceleniyor: 💠 ENDÜSTRİ MÜHENDİSLERİ GRUBU --> [Mühendisler ve Mimarlar]
+   📥 0 adet anlamlı mesaj/tecrübe süzüldü.
+📡 Grup İnceleniyor: 💠 ELEKTRİK AUSBILDUNG GRUBU --> [Elektrik & Elektronik]
+   📥 0 adet anlamlı mesaj/tecrübe süzüldü.
+📡 Grup İnceleniyor: 💠 ÇEVRE MÜHENDİSLERİ GRUBU --> [Çevre Mühendisliği]
+   📥 0 adet anlamlı mesaj/tecrübe süzüldü.
+📡 Grup İnceleniyor: 💠 COĞRAFYA ÖĞRETMENLERİ GRUBU --> [Coğrafya Öğretmenliği]
+   📥 0 adet anlamlı mesaj/tecrübe süzüldü.
+📡 Grup İnceleniyor: 💠 BEDEN EĞİTIMİ ÖĞRTMENLERİ --> [Beden Eğitimi Öğretmenliği]
+   📥 0 adet anlamlı mesaj/tecrübe süzüldü.
+📡 Grup İnceleniyor: 💠BEWERBUNG HAZIRLIK GRUBU --> [Bewerbung (CV ve Başvuru)]
+   📥 0 adet anlamlı mesaj/tecrübe süzüldü.
+📡 Grup İnceleniyor: 💠 ALMANYA EV ARAMA VE IKINCI EL EŞYA GRUBU --> [Ev Arama & Yaşam]
+   📥 0 adet anlamlı mesaj/tecrübe süzüldü.
+📡 Grup İnceleniyor: 💠 ABITUR GRUBU --> [Abitur & Üniversite]
+   📥 0 adet anlamlı mesaj/tecrübe süzüldü.
+📡 Grup İnceleniyor: Avrupa’da Şirket Kurmak İstiyorum --> [Şirket Kurma]
+   📥 0 adet anlamlı mesaj/tecrübe süzüldü.
+📡 Grup İnceleniyor: 💠 BİLGİSAYAR ÖĞRETMENLERİ GRUBU --> [Bilgisayar Öğretmenliği]
+   📥 0 adet anlamlı mesaj/tecrübe süzüldü.
+📡 Grup İnceleniyor: 💠 OKUL ÖNCESİ ÖĞRETMENLERİ --> [Okul Öncesi Öğretmenliği]
+   📥 67 adet anlamlı mesaj/tecrübe süzüldü.
+   📚 Sayfadaki mevcut konu sayısı: 0 (Birleştirme için yapay zekaya iletiliyor...)
+   ⏳ gemini-3.5-flash kotası doldu, diğer model deneniyor...
+   ⏳ gemini-3.6-flash kotası doldu, diğer model deneniyor...
+   ⏳ gemini-flash-latest kotası doldu, diğer model deneniyor...
+   ✨ Yapay zeka sonucu: 0 işlem önerildi.
+📡 Grup İnceleniyor: 💠 FİZİK ÖĞRETMENLERİ GRUBU --> [Fizik Öğretmenliği]
+   📥 0 adet anlamlı mesaj/tecrübe süzüldü.
+📡 Grup İnceleniyor: 💠 ÖZEL EĞİTİM ÖĞRETMENLERİ GRUBU --> [Özel Eğitim Öğretmenliği]
+   📥 63 adet anlamlı mesaj/tecrübe süzüldü.
+   📚 Sayfadaki mevcut konu sayısı: 0 (Birleştirme için yapay zekaya iletiliyor...)
+   ⏳ gemini-3.5-flash kotası doldu, diğer model deneniyor...
+   ⏳ gemini-3.6-flash kotası doldu, diğer model deneniyor...
+   ⏳ gemini-flash-latest kotası doldu, diğer model deneniyor...
+   ✨ Yapay zeka sonucu: 0 işlem önerildi.
+📡 Grup İnceleniyor: 💠 KÜRTÇE ÖĞRETMENLERİ GRUBU --> [Kürtçe Öğretmenliği]
+   📥 0 adet anlamlı mesaj/tecrübe süzüldü.
+📡 Grup İnceleniyor: 💠 İNŞAAT MÜHENDİSLERİ GRUBU --> [İnşaat Mühendisliği]
+   📥 0 adet anlamlı mesaj/tecrübe süzüldü.
+📡 Grup İnceleniyor: 💠 MÜHENDİSLER-MİMARLAR GRUBU --> [Mühendisler ve Mimarlar]
+   📥 74 adet anlamlı mesaj/tecrübe süzüldü.
+   📚 Sayfadaki mevcut konu sayısı: 3 (Birleştirme için yapay zekaya iletiliyor...)
+   ⏳ gemini-3.5-flash kotası doldu, diğer model deneniyor...
+   ⏳ gemini-3.6-flash kotası doldu, diğer model deneniyor...
+   ⏳ gemini-flash-latest kotası doldu, diğer model deneniyor...
+   ✨ Yapay zeka sonucu: 0 işlem önerildi.
+📡 Grup İnceleniyor: 💠 (GIS) COĞRAFİ BILGI SISTEMLERI GRUBU --> [Coğrafi Bilgi Sistemleri (GIS)]
+   📥 0 adet anlamlı mesaj/tecrübe süzüldü.
+📡 Grup İnceleniyor: 💠 EHRENAMTLICH ÇALIŞMA GRUBU --> [Gönüllü Çalışma (Ehrenamt)]
+   📥 0 adet anlamlı mesaj/tecrübe süzüldü.
+📡 Grup İnceleniyor: 💠 AVRUPA'DA YOL YARDIM GRUBU --> [Yol Yardım & Ulaşım]
+   📥 0 adet anlamlı mesaj/tecrübe süzüldü.
+📡 Grup İnceleniyor: 💠 MYO MEZUNLARI GRUBU --> [MYO Mezunları]
+   📥 63 adet anlamlı mesaj/tecrübe süzüldü.
+   📚 Sayfadaki mevcut konu sayısı: 0 (Birleştirme için yapay zekaya iletiliyor...)
+   ⏳ gemini-3.5-flash kotası doldu, diğer model deneniyor...
+   ⏳ gemini-3.6-flash kotası doldu, diğer model deneniyor...
+   ⏳ gemini-flash-latest kotası doldu, diğer model deneniyor...
+   ✨ Yapay zeka sonucu: 0 işlem önerildi.
+
+=================================================================
+🎉 Tüm Grupların (Topluluk, Helal Mekanlar, Gurbet Kalemleri) Senkronizasyonu Tamamlandı!
+=================================================================
+[20.09.2026  7:07:00,97] Senkronizasyon Tamamlandi. Exit Code: 0 
+ 
+=================================================================== 
+[21.09.2026  8:09:08,92] Gunluk Senkronizasyon Baslatildi 
+=================================================================== 
+C:\Users\User\Projeler (Web Sayfalari)\deutschland_compass\scripts\telegram_sync.py:41: FutureWarning: 
+
+All support for the `google.generativeai` package has ended. It will no longer be receiving 
+updates or bug fixes. Please switch to the `google.genai` package as soon as possible.
+See README for more details:
+
+https://github.com/google-gemini/deprecated-generative-ai-python/blob/main/README.md
+
+  import google.generativeai as genai
+=================================================================
+🚀 Deutschlandcompass Telegram Wikipedia Sentezleme Motoru Başlatılıyor...
+=================================================================
+✅ Bağlanılan Hesap: Trgy  (@trgy001)
+🔍 Hesabınızın üye olduğu gruplar taranıyor...
+
+📌 Tespit Edilen & Eşleşen Grup Sayısı: 42 adet
+
+📡 Grup İnceleniyor: 💠 ABITUR GRUBU --> [Abitur & Üniversite]
+   📥 4 adet anlamlı mesaj/tecrübe süzüldü.
+   📚 Sayfadaki mevcut konu sayısı: 5 (Birleştirme için yapay zekaya iletiliyor...)
+   ✨ Yapay zeka sonucu: 0 işlem önerildi.
+📡 Grup İnceleniyor: 💠ŞEHİRLERDE HELAL RESTAURANTLAR --> [Helal Mekanlar & Restoranlar]
+🚀 Helal Mekanlar Senkronizasyonu Başlatılıyor...
+🔌 Supabase bağlanıyor...
+📡 Hedef Grup: 💠ŞEHİRLERDE HELAL RESTAURANTLAR (ID: -1001551101830)
+🔍 Mesajlar taranıyor (min_id: 10278, limit: 50)...
+📥 21 adet ilgili mesaj toplandı.
+🤖 Yapay zeka ile mekan ve tavsiyeler ayrıştırılıyor...
+✨ Tespit Edilen Mekan/Yorum Önerisi: 6 adet
+
+🍽️ İşleniyor: Taco Bros (Lindau)
+   ℹ️ Mevcut mekan bulundu: Taco Bros (ID: 42fe7dec-150a-4a03-861b-247b3f4e6fbb)
+   💬 Topluluk tavsiyesi yorum olarak eklendi.
+
+🍽️ İşleniyor: Sos Döner (Frankfurt)
+   ℹ️ Mevcut mekan bulundu: Frankfurt ta Hauptbahnhof ta Sos Döner (ID: 1bebefd1-92a8-44e1-962d-3fac961d5ecc)
+   💬 Topluluk tavsiyesi yorum olarak eklendi.
+
+🍽️ İşleniyor: Einstein (Köln)
+   ➕ Yeni mekan oluşturuluyor...
+   ✅ Başarıyla eklendi! ID: 44a7fca7-6bae-4441-a186-57c3d771801a (Highlight: False)
+   💬 Topluluk tavsiyesi yorum olarak eklendi.
+
+🍽️ İşleniyor: Collage (Köln)
+   ➕ Yeni mekan oluşturuluyor...
+   ✅ Başarıyla eklendi! ID: c872415b-beab-4184-b367-a7e50a4f51bb (Highlight: False)
+   💬 Topluluk tavsiyesi yorum olarak eklendi.
+
+🍽️ İşleniyor: Ebru (Köln)
+   ➕ Yeni mekan oluşturuluyor...
+   ✅ Başarıyla eklendi! ID: 8ef9a135-90ad-464a-8a08-ca24ab669c40 (Highlight: False)
+   💬 Topluluk tavsiyesi yorum olarak eklendi.
+
+🍽️ İşleniyor: Tandır Döner (Crailsheim)
+   ➕ Yeni mekan oluşturuluyor...
+   ✅ Başarıyla eklendi! ID: a062c86b-503e-4036-bd0d-118147b66c73 (Highlight: True)
+   💬 Topluluk tavsiyesi yorum olarak eklendi.
+
+============================================================
+🎉 Helal Mekanlar Senkronizasyonu Tamamlandı!
+📊 Yeni Eklenen Mekan: 4 adet
+💬 Eklenen Topluluk Yorumu: 6 adet
+============================================================
+📡 Grup İnceleniyor: 💠 AUSBILDUNG-WEITERBILDUNG GRUBU --> [Ausbildung & Weiterbildung]
+   📥 7 adet anlamlı mesaj/tecrübe süzüldü.
+   📚 Sayfadaki mevcut konu sayısı: 5 (Birleştirme için yapay zekaya iletiliyor...)
+   ✨ Yapay zeka sonucu: 1 işlem önerildi.
+      🔄 [GÜNCELLENDİ & BİRLEŞTİRİLDİ] ID 132: Ausbildung ve Weiterbildung Süreçlerinde Almanca Dil Seviyesi Gereksinimleri
+📡 Grup İnceleniyor: 💠AİLE BİRLEŞİMİ GRUBU👨‍👩‍👦 --> [Aile Birleşimi]
+   📥 1 adet anlamlı mesaj/tecrübe süzüldü.
+   📚 Sayfadaki mevcut konu sayısı: 7 (Birleştirme için yapay zekaya iletiliyor...)
+   ✨ Yapay zeka sonucu: 1 işlem önerildi.
+      🔄 [GÜNCELLENDİ & BİRLEŞTİRİLDİ] ID 8: Aile Birleşimi Sürecinde IOM Belge Talebi ve Belediye Kaydı
+📡 Grup İnceleniyor: 💠 ALMANCA ÖĞRETMENİ OLMAK İSTİYORUM --> [Almanca Öğretmenliği]
+   📥 0 adet anlamlı mesaj/tecrübe süzüldü.
+📡 Grup İnceleniyor: 💠 IKINCI BRANŞ / BRANŞ TAMAMLAMA --> [İkinci Branş / OBAS]
+   📥 0 adet anlamlı mesaj/tecrübe süzüldü.
+📡 Grup İnceleniyor: 💠 ERZIEHER/IN GRUBU --> [Erzieher / Kreş Eğitmenliği]
+   📥 0 adet anlamlı mesaj/tecrübe süzüldü.
+📡 Grup İnceleniyor: 💠 DEUTSCHE POST/AMAZON /HERMES/UBER DAĞITIM ÇALIŞANLAR GRUBU --> [Kargo & Posta Dağıtım]
+   📥 0 adet anlamlı mesaj/tecrübe süzüldü.
+📡 Grup İnceleniyor: 💠 BIOLOGIELEHRER/IN GRUBU --> [Biyoloji Öğretmenliği]
+   📥 0 adet anlamlı mesaj/tecrübe süzüldü.
+📡 Grup İnceleniyor: 💠 PFLEGER-IN /PFLEGEHELFER-IN GRUBU --> [Hasta ve Yaşlı Bakımı]
+   📥 75 adet anlamlı mesaj/tecrübe süzüldü.
+   📚 Sayfadaki mevcut konu sayısı: 4 (Birleştirme için yapay zekaya iletiliyor...)
+   ✨ Yapay zeka sonucu: 4 işlem önerildi.
+      🔄 [GÜNCELLENDİ & BİRLEŞTİRİLDİ] ID 124: Pflegefachfrau / Pflegefachmann (Genel Bakım Eğitimi)
+      🔄 [GÜNCELLENDİ & BİRLEŞTİRİLDİ] ID 126: Betreuungskraft ve Yardımcı Bakım Rolleri
+      🔄 [GÜNCELLENDİ & BİRLEŞTİRİLDİ] ID 127: Hastane ve Yaşlı Bakımevlerinde Çalışma Dinamikleri
+      ✨ [YENİ KONU EKLENDİ]: Bakım Eğitimi (Ausbildung) Başvuru Süreci ve Kabul Koşulları
+📡 Grup İnceleniyor: 💠 FEN BİLGİSİ ÖĞRETMEN GRUBU --> [Fen Bilgisi Öğretmenliği]
+   📥 0 adet anlamlı mesaj/tecrübe süzüldü.
+📡 Grup İnceleniyor: 💠 BUSFAHRER/IN GRUBU --> [Otobüs Şoförlüğü]
+   📥 0 adet anlamlı mesaj/tecrübe süzüldü.
+📡 Grup İnceleniyor: 💠KENDİ YAZDIĞINIZ YAZILAR ŞİİRLER --> [Gurbet Kalemleri]

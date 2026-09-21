@@ -8,6 +8,7 @@ import { FileText, MessageSquare, PenTool, ExternalLink, Calendar, Sparkles, Pla
 import Link from 'next/link';
 import { supabase } from '@/lib/supabase';
 import { professionsList } from '@/data/professions-list';
+import { resolveCategoryRoute } from '@/lib/route-resolver';
 import { formatDistanceToNow } from 'date-fns';
 import { tr } from 'date-fns/locale';
 
@@ -75,11 +76,7 @@ export function WhatsNewPopup() {
 
         docs?.forEach(doc => {
           const profession = professionsList.find(p => p.slug === doc.profession_slug);
-          let link = `/meslekler/${doc.profession_slug}`;
-          
-          if (profession?.customLink) {
-            link = profession.customLink;
-          }
+          const link = profession?.customLink || resolveCategoryRoute(doc.profession_slug);
           
           newItems.push({
             id: `doc-${doc.id}`,
@@ -93,41 +90,14 @@ export function WhatsNewPopup() {
         });
 
         exps?.forEach(exp => {
-          // Try to create a link. Since we only have profession name, we might need a better way.
-          // For now, we link to the main guide page if we can guess the slug, or just /meslekler
-          // A simple slugify might work for common ones: "Veteriner Hekimliği" -> "veteriner-hekimligi"
-          const slug = exp.profession
-            .toLowerCase()
-            .replace(/ğ/g, 'g')
-            .replace(/ü/g, 'u')
-            .replace(/ş/g, 's')
-            .replace(/ı/g, 'i')
-            .replace(/i̇/g, 'i')
-            .replace(/ö/g, 'o')
-            .replace(/ç/g, 'c')
-            .replace(/[^a-z0-9-]/g, '-')
-            .replace(/-+/g, '-')
-            .replace(/^-|-$/g, '');
-
-          // Önce slug ile eşleşme, yoksa başlık ile eşleşme
-          let profession = professionsList.find(p => p.slug === slug);
-          if (!profession) {
-            // Tam başlık eşleşmesi yoksa, öğretmenlik varyasyonlarını yakala
-            const expNormalized = exp.profession.toLowerCase().replace(/öğretmen[ıi]$/,'öğretmenliği').replace(/öğretmeni$/,'öğretmenliği');
-            profession = professionsList.find(p => p.title.toLowerCase().includes(expNormalized));
-            // Son çare: başlıkta 'öğretmen' geçen ilk rehber
-            if (!profession && exp.profession.toLowerCase().includes('öğretmen')) {
-              profession = professionsList.find(p => p.title.toLowerCase().includes('öğretmen'));
-            }
-          }
-          let link = profession?.customLink ? profession.customLink : `/meslekler/${slug}`;
+          let link = resolveCategoryRoute(exp.profession);
 
           newItems.push({
             id: `exp-${exp.id}`,
             type: 'experience',
             title: exp.profession,
             subtitle: `Paylaşan: ${exp.name}`,
-            link: `${link}#experience-${exp.id}`,
+            link: `${link}?tab=experiences#experience-${exp.id}`,
             date: exp.created_at,
             isNew: true,
             isFeatured: true // Mark all experiences as featured
@@ -148,7 +118,7 @@ export function WhatsNewPopup() {
 
         videos?.forEach(video => {
           const profession = professionsList.find(p => p.slug === video.slug);
-          let link = profession?.customLink ? profession.customLink : `/meslekler/${video.slug}`;
+          let link = profession?.customLink ? profession.customLink : resolveCategoryRoute(video.slug);
 
           newItems.push({
             id: `video-${video.slug}`,

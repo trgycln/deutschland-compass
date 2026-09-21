@@ -19,6 +19,16 @@ export interface CommunityUpdateItem {
   is_approved?: boolean;
 }
 
+const CATEGORY_QUERY_ALIASES: Record<string, string[]> = {
+  'egitim-ve-kariyer': ['egitim-ve-kariyer', 'egitim-abitur', 'egitim-kariyer', 'egitim-rehberi'],
+  'sirket-kurma': ['sirket-kurma', 'is-kurma'],
+  'kariyer-yolu': ['kariyer-yolu', 'brans-tamamlama', 'ogretmenlik'],
+  'kargo-posta-dagitim': ['kargo-posta-dagitim', 'dagitim', 'kargo-posta', 'post'],
+  'schulbegleiter': ['schulbegleiter', 'gonulluluk'],
+  'bilisim-it': ['bilisim-it', 'it-sektoru', 'it-bilisim'],
+  'yazilim-gelistirici': ['yazilim-gelistirici', 'yazilim-gelistirme']
+};
+
 export function useCommunityUpdates(categorySlug: string) {
   const [updates, setUpdates] = useState<CommunityUpdateItem[]>([]);
   const [loading, setLoading] = useState(true);
@@ -26,10 +36,11 @@ export function useCommunityUpdates(categorySlug: string) {
   useEffect(() => {
     async function loadUpdates() {
       try {
+        const targetSlugs = CATEGORY_QUERY_ALIASES[categorySlug] || [categorySlug];
         const { data, error } = await supabase
           .from("community_updates")
           .select("*")
-          .eq("category_slug", categorySlug)
+          .in("category_slug", targetSlugs)
           .eq("is_approved", true)
           .order("updated_at", { ascending: false, nullsFirst: false });
 
@@ -45,6 +56,7 @@ export function useCommunityUpdates(categorySlug: string) {
 
     loadUpdates();
   }, [categorySlug]);
+
 
   return { updates, loading };
 }

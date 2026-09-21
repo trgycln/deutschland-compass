@@ -1,18 +1,32 @@
 'use client';
 
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { educationCareerGuideData } from '@/data/education-career-guide-data';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
-import { BookOpen, PlayCircle, GraduationCap, School, Briefcase, Users, HeartHandshake, Lightbulb, FileText, Download, Eye, Building2 } from 'lucide-react';
+import { BookOpen, PlayCircle, GraduationCap, School, Briefcase, Users, HeartHandshake, Lightbulb, FileText, Download, Eye, Building2, HelpCircle } from 'lucide-react';
 import { ShareExperienceDialog } from '@/components/share-experience-dialog';
 import { UploadDocumentDialog } from '@/components/upload-document-dialog';
 import { DocumentSection } from '@/components/document-section';
+import { useCommunityUpdates, PageCommunityUpdatesBanner, PageCommunityUpdatesContent } from '@/components/page-community-updates';
 
 export default function EducationCareerGuidePage() {
   const { title, description, videoUrl, sections, summary, faq } = educationCareerGuideData;
+  const [activeTab, setActiveTab] = useState('guide');
+  const { updates } = useCommunityUpdates('egitim-ve-kariyer');
+
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      const urlParams = new URLSearchParams(window.location.search);
+      const tabParam = urlParams.get('tab');
+      if (tabParam && ['guide', 'updates', 'faq', 'documents'].includes(tabParam)) {
+        setActiveTab(tabParam);
+      }
+    }
+  }, []);
 
   const getIconForSection = (id: string) => {
     switch (id) {
@@ -59,12 +73,12 @@ export default function EducationCareerGuidePage() {
               </Button>
               
               <ShareExperienceDialog 
-                professionSlug="egitim-rehberi" 
+                professionSlug="egitim-ve-kariyer" 
                 defaultProfessionName="Eğitim Rehberi" 
               />
               
               <UploadDocumentDialog 
-                professionSlug="egitim-rehberi" 
+                professionSlug="egitim-ve-kariyer" 
               />
             </div>
           </div>
@@ -114,109 +128,160 @@ export default function EducationCareerGuidePage() {
 
       <div className="container mx-auto px-4 py-12 max-w-4xl" id="content-start">
         
-        {/* Video Section */}
-        <div className="mb-12">
-          <div className="aspect-video bg-slate-200 rounded-xl overflow-hidden shadow-lg border border-slate-200 dark:border-slate-800 relative">
-            {videoUrl ? (
-              <iframe 
-                src={videoUrl.replace("watch?v=", "embed/")} 
-                title="Video İçerik"
-                className="w-full h-full"
-                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
-                allowFullScreen
-              />
-            ) : (
-              <div className="absolute inset-0 flex flex-col items-center justify-center bg-slate-100 dark:bg-slate-800 text-slate-400">
-                <PlayCircle className="w-16 h-16 opacity-50 mb-4" />
-                <p className="text-lg font-medium">NotebookLM Video Özeti Yakında Eklenecek</p>
-              </div>
-            )}
-          </div>
-        </div>
+        {/* Canlı Topluluk Güncellemeleri Banner */}
+        <PageCommunityUpdatesBanner 
+          categorySlug="egitim-ve-kariyer"
+          groupName="EĞİTİMCİLER İÇİN KARİYER"
+          updatesCount={updates.length}
+          onExploreClick={() => setActiveTab('updates')}
+        />
 
-        {/* Main Content Sections */}
-        <div className="space-y-12">
-          {sections.map((section) => (
-            <section key={section.id} className="scroll-mt-20" id={section.id}>
-              <div className="flex items-center gap-3 mb-6">
-                <div className="p-2 bg-white dark:bg-slate-800 rounded-lg shadow-sm border border-slate-200 dark:border-slate-700">
-                  {getIconForSection(section.id)}
-                </div>
-                <h2 className="text-2xl font-bold text-slate-900 dark:text-white">
-                  {section.title}
-                </h2>
-              </div>
-              
-              <div className="grid gap-6">
-                {section.content.map((item, index) => (
-                  <Card key={index} className="border-slate-200 dark:border-slate-800 shadow-sm hover:shadow-md transition-shadow">
-                    <CardHeader>
-                      <CardTitle className="text-lg font-semibold text-slate-800 dark:text-slate-200">
-                        {item.subtitle}
-                      </CardTitle>
-                    </CardHeader>
-                    <CardContent>
-                      <div className="prose prose-slate dark:prose-invert max-w-none">
-                        <p className="whitespace-pre-line text-slate-600 dark:text-slate-400 leading-relaxed">
-                          {item.text}
-                        </p>
-                      </div>
-                    </CardContent>
-                  </Card>
-                ))}
-              </div>
-            </section>
-          ))}
-        </div>
+        <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-8">
+          <TabsList className="grid w-full grid-cols-2 md:grid-cols-4 h-auto p-1 bg-slate-100 dark:bg-slate-800 rounded-xl gap-1">
+            <TabsTrigger value="guide" className="rounded-lg py-2.5">
+              Rehber
+            </TabsTrigger>
 
-        {/* Summary Section */}
-        <div className="my-16">
-          <div className="bg-gradient-to-br from-blue-50 to-indigo-50 dark:from-blue-950/30 dark:to-indigo-950/30 p-8 rounded-2xl border border-blue-100 dark:border-blue-900/50 shadow-sm">
-            <div className="flex items-start gap-4">
-              <Lightbulb className="w-8 h-8 text-blue-600 dark:text-blue-400 flex-shrink-0 mt-1" />
-              <div>
-                <h3 className="text-xl font-bold text-blue-900 dark:text-blue-100 mb-4">
-                  {summary.title}
-                </h3>
-                <p className="text-blue-800 dark:text-blue-200 leading-relaxed text-lg">
-                  {summary.text}
-                </p>
+            <TabsTrigger 
+              value="updates" 
+              className="relative rounded-lg font-bold flex items-center justify-center gap-1.5 py-2.5 transition-all data-[state=active]:bg-gradient-to-r data-[state=active]:from-amber-500 data-[state=active]:to-amber-600 data-[state=active]:text-white data-[state=active]:shadow-md data-[state=inactive]:text-amber-700 dark:data-[state=inactive]:text-amber-300 data-[state=inactive]:bg-amber-50/70 dark:data-[state=inactive]:bg-amber-950/30"
+            >
+              <span className="relative flex h-2 w-2">
+                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-amber-400 opacity-75"></span>
+                <span className="relative inline-flex rounded-full h-2 w-2 bg-amber-500 data-[state=active]:bg-white"></span>
+              </span>
+              <span>⚡ Güncel Gelişmeler</span>
+              {updates.length > 0 && (
+                <span className="ml-1 px-1.5 py-0.2 text-[10px] rounded-full bg-amber-200 dark:bg-amber-900/60 text-amber-900 dark:text-amber-200 font-extrabold">
+                  {updates.length}
+                </span>
+              )}
+            </TabsTrigger>
+
+            <TabsTrigger value="documents" className="rounded-lg py-2.5">
+              Dokümanlar
+            </TabsTrigger>
+
+            <TabsTrigger value="faq" className="rounded-lg py-2.5">
+              SSS
+            </TabsTrigger>
+          </TabsList>
+
+          {/* Güncel Gelişmeler Tab Content */}
+          <TabsContent value="updates" className="space-y-6">
+            <PageCommunityUpdatesContent
+              categorySlug="egitim-ve-kariyer"
+              groupName="EĞİTİMCİLER İÇİN KARİYER"
+              updates={updates}
+              onSwitchTab={(tab: string) => setActiveTab(tab)}
+            />
+          </TabsContent>
+
+          {/* Guide Tab Content */}
+          <TabsContent value="guide" className="space-y-12">
+            {/* Video Section */}
+            <div>
+              <div className="aspect-video bg-slate-200 rounded-xl overflow-hidden shadow-lg border border-slate-200 dark:border-slate-800 relative">
+                {videoUrl ? (
+                  <iframe 
+                    src={videoUrl.replace("watch?v=", "embed/")} 
+                    title="Video İçerik"
+                    className="w-full h-full"
+                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
+                    allowFullScreen
+                  />
+                ) : (
+                  <div className="absolute inset-0 flex flex-col items-center justify-center bg-slate-100 dark:bg-slate-800 text-slate-400">
+                    <PlayCircle className="w-16 h-16 opacity-50 mb-4" />
+                    <p className="text-lg font-medium">NotebookLM Video Özeti Yakında Eklenecek</p>
+                  </div>
+                )}
               </div>
             </div>
-          </div>
-        </div>
 
-        {/* Documents Section */}
-        <div className="mb-16">
-          <div className="flex items-center justify-between mb-8">
-            <h2 className="text-2xl font-bold text-slate-900 dark:text-white">
-              Kaynaklar ve Dokümanlar
+            {/* Main Content Sections */}
+            <div className="space-y-12">
+              {sections.map((section) => (
+                <section key={section.id} className="scroll-mt-20" id={section.id}>
+                  <div className="flex items-center gap-3 mb-6">
+                    <div className="p-2 bg-white dark:bg-slate-800 rounded-lg shadow-sm border border-slate-200 dark:border-slate-700">
+                      {getIconForSection(section.id)}
+                    </div>
+                    <h2 className="text-2xl font-bold text-slate-900 dark:text-white">
+                      {section.title}
+                    </h2>
+                  </div>
+                  
+                  <div className="grid gap-6">
+                    {section.content.map((item, index) => (
+                      <Card key={index} className="border-slate-200 dark:border-slate-800 shadow-sm hover:shadow-md transition-shadow">
+                        <CardHeader>
+                          <CardTitle className="text-lg font-semibold text-slate-800 dark:text-slate-200">
+                            {item.subtitle}
+                          </CardTitle>
+                        </CardHeader>
+                        <CardContent>
+                          <div className="prose prose-slate dark:prose-invert max-w-none">
+                            <p className="whitespace-pre-line text-slate-600 dark:text-slate-400 leading-relaxed">
+                              {item.text}
+                            </p>
+                          </div>
+                        </CardContent>
+                      </Card>
+                    ))}
+                  </div>
+                </section>
+              ))}
+            </div>
+
+            {/* Summary Section */}
+            <div className="my-16">
+              <div className="bg-gradient-to-br from-blue-50 to-indigo-50 dark:from-blue-950/30 dark:to-indigo-950/30 p-8 rounded-2xl border border-blue-100 dark:border-blue-900/50 shadow-sm">
+                <div className="flex items-start gap-4">
+                  <Lightbulb className="w-8 h-8 text-blue-600 dark:text-blue-400 flex-shrink-0 mt-1" />
+                  <div>
+                    <h3 className="text-xl font-bold text-blue-900 dark:text-blue-100 mb-4">
+                      {summary.title}
+                    </h3>
+                    <p className="text-blue-800 dark:text-blue-200 leading-relaxed text-lg">
+                      {summary.text}
+                    </p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </TabsContent>
+
+          {/* Documents Tab Content */}
+          <TabsContent value="documents" className="space-y-6">
+            <div className="flex items-center justify-between mb-4">
+              <h2 className="text-2xl font-bold text-slate-900 dark:text-white">
+                Kaynaklar ve Dokümanlar
+              </h2>
+              <UploadDocumentDialog professionSlug="egitim-ve-kariyer" />
+            </div>
+            <DocumentSection professionSlug="egitim-ve-kariyer" />
+          </TabsContent>
+
+          {/* FAQ Tab Content */}
+          <TabsContent value="faq" className="space-y-6">
+            <h2 className="text-2xl font-bold text-slate-900 dark:text-white mb-6 text-center">
+              Sıkça Sorulan Sorular
             </h2>
-            <UploadDocumentDialog professionSlug="egitim-rehberi" />
-          </div>
-          
-          {/* Documents Section */}
-          <DocumentSection professionSlug="egitim-ve-kariyer" />
-        </div>
-
-        {/* FAQ Section */}
-        <div className="mb-16">
-          <h2 className="text-2xl font-bold text-slate-900 dark:text-white mb-8 text-center">
-            Sıkça Sorulan Sorular
-          </h2>
-          <Accordion type="single" collapsible className="w-full">
-            {faq.map((item, index) => (
-              <AccordionItem key={index} value={`item-${index}`}>
-                <AccordionTrigger className="text-left font-medium text-slate-900 dark:text-slate-200">
-                  {item.question}
-                </AccordionTrigger>
-                <AccordionContent className="text-slate-600 dark:text-slate-400">
-                  {item.answer}
-                </AccordionContent>
-              </AccordionItem>
-            ))}
-          </Accordion>
-        </div>
+            <Accordion type="single" collapsible className="w-full">
+              {faq.map((item, index) => (
+                <AccordionItem key={index} value={`item-${index}`}>
+                  <AccordionTrigger className="text-left font-medium text-slate-900 dark:text-slate-200">
+                    {item.question}
+                  </AccordionTrigger>
+                  <AccordionContent className="text-slate-600 dark:text-slate-400">
+                    {item.answer}
+                  </AccordionContent>
+                </AccordionItem>
+              ))}
+            </Accordion>
+          </TabsContent>
+        </Tabs>
 
       </div>
     </div>
