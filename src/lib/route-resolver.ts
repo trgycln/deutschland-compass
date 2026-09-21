@@ -134,6 +134,15 @@ export const ROUTE_ALIASES: Record<string, string> = {
   'mekanlar': '/rehber/helal-mekanlar',
   'restoran': '/rehber/helal-mekanlar',
 
+  // Almanca & Sınav Hazırlığı
+  'almanca': '/almanca',
+  'almanca-sinav': '/almanca',
+  'sinav-hazirlik': '/almanca/b2-sinav-hazirlik',
+  'b2-sinav-hazirlik': '/almanca/b2-sinav-hazirlik',
+  'b2-hazirlik': '/almanca/b2-sinav-hazirlik',
+  'all-dosyasi': '/almanca/b2-sinav-hazirlik',
+  'b2-all-dosyasi': '/almanca/b2-sinav-hazirlik',
+
   // Okul Öncesi & Kreş
   'okul-oncesi-ogretmeni': '/rehber/okul-oncesi-ogretmenligi',
   'okul-oncesi-ogretmenligi': '/rehber/okul-oncesi-ogretmenligi',
@@ -238,6 +247,9 @@ export const CATEGORY_TITLES: Record<string, string> = {
   'teknik-ogretmenler': 'Teknik Öğretmenler',
   'turkce-ogretmenligi': 'Türkçe Öğretmenliği',
   'yapay-zeka-kariyerleri': 'Yapay Zeka Kariyerleri',
+  'almanca': 'Almanca & Dil Sınavları',
+  'b2-sinav-hazirlik': 'B2 Sınav Hazırlığı (ALL DOSYASI)',
+  'sinav-hazirlik': 'B2 Sınav Hazırlığı (ALL DOSYASI)',
 
   // Meslekler
   'lokfuhrer': 'Makinistlik (Lokführer)',

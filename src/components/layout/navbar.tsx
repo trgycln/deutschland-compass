@@ -275,6 +275,23 @@ export function Navbar() {
                       </div>
                       <ChevronRight className="w-4 h-4 text-slate-300 dark:text-slate-600 flex-shrink-0" />
                     </Link>
+
+                    <Link 
+                      href="/almanca" 
+                      className="flex items-center justify-between p-2 rounded-xl hover:bg-slate-50 dark:hover:bg-slate-900 text-slate-700 dark:text-slate-200 transition-colors"
+                      onClick={() => setIsOpen(false)}
+                    >
+                      <div className="flex items-center gap-2.5 min-w-0">
+                        <div className="w-7 h-7 rounded-lg bg-blue-100 dark:bg-blue-950/60 flex items-center justify-center text-blue-700 dark:text-blue-400 flex-shrink-0">
+                          <GraduationCap className="w-3.5 h-3.5" />
+                        </div>
+                        <div className="min-w-0">
+                          <p className="text-xs font-semibold truncate">Almanca & Sınavlar</p>
+                          <p className="text-[10px] text-slate-400 truncate">B2 ALL Dosyası, B1 & B2 Allgemein</p>
+                        </div>
+                      </div>
+                      <ChevronRight className="w-4 h-4 text-slate-300 dark:text-slate-600 flex-shrink-0" />
+                    </Link>
                   </div>
                 </div>
 
@@ -352,6 +369,10 @@ export function Navbar() {
             <Link href="/rehber" className="hover:text-primary transition-colors flex items-center gap-2">
               <BookOpen className="w-4 h-4" />
               Rehberler
+            </Link>
+            <Link href="/almanca" className="hover:text-primary transition-colors flex items-center gap-2">
+              <GraduationCap className="w-4 h-4 text-blue-600 dark:text-blue-400" />
+              Almanca
             </Link>
 
             <Link href="/gurbet-kalemleri" className="hover:text-primary transition-colors flex items-center gap-2">

@@ -1,4 +1,4 @@
-﻿"use client";
+"use client";
 
 import Link from "next/link";
 import { Card, CardContent } from "@/components/ui/card";
@@ -81,7 +81,8 @@ const CATEGORIES = [
     color: "emerald",
     description: "Is bulma, egitim ve günlük yasam rehberleri.",
     links: [
-      { text: "AI ile Yeni Kariyerler", href: "/rehber/yapay-zeka-kariyerleri", badge: "Yeni" },
+      { text: "Almanca (B1/B2 Sınav)", href: "/almanca", badge: "Yeni" },
+      { text: "AI ile Yeni Kariyerler", href: "/rehber/yapay-zeka-kariyerleri" },
       { text: "Kariyer Yolu", href: "/rehber/kariyer-yolu" },
       { text: "Egitim & Kariyer (Aileler)", href: "/rehber/egitim-ve-kariyer" },
       { text: "Tagesmutter", href: "/rehber/tagesmutter" }
