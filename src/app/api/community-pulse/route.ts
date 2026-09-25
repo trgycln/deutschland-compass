@@ -10,10 +10,11 @@ export const dynamic = 'force-dynamic';
 export const revalidate = 60; // Cache for 60 seconds
 
 import { resolveCategoryRoute, resolveCategoryTitle } from '@/lib/route-resolver';
+import { professionsList } from '@/data/professions-list';
 
 export interface PulseItem {
   id: string;
-  type: 'community_update' | 'literary' | 'experience' | 'guide';
+  type: 'community_update' | 'literary' | 'experience' | 'guide' | 'document' | 'blog' | 'video';
   badge: string;
   badgeStyle: string; // Tailwind color styling
   title: string;
@@ -30,18 +31,23 @@ function truncateText(text: string, maxLen = 140): string {
   return clean.slice(0, maxLen).trim() + '...';
 }
 
-
 export async function GET() {
   try {
     const items: PulseItem[] = [];
+    
+    // We only want items from the last 90 days to prevent very old items from sticking to the top
+    const ninetyDaysAgo = new Date();
+    ninetyDaysAgo.setDate(ninetyDaysAgo.getDate() - 90);
+    const dateStr = ninetyDaysAgo.toISOString();
 
     // 1. Fetch latest community updates (Telegram field notes)
     try {
       const { data: communityUpdates } = await supabase
         .from('community_updates')
         .select('id, category_slug, title, content, badge_text, source_group, updated_at, created_at')
+        .gt('updated_at', dateStr)
         .order('updated_at', { ascending: false, nullsFirst: false })
-        .limit(5);
+        .limit(30);
 
       if (communityUpdates) {
         for (const cu of communityUpdates) {
@@ -71,6 +77,7 @@ export async function GET() {
       const { data: literaryWorks } = await supabase
         .from('literary_works')
         .select('id, title, author, type, excerpt, content, created_at')
+        .gt('created_at', dateStr)
         .order('created_at', { ascending: false })
         .limit(3);
 
@@ -103,8 +110,9 @@ export async function GET() {
         .from('experiences')
         .select('id, profession, name, created_at')
         .eq('status', 'approved')
+        .gt('created_at', dateStr)
         .order('created_at', { ascending: false })
-        .limit(2);
+        .limit(3);
 
       if (experiences) {
         for (const exp of experiences) {
@@ -126,6 +134,99 @@ export async function GET() {
     } catch (expErr) {
       console.error('Error fetching experiences:', expErr);
     }
+    
+    // 4. Fetch latest documents
+    try {
+      const { data: docs } = await supabase
+        .from('documents')
+        .select('id, title, profession_slug, created_at, file_type')
+        .eq('status', 'approved')
+        .gt('created_at', dateStr)
+        .order('created_at', { ascending: false })
+        .limit(4);
+
+      if (docs) {
+        for (const doc of docs) {
+          const profession = professionsList.find(p => p.slug === doc.profession_slug);
+          const link = profession?.customLink || resolveCategoryRoute(doc.profession_slug);
+          
+          items.push({
+            id: `doc-${doc.id}`,
+            type: 'document',
+            badge: 'Doküman',
+            badgeStyle: 'bg-blue-100 text-blue-800 dark:bg-blue-950/60 dark:text-blue-300 border-blue-200 dark:border-blue-800',
+            title: doc.title,
+            teaser: `${doc.file_type?.toUpperCase() || 'DOC'} formatında yeni doküman eklendi. (${profession?.title || doc.profession_slug})`,
+            link: `${link}?tab=documents`,
+            source: 'Dosya Paylaşımı',
+            timestamp: doc.created_at || new Date().toISOString()
+          });
+        }
+      }
+    } catch (docErr) {
+      console.error('Error fetching documents:', docErr);
+    }
+    
+    // 5. Fetch latest blogs
+    try {
+      const { data: blogs } = await supabase
+        .from('blogs')
+        .select('id, title, slug, created_at')
+        .eq('is_published', true)
+        .gt('created_at', dateStr)
+        .order('created_at', { ascending: false })
+        .limit(3);
+
+      if (blogs) {
+        for (const blog of blogs) {
+          items.push({
+            id: `blog-${blog.id}`,
+            type: 'blog',
+            badge: 'Blog',
+            badgeStyle: 'bg-fuchsia-100 text-fuchsia-800 dark:bg-fuchsia-950/60 dark:text-fuchsia-300 border-fuchsia-200 dark:border-fuchsia-800',
+            title: blog.title,
+            teaser: `Yeni blog yazısı platformda yayında.`,
+            link: `/blog/${blog.slug}`,
+            source: 'Blog Yazısı',
+            timestamp: blog.created_at || new Date().toISOString()
+          });
+        }
+      }
+    } catch (blogErr) {
+      console.error('Error fetching blogs:', blogErr);
+    }
+    
+    // 6. Fetch latest profession videos
+    try {
+      const { data: videos } = await supabase
+        .from('professions')
+        .select('slug, title, video_url, created_at')
+        .not('video_url', 'is', null)
+        .gt('created_at', dateStr)
+        .order('created_at', { ascending: false })
+        .limit(2);
+
+      if (videos) {
+        for (const video of videos) {
+          const profession = professionsList.find(p => p.slug === video.slug);
+          let link = profession?.customLink ? profession.customLink : resolveCategoryRoute(video.slug);
+
+          items.push({
+            id: `video-${video.slug}`,
+            type: 'video',
+            badge: 'Video',
+            badgeStyle: 'bg-rose-100 text-rose-800 dark:bg-rose-950/60 dark:text-rose-300 border-rose-200 dark:border-rose-800',
+            title: profession?.title || video.title || video.slug,
+            teaser: `NotebookLM destekli sesli anlatım ve video rehberi eklendi.`,
+            link,
+            source: 'Video Rehber',
+            timestamp: video.created_at || new Date().toISOString()
+          });
+        }
+      }
+    } catch (videoErr) {
+      console.error('Error fetching videos:', videoErr);
+    }
 
     // Sort all by timestamp descending
     items.sort((a, b) => new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime());
@@ -136,10 +237,11 @@ export async function GET() {
       success: true,
       latestTimestamp,
       totalCount: items.length,
-      items: items.slice(0, 7) // return top 7 items
+      items: items.slice(0, 15) // return top 15 items to show ALL recent Telegram field notes and more
     });
   } catch (error: any) {
     console.error('API /api/community-pulse error:', error);
     return NextResponse.json({ success: false, error: error.message }, { status: 500 });
   }
 }
+
